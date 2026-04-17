@@ -188,23 +188,9 @@ function DashboardHome() {
                     <s.icon className="h-4 w-4 text-foreground" />
                   </div>
                 </div>
-                <div className="mt-4 flex items-end justify-between">
+                <div className="mt-4">
                   <div className="text-3xl font-bold font-display">
                     {s.value}
-                  </div>
-                  <div
-                    className={`flex items-center gap-1 text-xs font-medium ${
-                      s.trend === "up"
-                        ? "text-emerald-600 dark:text-emerald-400"
-                        : "text-rose-600 dark:text-rose-400"
-                    }`}
-                  >
-                    {s.trend === "up" ? (
-                      <TrendingUp className="h-3 w-3" />
-                    ) : (
-                      <TrendingDown className="h-3 w-3" />
-                    )}
-                    {s.delta}
                   </div>
                 </div>
               </CardContent>
