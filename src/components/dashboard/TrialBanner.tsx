@@ -5,26 +5,37 @@ import { Button } from "@/components/ui/button";
 interface TrialBannerProps {
   status: string;
   daysRemaining: number;
+  hadPaidSubscription?: boolean;
 }
 
-export function TrialBanner({ status, daysRemaining }: TrialBannerProps) {
+export function TrialBanner({
+  status,
+  daysRemaining,
+  hadPaidSubscription,
+}: TrialBannerProps) {
   if (status === "active") return null;
 
   const isExpired = status === "expired" || daysRemaining <= 0;
 
   if (isExpired) {
+    const title = hadPaidSubscription
+      ? "Your subscription has expired."
+      : "Your trial has expired.";
+    const tail = hadPaidSubscription
+      ? "Renew to continue using your store."
+      : "Upgrade to keep using your store.";
+    const cta = hadPaidSubscription ? "Renew now" : "Upgrade now";
     return (
       <div className="border-b border-destructive/30 bg-destructive/10 text-destructive-foreground">
         <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 md:px-8">
           <div className="flex items-center gap-2 text-sm">
             <AlertTriangle className="size-4 text-destructive" />
             <span className="text-foreground">
-              <strong className="text-destructive">Your trial has expired.</strong>{" "}
-              Upgrade to keep using your store.
+              <strong className="text-destructive">{title}</strong> {tail}
             </span>
           </div>
           <Button size="sm" asChild>
-            <Link to="/dashboard/upgrade">Upgrade now</Link>
+            <Link to="/dashboard/upgrade">{cta}</Link>
           </Button>
         </div>
       </div>
