@@ -13,6 +13,8 @@ import {
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { useSubscription } from "@/hooks/use-subscription";
+import { ExpiredOverlay } from "@/components/dashboard/ExpiredOverlay";
 import { PageHeader, EmptyState } from "@/components/dashboard/PageHeader";
 import {
   ProductFormDialog,
