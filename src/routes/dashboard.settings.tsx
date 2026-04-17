@@ -48,10 +48,13 @@ function SettingsPage() {
 
     supabase
       .from("profiles")
-      .select("name")
+      .select("name, avatar_url")
       .eq("id", user.id)
       .maybeSingle()
-      .then(({ data }) => setName(data?.name ?? ""));
+      .then(({ data }) => {
+        setName(data?.name ?? "");
+        setAvatarUrl(data?.avatar_url ?? null);
+      });
 
     supabase
       .from("store_settings")
