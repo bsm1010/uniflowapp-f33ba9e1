@@ -22,7 +22,14 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-const items = [
+type NavItem = {
+  title: string;
+  url: string;
+  icon: typeof LayoutDashboard;
+  end?: boolean;
+};
+
+const items: NavItem[] = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard, end: true },
   { title: "My Store", url: "/dashboard/store", icon: Store },
   { title: "Products", url: "/dashboard/products", icon: Package },
@@ -31,7 +38,7 @@ const items = [
   { title: "Themes", url: "/dashboard/themes", icon: Palette },
   { title: "Analytics", url: "/dashboard/analytics", icon: BarChart3 },
   { title: "Settings", url: "/dashboard/settings", icon: Settings },
-] as const;
+];
 
 export function DashboardSidebar() {
   const { state } = useSidebar();
