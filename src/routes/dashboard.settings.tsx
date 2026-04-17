@@ -432,6 +432,59 @@ function SettingsPage() {
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
+          <div className="flex items-center gap-4">
+            <Avatar className="h-20 w-20 border border-border/60">
+              {avatarUrl ? <AvatarImage src={avatarUrl} alt={name || "Avatar"} /> : null}
+              <AvatarFallback className="bg-gradient-brand text-brand-foreground text-lg font-semibold">
+                {(name || user?.email || "U")
+                  .split(/[\s@]/)[0]
+                  .slice(0, 2)
+                  .toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium">Profile photo</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                PNG or JPG, up to 5MB. Shown in the topbar.
+              </p>
+              <div className="flex flex-wrap gap-2 mt-3">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) handleAvatarUpload(f);
+                    e.target.value = "";
+                  }}
+                />
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploadingAvatar}
+                >
+                  <Upload className="size-4 mr-1.5" />
+                  {uploadingAvatar ? "Uploading…" : avatarUrl ? "Replace" : "Upload"}
+                </Button>
+                {avatarUrl && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={removeAvatar}
+                    disabled={uploadingAvatar}
+                  >
+                    <Trash2 className="size-4 mr-1.5" />
+                    Remove
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="name">Full name</Label>
