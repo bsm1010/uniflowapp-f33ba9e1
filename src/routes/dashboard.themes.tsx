@@ -230,30 +230,13 @@ function CustomizePage() {
         {/* Left settings panel */}
         <Card className="border-border/60 shadow-soft h-fit lg:sticky lg:top-20">
           <CardContent className="p-0">
-            <Tabs defaultValue="design">
-              <TabsList className="w-full rounded-none border-b border-border/60 bg-transparent p-0 h-auto">
-                <TabsTrigger
-                  value="design"
-                  className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3"
-                >
-                  Design
-                </TabsTrigger>
-                <TabsTrigger
-                  value="content"
-                  className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3"
-                >
-                  Content
-                </TabsTrigger>
-                <TabsTrigger
-                  value="sections"
-                  className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3"
-                >
-                  Sections
-                </TabsTrigger>
-              </TabsList>
-
-              {/* DESIGN TAB */}
-              <div data-tab="design">
+            <div className="px-4 py-3 border-b border-border/60">
+              <div className="text-sm font-semibold">Design</div>
+              <div className="text-xs text-muted-foreground">
+                Theme, colors, fonts and logo.
+              </div>
+            </div>
+            <div>
                 <Accordion
                   type="multiple"
                   defaultValue={["theme", "colors", "fonts", "logo"]}
@@ -481,32 +464,7 @@ function CustomizePage() {
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion>
-              </div>
-
-              {/* CONTENT TAB */}
-              <div data-tab="content" className="hidden">
-                <div className="p-4 space-y-4">
-                  <div className="space-y-2">
-                    <Label>Store name</Label>
-                    <Input
-                      value={settings.store_name}
-                      onChange={(e) => update("store_name", e.target.value)}
-                      maxLength={60}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Tagline</Label>
-                    <Input
-                      value={settings.tagline}
-                      onChange={(e) => update("tagline", e.target.value)}
-                      maxLength={120}
-                    />
-                  </div>
-                </div>
-              </div>
-            </Tabs>
-
-            {/* CONTENT + SECTIONS rendered together below tabs since shadcn Tabs needs proper TabsContent. Replacing approach: */}
+            </div>
           </CardContent>
         </Card>
 
