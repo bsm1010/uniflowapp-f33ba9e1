@@ -63,6 +63,7 @@ function formatPrice(n: number) {
 
 function ProductsPage() {
   const { user } = useAuth();
+  const { isExpired } = useSubscription();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
