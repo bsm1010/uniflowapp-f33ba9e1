@@ -19,6 +19,8 @@ import {
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { useSubscription } from "@/hooks/use-subscription";
+import { ExpiredOverlay } from "@/components/dashboard/ExpiredOverlay";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import {
   StorePreview,
@@ -97,6 +99,7 @@ function defaults(userId: string): StoreSettings {
 
 function CustomizePage() {
   const { user } = useAuth();
+  const { isExpired } = useSubscription();
   const [settings, setSettings] = useState<StoreSettings | null>(null);
   const [products, setProducts] = useState<
     { name: string; price: number; images: string[] }[]
@@ -192,6 +195,7 @@ function CustomizePage() {
 
   return (
     <div className="max-w-[1600px] mx-auto">
+      {isExpired && <ExpiredOverlay />}
       <PageHeader
         eyebrow="Storefront"
         title="Customize your store"

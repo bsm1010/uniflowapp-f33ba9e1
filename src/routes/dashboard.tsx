@@ -6,6 +6,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { DashboardTopbar } from "@/components/dashboard/DashboardTopbar";
 import { TrialBanner } from "@/components/dashboard/TrialBanner";
+import { SubscriptionProvider } from "@/hooks/use-subscription";
 
 export const Route = createFileRoute("/dashboard")({
   component: DashboardLayout,
@@ -82,18 +83,24 @@ function DashboardLayout() {
       )
     : 0;
 
+  const isExpired = subscriptionStatus === "expired";
+
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-background">
-        <DashboardSidebar />
-        <SidebarInset className="flex-1 flex flex-col min-w-0">
-          <DashboardTopbar name={name} avatarUrl={avatarUrl} />
-          <TrialBanner status={subscriptionStatus} daysRemaining={daysRemaining} />
-          <main className="flex-1 p-4 md:p-8">
-            <Outlet />
-          </main>
-        </SidebarInset>
-      </div>
-    </SidebarProvider>
+    <SubscriptionProvider
+      value={{ status: subscriptionStatus, isExpired, daysRemaining }}
+    >
+      <SidebarProvider>
+        <div className="min-h-screen flex w-full bg-background">
+          <DashboardSidebar />
+          <SidebarInset className="flex-1 flex flex-col min-w-0">
+            <DashboardTopbar name={name} avatarUrl={avatarUrl} />
+            <TrialBanner status={subscriptionStatus} daysRemaining={daysRemaining} />
+            <main className="flex-1 p-4 md:p-8">
+              <Outlet />
+            </main>
+          </SidebarInset>
+        </div>
+      </SidebarProvider>
+    </SubscriptionProvider>
   );
 }
