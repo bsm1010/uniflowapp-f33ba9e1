@@ -10,8 +10,13 @@ import {
   Palette,
   ExternalLink,
   CircleDot,
+  Sparkles,
+  Clock,
+  AlertTriangle,
+  CheckCircle2,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { useSubscription } from "@/hooks/use-subscription";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
