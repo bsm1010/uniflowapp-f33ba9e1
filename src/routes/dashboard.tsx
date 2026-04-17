@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { DashboardTopbar } from "@/components/dashboard/DashboardTopbar";
+import { TrialBanner } from "@/components/dashboard/TrialBanner";
 
 export const Route = createFileRoute("/dashboard")({
   component: DashboardLayout,
@@ -21,6 +22,8 @@ function DashboardLayout() {
   const navigate = useNavigate();
   const [name, setName] = useState<string>("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [trialEndDate, setTrialEndDate] = useState<string | null>(null);
+  const [subscriptionStatus, setSubscriptionStatus] = useState<string>("trial");
 
   useEffect(() => {
     if (!loading && !user) {
@@ -30,16 +33,31 @@ function DashboardLayout() {
 
   useEffect(() => {
     if (!user) return;
-    const load = () => {
-      supabase
+    const load = async () => {
+      const { data } = await supabase
         .from("profiles")
-        .select("name, avatar_url")
+        .select("name, avatar_url, trial_end_date, subscription_status")
         .eq("id", user.id)
-        .maybeSingle()
-        .then(({ data }) => {
-          setName(data?.name ?? "");
-          setAvatarUrl(data?.avatar_url ?? null);
-        });
+        .maybeSingle();
+
+      setName(data?.name ?? "");
+      setAvatarUrl(data?.avatar_url ?? null);
+      setTrialEndDate(data?.trial_end_date ?? null);
+
+      // Auto-expire trial if past trial_end_date
+      let status = data?.subscription_status ?? "trial";
+      if (
+        status === "trial" &&
+        data?.trial_end_date &&
+        new Date(data.trial_end_date) < new Date()
+      ) {
+        await supabase
+          .from("profiles")
+          .update({ subscription_status: "expired" })
+          .eq("id", user.id);
+        status = "expired";
+      }
+      setSubscriptionStatus(status);
     };
     load();
     const handler = () => load();
@@ -55,12 +73,22 @@ function DashboardLayout() {
     );
   }
 
+  const daysRemaining = trialEndDate
+    ? Math.max(
+        0,
+        Math.ceil(
+          (new Date(trialEndDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
+        ),
+      )
+    : 0;
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
         <DashboardSidebar />
         <SidebarInset className="flex-1 flex flex-col min-w-0">
           <DashboardTopbar name={name} avatarUrl={avatarUrl} />
+          <TrialBanner status={subscriptionStatus} daysRemaining={daysRemaining} />
           <main className="flex-1 p-4 md:p-8">
             <Outlet />
           </main>
