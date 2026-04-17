@@ -37,7 +37,9 @@ function DashboardLayout() {
     const load = async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("name, avatar_url, trial_end_date, subscription_status")
+        .select(
+          "name, avatar_url, trial_end_date, subscription_status, subscription_end_date",
+        )
         .eq("id", user.id)
         .maybeSingle();
 
@@ -45,12 +47,14 @@ function DashboardLayout() {
       setAvatarUrl(data?.avatar_url ?? null);
       setTrialEndDate(data?.trial_end_date ?? null);
 
-      // Auto-expire trial if past trial_end_date
       let status = data?.subscription_status ?? "trial";
+      const now = new Date();
+
+      // Auto-expire trial
       if (
         status === "trial" &&
         data?.trial_end_date &&
-        new Date(data.trial_end_date) < new Date()
+        new Date(data.trial_end_date) < now
       ) {
         await supabase
           .from("profiles")
@@ -58,6 +62,20 @@ function DashboardLayout() {
           .eq("id", user.id);
         status = "expired";
       }
+
+      // Auto-expire active subscription past its end date
+      if (
+        status === "active" &&
+        data?.subscription_end_date &&
+        new Date(data.subscription_end_date) < now
+      ) {
+        await supabase
+          .from("profiles")
+          .update({ subscription_status: "expired" })
+          .eq("id", user.id);
+        status = "expired";
+      }
+
       setSubscriptionStatus(status);
     };
     load();
