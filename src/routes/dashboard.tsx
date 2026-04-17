@@ -25,6 +25,7 @@ function DashboardLayout() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [trialEndDate, setTrialEndDate] = useState<string | null>(null);
   const [subscriptionStatus, setSubscriptionStatus] = useState<string>("trial");
+  const [hadPaidSubscription, setHadPaidSubscription] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {

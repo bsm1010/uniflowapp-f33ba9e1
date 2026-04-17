@@ -4,6 +4,8 @@ interface SubscriptionContextValue {
   status: string;
   isExpired: boolean;
   daysRemaining: number;
+  /** True if the user previously had a paid subscription (now expired) */
+  hadPaidSubscription?: boolean;
 }
 
 const SubscriptionContext = createContext<SubscriptionContextValue | undefined>(
@@ -27,7 +29,12 @@ export function SubscriptionProvider({
 export function useSubscription() {
   const ctx = useContext(SubscriptionContext);
   if (!ctx) {
-    return { status: "trial", isExpired: false, daysRemaining: 0 };
+    return {
+      status: "trial",
+      isExpired: false,
+      daysRemaining: 0,
+      hadPaidSubscription: false,
+    };
   }
   return ctx;
 }
