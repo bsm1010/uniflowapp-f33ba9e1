@@ -80,6 +80,66 @@ export type Database = {
         }
         Relationships: []
       }
+      store_settings: {
+        Row: {
+          background_color: string
+          created_at: string
+          font_family: string
+          hero_cta_label: string
+          hero_heading: string
+          hero_subheading: string
+          logo_url: string | null
+          primary_color: string
+          show_categories: boolean
+          show_featured: boolean
+          show_hero: boolean
+          show_newsletter: boolean
+          store_name: string
+          tagline: string
+          theme: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          background_color?: string
+          created_at?: string
+          font_family?: string
+          hero_cta_label?: string
+          hero_heading?: string
+          hero_subheading?: string
+          logo_url?: string | null
+          primary_color?: string
+          show_categories?: boolean
+          show_featured?: boolean
+          show_hero?: boolean
+          show_newsletter?: boolean
+          store_name?: string
+          tagline?: string
+          theme?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          background_color?: string
+          created_at?: string
+          font_family?: string
+          hero_cta_label?: string
+          hero_heading?: string
+          hero_subheading?: string
+          logo_url?: string | null
+          primary_color?: string
+          show_categories?: boolean
+          show_featured?: boolean
+          show_hero?: boolean
+          show_newsletter?: boolean
+          store_name?: string
+          tagline?: string
+          theme?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
