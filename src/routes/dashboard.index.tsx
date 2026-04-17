@@ -10,8 +10,13 @@ import {
   Palette,
   ExternalLink,
   CircleDot,
+  Sparkles,
+  Clock,
+  AlertTriangle,
+  CheckCircle2,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { useSubscription } from "@/hooks/use-subscription";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -61,7 +66,9 @@ const stats = [
 
 function DashboardHome() {
   const { user } = useAuth();
+  const { status, daysRemaining, hadPaidSubscription } = useSubscription();
   const [name, setName] = useState("");
+  const [hasPendingPayment, setHasPendingPayment] = useState(false);
   const [counts, setCounts] = useState({
     products: 0,
     orders: 0,
@@ -79,6 +86,14 @@ function DashboardHome() {
       .then(({ data }) => {
         if (data?.name) setName(data.name);
       });
+
+    supabase
+      .from("payment_submissions")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("status", "pending")
+      .limit(1)
+      .then(({ data }) => setHasPendingPayment((data?.length ?? 0) > 0));
 
     Promise.all([
       supabase
@@ -163,6 +178,13 @@ function DashboardHome() {
           </Badge>
         </div>
       </motion.div>
+
+      <SubscriptionStatusCard
+        status={status}
+        daysRemaining={daysRemaining}
+        hadPaidSubscription={!!hadPaidSubscription}
+        hasPendingPayment={hasPendingPayment}
+      />
 
       {/* Stats */}
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -321,5 +343,112 @@ function QuickAction({
         </CardContent>
       </Card>
     </Link>
+  );
+}
+
+function SubscriptionStatusCard({
+  status,
+  daysRemaining,
+  hadPaidSubscription,
+  hasPendingPayment,
+}: {
+  status: string;
+  daysRemaining: number;
+  hadPaidSubscription: boolean;
+  hasPendingPayment: boolean;
+}) {
+  if (status === "active") {
+    return (
+      <Card className="mt-6 border-emerald-500/30 bg-emerald-500/5 shadow-soft">
+        <CardContent className="p-5 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="grid size-10 place-items-center rounded-xl bg-emerald-500/15 text-emerald-700 dark:text-emerald-400">
+              <CheckCircle2 className="size-5" />
+            </div>
+            <div>
+              <p className="font-semibold">Subscription active</p>
+              <p className="text-sm text-muted-foreground">
+                Your plan is active. All features are unlocked.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (hasPendingPayment) {
+    return (
+      <Card className="mt-6 border-amber-500/30 bg-amber-500/5 shadow-soft">
+        <CardContent className="p-5 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="grid size-10 place-items-center rounded-xl bg-amber-500/15 text-amber-700 dark:text-amber-400">
+              <Clock className="size-5" />
+            </div>
+            <div>
+              <p className="font-semibold">Payment under review</p>
+              <p className="text-sm text-muted-foreground">
+                We'll activate your subscription as soon as the admin approves it.
+              </p>
+            </div>
+          </div>
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/dashboard/upgrade">View status</Link>
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (status === "expired") {
+    const title = hadPaidSubscription ? "Subscription expired" : "Trial expired";
+    const desc = hadPaidSubscription
+      ? "Renew to continue using your store. Your data is safe."
+      : "Upgrade to a paid plan to keep using your store.";
+    const cta = hadPaidSubscription ? "Renew now" : "Upgrade now";
+    return (
+      <Card className="mt-6 border-destructive/30 bg-destructive/5 shadow-soft">
+        <CardContent className="p-5 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="grid size-10 place-items-center rounded-xl bg-destructive/15 text-destructive">
+              <AlertTriangle className="size-5" />
+            </div>
+            <div>
+              <p className="font-semibold">{title}</p>
+              <p className="text-sm text-muted-foreground">{desc}</p>
+            </div>
+          </div>
+          <Button size="sm" asChild>
+            <Link to="/dashboard/upgrade">
+              <Sparkles className="size-4" />
+              {cta}
+            </Link>
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="mt-6 border-primary/30 bg-primary/5 shadow-soft">
+      <CardContent className="p-5 flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="grid size-10 place-items-center rounded-xl bg-primary/15 text-primary">
+            <Sparkles className="size-5" />
+          </div>
+          <div>
+            <p className="font-semibold">
+              Free trial · {daysRemaining} {daysRemaining === 1 ? "day" : "days"} left
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Upgrade anytime to unlock unlimited access.
+            </p>
+          </div>
+        </div>
+        <Button size="sm" variant="outline" asChild>
+          <Link to="/dashboard/upgrade">Upgrade</Link>
+        </Button>
+      </CardContent>
+    </Card>
   );
 }

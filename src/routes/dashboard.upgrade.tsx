@@ -162,6 +162,8 @@ function UpgradePage() {
 
   const selectedPlan = PLANS.find((p) => p.id === plan)!;
 
+  const pendingSubmission = submissions.find((s) => s.status === "pending");
+
   return (
     <div className="max-w-6xl mx-auto space-y-8">
       <PageHeader
@@ -170,6 +172,21 @@ function UpgradePage() {
         description="Choose a plan, send payment via CCP or BaridiMob, then upload your proof. We'll activate your subscription after review."
       />
 
+      {pendingSubmission && (
+        <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 flex items-start gap-3">
+          <Clock className="size-5 text-amber-600 mt-0.5 shrink-0" />
+          <div className="text-sm">
+            <p className="font-medium text-foreground">
+              Payment under review
+            </p>
+            <p className="text-muted-foreground mt-0.5">
+              Your {pendingSubmission.plan} plan payment of{" "}
+              {Number(pendingSubmission.amount).toLocaleString()} DZD is awaiting
+              admin approval. You'll be notified once it's activated.
+            </p>
+          </div>
+        </div>
+      )}
       {/* Plans */}
       <div className="grid gap-4 md:grid-cols-2">
         {PLANS.map((p) => {
