@@ -20,6 +20,7 @@ function DashboardLayout() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [name, setName] = useState<string>("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -29,14 +30,21 @@ function DashboardLayout() {
 
   useEffect(() => {
     if (!user) return;
-    supabase
-      .from("profiles")
-      .select("name")
-      .eq("id", user.id)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (data?.name) setName(data.name);
-      });
+    const load = () => {
+      supabase
+        .from("profiles")
+        .select("name, avatar_url")
+        .eq("id", user.id)
+        .maybeSingle()
+        .then(({ data }) => {
+          setName(data?.name ?? "");
+          setAvatarUrl(data?.avatar_url ?? null);
+        });
+    };
+    load();
+    const handler = () => load();
+    window.addEventListener("profile:updated", handler);
+    return () => window.removeEventListener("profile:updated", handler);
   }, [user]);
 
   if (loading || !user) {
@@ -52,7 +60,7 @@ function DashboardLayout() {
       <div className="min-h-screen flex w-full bg-background">
         <DashboardSidebar />
         <SidebarInset className="flex-1 flex flex-col min-w-0">
-          <DashboardTopbar name={name} />
+          <DashboardTopbar name={name} avatarUrl={avatarUrl} />
           <main className="flex-1 p-4 md:p-8">
             <Outlet />
           </main>
