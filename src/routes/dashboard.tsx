@@ -83,7 +83,26 @@ function DashboardLayout() {
     load();
     const handler = () => load();
     window.addEventListener("profile:updated", handler);
-    return () => window.removeEventListener("profile:updated", handler);
+
+    // Realtime: refresh when our profile row changes (e.g., admin approval)
+    const channel = supabase
+      .channel(`profile-${user.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "profiles",
+          filter: `id=eq.${user.id}`,
+        },
+        () => load(),
+      )
+      .subscribe();
+
+    return () => {
+      window.removeEventListener("profile:updated", handler);
+      supabase.removeChannel(channel);
+    };
   }, [user]);
 
   if (loading || !user) {
