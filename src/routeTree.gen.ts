@@ -14,6 +14,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
+import { Route as SSlugRouteImport } from './routes/s.$slug'
 import { Route as DashboardThemesRouteImport } from './routes/dashboard.themes'
 import { Route as DashboardStoreRouteImport } from './routes/dashboard.store'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
@@ -21,6 +22,10 @@ import { Route as DashboardProductsRouteImport } from './routes/dashboard.produc
 import { Route as DashboardOrdersRouteImport } from './routes/dashboard.orders'
 import { Route as DashboardCustomersRouteImport } from './routes/dashboard.customers'
 import { Route as DashboardAnalyticsRouteImport } from './routes/dashboard.analytics'
+import { Route as SSlugCheckoutRouteImport } from './routes/s.$slug.checkout'
+import { Route as SSlugCartRouteImport } from './routes/s.$slug.cart'
+import { Route as SSlugPProductIdRouteImport } from './routes/s.$slug.p.$productId'
+import { Route as SSlugCheckoutSuccessRouteImport } from './routes/s.$slug.checkout.success'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -46,6 +51,11 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => DashboardRoute,
+} as any)
+const SSlugRoute = SSlugRouteImport.update({
+  id: '/s/$slug',
+  path: '/s/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardThemesRoute = DashboardThemesRouteImport.update({
   id: '/themes',
@@ -82,6 +92,26 @@ const DashboardAnalyticsRoute = DashboardAnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => DashboardRoute,
 } as any)
+const SSlugCheckoutRoute = SSlugCheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => SSlugRoute,
+} as any)
+const SSlugCartRoute = SSlugCartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
+  getParentRoute: () => SSlugRoute,
+} as any)
+const SSlugPProductIdRoute = SSlugPProductIdRouteImport.update({
+  id: '/p/$productId',
+  path: '/p/$productId',
+  getParentRoute: () => SSlugRoute,
+} as any)
+const SSlugCheckoutSuccessRoute = SSlugCheckoutSuccessRouteImport.update({
+  id: '/success',
+  path: '/success',
+  getParentRoute: () => SSlugCheckoutRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -95,7 +125,12 @@ export interface FileRoutesByFullPath {
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/store': typeof DashboardStoreRoute
   '/dashboard/themes': typeof DashboardThemesRoute
+  '/s/$slug': typeof SSlugRouteWithChildren
   '/dashboard/': typeof DashboardIndexRoute
+  '/s/$slug/cart': typeof SSlugCartRoute
+  '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
+  '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
+  '/s/$slug/p/$productId': typeof SSlugPProductIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -108,7 +143,12 @@ export interface FileRoutesByTo {
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/store': typeof DashboardStoreRoute
   '/dashboard/themes': typeof DashboardThemesRoute
+  '/s/$slug': typeof SSlugRouteWithChildren
   '/dashboard': typeof DashboardIndexRoute
+  '/s/$slug/cart': typeof SSlugCartRoute
+  '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
+  '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
+  '/s/$slug/p/$productId': typeof SSlugPProductIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -123,7 +163,12 @@ export interface FileRoutesById {
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/store': typeof DashboardStoreRoute
   '/dashboard/themes': typeof DashboardThemesRoute
+  '/s/$slug': typeof SSlugRouteWithChildren
   '/dashboard/': typeof DashboardIndexRoute
+  '/s/$slug/cart': typeof SSlugCartRoute
+  '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
+  '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
+  '/s/$slug/p/$productId': typeof SSlugPProductIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -139,7 +184,12 @@ export interface FileRouteTypes {
     | '/dashboard/settings'
     | '/dashboard/store'
     | '/dashboard/themes'
+    | '/s/$slug'
     | '/dashboard/'
+    | '/s/$slug/cart'
+    | '/s/$slug/checkout'
+    | '/s/$slug/checkout/success'
+    | '/s/$slug/p/$productId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -152,7 +202,12 @@ export interface FileRouteTypes {
     | '/dashboard/settings'
     | '/dashboard/store'
     | '/dashboard/themes'
+    | '/s/$slug'
     | '/dashboard'
+    | '/s/$slug/cart'
+    | '/s/$slug/checkout'
+    | '/s/$slug/checkout/success'
+    | '/s/$slug/p/$productId'
   id:
     | '__root__'
     | '/'
@@ -166,7 +221,12 @@ export interface FileRouteTypes {
     | '/dashboard/settings'
     | '/dashboard/store'
     | '/dashboard/themes'
+    | '/s/$slug'
     | '/dashboard/'
+    | '/s/$slug/cart'
+    | '/s/$slug/checkout'
+    | '/s/$slug/checkout/success'
+    | '/s/$slug/p/$productId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -174,6 +234,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRouteWithChildren
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
+  SSlugRoute: typeof SSlugRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -212,6 +273,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/'
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRoute
+    }
+    '/s/$slug': {
+      id: '/s/$slug'
+      path: '/s/$slug'
+      fullPath: '/s/$slug'
+      preLoaderRoute: typeof SSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/dashboard/themes': {
       id: '/dashboard/themes'
@@ -262,6 +330,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAnalyticsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/s/$slug/checkout': {
+      id: '/s/$slug/checkout'
+      path: '/checkout'
+      fullPath: '/s/$slug/checkout'
+      preLoaderRoute: typeof SSlugCheckoutRouteImport
+      parentRoute: typeof SSlugRoute
+    }
+    '/s/$slug/cart': {
+      id: '/s/$slug/cart'
+      path: '/cart'
+      fullPath: '/s/$slug/cart'
+      preLoaderRoute: typeof SSlugCartRouteImport
+      parentRoute: typeof SSlugRoute
+    }
+    '/s/$slug/p/$productId': {
+      id: '/s/$slug/p/$productId'
+      path: '/p/$productId'
+      fullPath: '/s/$slug/p/$productId'
+      preLoaderRoute: typeof SSlugPProductIdRouteImport
+      parentRoute: typeof SSlugRoute
+    }
+    '/s/$slug/checkout/success': {
+      id: '/s/$slug/checkout/success'
+      path: '/success'
+      fullPath: '/s/$slug/checkout/success'
+      preLoaderRoute: typeof SSlugCheckoutSuccessRouteImport
+      parentRoute: typeof SSlugCheckoutRoute
+    }
   }
 }
 
@@ -291,11 +387,38 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
   DashboardRouteChildren,
 )
 
+interface SSlugCheckoutRouteChildren {
+  SSlugCheckoutSuccessRoute: typeof SSlugCheckoutSuccessRoute
+}
+
+const SSlugCheckoutRouteChildren: SSlugCheckoutRouteChildren = {
+  SSlugCheckoutSuccessRoute: SSlugCheckoutSuccessRoute,
+}
+
+const SSlugCheckoutRouteWithChildren = SSlugCheckoutRoute._addFileChildren(
+  SSlugCheckoutRouteChildren,
+)
+
+interface SSlugRouteChildren {
+  SSlugCartRoute: typeof SSlugCartRoute
+  SSlugCheckoutRoute: typeof SSlugCheckoutRouteWithChildren
+  SSlugPProductIdRoute: typeof SSlugPProductIdRoute
+}
+
+const SSlugRouteChildren: SSlugRouteChildren = {
+  SSlugCartRoute: SSlugCartRoute,
+  SSlugCheckoutRoute: SSlugCheckoutRouteWithChildren,
+  SSlugPProductIdRoute: SSlugPProductIdRoute,
+}
+
+const SSlugRouteWithChildren = SSlugRoute._addFileChildren(SSlugRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRouteWithChildren,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
+  SSlugRoute: SSlugRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
