@@ -29,6 +29,7 @@ export const Route = createFileRoute("/dashboard/store")({
 
 function StorePage() {
   const { user } = useAuth();
+  const { isExpired } = useSubscription();
   const [settings, setSettings] = useState<StoreSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [productCount, setProductCount] = useState(0);

@@ -99,6 +99,7 @@ function defaults(userId: string): StoreSettings {
 
 function CustomizePage() {
   const { user } = useAuth();
+  const { isExpired } = useSubscription();
   const [settings, setSettings] = useState<StoreSettings | null>(null);
   const [products, setProducts] = useState<
     { name: string; price: number; images: string[] }[]
