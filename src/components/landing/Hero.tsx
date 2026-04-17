@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Sparkles } from "lucide-react";
 
@@ -50,10 +51,13 @@ export function Hero() {
         >
           <Button
             size="lg"
+            asChild
             className="bg-gradient-brand text-brand-foreground hover:opacity-90 shadow-glow group"
           >
-            Get Started
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            <Link to="/signup">
+              Get Started
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </Link>
           </Button>
           <Button size="lg" variant="outline" className="backdrop-blur">
             <Play className="h-4 w-4" />
