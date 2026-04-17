@@ -195,6 +195,7 @@ function CustomizePage() {
 
   return (
     <div className="max-w-[1600px] mx-auto">
+      {isExpired && <ExpiredOverlay />}
       <PageHeader
         eyebrow="Storefront"
         title="Customize your store"

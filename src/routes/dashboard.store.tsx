@@ -107,6 +107,7 @@ function StorePage() {
 
   return (
     <div className="max-w-7xl mx-auto">
+      {isExpired && <ExpiredOverlay />}
       <PageHeader
         eyebrow="Storefront"
         title="My Store"
