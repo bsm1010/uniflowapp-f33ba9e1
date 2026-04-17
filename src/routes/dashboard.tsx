@@ -25,6 +25,7 @@ function DashboardLayout() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [trialEndDate, setTrialEndDate] = useState<string | null>(null);
   const [subscriptionStatus, setSubscriptionStatus] = useState<string>("trial");
+  const [hadPaidSubscription, setHadPaidSubscription] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -37,7 +38,9 @@ function DashboardLayout() {
     const load = async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("name, avatar_url, trial_end_date, subscription_status")
+        .select(
+          "name, avatar_url, trial_end_date, subscription_status, subscription_end_date",
+        )
         .eq("id", user.id)
         .maybeSingle();
 
@@ -45,12 +48,14 @@ function DashboardLayout() {
       setAvatarUrl(data?.avatar_url ?? null);
       setTrialEndDate(data?.trial_end_date ?? null);
 
-      // Auto-expire trial if past trial_end_date
       let status = data?.subscription_status ?? "trial";
+      const now = new Date();
+
+      // Auto-expire trial
       if (
         status === "trial" &&
         data?.trial_end_date &&
-        new Date(data.trial_end_date) < new Date()
+        new Date(data.trial_end_date) < now
       ) {
         await supabase
           .from("profiles")
@@ -58,6 +63,21 @@ function DashboardLayout() {
           .eq("id", user.id);
         status = "expired";
       }
+
+      // Auto-expire active subscription past its end date
+      if (
+        status === "active" &&
+        data?.subscription_end_date &&
+        new Date(data.subscription_end_date) < now
+      ) {
+        await supabase
+          .from("profiles")
+          .update({ subscription_status: "expired" })
+          .eq("id", user.id);
+        status = "expired";
+      }
+
+      setHadPaidSubscription(!!data?.subscription_end_date);
       setSubscriptionStatus(status);
     };
     load();
@@ -87,14 +107,23 @@ function DashboardLayout() {
 
   return (
     <SubscriptionProvider
-      value={{ status: subscriptionStatus, isExpired, daysRemaining }}
+      value={{
+        status: subscriptionStatus,
+        isExpired,
+        daysRemaining,
+        hadPaidSubscription,
+      }}
     >
       <SidebarProvider>
         <div className="min-h-screen flex w-full bg-background">
           <DashboardSidebar />
           <SidebarInset className="flex-1 flex flex-col min-w-0">
             <DashboardTopbar name={name} avatarUrl={avatarUrl} />
-            <TrialBanner status={subscriptionStatus} daysRemaining={daysRemaining} />
+            <TrialBanner
+              status={subscriptionStatus}
+              daysRemaining={daysRemaining}
+              hadPaidSubscription={hadPaidSubscription}
+            />
             <main className="flex-1 p-4 md:p-8">
               <Outlet />
             </main>
