@@ -64,6 +64,12 @@ const stats = [
 function DashboardHome() {
   const { user } = useAuth();
   const [name, setName] = useState("");
+  const [counts, setCounts] = useState({
+    products: 0,
+    orders: 0,
+    revenue: 0,
+    customers: 0,
+  });
 
   useEffect(() => {
     if (!user) return;
@@ -75,7 +81,57 @@ function DashboardHome() {
       .then(({ data }) => {
         if (data?.name) setName(data.name);
       });
+
+    Promise.all([
+      supabase
+        .from("products")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id),
+      supabase
+        .from("orders")
+        .select("total,customer_email")
+        .eq("store_owner_id", user.id),
+    ]).then(([prodRes, ordersRes]) => {
+      const orders = ordersRes.data ?? [];
+      const revenue = orders.reduce((n, o) => n + Number(o.total ?? 0), 0);
+      const customers = new Set(
+        orders.map((o) => o.customer_email.toLowerCase()),
+      ).size;
+      setCounts({
+        products: prodRes.count ?? 0,
+        orders: orders.length,
+        revenue,
+        customers,
+      });
+    });
   }, [user]);
+
+  const stats = [
+    {
+      label: "Total Products",
+      value: counts.products.toString(),
+      icon: Package,
+      accent: "from-violet-500/15 to-violet-500/5",
+    },
+    {
+      label: "Orders",
+      value: counts.orders.toString(),
+      icon: ShoppingBag,
+      accent: "from-fuchsia-500/15 to-fuchsia-500/5",
+    },
+    {
+      label: "Revenue",
+      value: `$${counts.revenue.toFixed(2)}`,
+      icon: DollarSign,
+      accent: "from-emerald-500/15 to-emerald-500/5",
+    },
+    {
+      label: "Customers",
+      value: counts.customers.toString(),
+      icon: Users,
+      accent: "from-sky-500/15 to-sky-500/5",
+    },
+  ];
 
   const displayName = name || user?.email?.split("@")[0] || "there";
 
