@@ -9,8 +9,6 @@ import {
   Plus,
   Palette,
   ExternalLink,
-  TrendingUp,
-  TrendingDown,
   CircleDot,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";

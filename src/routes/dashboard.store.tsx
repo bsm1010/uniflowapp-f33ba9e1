@@ -1,22 +1,107 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CircleDot, ExternalLink, Globe, Palette, Package } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  CircleDot,
+  Copy,
+  ExternalLink,
+  Globe,
+  Loader2,
+  Package,
+  Palette,
+} from "lucide-react";
+import { toast } from "sonner";
+import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+
+type StoreSettings = Tables<"store_settings">;
 
 export const Route = createFileRoute("/dashboard/store")({
   component: StorePage,
   head: () => ({ meta: [{ title: "My Store — Storely" }] }),
 });
 
-const checklist = [
-  { title: "Add your first product", done: false, to: "/dashboard/products" as const, icon: Package },
-  { title: "Pick a theme", done: false, to: "/dashboard/themes" as const, icon: Palette },
-  { title: "Connect a domain", done: false, to: "/dashboard/settings" as const, icon: Globe },
-];
-
 function StorePage() {
+  const { user } = useAuth();
+  const [settings, setSettings] = useState<StoreSettings | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [productCount, setProductCount] = useState(0);
+
+  useEffect(() => {
+    if (!user) return;
+    let active = true;
+    Promise.all([
+      supabase
+        .from("store_settings")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle(),
+      supabase
+        .from("products")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id),
+    ]).then(([s, p]) => {
+      if (!active) return;
+      setSettings(s.data);
+      setProductCount(p.count ?? 0);
+      setLoading(false);
+    });
+    return () => {
+      active = false;
+    };
+  }, [user]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  const slug = settings?.slug;
+  const liveUrl = slug
+    ? `${typeof window !== "undefined" ? window.location.origin : ""}/s/${slug}`
+    : "";
+  const themePicked =
+    settings != null && settings.store_name !== "My Store";
+
+  const checklist: {
+    title: string;
+    done: boolean;
+    to: "/dashboard/products" | "/dashboard/themes";
+    icon: React.ComponentType<{ className?: string }>;
+  }[] = [
+    {
+      title: "Add your first product",
+      done: productCount > 0,
+      to: "/dashboard/products",
+      icon: Package,
+    },
+    {
+      title: "Customize your storefront",
+      done: themePicked,
+      to: "/dashboard/themes",
+      icon: Palette,
+    },
+    {
+      title: "Share your store URL",
+      done: false,
+      to: "/dashboard/themes",
+      icon: Globe,
+    },
+  ];
+
+  const copyUrl = () => {
+    if (!liveUrl) return;
+    navigator.clipboard.writeText(liveUrl);
+    toast.success("Store URL copied");
+  };
+
   return (
     <div className="max-w-7xl mx-auto">
       <PageHeader
@@ -24,26 +109,60 @@ function StorePage() {
         title="My Store"
         description="Your storefront at a glance."
         actions={
-          <Button variant="outline">
-            <ExternalLink className="h-4 w-4" /> View live store
-          </Button>
+          slug ? (
+            <Button variant="outline" asChild>
+              <a href={`/s/${slug}`} target="_blank" rel="noopener noreferrer">
+                <ExternalLink className="h-4 w-4" /> View live store
+              </a>
+            </Button>
+          ) : null
         }
       />
 
       <Card className="border-border/60 shadow-soft overflow-hidden">
-        <div className="bg-gradient-brand h-32 relative">
+        <div
+          className="h-32 relative"
+          style={{
+            background: settings?.primary_color
+              ? `linear-gradient(135deg, ${settings.primary_color}, ${settings.primary_color}88)`
+              : undefined,
+          }}
+        >
           <div className="absolute inset-0 bg-soft-radial opacity-60" />
         </div>
         <CardContent className="p-6 -mt-10 relative">
-          <div className="h-20 w-20 rounded-2xl bg-background border-4 border-background shadow-soft flex items-center justify-center">
-            <div className="h-12 w-12 rounded-xl bg-gradient-brand" />
+          <div className="h-20 w-20 rounded-2xl bg-background border-4 border-background shadow-soft flex items-center justify-center overflow-hidden">
+            {settings?.logo_url ? (
+              <img
+                src={settings.logo_url}
+                alt=""
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <div
+                className="h-12 w-12 rounded-xl"
+                style={{ backgroundColor: settings?.primary_color }}
+              />
+            )}
           </div>
           <div className="mt-4 flex items-start justify-between flex-wrap gap-3">
-            <div>
-              <h2 className="text-xl font-bold font-display">Your Store</h2>
-              <p className="text-sm text-muted-foreground">
-                yourstore.storely.app
-              </p>
+            <div className="min-w-0">
+              <h2 className="text-xl font-bold font-display truncate">
+                {settings?.store_name ?? "Your Store"}
+              </h2>
+              {slug ? (
+                <button
+                  onClick={copyUrl}
+                  className="mt-1 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <span className="font-mono">/s/{slug}</span>
+                  <Copy className="h-3 w-3" />
+                </button>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  No store URL set yet
+                </p>
+              )}
             </div>
             <Badge
               variant="outline"
@@ -63,7 +182,13 @@ function StorePage() {
             <Link key={item.title} to={item.to}>
               <Card className="border-border/60 shadow-soft hover:border-primary/40 transition-colors">
                 <CardContent className="p-4 flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-xl bg-accent text-accent-foreground flex items-center justify-center">
+                  <div
+                    className={`h-10 w-10 rounded-xl flex items-center justify-center ${
+                      item.done
+                        ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                        : "bg-accent text-accent-foreground"
+                    }`}
+                  >
                     <item.icon className="h-5 w-5" />
                   </div>
                   <div className="flex-1 min-w-0">
