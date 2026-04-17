@@ -11,11 +11,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
 
-export function DashboardTopbar({ name }: { name: string }) {
+export function DashboardTopbar({ name, avatarUrl }: { name: string; avatarUrl?: string | null }) {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
@@ -53,6 +53,7 @@ export function DashboardTopbar({ name }: { name: string }) {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="gap-2 px-2">
               <Avatar className="h-8 w-8">
+                {avatarUrl ? <AvatarImage src={avatarUrl} alt={name || "Avatar"} /> : null}
                 <AvatarFallback className="bg-gradient-brand text-brand-foreground text-xs font-semibold">
                   {initials}
                 </AvatarFallback>

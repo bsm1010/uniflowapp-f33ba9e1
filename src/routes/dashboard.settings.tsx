@@ -1,16 +1,16 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { ExternalLink, Copy, CreditCard, Store, User, Globe } from "lucide-react";
+import { ExternalLink, Copy, CreditCard, Store, User, Globe, Upload, Trash2 } from "lucide-react";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -25,7 +25,10 @@ function SettingsPage() {
 
   // Profile
   const [name, setName] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Store
   const [storeName, setStoreName] = useState("");
@@ -45,10 +48,13 @@ function SettingsPage() {
 
     supabase
       .from("profiles")
-      .select("name")
+      .select("name, avatar_url")
       .eq("id", user.id)
       .maybeSingle()
-      .then(({ data }) => setName(data?.name ?? ""));
+      .then(({ data }) => {
+        setName(data?.name ?? "");
+        setAvatarUrl(data?.avatar_url ?? null);
+      });
 
     supabase
       .from("store_settings")
@@ -86,7 +92,62 @@ function SettingsPage() {
       .eq("id", user.id);
     setSavingProfile(false);
     if (error) toast.error(error.message);
-    else toast.success("Profile updated");
+    else {
+      toast.success("Profile updated");
+      window.dispatchEvent(new Event("profile:updated"));
+    }
+  };
+
+  const handleAvatarUpload = async (file: File) => {
+    if (!user) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be smaller than 5MB");
+      return;
+    }
+    setUploadingAvatar(true);
+    const ext = file.name.split(".").pop()?.toLowerCase() || "png";
+    const path = `${user.id}/avatar-${Date.now()}.${ext}`;
+    const { error: uploadError } = await supabase.storage
+      .from("store-assets")
+      .upload(path, file, { upsert: true, contentType: file.type });
+    if (uploadError) {
+      setUploadingAvatar(false);
+      toast.error(uploadError.message);
+      return;
+    }
+    const { data: pub } = supabase.storage.from("store-assets").getPublicUrl(path);
+    const url = pub.publicUrl;
+    const { error: updateError } = await supabase
+      .from("profiles")
+      .update({ avatar_url: url })
+      .eq("id", user.id);
+    setUploadingAvatar(false);
+    if (updateError) {
+      toast.error(updateError.message);
+      return;
+    }
+    setAvatarUrl(url);
+    window.dispatchEvent(new Event("profile:updated"));
+    toast.success("Avatar updated");
+  };
+
+  const removeAvatar = async () => {
+    if (!user) return;
+    const { error } = await supabase
+      .from("profiles")
+      .update({ avatar_url: null })
+      .eq("id", user.id);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    setAvatarUrl(null);
+    window.dispatchEvent(new Event("profile:updated"));
+    toast.success("Avatar removed");
   };
 
   const saveStore = async () => {
@@ -371,6 +432,59 @@ function SettingsPage() {
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
+          <div className="flex items-center gap-4">
+            <Avatar className="h-20 w-20 border border-border/60">
+              {avatarUrl ? <AvatarImage src={avatarUrl} alt={name || "Avatar"} /> : null}
+              <AvatarFallback className="bg-gradient-brand text-brand-foreground text-lg font-semibold">
+                {(name || user?.email || "U")
+                  .split(/[\s@]/)[0]
+                  .slice(0, 2)
+                  .toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium">Profile photo</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                PNG or JPG, up to 5MB. Shown in the topbar.
+              </p>
+              <div className="flex flex-wrap gap-2 mt-3">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) handleAvatarUpload(f);
+                    e.target.value = "";
+                  }}
+                />
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploadingAvatar}
+                >
+                  <Upload className="size-4 mr-1.5" />
+                  {uploadingAvatar ? "Uploading…" : avatarUrl ? "Replace" : "Upload"}
+                </Button>
+                {avatarUrl && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={removeAvatar}
+                    disabled={uploadingAvatar}
+                  >
+                    <Trash2 className="size-4 mr-1.5" />
+                    Remove
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="name">Full name</Label>
