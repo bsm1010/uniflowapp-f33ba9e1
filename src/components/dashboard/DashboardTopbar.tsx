@@ -53,6 +53,7 @@ export function DashboardTopbar({ name, avatarUrl }: { name: string; avatarUrl?:
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="gap-2 px-2">
               <Avatar className="h-8 w-8">
+                {avatarUrl ? <AvatarImage src={avatarUrl} alt={name || "Avatar"} /> : null}
                 <AvatarFallback className="bg-gradient-brand text-brand-foreground text-xs font-semibold">
                   {initials}
                 </AvatarFallback>
