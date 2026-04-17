@@ -6,6 +6,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { DashboardTopbar } from "@/components/dashboard/DashboardTopbar";
 import { TrialBanner } from "@/components/dashboard/TrialBanner";
+import { SubscriptionProvider } from "@/hooks/use-subscription";
 
 export const Route = createFileRoute("/dashboard")({
   component: DashboardLayout,
