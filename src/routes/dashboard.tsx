@@ -77,6 +77,7 @@ function DashboardLayout() {
         status = "expired";
       }
 
+      setHadPaidSubscription(!!data?.subscription_end_date);
       setSubscriptionStatus(status);
     };
     load();
@@ -106,14 +107,23 @@ function DashboardLayout() {
 
   return (
     <SubscriptionProvider
-      value={{ status: subscriptionStatus, isExpired, daysRemaining }}
+      value={{
+        status: subscriptionStatus,
+        isExpired,
+        daysRemaining,
+        hadPaidSubscription,
+      }}
     >
       <SidebarProvider>
         <div className="min-h-screen flex w-full bg-background">
           <DashboardSidebar />
           <SidebarInset className="flex-1 flex flex-col min-w-0">
             <DashboardTopbar name={name} avatarUrl={avatarUrl} />
-            <TrialBanner status={subscriptionStatus} daysRemaining={daysRemaining} />
+            <TrialBanner
+              status={subscriptionStatus}
+              daysRemaining={daysRemaining}
+              hadPaidSubscription={hadPaidSubscription}
+            />
             <main className="flex-1 p-4 md:p-8">
               <Outlet />
             </main>
