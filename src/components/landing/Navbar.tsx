@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 
 const links = [
@@ -34,11 +35,15 @@ export function Navbar() {
             ))}
           </nav>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
-              Sign in
+            <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex">
+              <Link to="/login">Sign in</Link>
             </Button>
-            <Button size="sm" className="bg-gradient-brand text-brand-foreground hover:opacity-90">
-              Get Started
+            <Button
+              size="sm"
+              asChild
+              className="bg-gradient-brand text-brand-foreground hover:opacity-90"
+            >
+              <Link to="/signup">Get Started</Link>
             </Button>
           </div>
         </div>
