@@ -132,12 +132,13 @@ function ProductsPage() {
 
   return (
     <div className="max-w-7xl mx-auto">
+      {isExpired && <ExpiredOverlay />}
       <PageHeader
         eyebrow="Catalog"
         title="Products"
         description="Manage everything you sell in one place."
         actions={
-          <Button onClick={handleAdd}>
+          <Button onClick={handleAdd} disabled={isExpired}>
             <Plus className="h-4 w-4" /> Add product
           </Button>
         }
