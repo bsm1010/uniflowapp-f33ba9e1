@@ -470,6 +470,44 @@ function CustomizePage() {
                       </p>
                     </AccordionContent>
                   </AccordionItem>
+
+                  <AccordionItem value="domain" className="border-b-0">
+                    <AccordionTrigger className="px-2 hover:no-underline">
+                      <div className="flex items-center gap-2">
+                        <ExternalLink className="h-4 w-4 text-primary" />
+                        <span className="font-medium">Store URL</span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-2 pb-4 space-y-2">
+                      <Label className="text-xs uppercase tracking-wider text-muted-foreground">
+                        Slug
+                      </Label>
+                      <div className="flex items-center gap-1.5 rounded-md border border-border bg-muted/30 px-2 focus-within:ring-2 focus-within:ring-primary/30">
+                        <span className="text-xs text-muted-foreground font-mono shrink-0">
+                          /s/
+                        </span>
+                        <Input
+                          value={settings.slug}
+                          onChange={(e) =>
+                            update(
+                              "slug",
+                              e.target.value
+                                .toLowerCase()
+                                .replace(/[^a-z0-9-]/g, "")
+                                .slice(0, 40),
+                            )
+                          }
+                          className="border-0 bg-transparent px-0 font-mono text-sm focus-visible:ring-0"
+                          minLength={3}
+                          maxLength={40}
+                          placeholder="my-shop"
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Lowercase letters, numbers, and hyphens. 3–40 chars.
+                      </p>
+                    </AccordionContent>
+                  </AccordionItem>
                 </Accordion>
             </div>
           </CardContent>
