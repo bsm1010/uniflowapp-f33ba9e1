@@ -25,6 +25,7 @@ import { Route as DashboardCustomersRouteImport } from './routes/dashboard.custo
 import { Route as DashboardAnalyticsRouteImport } from './routes/dashboard.analytics'
 import { Route as SSlugCheckoutRouteImport } from './routes/s.$slug.checkout'
 import { Route as SSlugCartRouteImport } from './routes/s.$slug.cart'
+import { Route as DashboardAdminPaymentsRouteImport } from './routes/dashboard.admin.payments'
 import { Route as SSlugPProductIdRouteImport } from './routes/s.$slug.p.$productId'
 import { Route as SSlugCheckoutSuccessRouteImport } from './routes/s.$slug.checkout.success'
 
@@ -108,6 +109,11 @@ const SSlugCartRoute = SSlugCartRouteImport.update({
   path: '/cart',
   getParentRoute: () => SSlugRoute,
 } as any)
+const DashboardAdminPaymentsRoute = DashboardAdminPaymentsRouteImport.update({
+  id: '/admin/payments',
+  path: '/admin/payments',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const SSlugPProductIdRoute = SSlugPProductIdRouteImport.update({
   id: '/p/$productId',
   path: '/p/$productId',
@@ -134,6 +140,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
   '/s/$slug': typeof SSlugRouteWithChildren
   '/dashboard/': typeof DashboardIndexRoute
+  '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
   '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
@@ -153,6 +160,7 @@ export interface FileRoutesByTo {
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
   '/s/$slug': typeof SSlugRouteWithChildren
   '/dashboard': typeof DashboardIndexRoute
+  '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
   '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
@@ -174,6 +182,7 @@ export interface FileRoutesById {
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
   '/s/$slug': typeof SSlugRouteWithChildren
   '/dashboard/': typeof DashboardIndexRoute
+  '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
   '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
@@ -196,6 +205,7 @@ export interface FileRouteTypes {
     | '/dashboard/upgrade'
     | '/s/$slug'
     | '/dashboard/'
+    | '/dashboard/admin/payments'
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
     | '/s/$slug/checkout/success'
@@ -215,6 +225,7 @@ export interface FileRouteTypes {
     | '/dashboard/upgrade'
     | '/s/$slug'
     | '/dashboard'
+    | '/dashboard/admin/payments'
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
     | '/s/$slug/checkout/success'
@@ -235,6 +246,7 @@ export interface FileRouteTypes {
     | '/dashboard/upgrade'
     | '/s/$slug'
     | '/dashboard/'
+    | '/dashboard/admin/payments'
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
     | '/s/$slug/checkout/success'
@@ -363,6 +375,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SSlugCartRouteImport
       parentRoute: typeof SSlugRoute
     }
+    '/dashboard/admin/payments': {
+      id: '/dashboard/admin/payments'
+      path: '/admin/payments'
+      fullPath: '/dashboard/admin/payments'
+      preLoaderRoute: typeof DashboardAdminPaymentsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/s/$slug/p/$productId': {
       id: '/s/$slug/p/$productId'
       path: '/p/$productId'
@@ -390,6 +409,7 @@ interface DashboardRouteChildren {
   DashboardThemesRoute: typeof DashboardThemesRoute
   DashboardUpgradeRoute: typeof DashboardUpgradeRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardAdminPaymentsRoute: typeof DashboardAdminPaymentsRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
@@ -402,6 +422,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardThemesRoute: DashboardThemesRoute,
   DashboardUpgradeRoute: DashboardUpgradeRoute,
   DashboardIndexRoute: DashboardIndexRoute,
+  DashboardAdminPaymentsRoute: DashboardAdminPaymentsRoute,
 }
 
 const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
