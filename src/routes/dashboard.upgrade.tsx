@@ -154,7 +154,7 @@ function UpgradePage() {
       return;
     }
 
-    toast.success("Payment submitted for review");
+    toast.success("Payment submitted successfully. Waiting for admin approval.");
     setFile(null);
     if (fileRef.current) fileRef.current.value = "";
     loadSubmissions();
