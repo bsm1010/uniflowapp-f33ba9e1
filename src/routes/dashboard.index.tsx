@@ -61,7 +61,9 @@ const stats = [
 
 function DashboardHome() {
   const { user } = useAuth();
+  const { status, daysRemaining, hadPaidSubscription } = useSubscription();
   const [name, setName] = useState("");
+  const [hasPendingPayment, setHasPendingPayment] = useState(false);
   const [counts, setCounts] = useState({
     products: 0,
     orders: 0,
@@ -79,6 +81,14 @@ function DashboardHome() {
       .then(({ data }) => {
         if (data?.name) setName(data.name);
       });
+
+    supabase
+      .from("payment_submissions")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("status", "pending")
+      .limit(1)
+      .then(({ data }) => setHasPendingPayment((data?.length ?? 0) > 0));
 
     Promise.all([
       supabase
