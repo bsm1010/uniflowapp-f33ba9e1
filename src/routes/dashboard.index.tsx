@@ -179,6 +179,13 @@ function DashboardHome() {
         </div>
       </motion.div>
 
+      <SubscriptionStatusCard
+        status={status}
+        daysRemaining={daysRemaining}
+        hadPaidSubscription={!!hadPaidSubscription}
+        hasPendingPayment={hasPendingPayment}
+      />
+
       {/* Stats */}
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((s, i) => (
