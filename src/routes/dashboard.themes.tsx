@@ -6,15 +6,15 @@ import {
   ExternalLink,
   Image as ImageIcon,
   LayoutGrid,
+  Layers,
   Loader2,
   Monitor,
+  Palette as PaletteIcon,
   Save,
   Smartphone,
   Sparkles,
   Type,
   Upload,
-  Palette as PaletteIcon,
-  Layers,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,7 +30,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Accordion,
   AccordionContent,
