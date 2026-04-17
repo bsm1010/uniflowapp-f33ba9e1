@@ -92,7 +92,62 @@ function SettingsPage() {
       .eq("id", user.id);
     setSavingProfile(false);
     if (error) toast.error(error.message);
-    else toast.success("Profile updated");
+    else {
+      toast.success("Profile updated");
+      window.dispatchEvent(new Event("profile:updated"));
+    }
+  };
+
+  const handleAvatarUpload = async (file: File) => {
+    if (!user) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be smaller than 5MB");
+      return;
+    }
+    setUploadingAvatar(true);
+    const ext = file.name.split(".").pop()?.toLowerCase() || "png";
+    const path = `${user.id}/avatar-${Date.now()}.${ext}`;
+    const { error: uploadError } = await supabase.storage
+      .from("store-assets")
+      .upload(path, file, { upsert: true, contentType: file.type });
+    if (uploadError) {
+      setUploadingAvatar(false);
+      toast.error(uploadError.message);
+      return;
+    }
+    const { data: pub } = supabase.storage.from("store-assets").getPublicUrl(path);
+    const url = pub.publicUrl;
+    const { error: updateError } = await supabase
+      .from("profiles")
+      .update({ avatar_url: url })
+      .eq("id", user.id);
+    setUploadingAvatar(false);
+    if (updateError) {
+      toast.error(updateError.message);
+      return;
+    }
+    setAvatarUrl(url);
+    window.dispatchEvent(new Event("profile:updated"));
+    toast.success("Avatar updated");
+  };
+
+  const removeAvatar = async () => {
+    if (!user) return;
+    const { error } = await supabase
+      .from("profiles")
+      .update({ avatar_url: null })
+      .eq("id", user.id);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    setAvatarUrl(null);
+    window.dispatchEvent(new Event("profile:updated"));
+    toast.success("Avatar removed");
   };
 
   const saveStore = async () => {
