@@ -75,6 +75,7 @@ const FONTS = ["Inter", "Space Grotesk", "Playfair", "DM Serif", "Mono"];
 function defaults(userId: string): StoreSettings {
   return {
     user_id: userId,
+    slug: `store-${userId.slice(0, 8)}`,
     store_name: "My Store",
     tagline: "Beautiful things, thoughtfully made.",
     theme: "modern",
@@ -215,8 +216,14 @@ function CustomizePage() {
                 <Smartphone className="h-4 w-4" />
               </Button>
             </div>
-            <Button variant="outline">
-              <ExternalLink className="h-4 w-4" /> View live
+            <Button variant="outline" asChild disabled={dirty}>
+              <a
+                href={`/s/${settings.slug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <ExternalLink className="h-4 w-4" /> View live
+              </a>
             </Button>
             <Button onClick={save} disabled={saving || !dirty}>
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
@@ -463,6 +470,44 @@ function CustomizePage() {
                       </p>
                     </AccordionContent>
                   </AccordionItem>
+
+                  <AccordionItem value="domain" className="border-b-0">
+                    <AccordionTrigger className="px-2 hover:no-underline">
+                      <div className="flex items-center gap-2">
+                        <ExternalLink className="h-4 w-4 text-primary" />
+                        <span className="font-medium">Store URL</span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-2 pb-4 space-y-2">
+                      <Label className="text-xs uppercase tracking-wider text-muted-foreground">
+                        Slug
+                      </Label>
+                      <div className="flex items-center gap-1.5 rounded-md border border-border bg-muted/30 px-2 focus-within:ring-2 focus-within:ring-primary/30">
+                        <span className="text-xs text-muted-foreground font-mono shrink-0">
+                          /s/
+                        </span>
+                        <Input
+                          value={settings.slug}
+                          onChange={(e) =>
+                            update(
+                              "slug",
+                              e.target.value
+                                .toLowerCase()
+                                .replace(/[^a-z0-9-]/g, "")
+                                .slice(0, 40),
+                            )
+                          }
+                          className="border-0 bg-transparent px-0 font-mono text-sm focus-visible:ring-0"
+                          minLength={3}
+                          maxLength={40}
+                          placeholder="my-shop"
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Lowercase letters, numbers, and hyphens. 3–40 chars.
+                      </p>
+                    </AccordionContent>
+                  </AccordionItem>
                 </Accordion>
             </div>
           </CardContent>
@@ -482,7 +527,7 @@ function CustomizePage() {
                 <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
               </div>
               <div className="ml-2 flex-1 text-center text-xs text-muted-foreground font-mono truncate">
-                {settings.store_name.toLowerCase().replace(/\s+/g, "-")}.storely.app
+                /s/{settings.slug}
               </div>
               <Sparkles className="h-3.5 w-3.5 text-primary" />
               <span className="text-xs text-primary font-medium">Live preview</span>

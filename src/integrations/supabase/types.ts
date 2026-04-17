@@ -14,6 +14,101 @@ export type Database = {
   }
   public: {
     Tables: {
+      order_items: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string | null
+          order_id: string
+          product_id: string | null
+          product_name: string
+          quantity: number
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          order_id: string
+          product_id?: string | null
+          product_name: string
+          quantity: number
+          unit_price: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          order_id?: string
+          product_id?: string | null
+          product_name?: string
+          quantity?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          created_at: string
+          customer_email: string
+          customer_name: string
+          id: string
+          notes: string | null
+          shipping_address: string
+          shipping_city: string
+          shipping_country: string
+          shipping_postal_code: string
+          status: string
+          store_owner_id: string
+          store_slug: string
+          subtotal: number
+          total: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_email: string
+          customer_name: string
+          id?: string
+          notes?: string | null
+          shipping_address: string
+          shipping_city: string
+          shipping_country: string
+          shipping_postal_code: string
+          status?: string
+          store_owner_id: string
+          store_slug: string
+          subtotal?: number
+          total?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_email?: string
+          customer_name?: string
+          id?: string
+          notes?: string | null
+          shipping_address?: string
+          shipping_city?: string
+          shipping_country?: string
+          shipping_postal_code?: string
+          status?: string
+          store_owner_id?: string
+          store_slug?: string
+          subtotal?: number
+          total?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           category: string | null
@@ -94,6 +189,7 @@ export type Database = {
           show_featured: boolean
           show_hero: boolean
           show_newsletter: boolean
+          slug: string
           store_name: string
           tagline: string
           theme: string
@@ -113,6 +209,7 @@ export type Database = {
           show_featured?: boolean
           show_hero?: boolean
           show_newsletter?: boolean
+          slug: string
           store_name?: string
           tagline?: string
           theme?: string
@@ -132,6 +229,7 @@ export type Database = {
           show_featured?: boolean
           show_hero?: boolean
           show_newsletter?: boolean
+          slug?: string
           store_name?: string
           tagline?: string
           theme?: string
