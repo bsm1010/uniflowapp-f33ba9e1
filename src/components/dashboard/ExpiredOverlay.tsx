@@ -18,7 +18,7 @@ export function ExpiredOverlay() {
         </p>
         <div className="mt-6 flex flex-col sm:flex-row gap-2 justify-center">
           <Button asChild size="lg" className="gap-2">
-            <Link to="/dashboard/settings">
+            <Link to="/dashboard/upgrade">
               <Sparkles className="size-4" />
               Upgrade now
             </Link>

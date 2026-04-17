@@ -24,7 +24,7 @@ export function TrialBanner({ status, daysRemaining }: TrialBannerProps) {
             </span>
           </div>
           <Button size="sm" asChild>
-            <Link to="/dashboard/settings">Upgrade now</Link>
+            <Link to="/dashboard/upgrade">Upgrade now</Link>
           </Button>
         </div>
       </div>
@@ -52,7 +52,7 @@ export function TrialBanner({ status, daysRemaining }: TrialBannerProps) {
           </span>
         </div>
         <Button size="sm" variant={isUrgent ? "default" : "outline"} asChild>
-          <Link to="/dashboard/settings">Upgrade</Link>
+          <Link to="/dashboard/upgrade">Upgrade</Link>
         </Button>
       </div>
     </div>
