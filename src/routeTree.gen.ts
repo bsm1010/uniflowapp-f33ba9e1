@@ -27,6 +27,7 @@ import { Route as DashboardCategoriesRouteImport } from './routes/dashboard.cate
 import { Route as DashboardAnalyticsRouteImport } from './routes/dashboard.analytics'
 import { Route as DashboardAboutRouteImport } from './routes/dashboard.about'
 import { Route as SSlugIndexRouteImport } from './routes/s.$slug.index'
+import { Route as SSlugTrackRouteImport } from './routes/s.$slug.track'
 import { Route as SSlugContactRouteImport } from './routes/s.$slug.contact'
 import { Route as SSlugCheckoutRouteImport } from './routes/s.$slug.checkout'
 import { Route as SSlugCartRouteImport } from './routes/s.$slug.cart'
@@ -125,6 +126,11 @@ const SSlugIndexRoute = SSlugIndexRouteImport.update({
   path: '/s/$slug/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SSlugTrackRoute = SSlugTrackRouteImport.update({
+  id: '/s/$slug/track',
+  path: '/s/$slug/track',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SSlugContactRoute = SSlugContactRouteImport.update({
   id: '/s/$slug/contact',
   path: '/s/$slug/contact',
@@ -184,6 +190,7 @@ export interface FileRoutesByFullPath {
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
   '/s/$slug/contact': typeof SSlugContactRoute
+  '/s/$slug/track': typeof SSlugTrackRoute
   '/s/$slug/': typeof SSlugIndexRoute
   '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
   '/s/$slug/p/$productId': typeof SSlugPProductIdRoute
@@ -210,6 +217,7 @@ export interface FileRoutesByTo {
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
   '/s/$slug/contact': typeof SSlugContactRoute
+  '/s/$slug/track': typeof SSlugTrackRoute
   '/s/$slug': typeof SSlugIndexRoute
   '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
   '/s/$slug/p/$productId': typeof SSlugPProductIdRoute
@@ -238,6 +246,7 @@ export interface FileRoutesById {
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
   '/s/$slug/contact': typeof SSlugContactRoute
+  '/s/$slug/track': typeof SSlugTrackRoute
   '/s/$slug/': typeof SSlugIndexRoute
   '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
   '/s/$slug/p/$productId': typeof SSlugPProductIdRoute
@@ -267,6 +276,7 @@ export interface FileRouteTypes {
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
     | '/s/$slug/contact'
+    | '/s/$slug/track'
     | '/s/$slug/'
     | '/s/$slug/checkout/success'
     | '/s/$slug/p/$productId'
@@ -293,6 +303,7 @@ export interface FileRouteTypes {
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
     | '/s/$slug/contact'
+    | '/s/$slug/track'
     | '/s/$slug'
     | '/s/$slug/checkout/success'
     | '/s/$slug/p/$productId'
@@ -320,6 +331,7 @@ export interface FileRouteTypes {
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
     | '/s/$slug/contact'
+    | '/s/$slug/track'
     | '/s/$slug/'
     | '/s/$slug/checkout/success'
     | '/s/$slug/p/$productId'
@@ -334,6 +346,7 @@ export interface RootRouteChildren {
   SSlugCartRoute: typeof SSlugCartRoute
   SSlugCheckoutRoute: typeof SSlugCheckoutRouteWithChildren
   SSlugContactRoute: typeof SSlugContactRoute
+  SSlugTrackRoute: typeof SSlugTrackRoute
   SSlugIndexRoute: typeof SSlugIndexRoute
   SSlugPProductIdRoute: typeof SSlugPProductIdRoute
 }
@@ -466,6 +479,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SSlugIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/s/$slug/track': {
+      id: '/s/$slug/track'
+      path: '/s/$slug/track'
+      fullPath: '/s/$slug/track'
+      preLoaderRoute: typeof SSlugTrackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/s/$slug/contact': {
       id: '/s/$slug/contact'
       path: '/s/$slug/contact'
@@ -577,6 +597,7 @@ const rootRouteChildren: RootRouteChildren = {
   SSlugCartRoute: SSlugCartRoute,
   SSlugCheckoutRoute: SSlugCheckoutRouteWithChildren,
   SSlugContactRoute: SSlugContactRoute,
+  SSlugTrackRoute: SSlugTrackRoute,
   SSlugIndexRoute: SSlugIndexRoute,
   SSlugPProductIdRoute: SSlugPProductIdRoute,
 }
