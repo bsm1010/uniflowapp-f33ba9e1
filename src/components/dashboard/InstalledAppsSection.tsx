@@ -1,10 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Blocks, ExternalLink, Trash2, Plus } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,50 +17,32 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { APPS_BY_KEY, type AppDef } from "@/lib/apps";
+import { useInstalledApps } from "@/hooks/use-installed-apps";
 
 export function InstalledAppsSection() {
-  const { user } = useAuth();
-  const [installed, setInstalled] = useState<AppDef[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { installed: installedKeys, uninstall, loading } = useInstalledApps();
   const [removing, setRemoving] = useState<AppDef | null>(null);
 
-  const load = () => {
-    if (!user) return;
-    supabase
-      .from("installed_apps")
-      .select("app_key")
-      .eq("user_id", user.id)
-      .order("installed_at", { ascending: false })
-      .then(({ data }) => {
-        const apps = (data ?? [])
-          .map((r) => APPS_BY_KEY[r.app_key])
-          .filter(Boolean);
-        setInstalled(apps);
-        setLoading(false);
-      });
-  };
-
-  useEffect(() => {
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  const installed = useMemo(
+    () =>
+      Array.from(installedKeys)
+        .map((k) => APPS_BY_KEY[k])
+        .filter(Boolean),
+    [installedKeys],
+  );
 
   const confirmRemove = async () => {
-    if (!user || !removing) return;
+    if (!removing) return;
     const app = removing;
     setRemoving(null);
-    const { error } = await supabase
-      .from("installed_apps")
-      .delete()
-      .eq("user_id", user.id)
-      .eq("app_key", app.key);
+    const { error } = await uninstall(app.key);
     if (error) {
       toast.error("Failed to remove app");
       return;
     }
-    setInstalled((prev) => prev.filter((a) => a.key !== app.key));
     toast.success(`${app.name} removed`);
   };
+
 
   return (
     <motion.section
