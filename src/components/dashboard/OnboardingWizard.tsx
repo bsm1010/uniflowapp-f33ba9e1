@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Loader2, Check, ArrowRight, ArrowLeft, Upload, Store, Link2, DollarSign, ImageIcon, Sparkles, Facebook, Instagram, Music2, Youtube, Users, Search, MoreHorizontal, MapPin } from "lucide-react";
+import { Loader2, Check, ArrowRight, ArrowLeft, Upload, Store, Link2, DollarSign, ImageIcon, Sparkles, Facebook, Instagram, Music2, Youtube, Users, Search, MoreHorizontal, MapPin, Rocket, PartyPopper } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -73,6 +73,7 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
   const [source, setSource] = useState<string>("");
   const [wilaya, setWilaya] = useState<string>("");
   const [wilayaSearch, setWilayaSearch] = useState("");
+  const [celebrate, setCelebrate] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const filteredWilayas = useMemo(() => {
@@ -214,8 +215,9 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
         .eq("id", userId);
       if (profErr) throw profErr;
 
-      toast.success("You're all set! Welcome to Storely 🎉");
-      onComplete();
+      toast.success("Setup complete! Your store is ready 🚀");
+      setCelebrate(true);
+      setTimeout(() => onComplete(), 1800);
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : "Something went wrong";
       toast.error(message);
@@ -225,6 +227,26 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
   };
 
   const Icon = current.icon;
+
+  if (celebrate) {
+    return (
+      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+        <div className="w-full max-w-md rounded-2xl border bg-card shadow-2xl overflow-hidden p-8 text-center animate-in zoom-in-95 duration-300">
+          <div className="mx-auto h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center mb-5 animate-in zoom-in-50 duration-500">
+            <PartyPopper className="h-10 w-10 text-primary" />
+          </div>
+          <h2 className="text-2xl font-bold tracking-tight">Setup complete!</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Your store is ready <Rocket className="inline h-4 w-4 text-primary" />
+          </p>
+          <div className="mt-6 inline-flex items-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Taking you to your dashboard…
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
@@ -263,6 +285,12 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
 
           {/* Header */}
           <div className="mb-6">
+            {step === 0 && (
+              <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary animate-in fade-in slide-in-from-top-2 duration-300">
+                <Sparkles className="h-3 w-3" />
+                Welcome! Let's set up your experience
+              </div>
+            )}
             <h2 className="text-2xl font-bold tracking-tight">{current.title}</h2>
             <p className="mt-1 text-sm text-muted-foreground">{current.subtitle}</p>
           </div>
