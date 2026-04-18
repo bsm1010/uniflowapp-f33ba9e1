@@ -13,17 +13,6 @@ export function Hero() {
         aria-hidden
         className="absolute inset-0 bg-grid-dots [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_75%)] pointer-events-none"
       />
-      {/* Aurora gradient wash */}
-      <div className="absolute inset-0 bg-soft-radial pointer-events-none" />
-      {/* Floating blobs */}
-      <div
-        aria-hidden
-        className="absolute -top-32 -left-20 h-[420px] w-[420px] rounded-full bg-gradient-brand opacity-25 blur-3xl pointer-events-none animate-pulse"
-      />
-      <div
-        aria-hidden
-        className="absolute top-20 -right-20 h-[380px] w-[380px] rounded-full bg-accent opacity-20 blur-3xl pointer-events-none"
-      />
       {/* Bottom fade into next section */}
       <div
         aria-hidden
