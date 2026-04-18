@@ -73,6 +73,7 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
   const [source, setSource] = useState<string>("");
   const [wilaya, setWilaya] = useState<string>("");
   const [wilayaSearch, setWilayaSearch] = useState("");
+  const [celebrate, setCelebrate] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const filteredWilayas = useMemo(() => {
