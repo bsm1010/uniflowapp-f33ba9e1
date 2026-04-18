@@ -19,8 +19,24 @@ interface Props {
 export function StorefrontShell({ settings, children }: Props) {
   const t = getStoreTokens(settings);
   const { count } = useCart(settings.slug);
-  const navLinks = getNavLinks(settings);
+  const location = useLocation();
   const socials = getFooterSocials(settings);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const navItems = [
+    { label: "Home", to: "/s/$slug" as const, exact: true },
+    { label: "Shop", to: "/s/$slug" as const, hash: "shop" },
+    { label: "About", to: "/s/$slug/about" as const },
+    { label: "Contact", to: "/s/$slug/contact" as const },
+  ];
+
+  const isActive = (to: string, exact?: boolean, hash?: string) => {
+    const base = `/s/${settings.slug}`;
+    const target = to.replace("$slug", settings.slug);
+    if (hash) return false;
+    if (exact) return location.pathname === base || location.pathname === base + "/";
+    return location.pathname === target || location.pathname === target + "/";
+  };
 
   const socialEntries: Array<{ key: string; url: string; Icon: typeof Instagram }> = [
     { key: "instagram", url: socials.instagram ?? "", Icon: Instagram },
@@ -64,37 +80,87 @@ export function StorefrontShell({ settings, children }: Props) {
             </span>
           </Link>
           <nav
-            className="hidden md:flex items-center gap-6 text-sm"
+            className="hidden md:flex items-center gap-7 text-sm"
             style={{ color: t.muted }}
           >
-            {navLinks.map((l) => (
-              <a
-                key={l.label}
-                href={l.href.startsWith("#") ? `/s/${settings.slug}${l.href}` : l.href}
-                className="hover:opacity-70 transition-opacity"
-              >
-                {l.label}
-              </a>
-            ))}
+            {navItems.map((item) => {
+              const active = isActive(item.to, item.exact, item.hash);
+              return (
+                <Link
+                  key={item.label}
+                  to={item.to}
+                  params={{ slug: settings.slug }}
+                  hash={item.hash}
+                  className="hover:opacity-100 transition-opacity"
+                  style={{
+                    color: active ? t.fg : t.muted,
+                    fontWeight: active ? 600 : 400,
+                  }}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
-          <Link
-            to="/s/$slug/cart"
-            params={{ slug: settings.slug }}
-            className="relative inline-flex items-center justify-center h-10 w-10 rounded-full transition-opacity hover:opacity-80"
-            style={{ backgroundColor: t.surface }}
-            aria-label="Cart"
-          >
-            <ShoppingBag className="h-4 w-4" />
-            {count > 0 && (
-              <span
-                className="absolute -top-1 -right-1 min-w-[18px] h-[18px] text-[10px] font-semibold rounded-full px-1 flex items-center justify-center"
-                style={{ backgroundColor: t.primary, color: t.onPrimary }}
-              >
-                {count}
-              </span>
-            )}
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/s/$slug/cart"
+              params={{ slug: settings.slug }}
+              className="relative inline-flex items-center justify-center h-10 w-10 rounded-full transition-opacity hover:opacity-80"
+              style={{ backgroundColor: t.surface }}
+              aria-label="Cart"
+            >
+              <ShoppingBag className="h-4 w-4" />
+              {count > 0 && (
+                <span
+                  className="absolute -top-1 -right-1 min-w-[18px] h-[18px] text-[10px] font-semibold rounded-full px-1 flex items-center justify-center"
+                  style={{ backgroundColor: t.primary, color: t.onPrimary }}
+                >
+                  {count}
+                </span>
+              )}
+            </Link>
+            <button
+              type="button"
+              onClick={() => setMobileOpen((v) => !v)}
+              className="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-full transition-opacity hover:opacity-80"
+              style={{ backgroundColor: t.surface }}
+              aria-label="Menu"
+              aria-expanded={mobileOpen}
+            >
+              {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </button>
+          </div>
         </div>
+        {mobileOpen && (
+          <div
+            className="md:hidden border-t"
+            style={{ borderColor: t.border, backgroundColor: t.bg }}
+          >
+            <nav className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex flex-col">
+              {navItems.map((item) => {
+                const active = isActive(item.to, item.exact, item.hash);
+                return (
+                  <Link
+                    key={item.label}
+                    to={item.to}
+                    params={{ slug: settings.slug }}
+                    hash={item.hash}
+                    onClick={() => setMobileOpen(false)}
+                    className="py-3 text-sm border-b last:border-0 transition-opacity hover:opacity-70"
+                    style={{
+                      borderColor: t.border,
+                      color: active ? t.fg : t.muted,
+                      fontWeight: active ? 600 : 400,
+                    }}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+        )}
       </header>
 
       <main className="flex-1">{children}</main>
