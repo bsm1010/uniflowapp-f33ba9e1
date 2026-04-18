@@ -264,18 +264,32 @@ export type Database = {
       }
       store_settings: {
         Row: {
+          accent_color: string
           background_color: string
+          border_radius: string
+          button_labels: Json
+          button_style: string
           created_at: string
+          currency: string
           font_family: string
+          footer_about: string
+          footer_copyright: string
+          footer_socials: Json
           hero_cta_label: string
           hero_heading: string
+          hero_image_url: string | null
+          hero_layout: string
           hero_subheading: string
           logo_url: string | null
+          nav_links: Json
           primary_color: string
+          secondary_color: string
+          section_titles: Json
           show_categories: boolean
           show_featured: boolean
           show_hero: boolean
           show_newsletter: boolean
+          show_search: boolean
           slug: string
           store_name: string
           tagline: string
@@ -284,18 +298,32 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          accent_color?: string
           background_color?: string
+          border_radius?: string
+          button_labels?: Json
+          button_style?: string
           created_at?: string
+          currency?: string
           font_family?: string
+          footer_about?: string
+          footer_copyright?: string
+          footer_socials?: Json
           hero_cta_label?: string
           hero_heading?: string
+          hero_image_url?: string | null
+          hero_layout?: string
           hero_subheading?: string
           logo_url?: string | null
+          nav_links?: Json
           primary_color?: string
+          secondary_color?: string
+          section_titles?: Json
           show_categories?: boolean
           show_featured?: boolean
           show_hero?: boolean
           show_newsletter?: boolean
+          show_search?: boolean
           slug: string
           store_name?: string
           tagline?: string
@@ -304,18 +332,32 @@ export type Database = {
           user_id: string
         }
         Update: {
+          accent_color?: string
           background_color?: string
+          border_radius?: string
+          button_labels?: Json
+          button_style?: string
           created_at?: string
+          currency?: string
           font_family?: string
+          footer_about?: string
+          footer_copyright?: string
+          footer_socials?: Json
           hero_cta_label?: string
           hero_heading?: string
+          hero_image_url?: string | null
+          hero_layout?: string
           hero_subheading?: string
           logo_url?: string | null
+          nav_links?: Json
           primary_color?: string
+          secondary_color?: string
+          section_titles?: Json
           show_categories?: boolean
           show_featured?: boolean
           show_hero?: boolean
           show_newsletter?: boolean
+          show_search?: boolean
           slug?: string
           store_name?: string
           tagline?: string
