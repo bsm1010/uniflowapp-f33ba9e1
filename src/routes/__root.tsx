@@ -44,9 +44,12 @@ export const Route = createRootRoute({
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/28b0d6c4-eea5-4674-858f-1f41175fcf28/id-preview-abc69f08--74977674-b385-4575-892a-a1a75682db5b.lovable.app-1776455556759.png" },
     ],
     links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: appCss,
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;700&family=Playfair+Display:wght@400;600;800&family=DM+Serif+Display&family=JetBrains+Mono:wght@400;600&family=Manrope:wght@400;600;800&family=Sora:wght@400;600;800&family=Outfit:wght@400;600;800&family=Bricolage+Grotesque:wght@400;600;800&family=Fraunces:wght@400;600;800&family=Cormorant+Garamond:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;700&family=Bebas+Neue&family=Archivo+Black&family=Syne:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap",
       },
     ],
   }),

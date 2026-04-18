@@ -60,7 +60,42 @@ const PRESET_COLORS = [
   "#ea580c", "#dc2626", "#db2777", "#7c3aed", "#0f172a",
 ];
 const BG_PRESETS = ["#ffffff", "#f8fafc", "#fafaf9", "#0b0b10", "#0f172a"];
-const FONTS = ["Inter", "Space Grotesk", "Playfair", "DM Serif", "Mono"];
+const FONT_GROUPS: { group: string; fonts: { id: string; preview: string }[] }[] = [
+  {
+    group: "Sans serif",
+    fonts: [
+      { id: "Inter", preview: "Aa Modern & neutral" },
+      { id: "Manrope", preview: "Aa Friendly geometric" },
+      { id: "Sora", preview: "Aa Crisp & techy" },
+      { id: "Outfit", preview: "Aa Clean rounded" },
+      { id: "Plex Sans", preview: "Aa Editorial sans" },
+      { id: "Jakarta", preview: "Aa Soft modern" },
+    ],
+  },
+  {
+    group: "Display",
+    fonts: [
+      { id: "Space Grotesk", preview: "Aa Tech / startup" },
+      { id: "Bricolage", preview: "Aa Playful display" },
+      { id: "Syne", preview: "Aa Bold creative" },
+      { id: "Bebas", preview: "AA TALL CONDENSED" },
+      { id: "Archivo", preview: "AA HEAVY IMPACT" },
+    ],
+  },
+  {
+    group: "Serif",
+    fonts: [
+      { id: "Playfair", preview: "Aa Elegant classic" },
+      { id: "DM Serif", preview: "Aa Refined editorial" },
+      { id: "Fraunces", preview: "Aa Warm modern serif" },
+      { id: "Cormorant", preview: "Aa Luxurious & airy" },
+    ],
+  },
+  {
+    group: "Mono",
+    fonts: [{ id: "Mono", preview: "Aa Code / minimal" }],
+  },
+];
 const BUTTON_STYLES = [
   { id: "rounded", label: "Rounded" },
   { id: "pill", label: "Pill" },
