@@ -3,6 +3,7 @@ import { Loader2, ShoppingBag } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import {
   ALGERIA_WILAYAS,
   WILAYA_LIST,
@@ -197,40 +198,30 @@ export function AlgerianCheckoutForm({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <Field label="Wilaya" error={errors.wilaya} mutedColor={t.muted}>
-          <select
+          <SearchableSelect
             value={wilaya}
-            onChange={(e) => {
-              setWilaya(e.target.value);
+            onChange={(v) => {
+              setWilaya(v);
               setCity("");
             }}
-            className="w-full h-11 px-3 text-sm outline-none"
-            style={inputStyle}
-          >
-            <option value="">Select wilaya…</option>
-            {WILAYA_LIST.map((w) => (
-              <option key={w} value={w}>
-                {w}
-              </option>
-            ))}
-          </select>
+            options={WILAYA_LIST}
+            placeholder="Select wilaya…"
+            searchPlaceholder="Search wilaya…"
+            emptyMessage="No wilaya found."
+            triggerStyle={inputStyle}
+          />
         </Field>
         <Field label="City / Commune" error={errors.city} mutedColor={t.muted}>
-          <select
+          <SearchableSelect
             value={city}
-            onChange={(e) => setCity(e.target.value)}
+            onChange={setCity}
+            options={cities}
+            placeholder={wilaya ? "Select city…" : "Pick wilaya first"}
+            searchPlaceholder="Search city…"
+            emptyMessage="No city found."
             disabled={!wilaya}
-            className="w-full h-11 px-3 text-sm outline-none disabled:opacity-50"
-            style={inputStyle}
-          >
-            <option value="">
-              {wilaya ? "Select city…" : "Pick wilaya first"}
-            </option>
-            {cities.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
+            triggerStyle={inputStyle}
+          />
         </Field>
       </div>
 
