@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Sparkles } from "lucide-react";
 import dashboardPreview from "@/assets/dashboard-preview.jpg";
 
+
 export function Hero() {
   return (
     <section className="relative overflow-hidden pt-36 pb-24 md:pt-44 md:pb-32">
