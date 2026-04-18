@@ -70,39 +70,58 @@ function OrdersPage() {
   const [items, setItems] = useState<Record<string, OrderItem[]>>({});
   const [query, setQuery] = useState("");
 
+  const loadOrders = async () => {
+    if (!user) return;
+    const { data: ords } = await supabase
+      .from("orders")
+      .select("*")
+      .eq("store_owner_id", user.id)
+      .order("created_at", { ascending: false });
+    const list = ords ?? [];
+    setOrders(list);
+    if (list.length) {
+      const { data: its } = await supabase
+        .from("order_items")
+        .select("*")
+        .in("order_id", list.map((o) => o.id));
+      const grouped: Record<string, OrderItem[]> = {};
+      for (const it of its ?? []) {
+        (grouped[it.order_id] ??= []).push(it);
+      }
+      setItems(grouped);
+    } else {
+      setItems({});
+    }
+  };
+
   useEffect(() => {
     if (!user) return;
-    let active = true;
-    (async () => {
-      const { data: ords } = await supabase
-        .from("orders")
-        .select("*")
-        .eq("store_owner_id", user.id)
-        .order("created_at", { ascending: false });
-      if (!active) return;
-      const list = ords ?? [];
-      setOrders(list);
+    loadOrders();
 
-      if (list.length) {
-        const { data: its } = await supabase
-          .from("order_items")
-          .select("*")
-          .in(
-            "order_id",
-            list.map((o) => o.id),
-          );
-        if (!active) return;
-        const grouped: Record<string, OrderItem[]> = {};
-        for (const it of its ?? []) {
-          (grouped[it.order_id] ??= []).push(it);
-        }
-        setItems(grouped);
-      }
-    })();
+    const channel = supabase
+      .channel(`orders-${user.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "orders",
+          filter: `store_owner_id=eq.${user.id}`,
+        },
+        () => loadOrders(),
+      )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "order_items" },
+        () => loadOrders(),
+      )
+      .subscribe();
+
     return () => {
-      active = false;
+      supabase.removeChannel(channel);
     };
-  }, [user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
   const updateStatus = async (orderId: string, status: Status) => {
     const prev = orders;
