@@ -1,14 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { APPS } from "@/lib/apps";
+import { useInstalledApps } from "@/hooks/use-installed-apps";
 
 export const Route = createFileRoute("/dashboard/apps")({
   component: AppsPage,
@@ -21,29 +20,12 @@ export const Route = createFileRoute("/dashboard/apps")({
 });
 
 function AppsPage() {
-  const { user } = useAuth();
-  const [installed, setInstalled] = useState<Set<string>>(new Set());
-  const [loading, setLoading] = useState(true);
+  const { isInstalled, install: installApp, loading } = useInstalledApps();
   const [pending, setPending] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!user) return;
-    supabase
-      .from("installed_apps")
-      .select("app_key")
-      .eq("user_id", user.id)
-      .then(({ data }) => {
-        setInstalled(new Set((data ?? []).map((r) => r.app_key)));
-        setLoading(false);
-      });
-  }, [user]);
-
   const install = async (appKey: string, appName: string) => {
-    if (!user) return;
     setPending(appKey);
-    const { error } = await supabase
-      .from("installed_apps")
-      .insert({ user_id: user.id, app_key: appKey });
+    const { error } = await installApp(appKey);
     setPending(null);
     if (error) {
       toast.error("Failed to install app");
