@@ -17,8 +17,14 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 
+import { RequireApp } from "@/components/dashboard/RequireApp";
+
 export const Route = createFileRoute("/dashboard/apps/multi-language")({
-  component: MultiLangPage,
+  component: () => (
+    <RequireApp appKey="multi-language">
+      <MultiLangPage />
+    </RequireApp>
+  ),
   head: () => ({ meta: [{ title: "Multi-language — Storely" }] }),
 });
 

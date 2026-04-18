@@ -18,8 +18,14 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 
+import { RequireApp } from "@/components/dashboard/RequireApp";
+
 export const Route = createFileRoute("/dashboard/apps/chatbot")({
-  component: ChatbotPage,
+  component: () => (
+    <RequireApp appKey="chatbot">
+      <ChatbotPage />
+    </RequireApp>
+  ),
   head: () => ({ meta: [{ title: "Chatbot — Storely" }] }),
 });
 

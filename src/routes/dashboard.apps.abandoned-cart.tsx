@@ -8,8 +8,14 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 
+import { RequireApp } from "@/components/dashboard/RequireApp";
+
 export const Route = createFileRoute("/dashboard/apps/abandoned-cart")({
-  component: AbandonedCartPage,
+  component: () => (
+    <RequireApp appKey="abandoned-cart">
+      <AbandonedCartPage />
+    </RequireApp>
+  ),
   head: () => ({ meta: [{ title: "Abandoned Cart Recovery — Storely" }] }),
 });
 

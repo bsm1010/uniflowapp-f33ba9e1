@@ -19,8 +19,14 @@ import { useAuth } from "@/hooks/use-auth";
 import { useServerFn } from "@tanstack/react-start";
 import { generateDescription } from "@/lib/ai/generate-description";
 
+import { RequireApp } from "@/components/dashboard/RequireApp";
+
 export const Route = createFileRoute("/dashboard/apps/ai-descriptions")({
-  component: AiDescPage,
+  component: () => (
+    <RequireApp appKey="ai-descriptions">
+      <AiDescPage />
+    </RequireApp>
+  ),
   head: () => ({ meta: [{ title: "AI Descriptions — Storely" }] }),
 });
 

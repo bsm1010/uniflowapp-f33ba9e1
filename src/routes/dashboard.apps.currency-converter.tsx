@@ -17,8 +17,14 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 
+import { RequireApp } from "@/components/dashboard/RequireApp";
+
 export const Route = createFileRoute("/dashboard/apps/currency-converter")({
-  component: CurrencyPage,
+  component: () => (
+    <RequireApp appKey="currency-converter">
+      <CurrencyPage />
+    </RequireApp>
+  ),
   head: () => ({ meta: [{ title: "Currency Converter — Storely" }] }),
 });
 

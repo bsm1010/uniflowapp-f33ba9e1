@@ -11,8 +11,14 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 
+import { RequireApp } from "@/components/dashboard/RequireApp";
+
 export const Route = createFileRoute("/dashboard/apps/seo-optimizer")({
-  component: SeoPage,
+  component: () => (
+    <RequireApp appKey="seo-optimizer">
+      <SeoPage />
+    </RequireApp>
+  ),
   head: () => ({ meta: [{ title: "SEO Optimizer — Storely" }] }),
 });
 

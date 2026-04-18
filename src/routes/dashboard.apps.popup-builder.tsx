@@ -18,8 +18,14 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 
+import { RequireApp } from "@/components/dashboard/RequireApp";
+
 export const Route = createFileRoute("/dashboard/apps/popup-builder")({
-  component: PopupBuilderPage,
+  component: () => (
+    <RequireApp appKey="popup-builder">
+      <PopupBuilderPage />
+    </RequireApp>
+  ),
   head: () => ({ meta: [{ title: "Popup Builder — Storely" }] }),
 });
 
