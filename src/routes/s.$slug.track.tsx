@@ -104,6 +104,29 @@ function TrackPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settings, orderParam, phoneParam]);
 
+  // Realtime: refresh tracked orders when their status changes
+  useEffect(() => {
+    if (orders.length === 0) return;
+    const ids = orders.map((o) => o.id);
+    const channel = supabase
+      .channel(`track-${slug}-${ids[0]}`)
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "orders" },
+        (payload) => {
+          const updated = payload.new as Order;
+          if (!ids.includes(updated.id)) return;
+          setOrders((cur) =>
+            cur.map((o) => (o.id === updated.id ? { ...o, ...updated } : o)),
+          );
+        },
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [orders, slug]);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!phoneInput.trim()) return;
