@@ -294,6 +294,8 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
             )}
 
             {step === 2 && (
+              <div className="space-y-2">
+                <Label htmlFor="store-slug">Store URL</Label>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground whitespace-nowrap">
                     storely.app/s/
@@ -331,9 +333,7 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
               </div>
             )}
 
-            {step === 2 && (
-              <div className="space-y-2">
-                <Label htmlFor="currency-select">Default currency</Label>
+            {step === 3 && (
                 <select
                   id="currency-select"
                   value={currency}
