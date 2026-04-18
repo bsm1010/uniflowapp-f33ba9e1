@@ -71,7 +71,15 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [source, setSource] = useState<string>("");
+  const [wilaya, setWilaya] = useState<string>("");
+  const [wilayaSearch, setWilayaSearch] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const filteredWilayas = useMemo(() => {
+    const q = wilayaSearch.trim().toLowerCase();
+    if (!q) return WILAYAS;
+    return WILAYAS.filter((w) => w.toLowerCase().includes(q));
+  }, [wilayaSearch]);
 
   // Auto-derive slug from store name until user edits it
   useEffect(() => {
