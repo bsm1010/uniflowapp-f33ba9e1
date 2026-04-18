@@ -288,6 +288,7 @@ export type Database = {
           id: string
           name: string | null
           onboarded: boolean
+          onboarding_completed: boolean
           source_of_user: string | null
           subscription_end_date: string | null
           subscription_status: string
@@ -304,6 +305,7 @@ export type Database = {
           id: string
           name?: string | null
           onboarded?: boolean
+          onboarding_completed?: boolean
           source_of_user?: string | null
           subscription_end_date?: string | null
           subscription_status?: string
@@ -320,6 +322,7 @@ export type Database = {
           id?: string
           name?: string | null
           onboarded?: boolean
+          onboarding_completed?: boolean
           source_of_user?: string | null
           subscription_end_date?: string | null
           subscription_status?: string
