@@ -9,7 +9,7 @@ import { PageHeader } from "@/components/dashboard/PageHeader";
 import { APPS } from "@/lib/apps";
 import { useInstalledApps } from "@/hooks/use-installed-apps";
 
-export const Route = createFileRoute("/dashboard/apps")({
+export const Route = createFileRoute("/dashboard/apps/")({
   component: AppsPage,
   head: () => ({
     meta: [
