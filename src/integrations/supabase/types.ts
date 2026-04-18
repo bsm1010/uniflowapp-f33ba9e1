@@ -291,6 +291,9 @@ export type Database = {
       }
       store_settings: {
         Row: {
+          about_content: string
+          about_image_url: string | null
+          about_title: string
           accent_color: string
           background_color: string
           border_radius: string
@@ -325,6 +328,9 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          about_content?: string
+          about_image_url?: string | null
+          about_title?: string
           accent_color?: string
           background_color?: string
           border_radius?: string
@@ -359,6 +365,9 @@ export type Database = {
           user_id: string
         }
         Update: {
+          about_content?: string
+          about_image_url?: string | null
+          about_title?: string
           accent_color?: string
           background_color?: string
           border_radius?: string
