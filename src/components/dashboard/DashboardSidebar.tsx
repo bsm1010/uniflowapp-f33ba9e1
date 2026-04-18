@@ -15,9 +15,12 @@ import {
   FileText,
   Mail,
   Blocks,
+  ChevronDown,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { useInstalledApps } from "@/hooks/use-installed-apps";
+import { APPS_BY_KEY } from "@/lib/apps";
 import {
   Sidebar,
   SidebarContent,
@@ -30,6 +33,11 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 type NavItem = {
   title: string;
