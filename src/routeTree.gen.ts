@@ -24,10 +24,10 @@ import { Route as DashboardOrdersRouteImport } from './routes/dashboard.orders'
 import { Route as DashboardCustomersRouteImport } from './routes/dashboard.customers'
 import { Route as DashboardContactRouteImport } from './routes/dashboard.contact'
 import { Route as DashboardCategoriesRouteImport } from './routes/dashboard.categories'
-import { Route as DashboardAppsRouteImport } from './routes/dashboard.apps'
 import { Route as DashboardAnalyticsRouteImport } from './routes/dashboard.analytics'
 import { Route as DashboardAboutRouteImport } from './routes/dashboard.about'
 import { Route as SSlugIndexRouteImport } from './routes/s.$slug.index'
+import { Route as DashboardAppsIndexRouteImport } from './routes/dashboard.apps.index'
 import { Route as SSlugTrackRouteImport } from './routes/s.$slug.track'
 import { Route as SSlugContactRouteImport } from './routes/s.$slug.contact'
 import { Route as SSlugCheckoutRouteImport } from './routes/s.$slug.checkout'
@@ -123,11 +123,6 @@ const DashboardCategoriesRoute = DashboardCategoriesRouteImport.update({
   path: '/categories',
   getParentRoute: () => DashboardRoute,
 } as any)
-const DashboardAppsRoute = DashboardAppsRouteImport.update({
-  id: '/apps',
-  path: '/apps',
-  getParentRoute: () => DashboardRoute,
-} as any)
 const DashboardAnalyticsRoute = DashboardAnalyticsRouteImport.update({
   id: '/analytics',
   path: '/analytics',
@@ -142,6 +137,11 @@ const SSlugIndexRoute = SSlugIndexRouteImport.update({
   id: '/s/$slug/',
   path: '/s/$slug/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardAppsIndexRoute = DashboardAppsIndexRouteImport.update({
+  id: '/apps/',
+  path: '/apps/',
+  getParentRoute: () => DashboardRoute,
 } as any)
 const SSlugTrackRoute = SSlugTrackRouteImport.update({
   id: '/s/$slug/track',
@@ -170,66 +170,66 @@ const SSlugAboutRoute = SSlugAboutRouteImport.update({
 } as any)
 const DashboardAppsSeoOptimizerRoute =
   DashboardAppsSeoOptimizerRouteImport.update({
-    id: '/seo-optimizer',
-    path: '/seo-optimizer',
-    getParentRoute: () => DashboardAppsRoute,
+    id: '/apps/seo-optimizer',
+    path: '/apps/seo-optimizer',
+    getParentRoute: () => DashboardRoute,
   } as any)
 const DashboardAppsPopupBuilderRoute =
   DashboardAppsPopupBuilderRouteImport.update({
-    id: '/popup-builder',
-    path: '/popup-builder',
-    getParentRoute: () => DashboardAppsRoute,
+    id: '/apps/popup-builder',
+    path: '/apps/popup-builder',
+    getParentRoute: () => DashboardRoute,
   } as any)
 const DashboardAppsMultiLanguageRoute =
   DashboardAppsMultiLanguageRouteImport.update({
-    id: '/multi-language',
-    path: '/multi-language',
-    getParentRoute: () => DashboardAppsRoute,
+    id: '/apps/multi-language',
+    path: '/apps/multi-language',
+    getParentRoute: () => DashboardRoute,
   } as any)
 const DashboardAppsEmailMarketingRoute =
   DashboardAppsEmailMarketingRouteImport.update({
-    id: '/email-marketing',
-    path: '/email-marketing',
-    getParentRoute: () => DashboardAppsRoute,
+    id: '/apps/email-marketing',
+    path: '/apps/email-marketing',
+    getParentRoute: () => DashboardRoute,
   } as any)
 const DashboardAppsDiscountGeneratorRoute =
   DashboardAppsDiscountGeneratorRouteImport.update({
-    id: '/discount-generator',
-    path: '/discount-generator',
-    getParentRoute: () => DashboardAppsRoute,
+    id: '/apps/discount-generator',
+    path: '/apps/discount-generator',
+    getParentRoute: () => DashboardRoute,
   } as any)
 const DashboardAppsCurrencyConverterRoute =
   DashboardAppsCurrencyConverterRouteImport.update({
-    id: '/currency-converter',
-    path: '/currency-converter',
-    getParentRoute: () => DashboardAppsRoute,
+    id: '/apps/currency-converter',
+    path: '/apps/currency-converter',
+    getParentRoute: () => DashboardRoute,
   } as any)
 const DashboardAppsChatbotRoute = DashboardAppsChatbotRouteImport.update({
-  id: '/chatbot',
-  path: '/chatbot',
-  getParentRoute: () => DashboardAppsRoute,
+  id: '/apps/chatbot',
+  path: '/apps/chatbot',
+  getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardAppsAnalyticsRoute = DashboardAppsAnalyticsRouteImport.update({
-  id: '/analytics',
-  path: '/analytics',
-  getParentRoute: () => DashboardAppsRoute,
+  id: '/apps/analytics',
+  path: '/apps/analytics',
+  getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardAppsAiDescriptionsRoute =
   DashboardAppsAiDescriptionsRouteImport.update({
-    id: '/ai-descriptions',
-    path: '/ai-descriptions',
-    getParentRoute: () => DashboardAppsRoute,
+    id: '/apps/ai-descriptions',
+    path: '/apps/ai-descriptions',
+    getParentRoute: () => DashboardRoute,
   } as any)
 const DashboardAppsAbandonedCartRoute =
   DashboardAppsAbandonedCartRouteImport.update({
-    id: '/abandoned-cart',
-    path: '/abandoned-cart',
-    getParentRoute: () => DashboardAppsRoute,
+    id: '/apps/abandoned-cart',
+    path: '/apps/abandoned-cart',
+    getParentRoute: () => DashboardRoute,
   } as any)
 const DashboardAppsAppKeyRoute = DashboardAppsAppKeyRouteImport.update({
-  id: '/$appKey',
-  path: '/$appKey',
-  getParentRoute: () => DashboardAppsRoute,
+  id: '/apps/$appKey',
+  path: '/apps/$appKey',
+  getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardAdminPaymentsRoute = DashboardAdminPaymentsRouteImport.update({
   id: '/admin/payments',
@@ -254,7 +254,6 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/dashboard/about': typeof DashboardAboutRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
-  '/dashboard/apps': typeof DashboardAppsRouteWithChildren
   '/dashboard/categories': typeof DashboardCategoriesRoute
   '/dashboard/contact': typeof DashboardContactRoute
   '/dashboard/customers': typeof DashboardCustomersRoute
@@ -283,6 +282,7 @@ export interface FileRoutesByFullPath {
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
   '/s/$slug/contact': typeof SSlugContactRoute
   '/s/$slug/track': typeof SSlugTrackRoute
+  '/dashboard/apps/': typeof DashboardAppsIndexRoute
   '/s/$slug/': typeof SSlugIndexRoute
   '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
   '/s/$slug/p/$productId': typeof SSlugPProductIdRoute
@@ -293,7 +293,6 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/dashboard/about': typeof DashboardAboutRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
-  '/dashboard/apps': typeof DashboardAppsRouteWithChildren
   '/dashboard/categories': typeof DashboardCategoriesRoute
   '/dashboard/contact': typeof DashboardContactRoute
   '/dashboard/customers': typeof DashboardCustomersRoute
@@ -322,6 +321,7 @@ export interface FileRoutesByTo {
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
   '/s/$slug/contact': typeof SSlugContactRoute
   '/s/$slug/track': typeof SSlugTrackRoute
+  '/dashboard/apps': typeof DashboardAppsIndexRoute
   '/s/$slug': typeof SSlugIndexRoute
   '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
   '/s/$slug/p/$productId': typeof SSlugPProductIdRoute
@@ -334,7 +334,6 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/dashboard/about': typeof DashboardAboutRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
-  '/dashboard/apps': typeof DashboardAppsRouteWithChildren
   '/dashboard/categories': typeof DashboardCategoriesRoute
   '/dashboard/contact': typeof DashboardContactRoute
   '/dashboard/customers': typeof DashboardCustomersRoute
@@ -363,6 +362,7 @@ export interface FileRoutesById {
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
   '/s/$slug/contact': typeof SSlugContactRoute
   '/s/$slug/track': typeof SSlugTrackRoute
+  '/dashboard/apps/': typeof DashboardAppsIndexRoute
   '/s/$slug/': typeof SSlugIndexRoute
   '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
   '/s/$slug/p/$productId': typeof SSlugPProductIdRoute
@@ -376,7 +376,6 @@ export interface FileRouteTypes {
     | '/signup'
     | '/dashboard/about'
     | '/dashboard/analytics'
-    | '/dashboard/apps'
     | '/dashboard/categories'
     | '/dashboard/contact'
     | '/dashboard/customers'
@@ -405,6 +404,7 @@ export interface FileRouteTypes {
     | '/s/$slug/checkout'
     | '/s/$slug/contact'
     | '/s/$slug/track'
+    | '/dashboard/apps/'
     | '/s/$slug/'
     | '/s/$slug/checkout/success'
     | '/s/$slug/p/$productId'
@@ -415,7 +415,6 @@ export interface FileRouteTypes {
     | '/signup'
     | '/dashboard/about'
     | '/dashboard/analytics'
-    | '/dashboard/apps'
     | '/dashboard/categories'
     | '/dashboard/contact'
     | '/dashboard/customers'
@@ -444,6 +443,7 @@ export interface FileRouteTypes {
     | '/s/$slug/checkout'
     | '/s/$slug/contact'
     | '/s/$slug/track'
+    | '/dashboard/apps'
     | '/s/$slug'
     | '/s/$slug/checkout/success'
     | '/s/$slug/p/$productId'
@@ -455,7 +455,6 @@ export interface FileRouteTypes {
     | '/signup'
     | '/dashboard/about'
     | '/dashboard/analytics'
-    | '/dashboard/apps'
     | '/dashboard/categories'
     | '/dashboard/contact'
     | '/dashboard/customers'
@@ -484,6 +483,7 @@ export interface FileRouteTypes {
     | '/s/$slug/checkout'
     | '/s/$slug/contact'
     | '/s/$slug/track'
+    | '/dashboard/apps/'
     | '/s/$slug/'
     | '/s/$slug/checkout/success'
     | '/s/$slug/p/$productId'
@@ -610,13 +610,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardCategoriesRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/dashboard/apps': {
-      id: '/dashboard/apps'
-      path: '/apps'
-      fullPath: '/dashboard/apps'
-      preLoaderRoute: typeof DashboardAppsRouteImport
-      parentRoute: typeof DashboardRoute
-    }
     '/dashboard/analytics': {
       id: '/dashboard/analytics'
       path: '/analytics'
@@ -637,6 +630,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/s/$slug/'
       preLoaderRoute: typeof SSlugIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/apps/': {
+      id: '/dashboard/apps/'
+      path: '/apps'
+      fullPath: '/dashboard/apps/'
+      preLoaderRoute: typeof DashboardAppsIndexRouteImport
+      parentRoute: typeof DashboardRoute
     }
     '/s/$slug/track': {
       id: '/s/$slug/track'
@@ -675,80 +675,80 @@ declare module '@tanstack/react-router' {
     }
     '/dashboard/apps/seo-optimizer': {
       id: '/dashboard/apps/seo-optimizer'
-      path: '/seo-optimizer'
+      path: '/apps/seo-optimizer'
       fullPath: '/dashboard/apps/seo-optimizer'
       preLoaderRoute: typeof DashboardAppsSeoOptimizerRouteImport
-      parentRoute: typeof DashboardAppsRoute
+      parentRoute: typeof DashboardRoute
     }
     '/dashboard/apps/popup-builder': {
       id: '/dashboard/apps/popup-builder'
-      path: '/popup-builder'
+      path: '/apps/popup-builder'
       fullPath: '/dashboard/apps/popup-builder'
       preLoaderRoute: typeof DashboardAppsPopupBuilderRouteImport
-      parentRoute: typeof DashboardAppsRoute
+      parentRoute: typeof DashboardRoute
     }
     '/dashboard/apps/multi-language': {
       id: '/dashboard/apps/multi-language'
-      path: '/multi-language'
+      path: '/apps/multi-language'
       fullPath: '/dashboard/apps/multi-language'
       preLoaderRoute: typeof DashboardAppsMultiLanguageRouteImport
-      parentRoute: typeof DashboardAppsRoute
+      parentRoute: typeof DashboardRoute
     }
     '/dashboard/apps/email-marketing': {
       id: '/dashboard/apps/email-marketing'
-      path: '/email-marketing'
+      path: '/apps/email-marketing'
       fullPath: '/dashboard/apps/email-marketing'
       preLoaderRoute: typeof DashboardAppsEmailMarketingRouteImport
-      parentRoute: typeof DashboardAppsRoute
+      parentRoute: typeof DashboardRoute
     }
     '/dashboard/apps/discount-generator': {
       id: '/dashboard/apps/discount-generator'
-      path: '/discount-generator'
+      path: '/apps/discount-generator'
       fullPath: '/dashboard/apps/discount-generator'
       preLoaderRoute: typeof DashboardAppsDiscountGeneratorRouteImport
-      parentRoute: typeof DashboardAppsRoute
+      parentRoute: typeof DashboardRoute
     }
     '/dashboard/apps/currency-converter': {
       id: '/dashboard/apps/currency-converter'
-      path: '/currency-converter'
+      path: '/apps/currency-converter'
       fullPath: '/dashboard/apps/currency-converter'
       preLoaderRoute: typeof DashboardAppsCurrencyConverterRouteImport
-      parentRoute: typeof DashboardAppsRoute
+      parentRoute: typeof DashboardRoute
     }
     '/dashboard/apps/chatbot': {
       id: '/dashboard/apps/chatbot'
-      path: '/chatbot'
+      path: '/apps/chatbot'
       fullPath: '/dashboard/apps/chatbot'
       preLoaderRoute: typeof DashboardAppsChatbotRouteImport
-      parentRoute: typeof DashboardAppsRoute
+      parentRoute: typeof DashboardRoute
     }
     '/dashboard/apps/analytics': {
       id: '/dashboard/apps/analytics'
-      path: '/analytics'
+      path: '/apps/analytics'
       fullPath: '/dashboard/apps/analytics'
       preLoaderRoute: typeof DashboardAppsAnalyticsRouteImport
-      parentRoute: typeof DashboardAppsRoute
+      parentRoute: typeof DashboardRoute
     }
     '/dashboard/apps/ai-descriptions': {
       id: '/dashboard/apps/ai-descriptions'
-      path: '/ai-descriptions'
+      path: '/apps/ai-descriptions'
       fullPath: '/dashboard/apps/ai-descriptions'
       preLoaderRoute: typeof DashboardAppsAiDescriptionsRouteImport
-      parentRoute: typeof DashboardAppsRoute
+      parentRoute: typeof DashboardRoute
     }
     '/dashboard/apps/abandoned-cart': {
       id: '/dashboard/apps/abandoned-cart'
-      path: '/abandoned-cart'
+      path: '/apps/abandoned-cart'
       fullPath: '/dashboard/apps/abandoned-cart'
       preLoaderRoute: typeof DashboardAppsAbandonedCartRouteImport
-      parentRoute: typeof DashboardAppsRoute
+      parentRoute: typeof DashboardRoute
     }
     '/dashboard/apps/$appKey': {
       id: '/dashboard/apps/$appKey'
-      path: '/$appKey'
+      path: '/apps/$appKey'
       fullPath: '/dashboard/apps/$appKey'
       preLoaderRoute: typeof DashboardAppsAppKeyRouteImport
-      parentRoute: typeof DashboardAppsRoute
+      parentRoute: typeof DashboardRoute
     }
     '/dashboard/admin/payments': {
       id: '/dashboard/admin/payments'
@@ -774,42 +774,9 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface DashboardAppsRouteChildren {
-  DashboardAppsAppKeyRoute: typeof DashboardAppsAppKeyRoute
-  DashboardAppsAbandonedCartRoute: typeof DashboardAppsAbandonedCartRoute
-  DashboardAppsAiDescriptionsRoute: typeof DashboardAppsAiDescriptionsRoute
-  DashboardAppsAnalyticsRoute: typeof DashboardAppsAnalyticsRoute
-  DashboardAppsChatbotRoute: typeof DashboardAppsChatbotRoute
-  DashboardAppsCurrencyConverterRoute: typeof DashboardAppsCurrencyConverterRoute
-  DashboardAppsDiscountGeneratorRoute: typeof DashboardAppsDiscountGeneratorRoute
-  DashboardAppsEmailMarketingRoute: typeof DashboardAppsEmailMarketingRoute
-  DashboardAppsMultiLanguageRoute: typeof DashboardAppsMultiLanguageRoute
-  DashboardAppsPopupBuilderRoute: typeof DashboardAppsPopupBuilderRoute
-  DashboardAppsSeoOptimizerRoute: typeof DashboardAppsSeoOptimizerRoute
-}
-
-const DashboardAppsRouteChildren: DashboardAppsRouteChildren = {
-  DashboardAppsAppKeyRoute: DashboardAppsAppKeyRoute,
-  DashboardAppsAbandonedCartRoute: DashboardAppsAbandonedCartRoute,
-  DashboardAppsAiDescriptionsRoute: DashboardAppsAiDescriptionsRoute,
-  DashboardAppsAnalyticsRoute: DashboardAppsAnalyticsRoute,
-  DashboardAppsChatbotRoute: DashboardAppsChatbotRoute,
-  DashboardAppsCurrencyConverterRoute: DashboardAppsCurrencyConverterRoute,
-  DashboardAppsDiscountGeneratorRoute: DashboardAppsDiscountGeneratorRoute,
-  DashboardAppsEmailMarketingRoute: DashboardAppsEmailMarketingRoute,
-  DashboardAppsMultiLanguageRoute: DashboardAppsMultiLanguageRoute,
-  DashboardAppsPopupBuilderRoute: DashboardAppsPopupBuilderRoute,
-  DashboardAppsSeoOptimizerRoute: DashboardAppsSeoOptimizerRoute,
-}
-
-const DashboardAppsRouteWithChildren = DashboardAppsRoute._addFileChildren(
-  DashboardAppsRouteChildren,
-)
-
 interface DashboardRouteChildren {
   DashboardAboutRoute: typeof DashboardAboutRoute
   DashboardAnalyticsRoute: typeof DashboardAnalyticsRoute
-  DashboardAppsRoute: typeof DashboardAppsRouteWithChildren
   DashboardCategoriesRoute: typeof DashboardCategoriesRoute
   DashboardContactRoute: typeof DashboardContactRoute
   DashboardCustomersRoute: typeof DashboardCustomersRoute
@@ -822,12 +789,23 @@ interface DashboardRouteChildren {
   DashboardUpgradeRoute: typeof DashboardUpgradeRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   DashboardAdminPaymentsRoute: typeof DashboardAdminPaymentsRoute
+  DashboardAppsAppKeyRoute: typeof DashboardAppsAppKeyRoute
+  DashboardAppsAbandonedCartRoute: typeof DashboardAppsAbandonedCartRoute
+  DashboardAppsAiDescriptionsRoute: typeof DashboardAppsAiDescriptionsRoute
+  DashboardAppsAnalyticsRoute: typeof DashboardAppsAnalyticsRoute
+  DashboardAppsChatbotRoute: typeof DashboardAppsChatbotRoute
+  DashboardAppsCurrencyConverterRoute: typeof DashboardAppsCurrencyConverterRoute
+  DashboardAppsDiscountGeneratorRoute: typeof DashboardAppsDiscountGeneratorRoute
+  DashboardAppsEmailMarketingRoute: typeof DashboardAppsEmailMarketingRoute
+  DashboardAppsMultiLanguageRoute: typeof DashboardAppsMultiLanguageRoute
+  DashboardAppsPopupBuilderRoute: typeof DashboardAppsPopupBuilderRoute
+  DashboardAppsSeoOptimizerRoute: typeof DashboardAppsSeoOptimizerRoute
+  DashboardAppsIndexRoute: typeof DashboardAppsIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAboutRoute: DashboardAboutRoute,
   DashboardAnalyticsRoute: DashboardAnalyticsRoute,
-  DashboardAppsRoute: DashboardAppsRouteWithChildren,
   DashboardCategoriesRoute: DashboardCategoriesRoute,
   DashboardContactRoute: DashboardContactRoute,
   DashboardCustomersRoute: DashboardCustomersRoute,
@@ -840,6 +818,18 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardUpgradeRoute: DashboardUpgradeRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   DashboardAdminPaymentsRoute: DashboardAdminPaymentsRoute,
+  DashboardAppsAppKeyRoute: DashboardAppsAppKeyRoute,
+  DashboardAppsAbandonedCartRoute: DashboardAppsAbandonedCartRoute,
+  DashboardAppsAiDescriptionsRoute: DashboardAppsAiDescriptionsRoute,
+  DashboardAppsAnalyticsRoute: DashboardAppsAnalyticsRoute,
+  DashboardAppsChatbotRoute: DashboardAppsChatbotRoute,
+  DashboardAppsCurrencyConverterRoute: DashboardAppsCurrencyConverterRoute,
+  DashboardAppsDiscountGeneratorRoute: DashboardAppsDiscountGeneratorRoute,
+  DashboardAppsEmailMarketingRoute: DashboardAppsEmailMarketingRoute,
+  DashboardAppsMultiLanguageRoute: DashboardAppsMultiLanguageRoute,
+  DashboardAppsPopupBuilderRoute: DashboardAppsPopupBuilderRoute,
+  DashboardAppsSeoOptimizerRoute: DashboardAppsSeoOptimizerRoute,
+  DashboardAppsIndexRoute: DashboardAppsIndexRoute,
 }
 
 const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
