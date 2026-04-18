@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Loader2, Check, ArrowRight, ArrowLeft, Upload, Store, Link2, DollarSign, ImageIcon, Sparkles, Facebook, Instagram, Music2, Youtube, Users, Search, MoreHorizontal, MapPin } from "lucide-react";
+import { Loader2, Check, ArrowRight, ArrowLeft, Upload, Store, Link2, DollarSign, ImageIcon, Sparkles, Facebook, Instagram, Music2, Youtube, Users, Search, MoreHorizontal, MapPin, Rocket, PartyPopper } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -214,8 +214,9 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
         .eq("id", userId);
       if (profErr) throw profErr;
 
-      toast.success("You're all set! Welcome to Storely 🎉");
-      onComplete();
+      toast.success("Setup complete! Your store is ready 🚀");
+      setCelebrate(true);
+      setTimeout(() => onComplete(), 1800);
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : "Something went wrong";
       toast.error(message);
