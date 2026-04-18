@@ -228,6 +228,26 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
 
   const Icon = current.icon;
 
+  if (celebrate) {
+    return (
+      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+        <div className="w-full max-w-md rounded-2xl border bg-card shadow-2xl overflow-hidden p-8 text-center animate-in zoom-in-95 duration-300">
+          <div className="mx-auto h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center mb-5 animate-in zoom-in-50 duration-500">
+            <PartyPopper className="h-10 w-10 text-primary" />
+          </div>
+          <h2 className="text-2xl font-bold tracking-tight">Setup complete!</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Your store is ready <Rocket className="inline h-4 w-4 text-primary" />
+          </p>
+          <div className="mt-6 inline-flex items-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Taking you to your dashboard…
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
       <div className="w-full max-w-lg rounded-2xl border bg-card shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
