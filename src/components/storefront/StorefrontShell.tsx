@@ -173,6 +173,11 @@ export function StorefrontShell({ settings, children }: Props) {
             </div>
             <ul className="space-y-2 text-sm">
               <li>
+                <Link to="/s/$slug/about" params={{ slug: settings.slug }} className="hover:opacity-70">
+                  About
+                </Link>
+              </li>
+              <li>
                 <Link to="/s/$slug/cart" params={{ slug: settings.slug }} className="hover:opacity-70">
                   Cart
                 </Link>
