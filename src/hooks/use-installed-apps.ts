@@ -43,8 +43,8 @@ export function useInstalledApps() {
   // Realtime: keep state fresh if changes happen in another tab.
   useEffect(() => {
     if (!user) return;
-    const channel = supabase
-      .channel(`installed-apps-${user.id}`)
+    const channel = supabase.channel(`installed-apps-${user.id}-${Math.random()}`);
+    channel
       .on(
         "postgres_changes",
         {
