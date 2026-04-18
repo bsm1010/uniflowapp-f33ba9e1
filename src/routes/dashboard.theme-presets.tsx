@@ -33,7 +33,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
 } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/dashboard/theme-presets")({
