@@ -1,48 +1,33 @@
 import { createServerFn } from "@tanstack/react-start";
-import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const GATEWAY_URL = "https://connector-gateway.lovable.dev/resend";
 
 const SendSchema = z.object({
   campaignId: z.string().uuid(),
-  accessToken: z.string().min(1),
 });
 
 export const sendCampaign = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => SendSchema.parse(input))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
     const LOVABLE_API_KEY = process.env.LOVABLE_API_KEY;
     const RESEND_API_KEY = process.env.RESEND_API_KEY;
-    const SUPABASE_URL =
-      process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL;
-    const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
     if (!RESEND_API_KEY) throw new Error("RESEND_API_KEY not configured");
-    if (!SUPABASE_URL)
-      throw new Error("SUPABASE_URL not configured");
-    if (!SERVICE_KEY)
-      throw new Error("SUPABASE_SERVICE_ROLE_KEY not configured — add it in Cloud settings");
 
-    // Verify the caller
-    const userClient = createClient(SUPABASE_URL, SERVICE_KEY, {
-      global: { headers: { Authorization: `Bearer ${data.accessToken}` } },
-    });
-    const {
-      data: { user },
-      error: userErr,
-    } = await userClient.auth.getUser(data.accessToken);
-    if (userErr || !user) throw new Error("Unauthorized");
-
-    const admin = createClient(SUPABASE_URL, SERVICE_KEY);
+    const { userId } = context;
+    const admin = supabaseAdmin;
 
     // Load campaign owned by this user
     const { data: campaign, error: cErr } = await admin
       .from("email_campaigns")
       .select("*")
       .eq("id", data.campaignId)
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
       .single();
     if (cErr || !campaign) throw new Error("Campaign not found");
     if (campaign.status === "sent" || campaign.status === "sending") {
@@ -57,7 +42,7 @@ export const sendCampaign = createServerFn({ method: "POST" })
       const { data: orders } = await admin
         .from("orders")
         .select("customer_email")
-        .eq("store_owner_id", user.id);
+        .eq("store_owner_id", userId);
       recipients = Array.from(
         new Set(
           (orders ?? [])
@@ -97,7 +82,6 @@ export const sendCampaign = createServerFn({ method: "POST" })
     let failed = 0;
     let firstError: string | null = null;
 
-    // Send one email per recipient (no CC/BCC leakage)
     for (const to of recipients) {
       try {
         const res = await fetch(`${GATEWAY_URL}/emails`, {

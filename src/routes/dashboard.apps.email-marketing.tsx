@@ -166,7 +166,8 @@ function EmailMarketingApp() {
       } = await supabase.auth.getSession();
       if (!session) throw new Error("Not signed in");
       const res = await sendCampaign({
-        data: { campaignId: id, accessToken: session.access_token },
+        data: { campaignId: id },
+        headers: { Authorization: `Bearer ${session.access_token}` },
       });
       toast.success(`Sent ${res.sent} • Failed ${res.failed}`);
       refresh();
