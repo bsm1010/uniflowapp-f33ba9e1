@@ -142,6 +142,14 @@ function CategoriesPage() {
       .update({ category: next })
       .eq("user_id", user.id)
       .eq("category", renaming.name);
+    if (!error) {
+      // Move/merge the image row to the new name
+      await supabase
+        .from("category_images")
+        .update({ category_name: next })
+        .eq("user_id", user.id)
+        .eq("category_name", renaming.name);
+    }
     setBusy(false);
     if (error) {
       toast.error(error.message);
@@ -160,6 +168,13 @@ function CategoriesPage() {
       .update({ category: null })
       .eq("user_id", user.id)
       .eq("category", deleting.name);
+    if (!error) {
+      await supabase
+        .from("category_images")
+        .delete()
+        .eq("user_id", user.id)
+        .eq("category_name", deleting.name);
+    }
     setBusy(false);
     if (error) {
       toast.error(error.message);
