@@ -295,6 +295,7 @@ export type Database = {
           trial_end_date: string | null
           trial_start_date: string | null
           updated_at: string
+          user_wilaya: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -310,6 +311,7 @@ export type Database = {
           trial_end_date?: string | null
           trial_start_date?: string | null
           updated_at?: string
+          user_wilaya?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -325,6 +327,7 @@ export type Database = {
           trial_end_date?: string | null
           trial_start_date?: string | null
           updated_at?: string
+          user_wilaya?: string | null
         }
         Relationships: []
       }

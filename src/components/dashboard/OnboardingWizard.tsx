@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { Loader2, Check, ArrowRight, ArrowLeft, Upload, Store, Link2, DollarSign, ImageIcon, Sparkles, Facebook, Instagram, Music2, Youtube, Users, Search, MoreHorizontal } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Loader2, Check, ArrowRight, ArrowLeft, Upload, Store, Link2, DollarSign, ImageIcon, Sparkles, Facebook, Instagram, Music2, Youtube, Users, Search, MoreHorizontal, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -37,6 +37,17 @@ const SOURCES = [
   { value: "other", label: "Other", Icon: MoreHorizontal },
 ];
 
+const WILAYAS = [
+  "Adrar","Chlef","Laghouat","Oum El Bouaghi","Batna","Béjaïa","Biskra","Béchar",
+  "Blida","Bouira","Tamanrasset","Tébessa","Tlemcen","Tiaret","Tizi Ouzou","Algiers",
+  "Djelfa","Jijel","Sétif","Saïda","Skikda","Sidi Bel Abbès","Annaba","Guelma",
+  "Constantine","Médéa","Mostaganem","M'Sila","Mascara","Ouargla","Oran","El Bayadh",
+  "Illizi","Bordj Bou Arréridj","Boumerdès","El Tarf","Tindouf","Tissemsilt","El Oued",
+  "Khenchela","Souk Ahras","Tipaza","Mila","Aïn Defla","Naâma","Aïn Témouchent",
+  "Ghardaïa","Relizane","Timimoun","Bordj Badji Mokhtar","Ouled Djellal","Béni Abbès",
+  "In Salah","In Guezzam","Touggourt","Djanet","El M'Ghair","El Meniaa",
+];
+
 function slugify(input: string) {
   return input
     .toLowerCase()
@@ -60,7 +71,15 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [source, setSource] = useState<string>("");
+  const [wilaya, setWilaya] = useState<string>("");
+  const [wilayaSearch, setWilayaSearch] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const filteredWilayas = useMemo(() => {
+    const q = wilayaSearch.trim().toLowerCase();
+    if (!q) return WILAYAS;
+    return WILAYAS.filter((w) => w.toLowerCase().includes(q));
+  }, [wilayaSearch]);
 
   // Auto-derive slug from store name until user edits it
   useEffect(() => {
@@ -102,6 +121,12 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
       subtitle: "Help us understand how you found Storely.",
       icon: Sparkles,
       valid: source.length > 0,
+    },
+    {
+      title: "Where do you live?",
+      subtitle: "Pick your wilaya so we can tailor your experience.",
+      icon: MapPin,
+      valid: wilaya.length > 0,
     },
     {
       title: "Name your store",
@@ -177,10 +202,10 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
         );
       if (storeErr) throw storeErr;
 
-      // Mark profile as onboarded and save discovery source
+      // Mark profile as onboarded and save discovery source + wilaya
       const { error: profErr } = await supabase
         .from("profiles")
-        .update({ onboarded: true, source_of_user: source || null })
+        .update({ onboarded: true, source_of_user: source || null, user_wilaya: wilaya || null })
         .eq("id", userId);
       if (profErr) throw profErr;
 
@@ -281,6 +306,46 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
 
             {step === 1 && (
               <div className="space-y-2">
+                <Label htmlFor="wilaya-search">Your wilaya</Label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="wilaya-search"
+                    autoFocus
+                    value={wilayaSearch}
+                    onChange={(e) => setWilayaSearch(e.target.value)}
+                    placeholder="Search wilayas…"
+                    className="pl-9"
+                  />
+                </div>
+                <div className="max-h-48 overflow-y-auto rounded-md border border-input bg-background">
+                  {filteredWilayas.length === 0 ? (
+                    <div className="p-3 text-sm text-muted-foreground text-center">No matches</div>
+                  ) : (
+                    filteredWilayas.map((w) => {
+                      const selected = wilaya === w;
+                      return (
+                        <button
+                          key={w}
+                          type="button"
+                          onClick={() => setWilaya(w)}
+                          className={cn(
+                            "w-full flex items-center justify-between px-3 py-2 text-sm text-left transition-colors",
+                            selected ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/60",
+                          )}
+                        >
+                          <span>{w}</span>
+                          {selected && <Check className="h-4 w-4" />}
+                        </button>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            )}
+
+            {step === 2 && (
+              <div className="space-y-2">
                 <Label htmlFor="store-name">Store name</Label>
                 <Input
                   id="store-name"
@@ -293,7 +358,7 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
               </div>
             )}
 
-            {step === 2 && (
+            {step === 3 && (
               <div className="space-y-2">
                 <Label htmlFor="store-slug">Store URL</Label>
                 <div className="flex items-center gap-2">
@@ -333,7 +398,7 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
               </div>
             )}
 
-            {step === 3 && (
+            {step === 4 && (
               <div className="space-y-2">
                 <Label htmlFor="currency-select">Default currency</Label>
                 <select
@@ -351,7 +416,7 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
               </div>
             )}
 
-            {step === 4 && (
+            {step === 5 && (
               <div className="space-y-3">
                 <Label>Logo (optional)</Label>
                 <div className="flex items-center gap-4">
