@@ -1,48 +1,16 @@
 import { Link } from "@tanstack/react-router";
-import { ShoppingBag } from "lucide-react";
+import { ShoppingBag, Instagram, Facebook, Twitter, Music2 } from "lucide-react";
 import type { ReactNode } from "react";
 import { useCart } from "@/hooks/use-cart";
-import type { Tables } from "@/integrations/supabase/types";
+import {
+  getStoreTokens,
+  getNavLinks,
+  getFooterSocials,
+  type StoreSettings,
+} from "@/lib/storeTheme";
 
-type StoreSettings = Tables<"store_settings">;
-
-const FONT_STACK: Record<string, string> = {
-  Inter: '"Inter", system-ui, sans-serif',
-  "Space Grotesk": '"Space Grotesk", "Inter", sans-serif',
-  Playfair: '"Playfair Display", Georgia, serif',
-  "DM Serif": '"DM Serif Display", Georgia, serif',
-  Mono: '"JetBrains Mono", ui-monospace, monospace',
-};
-
-function readableOn(hex: string): string {
-  const h = hex.replace("#", "");
-  if (h.length !== 6) return "#0f172a";
-  const r = parseInt(h.slice(0, 2), 16);
-  const g = parseInt(h.slice(2, 4), 16);
-  const b = parseInt(h.slice(4, 6), 16);
-  const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-  return lum > 0.6 ? "#0f172a" : "#ffffff";
-}
-
-export function getStoreTokens(s: StoreSettings) {
-  const bg = s.background_color;
-  const primary = s.primary_color;
-  const onPrimary = readableOn(primary);
-  const fontFamily = FONT_STACK[s.font_family] ?? FONT_STACK.Inter;
-  const isDarkBg = readableOn(bg) === "#ffffff";
-  return {
-    bg,
-    primary,
-    onPrimary,
-    fontFamily,
-    fg: isDarkBg ? "#f8fafc" : "#0f172a",
-    muted: isDarkBg ? "#94a3b8" : "#64748b",
-    border: isDarkBg ? "rgba(255,255,255,0.08)" : "rgba(15,23,42,0.08)",
-    surface: isDarkBg ? "rgba(255,255,255,0.04)" : "rgba(15,23,42,0.03)",
-    radius:
-      s.theme === "minimal" ? 0 : s.theme === "grid" ? 6 : 14,
-  };
-}
+// Re-export for backwards compatibility
+export { getStoreTokens } from "@/lib/storeTheme";
 
 interface Props {
   settings: StoreSettings;
@@ -52,6 +20,15 @@ interface Props {
 export function StorefrontShell({ settings, children }: Props) {
   const t = getStoreTokens(settings);
   const { count } = useCart(settings.slug);
+  const navLinks = getNavLinks(settings);
+  const socials = getFooterSocials(settings);
+
+  const socialEntries: Array<{ key: string; url: string; Icon: typeof Instagram }> = [
+    { key: "instagram", url: socials.instagram ?? "", Icon: Instagram },
+    { key: "facebook", url: socials.facebook ?? "", Icon: Facebook },
+    { key: "twitter", url: socials.twitter ?? "", Icon: Twitter },
+    { key: "tiktok", url: socials.tiktok ?? "", Icon: Music2 },
+  ].filter((s) => s.url.trim().length > 0);
 
   return (
     <div
@@ -59,7 +36,7 @@ export function StorefrontShell({ settings, children }: Props) {
       style={{ backgroundColor: t.bg, color: t.fg, fontFamily: t.fontFamily }}
     >
       <header
-        className="sticky top-0 z-30 backdrop-blur"
+        className="sticky top-0 z-30 backdrop-blur-md"
         style={{
           backgroundColor: t.bg + "e6",
           borderBottom: `1px solid ${t.border}`,
@@ -91,9 +68,15 @@ export function StorefrontShell({ settings, children }: Props) {
             className="hidden md:flex items-center gap-6 text-sm"
             style={{ color: t.muted }}
           >
-            <Link to="/s/$slug" params={{ slug: settings.slug }}>
-              Shop
-            </Link>
+            {navLinks.map((l) => (
+              <a
+                key={l.label}
+                href={l.href.startsWith("#") ? `/s/${settings.slug}${l.href}` : l.href}
+                className="hover:opacity-70 transition-opacity"
+              >
+                {l.label}
+              </a>
+            ))}
           </nav>
           <Link
             to="/s/$slug/cart"
@@ -118,10 +101,98 @@ export function StorefrontShell({ settings, children }: Props) {
       <main className="flex-1">{children}</main>
 
       <footer
-        className="px-4 sm:px-6 py-8 text-center text-xs"
-        style={{ color: t.muted, borderTop: `1px solid ${t.border}` }}
+        className="px-4 sm:px-6 pt-12 pb-8"
+        style={{ borderTop: `1px solid ${t.border}`, color: t.muted }}
       >
-        © {new Date().getFullYear()} {settings.store_name}. Powered by Storely.
+        <div className="max-w-6xl mx-auto grid gap-8 md:grid-cols-4">
+          <div className="md:col-span-2">
+            <div className="flex items-center gap-2">
+              {settings.logo_url ? (
+                <img
+                  src={settings.logo_url}
+                  alt={settings.store_name}
+                  className="h-7 w-7 rounded object-cover"
+                />
+              ) : (
+                <div
+                  className="h-7 w-7 rounded"
+                  style={{ backgroundColor: t.primary }}
+                />
+              )}
+              <span className="font-semibold" style={{ color: t.fg }}>
+                {settings.store_name}
+              </span>
+            </div>
+            <p className="mt-3 text-sm max-w-sm leading-relaxed">
+              {settings.footer_about}
+            </p>
+            {socialEntries.length > 0 && (
+              <div className="mt-5 flex items-center gap-2">
+                {socialEntries.map(({ key, url, Icon }) => (
+                  <a
+                    key={key}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="h-9 w-9 inline-flex items-center justify-center rounded-full transition-opacity hover:opacity-80"
+                    style={{ backgroundColor: t.surface, color: t.fg }}
+                    aria-label={key}
+                  >
+                    <Icon className="h-4 w-4" />
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+          <div>
+            <div
+              className="text-xs font-semibold uppercase tracking-wider mb-3"
+              style={{ color: t.fg }}
+            >
+              Shop
+            </div>
+            <ul className="space-y-2 text-sm">
+              {getNavLinks(settings).slice(0, 4).map((l) => (
+                <li key={l.label}>
+                  <a
+                    href={l.href.startsWith("#") ? `/s/${settings.slug}${l.href}` : l.href}
+                    className="hover:opacity-70"
+                  >
+                    {l.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <div
+              className="text-xs font-semibold uppercase tracking-wider mb-3"
+              style={{ color: t.fg }}
+            >
+              Help
+            </div>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <Link to="/s/$slug/cart" params={{ slug: settings.slug }} className="hover:opacity-70">
+                  Cart
+                </Link>
+              </li>
+              <li>
+                <Link to="/s/$slug/checkout" params={{ slug: settings.slug }} className="hover:opacity-70">
+                  Checkout
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div
+          className="max-w-6xl mx-auto mt-10 pt-6 text-center text-xs"
+          style={{ borderTop: `1px solid ${t.border}` }}
+        >
+          {settings.footer_copyright?.trim()
+            ? settings.footer_copyright
+            : `© ${new Date().getFullYear()} ${settings.store_name}. All rights reserved.`}
+        </div>
       </footer>
     </div>
   );
