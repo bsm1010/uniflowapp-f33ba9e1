@@ -34,7 +34,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 
-export const Route = createFileRoute("/dashboard/themes/presets")({
+export const Route = createFileRoute("/dashboard/theme-presets")({
   component: PresetsPage,
   head: () => ({ meta: [{ title: "Theme Presets — Storely" }] }),
 });

@@ -17,6 +17,7 @@ import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as SSlugRouteImport } from './routes/s.$slug'
 import { Route as DashboardUpgradeRouteImport } from './routes/dashboard.upgrade'
 import { Route as DashboardThemesRouteImport } from './routes/dashboard.themes'
+import { Route as DashboardThemePresetsRouteImport } from './routes/dashboard.theme-presets'
 import { Route as DashboardStoreRouteImport } from './routes/dashboard.store'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
 import { Route as DashboardProductsRouteImport } from './routes/dashboard.products'
@@ -26,7 +27,6 @@ import { Route as DashboardCategoriesRouteImport } from './routes/dashboard.cate
 import { Route as DashboardAnalyticsRouteImport } from './routes/dashboard.analytics'
 import { Route as SSlugCheckoutRouteImport } from './routes/s.$slug.checkout'
 import { Route as SSlugCartRouteImport } from './routes/s.$slug.cart'
-import { Route as DashboardThemesPresetsRouteImport } from './routes/dashboard.themes.presets'
 import { Route as DashboardAdminPaymentsRouteImport } from './routes/dashboard.admin.payments'
 import { Route as SSlugPProductIdRouteImport } from './routes/s.$slug.p.$productId'
 import { Route as SSlugCheckoutSuccessRouteImport } from './routes/s.$slug.checkout.success'
@@ -69,6 +69,11 @@ const DashboardUpgradeRoute = DashboardUpgradeRouteImport.update({
 const DashboardThemesRoute = DashboardThemesRouteImport.update({
   id: '/themes',
   path: '/themes',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardThemePresetsRoute = DashboardThemePresetsRouteImport.update({
+  id: '/theme-presets',
+  path: '/theme-presets',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardStoreRoute = DashboardStoreRouteImport.update({
@@ -116,11 +121,6 @@ const SSlugCartRoute = SSlugCartRouteImport.update({
   path: '/cart',
   getParentRoute: () => SSlugRoute,
 } as any)
-const DashboardThemesPresetsRoute = DashboardThemesPresetsRouteImport.update({
-  id: '/presets',
-  path: '/presets',
-  getParentRoute: () => DashboardThemesRoute,
-} as any)
 const DashboardAdminPaymentsRoute = DashboardAdminPaymentsRouteImport.update({
   id: '/admin/payments',
   path: '/admin/payments',
@@ -149,12 +149,12 @@ export interface FileRoutesByFullPath {
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/store': typeof DashboardStoreRoute
-  '/dashboard/themes': typeof DashboardThemesRouteWithChildren
+  '/dashboard/theme-presets': typeof DashboardThemePresetsRoute
+  '/dashboard/themes': typeof DashboardThemesRoute
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
   '/s/$slug': typeof SSlugRouteWithChildren
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
-  '/dashboard/themes/presets': typeof DashboardThemesPresetsRoute
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
   '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
@@ -171,12 +171,12 @@ export interface FileRoutesByTo {
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/store': typeof DashboardStoreRoute
-  '/dashboard/themes': typeof DashboardThemesRouteWithChildren
+  '/dashboard/theme-presets': typeof DashboardThemePresetsRoute
+  '/dashboard/themes': typeof DashboardThemesRoute
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
   '/s/$slug': typeof SSlugRouteWithChildren
   '/dashboard': typeof DashboardIndexRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
-  '/dashboard/themes/presets': typeof DashboardThemesPresetsRoute
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
   '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
@@ -195,12 +195,12 @@ export interface FileRoutesById {
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/store': typeof DashboardStoreRoute
-  '/dashboard/themes': typeof DashboardThemesRouteWithChildren
+  '/dashboard/theme-presets': typeof DashboardThemePresetsRoute
+  '/dashboard/themes': typeof DashboardThemesRoute
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
   '/s/$slug': typeof SSlugRouteWithChildren
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
-  '/dashboard/themes/presets': typeof DashboardThemesPresetsRoute
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
   '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
@@ -220,12 +220,12 @@ export interface FileRouteTypes {
     | '/dashboard/products'
     | '/dashboard/settings'
     | '/dashboard/store'
+    | '/dashboard/theme-presets'
     | '/dashboard/themes'
     | '/dashboard/upgrade'
     | '/s/$slug'
     | '/dashboard/'
     | '/dashboard/admin/payments'
-    | '/dashboard/themes/presets'
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
     | '/s/$slug/checkout/success'
@@ -242,12 +242,12 @@ export interface FileRouteTypes {
     | '/dashboard/products'
     | '/dashboard/settings'
     | '/dashboard/store'
+    | '/dashboard/theme-presets'
     | '/dashboard/themes'
     | '/dashboard/upgrade'
     | '/s/$slug'
     | '/dashboard'
     | '/dashboard/admin/payments'
-    | '/dashboard/themes/presets'
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
     | '/s/$slug/checkout/success'
@@ -265,12 +265,12 @@ export interface FileRouteTypes {
     | '/dashboard/products'
     | '/dashboard/settings'
     | '/dashboard/store'
+    | '/dashboard/theme-presets'
     | '/dashboard/themes'
     | '/dashboard/upgrade'
     | '/s/$slug'
     | '/dashboard/'
     | '/dashboard/admin/payments'
-    | '/dashboard/themes/presets'
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
     | '/s/$slug/checkout/success'
@@ -343,6 +343,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardThemesRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/theme-presets': {
+      id: '/dashboard/theme-presets'
+      path: '/theme-presets'
+      fullPath: '/dashboard/theme-presets'
+      preLoaderRoute: typeof DashboardThemePresetsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/store': {
       id: '/dashboard/store'
       path: '/store'
@@ -406,13 +413,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SSlugCartRouteImport
       parentRoute: typeof SSlugRoute
     }
-    '/dashboard/themes/presets': {
-      id: '/dashboard/themes/presets'
-      path: '/presets'
-      fullPath: '/dashboard/themes/presets'
-      preLoaderRoute: typeof DashboardThemesPresetsRouteImport
-      parentRoute: typeof DashboardThemesRoute
-    }
     '/dashboard/admin/payments': {
       id: '/dashboard/admin/payments'
       path: '/admin/payments'
@@ -437,18 +437,6 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface DashboardThemesRouteChildren {
-  DashboardThemesPresetsRoute: typeof DashboardThemesPresetsRoute
-}
-
-const DashboardThemesRouteChildren: DashboardThemesRouteChildren = {
-  DashboardThemesPresetsRoute: DashboardThemesPresetsRoute,
-}
-
-const DashboardThemesRouteWithChildren = DashboardThemesRoute._addFileChildren(
-  DashboardThemesRouteChildren,
-)
-
 interface DashboardRouteChildren {
   DashboardAnalyticsRoute: typeof DashboardAnalyticsRoute
   DashboardCategoriesRoute: typeof DashboardCategoriesRoute
@@ -457,7 +445,8 @@ interface DashboardRouteChildren {
   DashboardProductsRoute: typeof DashboardProductsRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardStoreRoute: typeof DashboardStoreRoute
-  DashboardThemesRoute: typeof DashboardThemesRouteWithChildren
+  DashboardThemePresetsRoute: typeof DashboardThemePresetsRoute
+  DashboardThemesRoute: typeof DashboardThemesRoute
   DashboardUpgradeRoute: typeof DashboardUpgradeRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   DashboardAdminPaymentsRoute: typeof DashboardAdminPaymentsRoute
@@ -471,7 +460,8 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardProductsRoute: DashboardProductsRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardStoreRoute: DashboardStoreRoute,
-  DashboardThemesRoute: DashboardThemesRouteWithChildren,
+  DashboardThemePresetsRoute: DashboardThemePresetsRoute,
+  DashboardThemesRoute: DashboardThemesRoute,
   DashboardUpgradeRoute: DashboardUpgradeRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   DashboardAdminPaymentsRoute: DashboardAdminPaymentsRoute,
