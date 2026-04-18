@@ -49,7 +49,7 @@ function AppsPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {APPS.map((app) => {
-            const isInstalled = installed.has(app.key);
+            const installed = isInstalled(app.key);
             const isPending = pending === app.key;
             const Icon = app.icon;
             return (
