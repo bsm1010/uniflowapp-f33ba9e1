@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   FileText,
   Mail,
+  Blocks,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -49,6 +50,7 @@ const items: NavItem[] = [
   { title: "About page", url: "/dashboard/about", icon: FileText },
   { title: "Contact page", url: "/dashboard/contact", icon: Mail },
   { title: "Analytics", url: "/dashboard/analytics", icon: BarChart3 },
+  { title: "App Store", url: "/dashboard/apps", icon: Blocks },
   { title: "Settings", url: "/dashboard/settings", icon: Settings },
 ];
 
