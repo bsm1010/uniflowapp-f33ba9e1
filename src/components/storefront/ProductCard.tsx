@@ -9,7 +9,7 @@ export interface ProductCardData {
   price: number;
   images: string[];
   category?: string | null;
-  stock?: number;
+  stock?: number | null;
 }
 
 interface Props {

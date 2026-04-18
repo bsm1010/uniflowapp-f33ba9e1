@@ -1,25 +1,16 @@
-import type { Tables } from "@/integrations/supabase/types";
-import { ShoppingBag, Search, Heart, User, Mail } from "lucide-react";
+import { ShoppingBag, Search, Heart, User, Mail, Instagram, Facebook, Twitter } from "lucide-react";
+import {
+  getStoreTokens,
+  getNavLinks,
+  getButtonLabels,
+  getSectionTitles,
+  getFooterSocials,
+  formatPrice,
+  type StoreSettings,
+} from "@/lib/storeTheme";
 
-export type StoreSettings = Tables<"store_settings">;
-
-const FONT_STACK: Record<string, string> = {
-  Inter: '"Inter", system-ui, sans-serif',
-  "Space Grotesk": '"Space Grotesk", "Inter", sans-serif',
-  Playfair: '"Playfair Display", Georgia, serif',
-  "DM Serif": '"DM Serif Display", Georgia, serif',
-  Mono: '"JetBrains Mono", ui-monospace, monospace',
-};
-
-function readableOn(hex: string): string {
-  const h = hex.replace("#", "");
-  if (h.length !== 6) return "#0f172a";
-  const r = parseInt(h.slice(0, 2), 16);
-  const g = parseInt(h.slice(2, 4), 16);
-  const b = parseInt(h.slice(4, 6), 16);
-  const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-  return lum > 0.6 ? "#0f172a" : "#ffffff";
-}
+// Re-export for backwards compatibility
+export type { StoreSettings } from "@/lib/storeTheme";
 
 interface Props {
   settings: StoreSettings;
@@ -27,19 +18,16 @@ interface Props {
 }
 
 export function StorePreview({ settings, products = [] }: Props) {
-  const bg = settings.background_color;
-  const primary = settings.primary_color;
-  const onPrimary = readableOn(primary);
-  const fontFamily = FONT_STACK[settings.font_family] ?? FONT_STACK.Inter;
-
-  const isDarkBg = readableOn(bg) === "#ffffff";
-  const fg = isDarkBg ? "#f8fafc" : "#0f172a";
-  const muted = isDarkBg ? "#94a3b8" : "#64748b";
-  const border = isDarkBg ? "rgba(255,255,255,0.08)" : "rgba(15,23,42,0.08)";
-  const surface = isDarkBg ? "rgba(255,255,255,0.04)" : "rgba(15,23,42,0.03)";
+  const t = getStoreTokens(settings);
+  const navLinks = getNavLinks(settings);
+  const labels = getButtonLabels(settings);
+  const titles = getSectionTitles(settings);
+  const socials = getFooterSocials(settings);
+  const currency = settings.currency || "USD";
+  const template = settings.theme;
 
   const sample = products.length
-    ? products.slice(0, 6)
+    ? products.slice(0, template === "grid" ? 8 : 6)
     : Array.from({ length: 6 }).map((_, i) => ({
         name: `Sample Product ${i + 1}`,
         price: 29 + i * 10,
@@ -47,30 +35,32 @@ export function StorePreview({ settings, products = [] }: Props) {
       }));
 
   const grid =
-    settings.theme === "minimal"
-      ? "grid-cols-2 gap-8"
-      : settings.theme === "grid"
+    template === "minimal"
+      ? "grid-cols-2 gap-6"
+      : template === "grid"
         ? "grid-cols-3 gap-3"
-        : "grid-cols-3 gap-5";
+        : template === "editorial"
+          ? "grid-cols-2 gap-5"
+          : "grid-cols-3 gap-4";
 
-  const cardRadius =
-    settings.theme === "minimal"
-      ? "rounded-none"
-      : settings.theme === "grid"
-        ? "rounded-md"
-        : "rounded-2xl";
+  const cardRadius = template === "minimal" ? 0 : t.radius.lg;
+  const aspect = template === "editorial" ? "3 / 4" : "1 / 1";
 
   return (
     <div
       className="h-full w-full overflow-y-auto"
-      style={{ backgroundColor: bg, color: fg, fontFamily }}
+      style={{
+        backgroundColor: t.bg,
+        color: t.fg,
+        fontFamily: t.fontFamily,
+      }}
     >
       {/* Topbar */}
       <div
-        className="sticky top-0 z-10 backdrop-blur"
+        className="sticky top-0 z-10 backdrop-blur-md"
         style={{
-          backgroundColor: bg + "e6",
-          borderBottom: `1px solid ${border}`,
+          backgroundColor: t.bg + "e6",
+          borderBottom: `1px solid ${t.border}`,
         }}
       >
         <div className="px-6 h-14 flex items-center justify-between">
@@ -82,22 +72,18 @@ export function StorePreview({ settings, products = [] }: Props) {
                 className="h-7 w-7 rounded object-cover"
               />
             ) : (
-              <div
-                className="h-7 w-7 rounded"
-                style={{ backgroundColor: primary }}
-              />
+              <div className="h-7 w-7 rounded" style={{ backgroundColor: t.primary }} />
             )}
             <span className="font-semibold text-sm tracking-tight">
               {settings.store_name}
             </span>
           </div>
-          <div className="hidden sm:flex items-center gap-5 text-xs" style={{ color: muted }}>
-            <span>Shop</span>
-            <span>Collections</span>
-            <span>About</span>
-            <span>Contact</span>
+          <div className="hidden sm:flex items-center gap-5 text-xs" style={{ color: t.muted }}>
+            {navLinks.slice(0, 4).map((l) => (
+              <span key={l.label}>{l.label}</span>
+            ))}
           </div>
-          <div className="flex items-center gap-3" style={{ color: muted }}>
+          <div className="flex items-center gap-3" style={{ color: t.muted }}>
             <Search className="h-4 w-4" />
             <Heart className="h-4 w-4" />
             <User className="h-4 w-4" />
@@ -108,54 +94,27 @@ export function StorePreview({ settings, products = [] }: Props) {
 
       {/* Hero */}
       {settings.show_hero && (
-        <div
-          className="px-6 py-16 text-center"
-          style={{ borderBottom: `1px solid ${border}` }}
-        >
-          <h1
-            className="text-4xl md:text-5xl font-bold tracking-tight"
-            style={{ fontFamily }}
-          >
-            {settings.hero_heading}
-          </h1>
-          <p className="mt-4 text-base md:text-lg max-w-xl mx-auto" style={{ color: muted }}>
-            {settings.hero_subheading}
-          </p>
-          <button
-            className="mt-8 px-6 py-3 text-sm font-medium transition-opacity hover:opacity-90"
-            style={{
-              backgroundColor: primary,
-              color: onPrimary,
-              borderRadius:
-                settings.theme === "minimal"
-                  ? 0
-                  : settings.theme === "grid"
-                    ? 6
-                    : 999,
-            }}
-          >
-            {settings.hero_cta_label}
-          </button>
-        </div>
+        <HeroPreview settings={settings} t={t} />
       )}
 
       {/* Categories */}
       {settings.show_categories && (
         <div className="px-6 py-10">
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="text-lg font-semibold">Shop by category</h2>
-            <span className="text-xs" style={{ color: muted }}>
-              View all
-            </span>
+          <div className="mb-5">
+            <h2 className="text-lg font-bold">{titles.categories}</h2>
+            <p className="text-xs mt-0.5" style={{ color: t.muted }}>
+              {titles.categories_sub}
+            </p>
           </div>
           <div className="grid grid-cols-4 gap-3">
             {["Apparel", "Accessories", "Home", "Beauty"].map((c) => (
               <div
                 key={c}
-                className={`aspect-[4/3] flex items-end p-3 text-xs font-medium ${cardRadius}`}
+                className="aspect-[4/3] flex items-end p-3 text-xs font-medium"
                 style={{
-                  backgroundColor: surface,
-                  border: `1px solid ${border}`,
+                  backgroundColor: t.surface,
+                  border: `1px solid ${t.border}`,
+                  borderRadius: t.radius.md,
                 }}
               >
                 {c}
@@ -167,21 +126,46 @@ export function StorePreview({ settings, products = [] }: Props) {
 
       {/* Featured */}
       {settings.show_featured && (
-        <div className="px-6 py-10" style={{ borderTop: `1px solid ${border}` }}>
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="text-lg font-semibold">Featured products</h2>
-            <span className="text-xs" style={{ color: muted }}>
-              See all
+        <div className="px-6 py-10" style={{ borderTop: `1px solid ${t.border}` }}>
+          <div className="flex items-end justify-between mb-5">
+            <div>
+              <h2 className="text-lg font-bold">{titles.featured}</h2>
+              <p className="text-xs mt-0.5" style={{ color: t.muted }}>
+                {titles.featured_sub}
+              </p>
+            </div>
+            <span className="text-xs font-medium" style={{ color: t.primary }}>
+              {labels.view_all}
             </span>
           </div>
+
+          {/* Search bar preview */}
+          {settings.show_search && (
+            <div
+              className="flex items-center gap-2 mb-4 px-3 py-2"
+              style={{
+                backgroundColor: t.surface,
+                border: `1px solid ${t.border}`,
+                borderRadius: t.radius.md,
+              }}
+            >
+              <Search className="h-3.5 w-3.5" style={{ color: t.muted }} />
+              <span className="text-xs" style={{ color: t.muted }}>
+                {labels.search_placeholder}
+              </span>
+            </div>
+          )}
+
           <div className={`grid ${grid}`}>
             {sample.map((p, i) => (
               <div key={i} className="group">
                 <div
-                  className={`aspect-square overflow-hidden ${cardRadius}`}
+                  className="overflow-hidden relative"
                   style={{
-                    backgroundColor: surface,
-                    border: `1px solid ${border}`,
+                    backgroundColor: t.surface,
+                    border: template === "minimal" ? "none" : `1px solid ${t.border}`,
+                    borderRadius: cardRadius,
+                    aspectRatio: aspect,
                   }}
                 >
                   {p.images[0] ? (
@@ -194,15 +178,15 @@ export function StorePreview({ settings, products = [] }: Props) {
                     <div
                       className="h-full w-full"
                       style={{
-                        background: `linear-gradient(135deg, ${primary}22, ${primary}05)`,
+                        background: `linear-gradient(135deg, ${t.primary}22, ${t.accent}10)`,
                       }}
                     />
                   )}
                 </div>
-                <div className="mt-3 flex items-start justify-between gap-2">
-                  <span className="text-sm font-medium line-clamp-1">{p.name}</span>
-                  <span className="text-sm font-semibold whitespace-nowrap">
-                    ${p.price.toFixed(2)}
+                <div className="mt-2.5 flex items-start justify-between gap-2">
+                  <span className="text-xs font-medium line-clamp-1">{p.name}</span>
+                  <span className="text-xs font-semibold whitespace-nowrap">
+                    {formatPrice(p.price, currency)}
                   </span>
                 </div>
               </div>
@@ -216,45 +200,196 @@ export function StorePreview({ settings, products = [] }: Props) {
         <div
           className="px-6 py-12 text-center"
           style={{
-            backgroundColor: surface,
-            borderTop: `1px solid ${border}`,
+            backgroundColor: t.surface,
+            borderTop: `1px solid ${t.border}`,
           }}
         >
-          <Mail className="h-6 w-6 mx-auto" style={{ color: primary }} />
-          <h3 className="mt-3 text-xl font-semibold">Join our newsletter</h3>
-          <p className="mt-1 text-sm" style={{ color: muted }}>
-            Get 10% off your first order.
+          <Mail className="h-6 w-6 mx-auto" style={{ color: t.primary }} />
+          <h3 className="mt-3 text-xl font-bold">{titles.newsletter}</h3>
+          <p className="mt-1 text-sm" style={{ color: t.muted }}>
+            {titles.newsletter_sub}
           </p>
           <div className="mt-5 flex max-w-sm mx-auto gap-2">
             <input
-              placeholder="Your email"
+              placeholder="you@email.com"
               className="flex-1 px-3 py-2 text-sm outline-none"
               style={{
-                backgroundColor: bg,
-                color: fg,
-                border: `1px solid ${border}`,
-                borderRadius: settings.theme === "minimal" ? 0 : 8,
+                backgroundColor: t.bg,
+                color: t.fg,
+                border: `1px solid ${t.border}`,
+                borderRadius: t.buttonRadius,
               }}
             />
             <button
               className="px-4 py-2 text-sm font-medium"
               style={{
-                backgroundColor: primary,
-                color: onPrimary,
-                borderRadius: settings.theme === "minimal" ? 0 : 8,
+                backgroundColor: t.primary,
+                color: t.onPrimary,
+                borderRadius: t.buttonRadius,
               }}
             >
-              Subscribe
+              {labels.subscribe}
             </button>
           </div>
         </div>
       )}
 
+      {/* Footer */}
       <div
-        className="px-6 py-6 text-center text-xs"
-        style={{ color: muted, borderTop: `1px solid ${border}` }}
+        className="px-6 py-8"
+        style={{ borderTop: `1px solid ${t.border}`, color: t.muted }}
       >
-        © {new Date().getFullYear()} {settings.store_name}. Powered by Storely.
+        <p className="text-xs max-w-md leading-relaxed">{settings.footer_about}</p>
+        <div className="mt-3 flex gap-2">
+          {socials.instagram && (
+            <span
+              className="h-7 w-7 rounded-full inline-flex items-center justify-center"
+              style={{ backgroundColor: t.surfaceStrong }}
+            >
+              <Instagram className="h-3.5 w-3.5" style={{ color: t.fg }} />
+            </span>
+          )}
+          {socials.facebook && (
+            <span
+              className="h-7 w-7 rounded-full inline-flex items-center justify-center"
+              style={{ backgroundColor: t.surfaceStrong }}
+            >
+              <Facebook className="h-3.5 w-3.5" style={{ color: t.fg }} />
+            </span>
+          )}
+          {socials.twitter && (
+            <span
+              className="h-7 w-7 rounded-full inline-flex items-center justify-center"
+              style={{ backgroundColor: t.surfaceStrong }}
+            >
+              <Twitter className="h-3.5 w-3.5" style={{ color: t.fg }} />
+            </span>
+          )}
+        </div>
+        <div className="mt-4 text-xs">
+          {settings.footer_copyright?.trim()
+            ? settings.footer_copyright
+            : `© ${new Date().getFullYear()} ${settings.store_name}.`}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function HeroPreview({
+  settings,
+  t,
+}: {
+  settings: StoreSettings;
+  t: ReturnType<typeof getStoreTokens>;
+}) {
+  const layout = settings.hero_layout || "centered";
+  const img = settings.hero_image_url;
+
+  if (layout === "split" && img) {
+    return (
+      <div
+        className="px-6 py-10 grid grid-cols-2 gap-6 items-center"
+        style={{ borderBottom: `1px solid ${t.border}` }}
+      >
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight leading-tight">
+            {settings.hero_heading}
+          </h1>
+          <p className="mt-2 text-xs" style={{ color: t.muted }}>
+            {settings.hero_subheading}
+          </p>
+          <button
+            className="mt-4 px-4 py-2 text-xs font-semibold"
+            style={{
+              backgroundColor: t.primary,
+              color: t.onPrimary,
+              borderRadius: t.buttonRadius,
+            }}
+          >
+            {settings.hero_cta_label}
+          </button>
+        </div>
+        <div
+          className="aspect-[4/5] overflow-hidden"
+          style={{ borderRadius: t.radius.lg }}
+        >
+          <img src={img} alt="" className="h-full w-full object-cover" />
+        </div>
+      </div>
+    );
+  }
+
+  if (layout === "fullbleed" && img) {
+    return (
+      <div
+        className="relative px-6 py-16 text-center"
+        style={{
+          backgroundImage: `url(${img})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          borderBottom: `1px solid ${t.border}`,
+        }}
+      >
+        <div
+          className="absolute inset-0"
+          style={{
+            background: `linear-gradient(180deg, ${t.bg}10, ${t.bg}cc)`,
+          }}
+        />
+        <div className="relative">
+          <h1 className="text-3xl font-bold tracking-tight" style={{ color: t.fg }}>
+            {settings.hero_heading}
+          </h1>
+          <p className="mt-2 text-sm max-w-xs mx-auto" style={{ color: t.fg, opacity: 0.85 }}>
+            {settings.hero_subheading}
+          </p>
+          <button
+            className="mt-5 px-5 py-2.5 text-sm font-semibold"
+            style={{
+              backgroundColor: t.primary,
+              color: t.onPrimary,
+              borderRadius: t.buttonRadius,
+            }}
+          >
+            {settings.hero_cta_label}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="relative px-6 py-16 text-center overflow-hidden"
+      style={{
+        borderBottom: `1px solid ${t.border}`,
+        background: img
+          ? `url(${img}) center/cover`
+          : `radial-gradient(ellipse at top, ${t.primary}15, transparent 60%)`,
+      }}
+    >
+      {img && (
+        <div
+          className="absolute inset-0"
+          style={{ background: `linear-gradient(180deg, ${t.bg}aa, ${t.bg}ee)` }}
+        />
+      )}
+      <div className="relative">
+        <h1 className="text-3xl font-bold tracking-tight">{settings.hero_heading}</h1>
+        <p className="mt-3 text-sm max-w-xs mx-auto" style={{ color: t.muted }}>
+          {settings.hero_subheading}
+        </p>
+        <button
+          className="mt-5 px-5 py-2.5 text-sm font-semibold"
+          style={{
+            backgroundColor: t.primary,
+            color: t.onPrimary,
+            borderRadius: t.buttonRadius,
+          }}
+        >
+          {settings.hero_cta_label}
+        </button>
       </div>
     </div>
   );
