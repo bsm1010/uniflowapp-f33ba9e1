@@ -15,9 +15,12 @@ import {
   FileText,
   Mail,
   Blocks,
+  ChevronDown,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { useInstalledApps } from "@/hooks/use-installed-apps";
+import { APPS_BY_KEY } from "@/lib/apps";
 import {
   Sidebar,
   SidebarContent,
@@ -30,6 +33,11 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 type NavItem = {
   title: string;
@@ -60,6 +68,15 @@ export function DashboardSidebar() {
   const { pathname } = useLocation();
   const { user } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
+  const { installed } = useInstalledApps();
+  const installedApps = Array.from(installed)
+    .map((key) => APPS_BY_KEY[key])
+    .filter(Boolean);
+  const anyAppActive = pathname.startsWith("/dashboard/apps/");
+  const [appsOpen, setAppsOpen] = useState(anyAppActive);
+  useEffect(() => {
+    if (anyAppActive) setAppsOpen(true);
+  }, [anyAppActive]);
 
   useEffect(() => {
     if (!user) return;
@@ -117,6 +134,58 @@ export function DashboardSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        {installedApps.length > 0 && (
+          <Collapsible open={appsOpen} onOpenChange={setAppsOpen}>
+            <SidebarGroup>
+              <CollapsibleTrigger asChild>
+                <SidebarGroupLabel
+                  asChild
+                  className="cursor-pointer hover:bg-sidebar-accent/40 rounded-md transition-colors"
+                >
+                  <button className="w-full flex items-center justify-between">
+                    <span>My Apps</span>
+                    <ChevronDown
+                      className={`h-3.5 w-3.5 transition-transform ${appsOpen ? "" : "-rotate-90"}`}
+                    />
+                  </button>
+                </SidebarGroupLabel>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    {installedApps.map((app) => {
+                      const url = `/dashboard/apps/${app.key}`;
+                      const active = pathname === url;
+                      const Icon = app.icon;
+                      return (
+                        <SidebarMenuItem key={app.key}>
+                          <SidebarMenuButton
+                            asChild
+                            isActive={active}
+                            tooltip={app.name}
+                          >
+                            <Link
+                              to="/dashboard/apps/$appKey"
+                              params={{ appKey: app.key }}
+                              className={
+                                active
+                                  ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                                  : "hover:bg-sidebar-accent/60"
+                              }
+                            >
+                              <Icon className="h-4 w-4" />
+                              <span>{app.name}</span>
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      );
+                    })}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </CollapsibleContent>
+            </SidebarGroup>
+          </Collapsible>
+        )}
         {isAdmin && (
           <SidebarGroup>
             <SidebarGroupLabel>Admin</SidebarGroupLabel>
