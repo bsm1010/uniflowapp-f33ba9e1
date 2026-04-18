@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { Loader2, Search, ShoppingBag } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Loader2, Search, ShoppingBag, Phone, MapPin } from "lucide-react";
+import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
@@ -8,6 +9,13 @@ import { PageHeader, EmptyState } from "@/components/dashboard/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -18,16 +26,17 @@ import {
 } from "@/components/ui/table";
 
 type Order = Tables<"orders">;
+type OrderItem = Tables<"order_items">;
 
 export const Route = createFileRoute("/dashboard/orders")({
   component: OrdersPage,
   head: () => ({ meta: [{ title: "Orders — Storely" }] }),
 });
 
-const STATUS_VARIANT: Record<
-  string,
-  { label: string; className: string }
-> = {
+const STATUS_FLOW = ["pending", "confirmed", "shipped", "delivered"] as const;
+type Status = (typeof STATUS_FLOW)[number];
+
+const STATUS_VARIANT: Record<string, { label: string; className: string }> = {
   pending: {
     label: "Pending",
     className:
@@ -58,40 +67,82 @@ const STATUS_VARIANT: Record<
 function OrdersPage() {
   const { user } = useAuth();
   const [orders, setOrders] = useState<Order[] | null>(null);
+  const [items, setItems] = useState<Record<string, OrderItem[]>>({});
   const [query, setQuery] = useState("");
 
   useEffect(() => {
     if (!user) return;
     let active = true;
-    supabase
-      .from("orders")
-      .select("*")
-      .eq("store_owner_id", user.id)
-      .order("created_at", { ascending: false })
-      .then(({ data }) => {
-        if (active) setOrders(data ?? []);
-      });
+    (async () => {
+      const { data: ords } = await supabase
+        .from("orders")
+        .select("*")
+        .eq("store_owner_id", user.id)
+        .order("created_at", { ascending: false });
+      if (!active) return;
+      const list = ords ?? [];
+      setOrders(list);
+
+      if (list.length) {
+        const { data: its } = await supabase
+          .from("order_items")
+          .select("*")
+          .in(
+            "order_id",
+            list.map((o) => o.id),
+          );
+        if (!active) return;
+        const grouped: Record<string, OrderItem[]> = {};
+        for (const it of its ?? []) {
+          (grouped[it.order_id] ??= []).push(it);
+        }
+        setItems(grouped);
+      }
+    })();
     return () => {
       active = false;
     };
   }, [user]);
 
-  const filtered = (orders ?? []).filter((o) => {
-    const q = query.trim().toLowerCase();
-    if (!q) return true;
-    return (
-      o.customer_name.toLowerCase().includes(q) ||
-      o.customer_email.toLowerCase().includes(q) ||
-      o.id.toLowerCase().startsWith(q)
+  const updateStatus = async (orderId: string, status: Status) => {
+    const prev = orders;
+    setOrders((cur) =>
+      cur ? cur.map((o) => (o.id === orderId ? { ...o, status } : o)) : cur,
     );
-  });
+    const { error } = await supabase
+      .from("orders")
+      .update({ status })
+      .eq("id", orderId);
+    if (error) {
+      setOrders(prev);
+      toast.error("Failed to update status");
+    } else {
+      toast.success(`Order marked as ${STATUS_VARIANT[status].label}`);
+    }
+  };
+
+  const filtered = useMemo(
+    () =>
+      (orders ?? []).filter((o) => {
+        const q = query.trim().toLowerCase();
+        if (!q) return true;
+        return (
+          o.customer_name.toLowerCase().includes(q) ||
+          o.shipping_address.toLowerCase().includes(q) ||
+          o.shipping_city.toLowerCase().includes(q) ||
+          o.shipping_postal_code.toLowerCase().includes(q) ||
+          o.id.toLowerCase().startsWith(q)
+        );
+      }),
+    [orders, query],
+  );
 
   return (
     <div className="max-w-7xl mx-auto">
       <PageHeader
         eyebrow="Sales"
         title="Orders"
-        description="Track, fulfill, and manage customer orders."
+        description="Manage incoming orders and update their delivery status."
       />
 
       {orders === null ? (
@@ -119,7 +170,7 @@ function OrdersPage() {
               <div className="relative flex-1 max-w-sm">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search by customer, email, or order ID"
+                  placeholder="Search by customer, phone, wilaya, city, or order ID"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   className="pl-9"
@@ -133,10 +184,12 @@ function OrdersPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Order</TableHead>
                     <TableHead>Customer</TableHead>
-                    <TableHead>Date</TableHead>
+                    <TableHead>Phone</TableHead>
+                    <TableHead>Wilaya / City</TableHead>
+                    <TableHead>Product</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Date</TableHead>
                     <TableHead className="text-right">Total</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -146,34 +199,90 @@ function OrdersPage() {
                       label: o.status,
                       className: "bg-muted text-foreground border-border",
                     };
+                    const orderItems = items[o.id] ?? [];
+                    const firstItem = orderItems[0];
+                    const extraCount = orderItems.length - 1;
                     return (
                       <TableRow key={o.id}>
-                        <TableCell className="font-mono text-xs">
-                          #{o.id.slice(0, 8).toUpperCase()}
-                        </TableCell>
                         <TableCell>
                           <div className="font-medium">{o.customer_name}</div>
-                          <div className="text-xs text-muted-foreground">
-                            {o.customer_email}
+                          <div className="text-[11px] font-mono text-muted-foreground">
+                            #{o.id.slice(0, 8).toUpperCase()}
                           </div>
                         </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
+                        <TableCell>
+                          <a
+                            href={`tel:${o.shipping_address}`}
+                            className="inline-flex items-center gap-1.5 text-sm hover:text-primary"
+                          >
+                            <Phone className="h-3.5 w-3.5 text-muted-foreground" />
+                            {o.shipping_address}
+                          </a>
+                        </TableCell>
+                        <TableCell>
+                          <div className="inline-flex items-start gap-1.5 text-sm">
+                            <MapPin className="h-3.5 w-3.5 text-muted-foreground mt-0.5" />
+                            <div>
+                              <div className="font-medium">
+                                {o.shipping_postal_code || "—"}
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                {o.shipping_city}
+                              </div>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {firstItem ? (
+                            <div>
+                              <div className="text-sm font-medium line-clamp-1">
+                                {firstItem.product_name}
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                Qty {firstItem.quantity}
+                                {extraCount > 0 && ` + ${extraCount} more`}
+                              </div>
+                            </div>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">
+                              —
+                            </span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <Select
+                            value={o.status}
+                            onValueChange={(v) =>
+                              updateStatus(o.id, v as Status)
+                            }
+                          >
+                            <SelectTrigger className="h-8 w-[130px] border-0 p-0 focus:ring-0 shadow-none bg-transparent [&>svg]:opacity-50">
+                              <Badge
+                                variant="outline"
+                                className={`${status.className} font-medium`}
+                              >
+                                {status.label}
+                              </Badge>
+                            </SelectTrigger>
+                            <SelectContent align="end">
+                              {STATUS_FLOW.map((s) => (
+                                <SelectItem key={s} value={s}>
+                                  {STATUS_VARIANT[s].label}
+                                </SelectItem>
+                              ))}
+                              <SelectItem value="cancelled">Cancelled</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
                           {new Date(o.created_at).toLocaleDateString(undefined, {
                             year: "numeric",
                             month: "short",
                             day: "numeric",
                           })}
                         </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant="outline"
-                            className={status.className}
-                          >
-                            {status.label}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right font-semibold">
-                          ${Number(o.total).toFixed(2)}
+                        <TableCell className="text-right font-semibold whitespace-nowrap">
+                          {Number(o.total).toFixed(2)} DA
                         </TableCell>
                       </TableRow>
                     );
