@@ -134,6 +134,58 @@ export function DashboardSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        {installedApps.length > 0 && (
+          <Collapsible open={appsOpen} onOpenChange={setAppsOpen}>
+            <SidebarGroup>
+              <CollapsibleTrigger asChild>
+                <SidebarGroupLabel
+                  asChild
+                  className="cursor-pointer hover:bg-sidebar-accent/40 rounded-md transition-colors"
+                >
+                  <button className="w-full flex items-center justify-between">
+                    <span>My Apps</span>
+                    <ChevronDown
+                      className={`h-3.5 w-3.5 transition-transform ${appsOpen ? "" : "-rotate-90"}`}
+                    />
+                  </button>
+                </SidebarGroupLabel>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    {installedApps.map((app) => {
+                      const url = `/dashboard/apps/${app.key}`;
+                      const active = pathname === url;
+                      const Icon = app.icon;
+                      return (
+                        <SidebarMenuItem key={app.key}>
+                          <SidebarMenuButton
+                            asChild
+                            isActive={active}
+                            tooltip={app.name}
+                          >
+                            <Link
+                              to="/dashboard/apps/$appKey"
+                              params={{ appKey: app.key }}
+                              className={
+                                active
+                                  ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                                  : "hover:bg-sidebar-accent/60"
+                              }
+                            >
+                              <Icon className="h-4 w-4" />
+                              <span>{app.name}</span>
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      );
+                    })}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </CollapsibleContent>
+            </SidebarGroup>
+          </Collapsible>
+        )}
         {isAdmin && (
           <SidebarGroup>
             <SidebarGroupLabel>Admin</SidebarGroupLabel>
