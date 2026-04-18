@@ -74,6 +74,27 @@ export type Database = {
         }
         Relationships: []
       }
+      installed_apps: {
+        Row: {
+          app_key: string
+          id: string
+          installed_at: string
+          user_id: string
+        }
+        Insert: {
+          app_key: string
+          id?: string
+          installed_at?: string
+          user_id: string
+        }
+        Update: {
+          app_key?: string
+          id?: string
+          installed_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string
