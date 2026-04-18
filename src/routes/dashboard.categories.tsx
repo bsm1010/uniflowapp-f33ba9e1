@@ -180,13 +180,72 @@ function CategoriesPage() {
     // Categories are derived from products. A category becomes "real" once at
     // least one product uses it — show as 0-count locally to guide the user.
     setRows((prev) =>
-      [...prev, { name: next, count: 0 }].sort((a, b) =>
+      [...prev, { name: next, count: 0, image_url: null }].sort((a, b) =>
         b.count - a.count || a.name.localeCompare(b.name),
       ),
     );
     toast.success(`"${next}" created. Assign it to products to make it live.`);
     setCreating(false);
     setNewName("");
+  };
+
+  const uploadImage = async (row: CategoryRow, file: File) => {
+    if (!user) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file.");
+      return;
+    }
+    if (file.size > 4 * 1024 * 1024) {
+      toast.error("Image must be smaller than 4 MB.");
+      return;
+    }
+    setUploadingFor(row.name);
+    const ext = file.name.split(".").pop() ?? "png";
+    const safe = row.name.toLowerCase().replace(/[^a-z0-9-]+/g, "-").slice(0, 40);
+    const path = `${user.id}/categories/${safe}-${Date.now()}.${ext}`;
+    const up = await supabase.storage
+      .from("store-assets")
+      .upload(path, file, { upsert: true });
+    if (up.error) {
+      setUploadingFor(null);
+      toast.error(up.error.message);
+      return;
+    }
+    const { data: pub } = supabase.storage.from("store-assets").getPublicUrl(path);
+    const { error } = await supabase.from("category_images").upsert(
+      {
+        user_id: user.id,
+        category_name: row.name,
+        image_url: pub.publicUrl,
+      },
+      { onConflict: "user_id,category_name" },
+    );
+    setUploadingFor(null);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    setRows((prev) =>
+      prev.map((r) => (r.name === row.name ? { ...r, image_url: pub.publicUrl } : r)),
+    );
+    toast.success("Category image updated");
+  };
+
+  const removeImage = async (row: CategoryRow) => {
+    if (!user || !row.image_url) return;
+    setUploadingFor(row.name);
+    const { error } = await supabase
+      .from("category_images")
+      .delete()
+      .eq("user_id", user.id)
+      .eq("category_name", row.name);
+    setUploadingFor(null);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    setRows((prev) => prev.map((r) => (r.name === row.name ? { ...r, image_url: null } : r)));
+    toast.success("Image removed");
   };
 
   return (
