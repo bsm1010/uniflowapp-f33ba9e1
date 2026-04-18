@@ -43,7 +43,6 @@ import { Route as DashboardAppsChatbotRouteImport } from './routes/dashboard.app
 import { Route as DashboardAppsAnalyticsRouteImport } from './routes/dashboard.apps.analytics'
 import { Route as DashboardAppsAiDescriptionsRouteImport } from './routes/dashboard.apps.ai-descriptions'
 import { Route as DashboardAppsAbandonedCartRouteImport } from './routes/dashboard.apps.abandoned-cart'
-import { Route as DashboardAppsAppKeyRouteImport } from './routes/dashboard.apps.$appKey'
 import { Route as DashboardAdminPaymentsRouteImport } from './routes/dashboard.admin.payments'
 import { Route as SSlugPProductIdRouteImport } from './routes/s.$slug.p.$productId'
 import { Route as SSlugCheckoutSuccessRouteImport } from './routes/s.$slug.checkout.success'
@@ -226,11 +225,6 @@ const DashboardAppsAbandonedCartRoute =
     path: '/abandoned-cart',
     getParentRoute: () => DashboardAppsRoute,
   } as any)
-const DashboardAppsAppKeyRoute = DashboardAppsAppKeyRouteImport.update({
-  id: '/$appKey',
-  path: '/$appKey',
-  getParentRoute: () => DashboardAppsRoute,
-} as any)
 const DashboardAdminPaymentsRoute = DashboardAdminPaymentsRouteImport.update({
   id: '/admin/payments',
   path: '/admin/payments',
@@ -267,7 +261,6 @@ export interface FileRoutesByFullPath {
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
-  '/dashboard/apps/$appKey': typeof DashboardAppsAppKeyRoute
   '/dashboard/apps/abandoned-cart': typeof DashboardAppsAbandonedCartRoute
   '/dashboard/apps/ai-descriptions': typeof DashboardAppsAiDescriptionsRoute
   '/dashboard/apps/analytics': typeof DashboardAppsAnalyticsRoute
@@ -306,7 +299,6 @@ export interface FileRoutesByTo {
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
   '/dashboard': typeof DashboardIndexRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
-  '/dashboard/apps/$appKey': typeof DashboardAppsAppKeyRoute
   '/dashboard/apps/abandoned-cart': typeof DashboardAppsAbandonedCartRoute
   '/dashboard/apps/ai-descriptions': typeof DashboardAppsAiDescriptionsRoute
   '/dashboard/apps/analytics': typeof DashboardAppsAnalyticsRoute
@@ -347,7 +339,6 @@ export interface FileRoutesById {
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
-  '/dashboard/apps/$appKey': typeof DashboardAppsAppKeyRoute
   '/dashboard/apps/abandoned-cart': typeof DashboardAppsAbandonedCartRoute
   '/dashboard/apps/ai-descriptions': typeof DashboardAppsAiDescriptionsRoute
   '/dashboard/apps/analytics': typeof DashboardAppsAnalyticsRoute
@@ -389,7 +380,6 @@ export interface FileRouteTypes {
     | '/dashboard/upgrade'
     | '/dashboard/'
     | '/dashboard/admin/payments'
-    | '/dashboard/apps/$appKey'
     | '/dashboard/apps/abandoned-cart'
     | '/dashboard/apps/ai-descriptions'
     | '/dashboard/apps/analytics'
@@ -428,7 +418,6 @@ export interface FileRouteTypes {
     | '/dashboard/upgrade'
     | '/dashboard'
     | '/dashboard/admin/payments'
-    | '/dashboard/apps/$appKey'
     | '/dashboard/apps/abandoned-cart'
     | '/dashboard/apps/ai-descriptions'
     | '/dashboard/apps/analytics'
@@ -468,7 +457,6 @@ export interface FileRouteTypes {
     | '/dashboard/upgrade'
     | '/dashboard/'
     | '/dashboard/admin/payments'
-    | '/dashboard/apps/$appKey'
     | '/dashboard/apps/abandoned-cart'
     | '/dashboard/apps/ai-descriptions'
     | '/dashboard/apps/analytics'
@@ -743,13 +731,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAppsAbandonedCartRouteImport
       parentRoute: typeof DashboardAppsRoute
     }
-    '/dashboard/apps/$appKey': {
-      id: '/dashboard/apps/$appKey'
-      path: '/$appKey'
-      fullPath: '/dashboard/apps/$appKey'
-      preLoaderRoute: typeof DashboardAppsAppKeyRouteImport
-      parentRoute: typeof DashboardAppsRoute
-    }
     '/dashboard/admin/payments': {
       id: '/dashboard/admin/payments'
       path: '/admin/payments'
@@ -775,7 +756,6 @@ declare module '@tanstack/react-router' {
 }
 
 interface DashboardAppsRouteChildren {
-  DashboardAppsAppKeyRoute: typeof DashboardAppsAppKeyRoute
   DashboardAppsAbandonedCartRoute: typeof DashboardAppsAbandonedCartRoute
   DashboardAppsAiDescriptionsRoute: typeof DashboardAppsAiDescriptionsRoute
   DashboardAppsAnalyticsRoute: typeof DashboardAppsAnalyticsRoute
@@ -789,7 +769,6 @@ interface DashboardAppsRouteChildren {
 }
 
 const DashboardAppsRouteChildren: DashboardAppsRouteChildren = {
-  DashboardAppsAppKeyRoute: DashboardAppsAppKeyRoute,
   DashboardAppsAbandonedCartRoute: DashboardAppsAbandonedCartRoute,
   DashboardAppsAiDescriptionsRoute: DashboardAppsAiDescriptionsRoute,
   DashboardAppsAnalyticsRoute: DashboardAppsAnalyticsRoute,
