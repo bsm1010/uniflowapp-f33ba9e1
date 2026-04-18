@@ -28,7 +28,7 @@ import { useSubscription } from "@/hooks/use-subscription";
 import { ExpiredOverlay } from "@/components/dashboard/ExpiredOverlay";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { StorePreview } from "@/components/dashboard/StorePreview";
-import type { StoreSettings } from "@/lib/storeTheme";
+import { type StoreSettings, FONT_STACK } from "@/lib/storeTheme";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -60,7 +60,42 @@ const PRESET_COLORS = [
   "#ea580c", "#dc2626", "#db2777", "#7c3aed", "#0f172a",
 ];
 const BG_PRESETS = ["#ffffff", "#f8fafc", "#fafaf9", "#0b0b10", "#0f172a"];
-const FONTS = ["Inter", "Space Grotesk", "Playfair", "DM Serif", "Mono"];
+const FONT_GROUPS: { group: string; fonts: { id: string; preview: string }[] }[] = [
+  {
+    group: "Sans serif",
+    fonts: [
+      { id: "Inter", preview: "Aa Modern & neutral" },
+      { id: "Manrope", preview: "Aa Friendly geometric" },
+      { id: "Sora", preview: "Aa Crisp & techy" },
+      { id: "Outfit", preview: "Aa Clean rounded" },
+      { id: "Plex Sans", preview: "Aa Editorial sans" },
+      { id: "Jakarta", preview: "Aa Soft modern" },
+    ],
+  },
+  {
+    group: "Display",
+    fonts: [
+      { id: "Space Grotesk", preview: "Aa Tech / startup" },
+      { id: "Bricolage", preview: "Aa Playful display" },
+      { id: "Syne", preview: "Aa Bold creative" },
+      { id: "Bebas", preview: "AA TALL CONDENSED" },
+      { id: "Archivo", preview: "AA HEAVY IMPACT" },
+    ],
+  },
+  {
+    group: "Serif",
+    fonts: [
+      { id: "Playfair", preview: "Aa Elegant classic" },
+      { id: "DM Serif", preview: "Aa Refined editorial" },
+      { id: "Fraunces", preview: "Aa Warm modern serif" },
+      { id: "Cormorant", preview: "Aa Luxurious & airy" },
+    ],
+  },
+  {
+    group: "Mono",
+    fonts: [{ id: "Mono", preview: "Aa Code / minimal" }],
+  },
+];
 const BUTTON_STYLES = [
   { id: "rounded", label: "Rounded" },
   { id: "pill", label: "Pill" },
@@ -368,26 +403,41 @@ function CustomizePage() {
                     <span className="font-medium">Typography</span>
                   </div>
                 </AccordionTrigger>
-                <AccordionContent className="px-2 pb-4">
-                  <div className="grid gap-2">
-                    {FONTS.map((f) => {
-                      const active = settings.font_family === f;
-                      return (
-                        <button
-                          key={f}
-                          onClick={() => update("font_family", f)}
-                          className={`text-left rounded-lg border px-3 py-2.5 transition-colors ${
-                            active ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"
-                          }`}
-                        >
-                          <div className="flex items-center justify-between">
-                            <span className="text-base" style={{ fontFamily: f === "Mono" ? "monospace" : f }}>{f}</span>
-                            {active && <Check className="h-4 w-4 text-primary" />}
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
+                <AccordionContent className="px-2 pb-4 space-y-4">
+                  {FONT_GROUPS.map((g) => (
+                    <div key={g.group}>
+                      <Label className="text-xs uppercase tracking-wider text-muted-foreground">
+                        {g.group}
+                      </Label>
+                      <div className="mt-2 grid gap-1.5">
+                        {g.fonts.map((f) => {
+                          const active = settings.font_family === f.id;
+                          const stack = FONT_STACK[f.id] ?? f.id;
+                          return (
+                            <button
+                              key={f.id}
+                              onClick={() => update("font_family", f.id)}
+                              className={`text-left rounded-lg border px-3 py-2 transition-colors ${
+                                active ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"
+                              }`}
+                            >
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="min-w-0">
+                                  <div className="text-sm font-medium truncate" style={{ fontFamily: stack }}>
+                                    {f.id}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground truncate" style={{ fontFamily: stack }}>
+                                    {f.preview}
+                                  </div>
+                                </div>
+                                {active && <Check className="h-4 w-4 text-primary shrink-0" />}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
                 </AccordionContent>
               </AccordionItem>
 

@@ -8,6 +8,17 @@ export const FONT_STACK: Record<string, string> = {
   Playfair: '"Playfair Display", Georgia, serif',
   "DM Serif": '"DM Serif Display", Georgia, serif',
   Mono: '"JetBrains Mono", ui-monospace, monospace',
+  Manrope: '"Manrope", system-ui, sans-serif',
+  Sora: '"Sora", system-ui, sans-serif',
+  Outfit: '"Outfit", system-ui, sans-serif',
+  Bricolage: '"Bricolage Grotesque", system-ui, sans-serif',
+  Fraunces: '"Fraunces", Georgia, serif',
+  Cormorant: '"Cormorant Garamond", Georgia, serif',
+  "Plex Sans": '"IBM Plex Sans", system-ui, sans-serif',
+  Bebas: '"Bebas Neue", Impact, sans-serif',
+  Archivo: '"Archivo Black", Impact, sans-serif',
+  Syne: '"Syne", system-ui, sans-serif',
+  Jakarta: '"Plus Jakarta Sans", system-ui, sans-serif',
 };
 
 export function readableOn(hex: string): string {
