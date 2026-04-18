@@ -25,6 +25,7 @@ import { Route as DashboardOrdersRouteImport } from './routes/dashboard.orders'
 import { Route as DashboardCustomersRouteImport } from './routes/dashboard.customers'
 import { Route as DashboardCategoriesRouteImport } from './routes/dashboard.categories'
 import { Route as DashboardAnalyticsRouteImport } from './routes/dashboard.analytics'
+import { Route as DashboardAboutRouteImport } from './routes/dashboard.about'
 import { Route as SSlugCheckoutRouteImport } from './routes/s.$slug.checkout'
 import { Route as SSlugCartRouteImport } from './routes/s.$slug.cart'
 import { Route as DashboardAdminPaymentsRouteImport } from './routes/dashboard.admin.payments'
@@ -111,6 +112,11 @@ const DashboardAnalyticsRoute = DashboardAnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardAboutRoute = DashboardAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const SSlugCheckoutRoute = SSlugCheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
@@ -142,6 +148,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/dashboard/about': typeof DashboardAboutRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/categories': typeof DashboardCategoriesRoute
   '/dashboard/customers': typeof DashboardCustomersRoute
@@ -164,6 +171,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/dashboard/about': typeof DashboardAboutRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/categories': typeof DashboardCategoriesRoute
   '/dashboard/customers': typeof DashboardCustomersRoute
@@ -188,6 +196,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/dashboard/about': typeof DashboardAboutRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/categories': typeof DashboardCategoriesRoute
   '/dashboard/customers': typeof DashboardCustomersRoute
@@ -213,6 +222,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/signup'
+    | '/dashboard/about'
     | '/dashboard/analytics'
     | '/dashboard/categories'
     | '/dashboard/customers'
@@ -235,6 +245,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/signup'
+    | '/dashboard/about'
     | '/dashboard/analytics'
     | '/dashboard/categories'
     | '/dashboard/customers'
@@ -258,6 +269,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/signup'
+    | '/dashboard/about'
     | '/dashboard/analytics'
     | '/dashboard/categories'
     | '/dashboard/customers'
@@ -399,6 +411,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAnalyticsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/about': {
+      id: '/dashboard/about'
+      path: '/about'
+      fullPath: '/dashboard/about'
+      preLoaderRoute: typeof DashboardAboutRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/s/$slug/checkout': {
       id: '/s/$slug/checkout'
       path: '/checkout'
@@ -438,6 +457,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface DashboardRouteChildren {
+  DashboardAboutRoute: typeof DashboardAboutRoute
   DashboardAnalyticsRoute: typeof DashboardAnalyticsRoute
   DashboardCategoriesRoute: typeof DashboardCategoriesRoute
   DashboardCustomersRoute: typeof DashboardCustomersRoute
@@ -453,6 +473,7 @@ interface DashboardRouteChildren {
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardAboutRoute: DashboardAboutRoute,
   DashboardAnalyticsRoute: DashboardAnalyticsRoute,
   DashboardCategoriesRoute: DashboardCategoriesRoute,
   DashboardCustomersRoute: DashboardCustomersRoute,
@@ -507,3 +528,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
