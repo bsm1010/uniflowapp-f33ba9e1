@@ -92,14 +92,30 @@ function SuccessPage() {
             Order #{order.slice(0, 8).toUpperCase()}
           </div>
         )}
-        <div className="mt-8">
+        <div className="mt-8 flex flex-wrap gap-3 justify-center">
+          {order && (
+            <Link
+              to="/s/$slug/track"
+              params={{ slug }}
+              search={{ order }}
+              className="inline-flex items-center justify-center px-6 py-3 text-sm font-medium transition-opacity hover:opacity-90"
+              style={{
+                backgroundColor: t.primary,
+                color: t.onPrimary,
+                borderRadius: radius / 2,
+              }}
+            >
+              Track your order
+            </Link>
+          )}
           <Link
             to="/s/$slug"
             params={{ slug }}
             className="inline-flex items-center justify-center px-6 py-3 text-sm font-medium transition-opacity hover:opacity-90"
             style={{
-              backgroundColor: t.primary,
-              color: t.onPrimary,
+              backgroundColor: t.surface,
+              color: t.fg,
+              border: `1px solid ${t.border}`,
               borderRadius: radius / 2,
             }}
           >
