@@ -14,7 +14,6 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
-import { Route as SSlugRouteImport } from './routes/s.$slug'
 import { Route as DashboardUpgradeRouteImport } from './routes/dashboard.upgrade'
 import { Route as DashboardThemesRouteImport } from './routes/dashboard.themes'
 import { Route as DashboardThemePresetsRouteImport } from './routes/dashboard.theme-presets'
@@ -27,6 +26,7 @@ import { Route as DashboardContactRouteImport } from './routes/dashboard.contact
 import { Route as DashboardCategoriesRouteImport } from './routes/dashboard.categories'
 import { Route as DashboardAnalyticsRouteImport } from './routes/dashboard.analytics'
 import { Route as DashboardAboutRouteImport } from './routes/dashboard.about'
+import { Route as SSlugIndexRouteImport } from './routes/s.$slug.index'
 import { Route as SSlugContactRouteImport } from './routes/s.$slug.contact'
 import { Route as SSlugCheckoutRouteImport } from './routes/s.$slug.checkout'
 import { Route as SSlugCartRouteImport } from './routes/s.$slug.cart'
@@ -59,11 +59,6 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => DashboardRoute,
-} as any)
-const SSlugRoute = SSlugRouteImport.update({
-  id: '/s/$slug',
-  path: '/s/$slug',
-  getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardUpgradeRoute = DashboardUpgradeRouteImport.update({
   id: '/upgrade',
@@ -125,25 +120,30 @@ const DashboardAboutRoute = DashboardAboutRouteImport.update({
   path: '/about',
   getParentRoute: () => DashboardRoute,
 } as any)
+const SSlugIndexRoute = SSlugIndexRouteImport.update({
+  id: '/s/$slug/',
+  path: '/s/$slug/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SSlugContactRoute = SSlugContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => SSlugRoute,
+  id: '/s/$slug/contact',
+  path: '/s/$slug/contact',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const SSlugCheckoutRoute = SSlugCheckoutRouteImport.update({
-  id: '/checkout',
-  path: '/checkout',
-  getParentRoute: () => SSlugRoute,
+  id: '/s/$slug/checkout',
+  path: '/s/$slug/checkout',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const SSlugCartRoute = SSlugCartRouteImport.update({
-  id: '/cart',
-  path: '/cart',
-  getParentRoute: () => SSlugRoute,
+  id: '/s/$slug/cart',
+  path: '/s/$slug/cart',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const SSlugAboutRoute = SSlugAboutRouteImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => SSlugRoute,
+  id: '/s/$slug/about',
+  path: '/s/$slug/about',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardAdminPaymentsRoute = DashboardAdminPaymentsRouteImport.update({
   id: '/admin/payments',
@@ -151,9 +151,9 @@ const DashboardAdminPaymentsRoute = DashboardAdminPaymentsRouteImport.update({
   getParentRoute: () => DashboardRoute,
 } as any)
 const SSlugPProductIdRoute = SSlugPProductIdRouteImport.update({
-  id: '/p/$productId',
-  path: '/p/$productId',
-  getParentRoute: () => SSlugRoute,
+  id: '/s/$slug/p/$productId',
+  path: '/s/$slug/p/$productId',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const SSlugCheckoutSuccessRoute = SSlugCheckoutSuccessRouteImport.update({
   id: '/success',
@@ -178,13 +178,13 @@ export interface FileRoutesByFullPath {
   '/dashboard/theme-presets': typeof DashboardThemePresetsRoute
   '/dashboard/themes': typeof DashboardThemesRoute
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
-  '/s/$slug': typeof SSlugRouteWithChildren
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
   '/s/$slug/about': typeof SSlugAboutRoute
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
   '/s/$slug/contact': typeof SSlugContactRoute
+  '/s/$slug/': typeof SSlugIndexRoute
   '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
   '/s/$slug/p/$productId': typeof SSlugPProductIdRoute
 }
@@ -204,13 +204,13 @@ export interface FileRoutesByTo {
   '/dashboard/theme-presets': typeof DashboardThemePresetsRoute
   '/dashboard/themes': typeof DashboardThemesRoute
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
-  '/s/$slug': typeof SSlugRouteWithChildren
   '/dashboard': typeof DashboardIndexRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
   '/s/$slug/about': typeof SSlugAboutRoute
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
   '/s/$slug/contact': typeof SSlugContactRoute
+  '/s/$slug': typeof SSlugIndexRoute
   '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
   '/s/$slug/p/$productId': typeof SSlugPProductIdRoute
 }
@@ -232,13 +232,13 @@ export interface FileRoutesById {
   '/dashboard/theme-presets': typeof DashboardThemePresetsRoute
   '/dashboard/themes': typeof DashboardThemesRoute
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
-  '/s/$slug': typeof SSlugRouteWithChildren
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
   '/s/$slug/about': typeof SSlugAboutRoute
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
   '/s/$slug/contact': typeof SSlugContactRoute
+  '/s/$slug/': typeof SSlugIndexRoute
   '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
   '/s/$slug/p/$productId': typeof SSlugPProductIdRoute
 }
@@ -261,13 +261,13 @@ export interface FileRouteTypes {
     | '/dashboard/theme-presets'
     | '/dashboard/themes'
     | '/dashboard/upgrade'
-    | '/s/$slug'
     | '/dashboard/'
     | '/dashboard/admin/payments'
     | '/s/$slug/about'
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
     | '/s/$slug/contact'
+    | '/s/$slug/'
     | '/s/$slug/checkout/success'
     | '/s/$slug/p/$productId'
   fileRoutesByTo: FileRoutesByTo
@@ -287,13 +287,13 @@ export interface FileRouteTypes {
     | '/dashboard/theme-presets'
     | '/dashboard/themes'
     | '/dashboard/upgrade'
-    | '/s/$slug'
     | '/dashboard'
     | '/dashboard/admin/payments'
     | '/s/$slug/about'
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
     | '/s/$slug/contact'
+    | '/s/$slug'
     | '/s/$slug/checkout/success'
     | '/s/$slug/p/$productId'
   id:
@@ -314,13 +314,13 @@ export interface FileRouteTypes {
     | '/dashboard/theme-presets'
     | '/dashboard/themes'
     | '/dashboard/upgrade'
-    | '/s/$slug'
     | '/dashboard/'
     | '/dashboard/admin/payments'
     | '/s/$slug/about'
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
     | '/s/$slug/contact'
+    | '/s/$slug/'
     | '/s/$slug/checkout/success'
     | '/s/$slug/p/$productId'
   fileRoutesById: FileRoutesById
@@ -330,7 +330,12 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRouteWithChildren
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
-  SSlugRoute: typeof SSlugRouteWithChildren
+  SSlugAboutRoute: typeof SSlugAboutRoute
+  SSlugCartRoute: typeof SSlugCartRoute
+  SSlugCheckoutRoute: typeof SSlugCheckoutRouteWithChildren
+  SSlugContactRoute: typeof SSlugContactRoute
+  SSlugIndexRoute: typeof SSlugIndexRoute
+  SSlugPProductIdRoute: typeof SSlugPProductIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -369,13 +374,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/'
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRoute
-    }
-    '/s/$slug': {
-      id: '/s/$slug'
-      path: '/s/$slug'
-      fullPath: '/s/$slug'
-      preLoaderRoute: typeof SSlugRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/dashboard/upgrade': {
       id: '/dashboard/upgrade'
@@ -461,33 +459,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAboutRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/s/$slug/': {
+      id: '/s/$slug/'
+      path: '/s/$slug'
+      fullPath: '/s/$slug/'
+      preLoaderRoute: typeof SSlugIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/s/$slug/contact': {
       id: '/s/$slug/contact'
-      path: '/contact'
+      path: '/s/$slug/contact'
       fullPath: '/s/$slug/contact'
       preLoaderRoute: typeof SSlugContactRouteImport
-      parentRoute: typeof SSlugRoute
+      parentRoute: typeof rootRouteImport
     }
     '/s/$slug/checkout': {
       id: '/s/$slug/checkout'
-      path: '/checkout'
+      path: '/s/$slug/checkout'
       fullPath: '/s/$slug/checkout'
       preLoaderRoute: typeof SSlugCheckoutRouteImport
-      parentRoute: typeof SSlugRoute
+      parentRoute: typeof rootRouteImport
     }
     '/s/$slug/cart': {
       id: '/s/$slug/cart'
-      path: '/cart'
+      path: '/s/$slug/cart'
       fullPath: '/s/$slug/cart'
       preLoaderRoute: typeof SSlugCartRouteImport
-      parentRoute: typeof SSlugRoute
+      parentRoute: typeof rootRouteImport
     }
     '/s/$slug/about': {
       id: '/s/$slug/about'
-      path: '/about'
+      path: '/s/$slug/about'
       fullPath: '/s/$slug/about'
       preLoaderRoute: typeof SSlugAboutRouteImport
-      parentRoute: typeof SSlugRoute
+      parentRoute: typeof rootRouteImport
     }
     '/dashboard/admin/payments': {
       id: '/dashboard/admin/payments'
@@ -498,10 +503,10 @@ declare module '@tanstack/react-router' {
     }
     '/s/$slug/p/$productId': {
       id: '/s/$slug/p/$productId'
-      path: '/p/$productId'
+      path: '/s/$slug/p/$productId'
       fullPath: '/s/$slug/p/$productId'
       preLoaderRoute: typeof SSlugPProductIdRouteImport
-      parentRoute: typeof SSlugRoute
+      parentRoute: typeof rootRouteImport
     }
     '/s/$slug/checkout/success': {
       id: '/s/$slug/checkout/success'
@@ -563,30 +568,17 @@ const SSlugCheckoutRouteWithChildren = SSlugCheckoutRoute._addFileChildren(
   SSlugCheckoutRouteChildren,
 )
 
-interface SSlugRouteChildren {
-  SSlugAboutRoute: typeof SSlugAboutRoute
-  SSlugCartRoute: typeof SSlugCartRoute
-  SSlugCheckoutRoute: typeof SSlugCheckoutRouteWithChildren
-  SSlugContactRoute: typeof SSlugContactRoute
-  SSlugPProductIdRoute: typeof SSlugPProductIdRoute
-}
-
-const SSlugRouteChildren: SSlugRouteChildren = {
-  SSlugAboutRoute: SSlugAboutRoute,
-  SSlugCartRoute: SSlugCartRoute,
-  SSlugCheckoutRoute: SSlugCheckoutRouteWithChildren,
-  SSlugContactRoute: SSlugContactRoute,
-  SSlugPProductIdRoute: SSlugPProductIdRoute,
-}
-
-const SSlugRouteWithChildren = SSlugRoute._addFileChildren(SSlugRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRouteWithChildren,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
-  SSlugRoute: SSlugRouteWithChildren,
+  SSlugAboutRoute: SSlugAboutRoute,
+  SSlugCartRoute: SSlugCartRoute,
+  SSlugCheckoutRoute: SSlugCheckoutRouteWithChildren,
+  SSlugContactRoute: SSlugContactRoute,
+  SSlugIndexRoute: SSlugIndexRoute,
+  SSlugPProductIdRoute: SSlugPProductIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
