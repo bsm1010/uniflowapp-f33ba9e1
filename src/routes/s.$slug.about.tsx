@@ -42,9 +42,9 @@ function AboutPage() {
   const { settings } = Route.useLoaderData();
   const t = getStoreTokens(settings);
 
-  const title = settings.about_title || "About us";
+  const title = (settings.about_title as string) || "About us";
   const content =
-    settings.about_content ||
+    (settings.about_content as string) ||
     "Welcome to our store. We are passionate about offering quality products and a delightful shopping experience.";
 
   return (
