@@ -1,0 +1,72 @@
+// Algeria's 58 wilayas with major cities (communes)
+export const ALGERIA_WILAYAS: Record<string, string[]> = {
+  "Adrar": ["Adrar", "Reggane", "Timimoun", "Aoulef", "Bordj Badji Mokhtar"],
+  "Chlef": ["Chlef", "Ténès", "Boukadir", "Oued Fodda", "Beni Haoua"],
+  "Laghouat": ["Laghouat", "Aflou", "Ksar El Hirane", "Hassi R'Mel"],
+  "Oum El Bouaghi": ["Oum El Bouaghi", "Aïn Beïda", "Aïn M'lila", "Meskiana"],
+  "Batna": ["Batna", "Barika", "Arris", "Merouana", "N'Gaous"],
+  "Béjaïa": ["Béjaïa", "Akbou", "Kherrata", "Sidi Aïch", "El Kseur"],
+  "Biskra": ["Biskra", "Tolga", "Sidi Okba", "Ouled Djellal", "Zeribet El Oued"],
+  "Béchar": ["Béchar", "Kenadsa", "Beni Ounif", "Taghit", "Abadla"],
+  "Blida": ["Blida", "Boufarik", "Bougara", "Larbaâ", "Mouzaïa"],
+  "Bouira": ["Bouira", "Lakhdaria", "Sour El-Ghozlane", "M'Chedallah", "Aïn Bessem"],
+  "Tamanrasset": ["Tamanrasset", "In Salah", "In Guezzam", "Tin Zaouatine"],
+  "Tébessa": ["Tébessa", "Bir el Ater", "Cheria", "El Aouinet", "Ouenza"],
+  "Tlemcen": ["Tlemcen", "Maghnia", "Remchi", "Nedroma", "Ghazaouet"],
+  "Tiaret": ["Tiaret", "Sougueur", "Mahdia", "Frenda", "Aïn Deheb"],
+  "Tizi Ouzou": ["Tizi Ouzou", "Azazga", "Draâ El Mizan", "Boghni", "Larbaâ Nath Irathen"],
+  "Alger": ["Alger Centre", "Bab El Oued", "Hussein Dey", "El Harrach", "Bir Mourad Raïs", "Birtouta", "Bordj El Kiffan", "Dar El Beïda", "Chéraga", "Zéralda"],
+  "Djelfa": ["Djelfa", "Messaad", "Aïn Oussera", "Hassi Bahbah", "El Idrissia"],
+  "Jijel": ["Jijel", "Taher", "El Milia", "Chekfa", "El Aouana"],
+  "Sétif": ["Sétif", "El Eulma", "Aïn Oulmene", "Bougaa", "Aïn Azel"],
+  "Saïda": ["Saïda", "Aïn El Hadjar", "Youb", "Ouled Khaled"],
+  "Skikda": ["Skikda", "Collo", "Azzaba", "El Harrouch", "Tamalous"],
+  "Sidi Bel Abbès": ["Sidi Bel Abbès", "Telagh", "Sfisef", "Ben Badis", "Marhoum"],
+  "Annaba": ["Annaba", "El Bouni", "Berrahal", "El Hadjar", "Aïn Berda"],
+  "Guelma": ["Guelma", "Oued Zenati", "Bouchegouf", "Héliopolis", "Aïn Hessainia"],
+  "Constantine": ["Constantine", "El Khroub", "Hamma Bouziane", "Aïn Smara", "Didouche Mourad"],
+  "Médéa": ["Médéa", "Berrouaghia", "Ksar El Boukhari", "Tablat", "Beni Slimane"],
+  "Mostaganem": ["Mostaganem", "Sidi Lakhdar", "Aïn Tedles", "Bouguirat", "Achaacha"],
+  "M'Sila": ["M'Sila", "Bou Saâda", "Sidi Aïssa", "Magra", "Aïn El Melh"],
+  "Mascara": ["Mascara", "Sig", "Mohammadia", "Tighennif", "Bouhanifia"],
+  "Ouargla": ["Ouargla", "Hassi Messaoud", "Touggourt", "N'Goussa", "Rouissat"],
+  "Oran": ["Oran", "Es Sénia", "Bir El Djir", "Arzew", "Aïn El Turk", "Bethioua"],
+  "El Bayadh": ["El Bayadh", "Bougtoub", "Brezina", "Rogassa", "Stitten"],
+  "Illizi": ["Illizi", "Djanet", "In Amenas", "Bordj Omar Driss"],
+  "Bordj Bou Arréridj": ["Bordj Bou Arréridj", "Ras El Oued", "Bordj Zemoura", "Mansourah", "El Achir"],
+  "Boumerdès": ["Boumerdès", "Boudouaou", "Bordj Menaïel", "Dellys", "Khemis El Khechna"],
+  "El Tarf": ["El Tarf", "El Kala", "Ben M'Hidi", "Bouhadjar", "Drean"],
+  "Tindouf": ["Tindouf", "Oum El Assel"],
+  "Tissemsilt": ["Tissemsilt", "Theniet El Had", "Bordj Bou Naâma", "Lardjem"],
+  "El Oued": ["El Oued", "Guemar", "Robbah", "Bayadha", "Reguiba"],
+  "Khenchela": ["Khenchela", "Kaïs", "Chechar", "El Hamma", "Bouhmama"],
+  "Souk Ahras": ["Souk Ahras", "Sedrata", "M'Daourouch", "Taoura", "Heddada"],
+  "Tipaza": ["Tipaza", "Hadjout", "Cherchell", "Koléa", "Bou Ismaïl"],
+  "Mila": ["Mila", "Ferdjioua", "Chelghoum Laïd", "Oued Athmenia", "Grarem Gouga"],
+  "Aïn Defla": ["Aïn Defla", "Khemis Miliana", "Miliana", "El Attaf", "Djelida"],
+  "Naâma": ["Naâma", "Mécheria", "Aïn Sefra", "Tiout", "Asla"],
+  "Aïn Témouchent": ["Aïn Témouchent", "Hammam Bou Hadjar", "Béni Saf", "El Amria", "El Malah"],
+  "Ghardaïa": ["Ghardaïa", "Métlili", "Berriane", "Bounoura", "El Atteuf"],
+  "Relizane": ["Relizane", "Oued Rhiou", "Mazouna", "Ammi Moussa", "Yellel"],
+  "Timimoun": ["Timimoun", "Charouine", "Ouled Aïssa", "Ksar Kaddour"],
+  "Bordj Badji Mokhtar": ["Bordj Badji Mokhtar", "Timiaouine"],
+  "Ouled Djellal": ["Ouled Djellal", "Sidi Khaled", "Doucen"],
+  "Béni Abbès": ["Béni Abbès", "Tabelbala", "El Ouata"],
+  "In Salah": ["In Salah", "Foggaret Ezzaouia", "In Ghar"],
+  "In Guezzam": ["In Guezzam", "Tin Zaouatine"],
+  "Touggourt": ["Touggourt", "Témacine", "Megarine", "Nezla"],
+  "Djanet": ["Djanet", "Bordj El Haouas"],
+  "El M'Ghair": ["El M'Ghair", "Djamaa", "Sidi Khellil", "Still"],
+  "El Meniaa": ["El Meniaa", "Hassi Gara", "Hassi Fehal"],
+};
+
+export const WILAYA_LIST = Object.keys(ALGERIA_WILAYAS).sort((a, b) =>
+  a.localeCompare(b),
+);
+
+// Validates Algerian phone numbers: +213XXXXXXXXX, 0XXXXXXXXX (mobile starts with 5,6,7; landline 2,3,4)
+export function isValidAlgerianPhone(phone: string): boolean {
+  const cleaned = phone.replace(/[\s-]/g, "");
+  return /^(?:\+213|0)(?:5|6|7)\d{8}$/.test(cleaned) ||
+    /^(?:\+213|0)(?:2|3|4)\d{7,8}$/.test(cleaned);
+}
