@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Check, Loader2 } from "lucide-react";
+import { Check, Loader2, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -69,9 +69,17 @@ function AppsPage() {
                     >
                       <Icon className="h-6 w-6 text-foreground" />
                     </div>
-                    <Badge variant="secondary" className="text-xs">
-                      {app.category}
-                    </Badge>
+                    <div className="flex items-center gap-1.5">
+                      {installed && (
+                        <Badge className="text-xs bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/15 animate-in fade-in zoom-in-95 duration-300">
+                          <Check className="h-3 w-3" />
+                          Installed
+                        </Badge>
+                      )}
+                      <Badge variant="secondary" className="text-xs">
+                        {app.category}
+                      </Badge>
+                    </div>
                   </div>
                   <div className="flex-1 space-y-1">
                     <h3 className="font-semibold leading-tight">{app.name}</h3>
@@ -79,27 +87,34 @@ function AppsPage() {
                       {app.description}
                     </p>
                   </div>
-                  <Button
-                    variant={installed ? "secondary" : "default"}
-                    size="sm"
-                    disabled={installed || isPending}
-                    onClick={() => install(app.key, app.name)}
-                    className="w-full"
-                  >
-                    {isPending ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Installing...
-                      </>
-                    ) : installed ? (
-                      <>
-                        <Check className="h-4 w-4" />
-                        Installed
-                      </>
-                    ) : (
-                      "Install App"
-                    )}
-                  </Button>
+                  {installed ? (
+                    <Button
+                      size="sm"
+                      asChild
+                      className="w-full transition-all duration-300 animate-in fade-in"
+                    >
+                      <Link to={`/dashboard/apps/${app.key}`}>
+                        <ExternalLink className="h-4 w-4" />
+                        Open App
+                      </Link>
+                    </Button>
+                  ) : (
+                    <Button
+                      size="sm"
+                      disabled={isPending}
+                      onClick={() => install(app.key, app.name)}
+                      className="w-full transition-all duration-300"
+                    >
+                      {isPending ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Installing...
+                        </>
+                      ) : (
+                        "Install App"
+                      )}
+                    </Button>
+                  )}
                 </div>
               </Card>
             );
