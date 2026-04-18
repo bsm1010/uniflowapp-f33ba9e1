@@ -33,6 +33,7 @@ import { Route as SSlugContactRouteImport } from './routes/s.$slug.contact'
 import { Route as SSlugCheckoutRouteImport } from './routes/s.$slug.checkout'
 import { Route as SSlugCartRouteImport } from './routes/s.$slug.cart'
 import { Route as SSlugAboutRouteImport } from './routes/s.$slug.about'
+import { Route as DashboardAppsEmailMarketingRouteImport } from './routes/dashboard.apps.email-marketing'
 import { Route as DashboardAppsAppKeyRouteImport } from './routes/dashboard.apps.$appKey'
 import { Route as DashboardAdminPaymentsRouteImport } from './routes/dashboard.admin.payments'
 import { Route as SSlugPProductIdRouteImport } from './routes/s.$slug.p.$productId'
@@ -158,6 +159,12 @@ const SSlugAboutRoute = SSlugAboutRouteImport.update({
   path: '/s/$slug/about',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardAppsEmailMarketingRoute =
+  DashboardAppsEmailMarketingRouteImport.update({
+    id: '/email-marketing',
+    path: '/email-marketing',
+    getParentRoute: () => DashboardAppsRoute,
+  } as any)
 const DashboardAppsAppKeyRoute = DashboardAppsAppKeyRouteImport.update({
   id: '/$appKey',
   path: '/$appKey',
@@ -200,6 +207,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
   '/dashboard/apps/$appKey': typeof DashboardAppsAppKeyRoute
+  '/dashboard/apps/email-marketing': typeof DashboardAppsEmailMarketingRoute
   '/s/$slug/about': typeof SSlugAboutRoute
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
@@ -229,6 +237,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardIndexRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
   '/dashboard/apps/$appKey': typeof DashboardAppsAppKeyRoute
+  '/dashboard/apps/email-marketing': typeof DashboardAppsEmailMarketingRoute
   '/s/$slug/about': typeof SSlugAboutRoute
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
@@ -260,6 +269,7 @@ export interface FileRoutesById {
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
   '/dashboard/apps/$appKey': typeof DashboardAppsAppKeyRoute
+  '/dashboard/apps/email-marketing': typeof DashboardAppsEmailMarketingRoute
   '/s/$slug/about': typeof SSlugAboutRoute
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
@@ -292,6 +302,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/dashboard/admin/payments'
     | '/dashboard/apps/$appKey'
+    | '/dashboard/apps/email-marketing'
     | '/s/$slug/about'
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
@@ -321,6 +332,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/dashboard/admin/payments'
     | '/dashboard/apps/$appKey'
+    | '/dashboard/apps/email-marketing'
     | '/s/$slug/about'
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
@@ -351,6 +363,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/dashboard/admin/payments'
     | '/dashboard/apps/$appKey'
+    | '/dashboard/apps/email-marketing'
     | '/s/$slug/about'
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
@@ -545,6 +558,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SSlugAboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/apps/email-marketing': {
+      id: '/dashboard/apps/email-marketing'
+      path: '/email-marketing'
+      fullPath: '/dashboard/apps/email-marketing'
+      preLoaderRoute: typeof DashboardAppsEmailMarketingRouteImport
+      parentRoute: typeof DashboardAppsRoute
+    }
     '/dashboard/apps/$appKey': {
       id: '/dashboard/apps/$appKey'
       path: '/$appKey'
@@ -578,10 +598,12 @@ declare module '@tanstack/react-router' {
 
 interface DashboardAppsRouteChildren {
   DashboardAppsAppKeyRoute: typeof DashboardAppsAppKeyRoute
+  DashboardAppsEmailMarketingRoute: typeof DashboardAppsEmailMarketingRoute
 }
 
 const DashboardAppsRouteChildren: DashboardAppsRouteChildren = {
   DashboardAppsAppKeyRoute: DashboardAppsAppKeyRoute,
+  DashboardAppsEmailMarketingRoute: DashboardAppsEmailMarketingRoute,
 }
 
 const DashboardAppsRouteWithChildren = DashboardAppsRoute._addFileChildren(
