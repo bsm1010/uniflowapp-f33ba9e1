@@ -1,55 +1,39 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { APPS } from "@/lib/apps";
+import { useInstalledApps } from "@/hooks/use-installed-apps";
 
 export const Route = createFileRoute("/dashboard/apps")({
   component: AppsPage,
   head: () => ({
     meta: [
       { title: "App Store — Storely" },
-      { name: "description", content: "Browse and install apps to power up your store." },
+      {
+        name: "description",
+        content: "Browse and install apps to power up your store.",
+      },
     ],
   }),
 });
 
 function AppsPage() {
-  const { user } = useAuth();
-  const [installed, setInstalled] = useState<Set<string>>(new Set());
-  const [loading, setLoading] = useState(true);
+  const { isInstalled, install: installApp, loading } = useInstalledApps();
   const [pending, setPending] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!user) return;
-    supabase
-      .from("installed_apps")
-      .select("app_key")
-      .eq("user_id", user.id)
-      .then(({ data }) => {
-        setInstalled(new Set((data ?? []).map((r) => r.app_key)));
-        setLoading(false);
-      });
-  }, [user]);
-
   const install = async (appKey: string, appName: string) => {
-    if (!user) return;
     setPending(appKey);
-    const { error } = await supabase
-      .from("installed_apps")
-      .insert({ user_id: user.id, app_key: appKey });
+    const { error } = await installApp(appKey);
     setPending(null);
     if (error) {
       toast.error("Failed to install app");
       return;
     }
-    setInstalled((prev) => new Set(prev).add(appKey));
     toast.success(`${appName} installed`);
   };
 
@@ -67,7 +51,7 @@ function AppsPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {APPS.map((app) => {
-            const isInstalled = installed.has(app.key);
+            const installed = isInstalled(app.key);
             const isPending = pending === app.key;
             const Icon = app.icon;
             return (
@@ -96,9 +80,9 @@ function AppsPage() {
                     </p>
                   </div>
                   <Button
-                    variant={isInstalled ? "secondary" : "default"}
+                    variant={installed ? "secondary" : "default"}
                     size="sm"
-                    disabled={isInstalled || isPending}
+                    disabled={installed || isPending}
                     onClick={() => install(app.key, app.name)}
                     className="w-full"
                   >
@@ -107,7 +91,7 @@ function AppsPage() {
                         <Loader2 className="h-4 w-4 animate-spin" />
                         Installing...
                       </>
-                    ) : isInstalled ? (
+                    ) : installed ? (
                       <>
                         <Check className="h-4 w-4" />
                         Installed
