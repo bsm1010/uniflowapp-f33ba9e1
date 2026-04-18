@@ -118,6 +118,30 @@ function DashboardLayout() {
 
   if (!user) return null;
 
+  // Block access while onboarding flag is loading or not completed
+  const showWizard = onboardingCompleted === false;
+  const isLoadingOnboarding = onboardingCompleted === null;
+
+  if (isLoadingOnboarding) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+      </div>
+    );
+  }
+
+  if (showWizard) {
+    return (
+      <div className="min-h-screen bg-background">
+        <OnboardingWizard
+          userId={user.id}
+          initialName={name}
+          onComplete={() => setOnboardingCompleted(true)}
+        />
+      </div>
+    );
+  }
+
   const daysRemaining = trialEndDate
     ? Math.max(
         0,
@@ -153,13 +177,6 @@ function DashboardLayout() {
             </main>
           </SidebarInset>
         </div>
-        {onboarded === false && (
-          <OnboardingWizard
-            userId={user.id}
-            initialName={name}
-            onComplete={() => setOnboarded(true)}
-          />
-        )}
       </SidebarProvider>
     </SubscriptionProvider>
   );
