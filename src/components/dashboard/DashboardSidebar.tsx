@@ -68,6 +68,15 @@ export function DashboardSidebar() {
   const { pathname } = useLocation();
   const { user } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
+  const { installed } = useInstalledApps();
+  const installedApps = Array.from(installed)
+    .map((key) => APPS_BY_KEY[key])
+    .filter(Boolean);
+  const anyAppActive = pathname.startsWith("/dashboard/apps/");
+  const [appsOpen, setAppsOpen] = useState(anyAppActive);
+  useEffect(() => {
+    if (anyAppActive) setAppsOpen(true);
+  }, [anyAppActive]);
 
   useEffect(() => {
     if (!user) return;
