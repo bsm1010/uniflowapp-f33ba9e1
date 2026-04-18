@@ -165,8 +165,7 @@ export function DashboardSidebar() {
                             tooltip={app.name}
                           >
                             <Link
-                              to="/dashboard/apps/$appKey"
-                              params={{ appKey: app.key }}
+                              to={url}
                               className={
                                 active
                                   ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
