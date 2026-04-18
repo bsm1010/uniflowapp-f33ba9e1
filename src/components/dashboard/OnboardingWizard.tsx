@@ -285,6 +285,12 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
 
           {/* Header */}
           <div className="mb-6">
+            {step === 0 && (
+              <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary animate-in fade-in slide-in-from-top-2 duration-300">
+                <Sparkles className="h-3 w-3" />
+                Welcome! Let's set up your experience
+              </div>
+            )}
             <h2 className="text-2xl font-bold tracking-tight">{current.title}</h2>
             <p className="mt-1 text-sm text-muted-foreground">{current.subtitle}</p>
           </div>
