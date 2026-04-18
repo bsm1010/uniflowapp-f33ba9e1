@@ -14,6 +14,81 @@ export type Database = {
   }
   public: {
     Tables: {
+      abandoned_carts: {
+        Row: {
+          cart_items: Json
+          cart_total: number
+          created_at: string
+          customer_email: string
+          customer_name: string | null
+          id: string
+          recovered: boolean
+          recovery_email_sent: boolean
+          recovery_email_sent_at: string | null
+          store_owner_id: string
+          store_slug: string
+          updated_at: string
+        }
+        Insert: {
+          cart_items?: Json
+          cart_total?: number
+          created_at?: string
+          customer_email: string
+          customer_name?: string | null
+          id?: string
+          recovered?: boolean
+          recovery_email_sent?: boolean
+          recovery_email_sent_at?: string | null
+          store_owner_id: string
+          store_slug: string
+          updated_at?: string
+        }
+        Update: {
+          cart_items?: Json
+          cart_total?: number
+          created_at?: string
+          customer_email?: string
+          customer_name?: string | null
+          id?: string
+          recovered?: boolean
+          recovery_email_sent?: boolean
+          recovery_email_sent_at?: string | null
+          store_owner_id?: string
+          store_slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      analytics_integrations: {
+        Row: {
+          created_at: string
+          ga4_id: string
+          id: string
+          meta_pixel_id: string
+          tiktok_pixel_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          ga4_id?: string
+          id?: string
+          meta_pixel_id?: string
+          tiktok_pixel_id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          ga4_id?: string
+          id?: string
+          meta_pixel_id?: string
+          tiktok_pixel_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       category_images: {
         Row: {
           category_name: string
@@ -38,6 +113,72 @@ export type Database = {
           image_url?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      chatbot_conversations: {
+        Row: {
+          created_at: string
+          id: string
+          messages: Json
+          store_owner_id: string
+          store_slug: string
+          updated_at: string
+          visitor_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          messages?: Json
+          store_owner_id: string
+          store_slug: string
+          updated_at?: string
+          visitor_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          messages?: Json
+          store_owner_id?: string
+          store_slug?: string
+          updated_at?: string
+          visitor_id?: string
+        }
+        Relationships: []
+      }
+      chatbot_settings: {
+        Row: {
+          ai_model: string
+          created_at: string
+          enabled: boolean
+          id: string
+          knowledge_base: string
+          primary_color: string
+          updated_at: string
+          user_id: string
+          welcome_message: string
+        }
+        Insert: {
+          ai_model?: string
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          knowledge_base?: string
+          primary_color?: string
+          updated_at?: string
+          user_id: string
+          welcome_message?: string
+        }
+        Update: {
+          ai_model?: string
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          knowledge_base?: string
+          primary_color?: string
+          updated_at?: string
+          user_id?: string
+          welcome_message?: string
         }
         Relationships: []
       }
@@ -71,6 +212,81 @@ export type Database = {
           sender_name?: string
           store_owner_id?: string
           store_slug?: string
+        }
+        Relationships: []
+      }
+      currency_settings: {
+        Row: {
+          auto_detect: boolean
+          base_currency: string
+          created_at: string
+          enabled_currencies: string[]
+          id: string
+          rates: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auto_detect?: boolean
+          base_currency?: string
+          created_at?: string
+          enabled_currencies?: string[]
+          id?: string
+          rates?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auto_detect?: boolean
+          base_currency?: string
+          created_at?: string
+          enabled_currencies?: string[]
+          id?: string
+          rates?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      discount_codes: {
+        Row: {
+          active: boolean
+          code: string
+          created_at: string
+          discount_type: string
+          expires_at: string | null
+          id: string
+          updated_at: string
+          usage_limit: number | null
+          used_count: number
+          user_id: string
+          value: number
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          created_at?: string
+          discount_type?: string
+          expires_at?: string | null
+          id?: string
+          updated_at?: string
+          usage_limit?: number | null
+          used_count?: number
+          user_id: string
+          value?: number
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          created_at?: string
+          discount_type?: string
+          expires_at?: string | null
+          id?: string
+          updated_at?: string
+          usage_limit?: number | null
+          used_count?: number
+          user_id?: string
+          value?: number
         }
         Relationships: []
       }
@@ -310,6 +526,54 @@ export type Database = {
         }
         Relationships: []
       }
+      popups: {
+        Row: {
+          active: boolean
+          background_color: string
+          content: string
+          created_at: string
+          cta_label: string
+          cta_url: string
+          id: string
+          text_color: string
+          title: string
+          trigger_type: string
+          trigger_value: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          background_color?: string
+          content?: string
+          created_at?: string
+          cta_label?: string
+          cta_url?: string
+          id?: string
+          text_color?: string
+          title?: string
+          trigger_type?: string
+          trigger_value?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          background_color?: string
+          content?: string
+          created_at?: string
+          cta_label?: string
+          cta_url?: string
+          id?: string
+          text_color?: string
+          title?: string
+          trigger_type?: string
+          trigger_value?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           category: string | null
@@ -400,6 +664,69 @@ export type Database = {
           trial_start_date?: string | null
           updated_at?: string
           user_wilaya?: string | null
+        }
+        Relationships: []
+      }
+      seo_settings: {
+        Row: {
+          created_at: string
+          id: string
+          keywords: string
+          meta_description: string
+          meta_title: string
+          og_image_url: string | null
+          sitemap_enabled: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          keywords?: string
+          meta_description?: string
+          meta_title?: string
+          og_image_url?: string | null
+          sitemap_enabled?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          keywords?: string
+          meta_description?: string
+          meta_title?: string
+          og_image_url?: string | null
+          sitemap_enabled?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      store_languages: {
+        Row: {
+          created_at: string
+          default_language: string
+          enabled_languages: string[]
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          default_language?: string
+          enabled_languages?: string[]
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          default_language?: string
+          enabled_languages?: string[]
+          id?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -532,6 +859,36 @@ export type Database = {
           theme?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      translations: {
+        Row: {
+          created_at: string
+          id: string
+          key: string
+          language: string
+          updated_at: string
+          user_id: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key: string
+          language: string
+          updated_at?: string
+          user_id: string
+          value?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key?: string
+          language?: string
+          updated_at?: string
+          user_id?: string
+          value?: string
         }
         Relationships: []
       }
