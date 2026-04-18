@@ -33,6 +33,7 @@ import { Route as SSlugContactRouteImport } from './routes/s.$slug.contact'
 import { Route as SSlugCheckoutRouteImport } from './routes/s.$slug.checkout'
 import { Route as SSlugCartRouteImport } from './routes/s.$slug.cart'
 import { Route as SSlugAboutRouteImport } from './routes/s.$slug.about'
+import { Route as DashboardAppsEmailMarketingRouteImport } from './routes/dashboard.apps.email-marketing'
 import { Route as DashboardAppsAppKeyRouteImport } from './routes/dashboard.apps.$appKey'
 import { Route as DashboardAdminPaymentsRouteImport } from './routes/dashboard.admin.payments'
 import { Route as SSlugPProductIdRouteImport } from './routes/s.$slug.p.$productId'
@@ -139,25 +140,31 @@ const SSlugTrackRoute = SSlugTrackRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const SSlugContactRoute = SSlugContactRouteImport.update({
-  id: '/s/$slug/contact',
-  path: '/s/$slug/contact',
-  getParentRoute: () => rootRouteImport,
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => SSlugRoute,
 } as any)
 const SSlugCheckoutRoute = SSlugCheckoutRouteImport.update({
-  id: '/s/$slug/checkout',
-  path: '/s/$slug/checkout',
-  getParentRoute: () => rootRouteImport,
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => SSlugRoute,
 } as any)
 const SSlugCartRoute = SSlugCartRouteImport.update({
-  id: '/s/$slug/cart',
-  path: '/s/$slug/cart',
-  getParentRoute: () => rootRouteImport,
+  id: '/cart',
+  path: '/cart',
+  getParentRoute: () => SSlugRoute,
 } as any)
 const SSlugAboutRoute = SSlugAboutRouteImport.update({
-  id: '/s/$slug/about',
-  path: '/s/$slug/about',
-  getParentRoute: () => rootRouteImport,
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => SSlugRoute,
 } as any)
+const DashboardAppsEmailMarketingRoute =
+  DashboardAppsEmailMarketingRouteImport.update({
+    id: '/email-marketing',
+    path: '/email-marketing',
+    getParentRoute: () => DashboardAppsRoute,
+  } as any)
 const DashboardAppsAppKeyRoute = DashboardAppsAppKeyRouteImport.update({
   id: '/$appKey',
   path: '/$appKey',
@@ -200,6 +207,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
   '/dashboard/apps/$appKey': typeof DashboardAppsAppKeyRoute
+  '/dashboard/apps/email-marketing': typeof DashboardAppsEmailMarketingRoute
   '/s/$slug/about': typeof SSlugAboutRoute
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
@@ -229,6 +237,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardIndexRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
   '/dashboard/apps/$appKey': typeof DashboardAppsAppKeyRoute
+  '/dashboard/apps/email-marketing': typeof DashboardAppsEmailMarketingRoute
   '/s/$slug/about': typeof SSlugAboutRoute
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
@@ -260,6 +269,7 @@ export interface FileRoutesById {
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
   '/dashboard/apps/$appKey': typeof DashboardAppsAppKeyRoute
+  '/dashboard/apps/email-marketing': typeof DashboardAppsEmailMarketingRoute
   '/s/$slug/about': typeof SSlugAboutRoute
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
@@ -292,6 +302,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/dashboard/admin/payments'
     | '/dashboard/apps/$appKey'
+    | '/dashboard/apps/email-marketing'
     | '/s/$slug/about'
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
@@ -321,6 +332,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/dashboard/admin/payments'
     | '/dashboard/apps/$appKey'
+    | '/dashboard/apps/email-marketing'
     | '/s/$slug/about'
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
@@ -351,6 +363,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/dashboard/admin/payments'
     | '/dashboard/apps/$appKey'
+    | '/dashboard/apps/email-marketing'
     | '/s/$slug/about'
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
@@ -366,10 +379,6 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRouteWithChildren
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
-  SSlugAboutRoute: typeof SSlugAboutRoute
-  SSlugCartRoute: typeof SSlugCartRoute
-  SSlugCheckoutRoute: typeof SSlugCheckoutRouteWithChildren
-  SSlugContactRoute: typeof SSlugContactRoute
   SSlugTrackRoute: typeof SSlugTrackRoute
   SSlugIndexRoute: typeof SSlugIndexRoute
   SSlugPProductIdRoute: typeof SSlugPProductIdRoute
@@ -519,31 +528,38 @@ declare module '@tanstack/react-router' {
     }
     '/s/$slug/contact': {
       id: '/s/$slug/contact'
-      path: '/s/$slug/contact'
+      path: '/contact'
       fullPath: '/s/$slug/contact'
       preLoaderRoute: typeof SSlugContactRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof SSlugRoute
     }
     '/s/$slug/checkout': {
       id: '/s/$slug/checkout'
-      path: '/s/$slug/checkout'
+      path: '/checkout'
       fullPath: '/s/$slug/checkout'
       preLoaderRoute: typeof SSlugCheckoutRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof SSlugRoute
     }
     '/s/$slug/cart': {
       id: '/s/$slug/cart'
-      path: '/s/$slug/cart'
+      path: '/cart'
       fullPath: '/s/$slug/cart'
       preLoaderRoute: typeof SSlugCartRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof SSlugRoute
     }
     '/s/$slug/about': {
       id: '/s/$slug/about'
-      path: '/s/$slug/about'
+      path: '/about'
       fullPath: '/s/$slug/about'
       preLoaderRoute: typeof SSlugAboutRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof SSlugRoute
+    }
+    '/dashboard/apps/email-marketing': {
+      id: '/dashboard/apps/email-marketing'
+      path: '/email-marketing'
+      fullPath: '/dashboard/apps/email-marketing'
+      preLoaderRoute: typeof DashboardAppsEmailMarketingRouteImport
+      parentRoute: typeof DashboardAppsRoute
     }
     '/dashboard/apps/$appKey': {
       id: '/dashboard/apps/$appKey'
@@ -578,10 +594,12 @@ declare module '@tanstack/react-router' {
 
 interface DashboardAppsRouteChildren {
   DashboardAppsAppKeyRoute: typeof DashboardAppsAppKeyRoute
+  DashboardAppsEmailMarketingRoute: typeof DashboardAppsEmailMarketingRoute
 }
 
 const DashboardAppsRouteChildren: DashboardAppsRouteChildren = {
   DashboardAppsAppKeyRoute: DashboardAppsAppKeyRoute,
+  DashboardAppsEmailMarketingRoute: DashboardAppsEmailMarketingRoute,
 }
 
 const DashboardAppsRouteWithChildren = DashboardAppsRoute._addFileChildren(
@@ -628,27 +646,11 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
   DashboardRouteChildren,
 )
 
-interface SSlugCheckoutRouteChildren {
-  SSlugCheckoutSuccessRoute: typeof SSlugCheckoutSuccessRoute
-}
-
-const SSlugCheckoutRouteChildren: SSlugCheckoutRouteChildren = {
-  SSlugCheckoutSuccessRoute: SSlugCheckoutSuccessRoute,
-}
-
-const SSlugCheckoutRouteWithChildren = SSlugCheckoutRoute._addFileChildren(
-  SSlugCheckoutRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRouteWithChildren,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
-  SSlugAboutRoute: SSlugAboutRoute,
-  SSlugCartRoute: SSlugCartRoute,
-  SSlugCheckoutRoute: SSlugCheckoutRouteWithChildren,
-  SSlugContactRoute: SSlugContactRoute,
   SSlugTrackRoute: SSlugTrackRoute,
   SSlugIndexRoute: SSlugIndexRoute,
   SSlugPProductIdRoute: SSlugPProductIdRoute,
@@ -656,3 +658,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
