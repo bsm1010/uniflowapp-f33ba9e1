@@ -306,6 +306,46 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
 
             {step === 1 && (
               <div className="space-y-2">
+                <Label htmlFor="wilaya-search">Your wilaya</Label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="wilaya-search"
+                    autoFocus
+                    value={wilayaSearch}
+                    onChange={(e) => setWilayaSearch(e.target.value)}
+                    placeholder="Search wilayas…"
+                    className="pl-9"
+                  />
+                </div>
+                <div className="max-h-48 overflow-y-auto rounded-md border border-input bg-background">
+                  {filteredWilayas.length === 0 ? (
+                    <div className="p-3 text-sm text-muted-foreground text-center">No matches</div>
+                  ) : (
+                    filteredWilayas.map((w) => {
+                      const selected = wilaya === w;
+                      return (
+                        <button
+                          key={w}
+                          type="button"
+                          onClick={() => setWilaya(w)}
+                          className={cn(
+                            "w-full flex items-center justify-between px-3 py-2 text-sm text-left transition-colors",
+                            selected ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/60",
+                          )}
+                        >
+                          <span>{w}</span>
+                          {selected && <Check className="h-4 w-4" />}
+                        </button>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            )}
+
+            {step === 2 && (
+              <div className="space-y-2">
                 <Label htmlFor="store-name">Store name</Label>
                 <Input
                   id="store-name"
