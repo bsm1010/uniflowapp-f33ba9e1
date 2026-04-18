@@ -205,7 +205,12 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
       // Mark profile as onboarded and save discovery source + wilaya
       const { error: profErr } = await supabase
         .from("profiles")
-        .update({ onboarded: true, source_of_user: source || null, user_wilaya: wilaya || null })
+        .update({
+          onboarded: true,
+          onboarding_completed: true,
+          source_of_user: source || null,
+          user_wilaya: wilaya || null,
+        })
         .eq("id", userId);
       if (profErr) throw profErr;
 
