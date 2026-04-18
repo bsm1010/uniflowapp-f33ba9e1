@@ -217,16 +217,26 @@ export function StorefrontShell({ settings, children }: Props) {
               Shop
             </div>
             <ul className="space-y-2 text-sm">
-              {getNavLinks(settings).slice(0, 4).map((l) => (
-                <li key={l.label}>
-                  <a
-                    href={l.href.startsWith("#") ? `/s/${settings.slug}${l.href}` : l.href}
-                    className="hover:opacity-70"
-                  >
-                    {l.label}
-                  </a>
-                </li>
-              ))}
+              <li>
+                <Link to="/s/$slug" params={{ slug: settings.slug }} className="hover:opacity-70">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link to="/s/$slug" params={{ slug: settings.slug }} hash="shop" className="hover:opacity-70">
+                  Shop
+                </Link>
+              </li>
+              <li>
+                <Link to="/s/$slug/about" params={{ slug: settings.slug }} className="hover:opacity-70">
+                  About
+                </Link>
+              </li>
+              <li>
+                <Link to="/s/$slug/contact" params={{ slug: settings.slug }} className="hover:opacity-70">
+                  Contact
+                </Link>
+              </li>
             </ul>
           </div>
           <div>
