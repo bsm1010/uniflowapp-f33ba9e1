@@ -126,24 +126,24 @@ const SSlugIndexRoute = SSlugIndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const SSlugContactRoute = SSlugContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => SSlugRoute,
+  id: '/s/$slug/contact',
+  path: '/s/$slug/contact',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const SSlugCheckoutRoute = SSlugCheckoutRouteImport.update({
-  id: '/checkout',
-  path: '/checkout',
-  getParentRoute: () => SSlugRoute,
+  id: '/s/$slug/checkout',
+  path: '/s/$slug/checkout',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const SSlugCartRoute = SSlugCartRouteImport.update({
-  id: '/cart',
-  path: '/cart',
-  getParentRoute: () => SSlugRoute,
+  id: '/s/$slug/cart',
+  path: '/s/$slug/cart',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const SSlugAboutRoute = SSlugAboutRouteImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => SSlugRoute,
+  id: '/s/$slug/about',
+  path: '/s/$slug/about',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardAdminPaymentsRoute = DashboardAdminPaymentsRouteImport.update({
   id: '/admin/payments',
@@ -151,9 +151,9 @@ const DashboardAdminPaymentsRoute = DashboardAdminPaymentsRouteImport.update({
   getParentRoute: () => DashboardRoute,
 } as any)
 const SSlugPProductIdRoute = SSlugPProductIdRouteImport.update({
-  id: '/p/$productId',
-  path: '/p/$productId',
-  getParentRoute: () => SSlugRoute,
+  id: '/s/$slug/p/$productId',
+  path: '/s/$slug/p/$productId',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const SSlugCheckoutSuccessRoute = SSlugCheckoutSuccessRouteImport.update({
   id: '/success',
@@ -330,7 +330,12 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRouteWithChildren
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
+  SSlugAboutRoute: typeof SSlugAboutRoute
+  SSlugCartRoute: typeof SSlugCartRoute
+  SSlugCheckoutRoute: typeof SSlugCheckoutRouteWithChildren
+  SSlugContactRoute: typeof SSlugContactRoute
   SSlugIndexRoute: typeof SSlugIndexRoute
+  SSlugPProductIdRoute: typeof SSlugPProductIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -463,31 +468,31 @@ declare module '@tanstack/react-router' {
     }
     '/s/$slug/contact': {
       id: '/s/$slug/contact'
-      path: '/contact'
+      path: '/s/$slug/contact'
       fullPath: '/s/$slug/contact'
       preLoaderRoute: typeof SSlugContactRouteImport
-      parentRoute: typeof SSlugRoute
+      parentRoute: typeof rootRouteImport
     }
     '/s/$slug/checkout': {
       id: '/s/$slug/checkout'
-      path: '/checkout'
+      path: '/s/$slug/checkout'
       fullPath: '/s/$slug/checkout'
       preLoaderRoute: typeof SSlugCheckoutRouteImport
-      parentRoute: typeof SSlugRoute
+      parentRoute: typeof rootRouteImport
     }
     '/s/$slug/cart': {
       id: '/s/$slug/cart'
-      path: '/cart'
+      path: '/s/$slug/cart'
       fullPath: '/s/$slug/cart'
       preLoaderRoute: typeof SSlugCartRouteImport
-      parentRoute: typeof SSlugRoute
+      parentRoute: typeof rootRouteImport
     }
     '/s/$slug/about': {
       id: '/s/$slug/about'
-      path: '/about'
+      path: '/s/$slug/about'
       fullPath: '/s/$slug/about'
       preLoaderRoute: typeof SSlugAboutRouteImport
-      parentRoute: typeof SSlugRoute
+      parentRoute: typeof rootRouteImport
     }
     '/dashboard/admin/payments': {
       id: '/dashboard/admin/payments'
@@ -498,10 +503,10 @@ declare module '@tanstack/react-router' {
     }
     '/s/$slug/p/$productId': {
       id: '/s/$slug/p/$productId'
-      path: '/p/$productId'
+      path: '/s/$slug/p/$productId'
       fullPath: '/s/$slug/p/$productId'
       preLoaderRoute: typeof SSlugPProductIdRouteImport
-      parentRoute: typeof SSlugRoute
+      parentRoute: typeof rootRouteImport
     }
     '/s/$slug/checkout/success': {
       id: '/s/$slug/checkout/success'
@@ -551,22 +556,30 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
   DashboardRouteChildren,
 )
 
+interface SSlugCheckoutRouteChildren {
+  SSlugCheckoutSuccessRoute: typeof SSlugCheckoutSuccessRoute
+}
+
+const SSlugCheckoutRouteChildren: SSlugCheckoutRouteChildren = {
+  SSlugCheckoutSuccessRoute: SSlugCheckoutSuccessRoute,
+}
+
+const SSlugCheckoutRouteWithChildren = SSlugCheckoutRoute._addFileChildren(
+  SSlugCheckoutRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRouteWithChildren,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
+  SSlugAboutRoute: SSlugAboutRoute,
+  SSlugCartRoute: SSlugCartRoute,
+  SSlugCheckoutRoute: SSlugCheckoutRouteWithChildren,
+  SSlugContactRoute: SSlugContactRoute,
   SSlugIndexRoute: SSlugIndexRoute,
+  SSlugPProductIdRoute: SSlugPProductIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
