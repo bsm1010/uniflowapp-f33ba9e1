@@ -124,7 +124,10 @@ export function AlgerianCheckoutForm({
       });
       if (itemErr) throw itemErr;
 
-      toast.success("Order placed! We'll contact you shortly.");
+      toast.success("Your order has been placed successfully 🎉", {
+        description: "We'll call you shortly to confirm delivery.",
+        duration: 5000,
+      });
       setFirstName("");
       setLastName("");
       setPhone("");
