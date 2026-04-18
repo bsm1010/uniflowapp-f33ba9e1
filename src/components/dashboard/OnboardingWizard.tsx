@@ -293,9 +293,7 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
               </div>
             )}
 
-            {step === 1 && (
-              <div className="space-y-2">
-                <Label htmlFor="store-slug">Store URL</Label>
+            {step === 2 && (
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground whitespace-nowrap">
                     storely.app/s/
