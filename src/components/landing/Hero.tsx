@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Sparkles } from "lucide-react";
+import dashboardPreview from "@/assets/dashboard-preview.jpg";
 
 export function Hero() {
   return (
