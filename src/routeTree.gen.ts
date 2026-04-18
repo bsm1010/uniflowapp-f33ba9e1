@@ -28,6 +28,7 @@ import { Route as DashboardAppsRouteImport } from './routes/dashboard.apps'
 import { Route as DashboardAnalyticsRouteImport } from './routes/dashboard.analytics'
 import { Route as DashboardAboutRouteImport } from './routes/dashboard.about'
 import { Route as SSlugIndexRouteImport } from './routes/s.$slug.index'
+import { Route as DashboardAppsIndexRouteImport } from './routes/dashboard.apps.index'
 import { Route as SSlugTrackRouteImport } from './routes/s.$slug.track'
 import { Route as SSlugContactRouteImport } from './routes/s.$slug.contact'
 import { Route as SSlugCheckoutRouteImport } from './routes/s.$slug.checkout'
@@ -142,6 +143,11 @@ const SSlugIndexRoute = SSlugIndexRouteImport.update({
   id: '/s/$slug/',
   path: '/s/$slug/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardAppsIndexRoute = DashboardAppsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardAppsRoute,
 } as any)
 const SSlugTrackRoute = SSlugTrackRouteImport.update({
   id: '/s/$slug/track',
@@ -283,6 +289,7 @@ export interface FileRoutesByFullPath {
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
   '/s/$slug/contact': typeof SSlugContactRoute
   '/s/$slug/track': typeof SSlugTrackRoute
+  '/dashboard/apps/': typeof DashboardAppsIndexRoute
   '/s/$slug/': typeof SSlugIndexRoute
   '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
   '/s/$slug/p/$productId': typeof SSlugPProductIdRoute
@@ -293,7 +300,6 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/dashboard/about': typeof DashboardAboutRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
-  '/dashboard/apps': typeof DashboardAppsRouteWithChildren
   '/dashboard/categories': typeof DashboardCategoriesRoute
   '/dashboard/contact': typeof DashboardContactRoute
   '/dashboard/customers': typeof DashboardCustomersRoute
@@ -322,6 +328,7 @@ export interface FileRoutesByTo {
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
   '/s/$slug/contact': typeof SSlugContactRoute
   '/s/$slug/track': typeof SSlugTrackRoute
+  '/dashboard/apps': typeof DashboardAppsIndexRoute
   '/s/$slug': typeof SSlugIndexRoute
   '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
   '/s/$slug/p/$productId': typeof SSlugPProductIdRoute
@@ -363,6 +370,7 @@ export interface FileRoutesById {
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
   '/s/$slug/contact': typeof SSlugContactRoute
   '/s/$slug/track': typeof SSlugTrackRoute
+  '/dashboard/apps/': typeof DashboardAppsIndexRoute
   '/s/$slug/': typeof SSlugIndexRoute
   '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
   '/s/$slug/p/$productId': typeof SSlugPProductIdRoute
@@ -405,6 +413,7 @@ export interface FileRouteTypes {
     | '/s/$slug/checkout'
     | '/s/$slug/contact'
     | '/s/$slug/track'
+    | '/dashboard/apps/'
     | '/s/$slug/'
     | '/s/$slug/checkout/success'
     | '/s/$slug/p/$productId'
@@ -415,7 +424,6 @@ export interface FileRouteTypes {
     | '/signup'
     | '/dashboard/about'
     | '/dashboard/analytics'
-    | '/dashboard/apps'
     | '/dashboard/categories'
     | '/dashboard/contact'
     | '/dashboard/customers'
@@ -444,6 +452,7 @@ export interface FileRouteTypes {
     | '/s/$slug/checkout'
     | '/s/$slug/contact'
     | '/s/$slug/track'
+    | '/dashboard/apps'
     | '/s/$slug'
     | '/s/$slug/checkout/success'
     | '/s/$slug/p/$productId'
@@ -484,6 +493,7 @@ export interface FileRouteTypes {
     | '/s/$slug/checkout'
     | '/s/$slug/contact'
     | '/s/$slug/track'
+    | '/dashboard/apps/'
     | '/s/$slug/'
     | '/s/$slug/checkout/success'
     | '/s/$slug/p/$productId'
@@ -638,6 +648,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SSlugIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/apps/': {
+      id: '/dashboard/apps/'
+      path: '/'
+      fullPath: '/dashboard/apps/'
+      preLoaderRoute: typeof DashboardAppsIndexRouteImport
+      parentRoute: typeof DashboardAppsRoute
+    }
     '/s/$slug/track': {
       id: '/s/$slug/track'
       path: '/s/$slug/track'
@@ -786,6 +803,7 @@ interface DashboardAppsRouteChildren {
   DashboardAppsMultiLanguageRoute: typeof DashboardAppsMultiLanguageRoute
   DashboardAppsPopupBuilderRoute: typeof DashboardAppsPopupBuilderRoute
   DashboardAppsSeoOptimizerRoute: typeof DashboardAppsSeoOptimizerRoute
+  DashboardAppsIndexRoute: typeof DashboardAppsIndexRoute
 }
 
 const DashboardAppsRouteChildren: DashboardAppsRouteChildren = {
@@ -800,6 +818,7 @@ const DashboardAppsRouteChildren: DashboardAppsRouteChildren = {
   DashboardAppsMultiLanguageRoute: DashboardAppsMultiLanguageRoute,
   DashboardAppsPopupBuilderRoute: DashboardAppsPopupBuilderRoute,
   DashboardAppsSeoOptimizerRoute: DashboardAppsSeoOptimizerRoute,
+  DashboardAppsIndexRoute: DashboardAppsIndexRoute,
 }
 
 const DashboardAppsRouteWithChildren = DashboardAppsRoute._addFileChildren(
