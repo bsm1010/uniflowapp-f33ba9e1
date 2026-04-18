@@ -334,6 +334,8 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
             )}
 
             {step === 3 && (
+              <div className="space-y-2">
+                <Label htmlFor="currency-select">Default currency</Label>
                 <select
                   id="currency-select"
                   value={currency}
@@ -349,9 +351,7 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
               </div>
             )}
 
-            {step === 3 && (
-              <div className="space-y-3">
-                <Label>Logo (optional)</Label>
+            {step === 4 && (
                 <div className="flex items-center gap-4">
                   <div className="h-20 w-20 rounded-xl border-2 border-dashed border-border flex items-center justify-center bg-muted/30 overflow-hidden shrink-0">
                     {logoPreview ? (
