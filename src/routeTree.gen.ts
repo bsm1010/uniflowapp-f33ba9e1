@@ -17,6 +17,7 @@ import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as SSlugRouteImport } from './routes/s.$slug'
 import { Route as DashboardUpgradeRouteImport } from './routes/dashboard.upgrade'
 import { Route as DashboardThemesRouteImport } from './routes/dashboard.themes'
+import { Route as DashboardThemePresetsRouteImport } from './routes/dashboard.theme-presets'
 import { Route as DashboardStoreRouteImport } from './routes/dashboard.store'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
 import { Route as DashboardProductsRouteImport } from './routes/dashboard.products'
@@ -68,6 +69,11 @@ const DashboardUpgradeRoute = DashboardUpgradeRouteImport.update({
 const DashboardThemesRoute = DashboardThemesRouteImport.update({
   id: '/themes',
   path: '/themes',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardThemePresetsRoute = DashboardThemePresetsRouteImport.update({
+  id: '/theme-presets',
+  path: '/theme-presets',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardStoreRoute = DashboardStoreRouteImport.update({
@@ -143,6 +149,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/store': typeof DashboardStoreRoute
+  '/dashboard/theme-presets': typeof DashboardThemePresetsRoute
   '/dashboard/themes': typeof DashboardThemesRoute
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
   '/s/$slug': typeof SSlugRouteWithChildren
@@ -164,6 +171,7 @@ export interface FileRoutesByTo {
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/store': typeof DashboardStoreRoute
+  '/dashboard/theme-presets': typeof DashboardThemePresetsRoute
   '/dashboard/themes': typeof DashboardThemesRoute
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
   '/s/$slug': typeof SSlugRouteWithChildren
@@ -187,6 +195,7 @@ export interface FileRoutesById {
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/store': typeof DashboardStoreRoute
+  '/dashboard/theme-presets': typeof DashboardThemePresetsRoute
   '/dashboard/themes': typeof DashboardThemesRoute
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
   '/s/$slug': typeof SSlugRouteWithChildren
@@ -211,6 +220,7 @@ export interface FileRouteTypes {
     | '/dashboard/products'
     | '/dashboard/settings'
     | '/dashboard/store'
+    | '/dashboard/theme-presets'
     | '/dashboard/themes'
     | '/dashboard/upgrade'
     | '/s/$slug'
@@ -232,6 +242,7 @@ export interface FileRouteTypes {
     | '/dashboard/products'
     | '/dashboard/settings'
     | '/dashboard/store'
+    | '/dashboard/theme-presets'
     | '/dashboard/themes'
     | '/dashboard/upgrade'
     | '/s/$slug'
@@ -254,6 +265,7 @@ export interface FileRouteTypes {
     | '/dashboard/products'
     | '/dashboard/settings'
     | '/dashboard/store'
+    | '/dashboard/theme-presets'
     | '/dashboard/themes'
     | '/dashboard/upgrade'
     | '/s/$slug'
@@ -329,6 +341,13 @@ declare module '@tanstack/react-router' {
       path: '/themes'
       fullPath: '/dashboard/themes'
       preLoaderRoute: typeof DashboardThemesRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/theme-presets': {
+      id: '/dashboard/theme-presets'
+      path: '/theme-presets'
+      fullPath: '/dashboard/theme-presets'
+      preLoaderRoute: typeof DashboardThemePresetsRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/store': {
@@ -426,6 +445,7 @@ interface DashboardRouteChildren {
   DashboardProductsRoute: typeof DashboardProductsRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardStoreRoute: typeof DashboardStoreRoute
+  DashboardThemePresetsRoute: typeof DashboardThemePresetsRoute
   DashboardThemesRoute: typeof DashboardThemesRoute
   DashboardUpgradeRoute: typeof DashboardUpgradeRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
@@ -440,6 +460,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardProductsRoute: DashboardProductsRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardStoreRoute: DashboardStoreRoute,
+  DashboardThemePresetsRoute: DashboardThemePresetsRoute,
   DashboardThemesRoute: DashboardThemesRoute,
   DashboardUpgradeRoute: DashboardUpgradeRoute,
   DashboardIndexRoute: DashboardIndexRoute,

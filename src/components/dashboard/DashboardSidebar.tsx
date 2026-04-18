@@ -8,6 +8,7 @@ import {
   ShoppingBag,
   Users,
   Palette,
+  Sparkles,
   BarChart3,
   Settings,
   ShieldCheck,
@@ -41,7 +42,8 @@ const items: NavItem[] = [
   { title: "Categories", url: "/dashboard/categories", icon: Tag },
   { title: "Orders", url: "/dashboard/orders", icon: ShoppingBag },
   { title: "Customers", url: "/dashboard/customers", icon: Users },
-  { title: "Themes", url: "/dashboard/themes", icon: Palette },
+  { title: "Theme presets", url: "/dashboard/theme-presets", icon: Sparkles },
+  { title: "Customize", url: "/dashboard/themes", icon: Palette },
   { title: "Analytics", url: "/dashboard/analytics", icon: BarChart3 },
   { title: "Settings", url: "/dashboard/settings", icon: Settings },
 ];

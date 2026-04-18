@@ -304,6 +304,11 @@ function CustomizePage() {
         description="Design every detail — themes, colors, content, navigation, footer."
         actions={
           <>
+            <Button variant="outline" asChild>
+              <a href="/dashboard/theme-presets">
+                <Sparkles className="h-4 w-4" /> Browse presets
+              </a>
+            </Button>
             <div className="flex items-center rounded-lg border border-border bg-background p-1">
               <Button size="sm" variant={device === "desktop" ? "secondary" : "ghost"} className="h-7 px-2" onClick={() => setDevice("desktop")}>
                 <Monitor className="h-4 w-4" />
