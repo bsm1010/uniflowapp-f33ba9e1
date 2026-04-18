@@ -248,6 +248,38 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
             )}
           >
             {step === 0 && (
+              <div className="grid grid-cols-2 gap-2">
+                {SOURCES.map(({ value, label, Icon: SrcIcon }) => {
+                  const selected = source === value;
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => setSource(value)}
+                      className={cn(
+                        "group flex items-center gap-2.5 rounded-lg border p-3 text-left text-sm transition-all",
+                        selected
+                          ? "border-primary bg-primary/5 ring-2 ring-primary/20"
+                          : "border-border hover:border-primary/40 hover:bg-muted/40",
+                      )}
+                    >
+                      <div
+                        className={cn(
+                          "h-8 w-8 rounded-md flex items-center justify-center shrink-0 transition-colors",
+                          selected ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
+                        )}
+                      >
+                        <SrcIcon className="h-4 w-4" />
+                      </div>
+                      <span className="font-medium">{label}</span>
+                      {selected && <Check className="h-4 w-4 text-primary ml-auto shrink-0" />}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {step === 1 && (
               <div className="space-y-2">
                 <Label htmlFor="store-name">Store name</Label>
                 <Input
