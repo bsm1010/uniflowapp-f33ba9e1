@@ -301,7 +301,7 @@ function OrderTrackingCard({
                     </div>
                     <div
                       className="text-xs mt-2 font-medium"
-                      style={{ color: reached ? t.text : t.muted }}
+                      style={{ color: reached ? t.fg : t.muted }}
                     >
                       {s.label}
                     </div>
@@ -313,7 +313,7 @@ function OrderTrackingCard({
 
           <div
             className="p-3 rounded text-sm"
-            style={{ backgroundColor: t.primary + "12", color: t.text, borderRadius: radius / 2 }}
+            style={{ backgroundColor: t.primary + "12", color: t.fg, borderRadius: radius / 2 }}
           >
             {step.message}
           </div>
