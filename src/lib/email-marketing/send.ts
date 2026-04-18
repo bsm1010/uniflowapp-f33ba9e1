@@ -14,13 +14,16 @@ export const sendCampaign = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const LOVABLE_API_KEY = process.env.LOVABLE_API_KEY;
     const RESEND_API_KEY = process.env.RESEND_API_KEY;
-    const SUPABASE_URL = process.env.SUPABASE_URL;
+    const SUPABASE_URL =
+      process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL;
     const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
     if (!RESEND_API_KEY) throw new Error("RESEND_API_KEY not configured");
-    if (!SUPABASE_URL || !SERVICE_KEY)
-      throw new Error("Supabase env not configured");
+    if (!SUPABASE_URL)
+      throw new Error("SUPABASE_URL not configured");
+    if (!SERVICE_KEY)
+      throw new Error("SUPABASE_SERVICE_ROLE_KEY not configured — add it in Cloud settings");
 
     // Verify the caller
     const userClient = createClient(SUPABASE_URL, SERVICE_KEY, {
