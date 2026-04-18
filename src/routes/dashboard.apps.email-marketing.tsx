@@ -36,8 +36,14 @@ import { useInstalledApps } from "@/hooks/use-installed-apps";
 import { sendCampaign } from "@/lib/email-marketing/send";
 import { toast } from "sonner";
 
+import { RequireApp } from "@/components/dashboard/RequireApp";
+
 export const Route = createFileRoute("/dashboard/apps/email-marketing")({
-  component: EmailMarketingApp,
+  component: () => (
+    <RequireApp appKey="email-marketing">
+      <EmailMarketingApp />
+    </RequireApp>
+  ),
   head: () => ({
     meta: [
       { title: "Email Marketing — Storely" },

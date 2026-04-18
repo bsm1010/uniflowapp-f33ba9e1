@@ -9,8 +9,14 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 
+import { RequireApp } from "@/components/dashboard/RequireApp";
+
 export const Route = createFileRoute("/dashboard/apps/analytics")({
-  component: AnalyticsIntegrationPage,
+  component: () => (
+    <RequireApp appKey="analytics">
+      <AnalyticsIntegrationPage />
+    </RequireApp>
+  ),
   head: () => ({ meta: [{ title: "Analytics Integration — Storely" }] }),
 });
 
