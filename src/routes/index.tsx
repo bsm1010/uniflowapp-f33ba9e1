@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+
 import { Navbar } from "@/components/landing/Navbar";
 import { Hero } from "@/components/landing/Hero";
 import { Features } from "@/components/landing/Features";
@@ -9,28 +10,35 @@ import { CTA } from "@/components/landing/CTA";
 import { Footer } from "@/components/landing/Footer";
 
 export const Route = createFileRoute("/")({
+  component: Index,
   head: () => ({
     meta: [
-      { title: "Storely — Launch your store in minutes" },
-      { name: "description", content: "Build, customize, and launch your e-commerce store with ease." },
+      { title: "Storely — Build Your Online Store in Minutes" },
+      {
+        name: "description",
+        content:
+          "Create, customize, and launch your e-commerce business without code. Drag-and-drop builder, beautiful themes, secure payments, and analytics.",
+      },
+      { property: "og:title", content: "Storely — Build Your Online Store in Minutes" },
+      {
+        property: "og:description",
+        content: "Launch your e-commerce store in minutes — no code required.",
+      },
     ],
   }),
-  component: HomePage,
 });
 
-function HomePage() {
+function Index() {
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       <Navbar />
-      <main>
-        <Hero />
-        <Features />
-        <HowItWorks />
-        <Pricing />
-        <Testimonials />
-        <CTA />
-      </main>
+      <Hero />
+      <Features />
+      <HowItWorks />
+      <Pricing />
+      <Testimonials />
+      <CTA />
       <Footer />
-    </div>
+    </main>
   );
 }
