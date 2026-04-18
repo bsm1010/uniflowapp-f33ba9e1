@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Sparkles } from "lucide-react";
+import dashboardPreview from "@/assets/dashboard-preview.jpg";
 
 export function Hero() {
   return (
@@ -72,22 +73,15 @@ export function Hero() {
           className="mt-16 mx-auto max-w-5xl"
         >
           <div className="rounded-2xl border border-border/60 bg-card/60 backdrop-blur-xl p-2 shadow-glow">
-            <div className="rounded-xl bg-gradient-to-br from-muted to-background aspect-[16/9] overflow-hidden relative">
-              <div className="absolute inset-0 grid grid-cols-12 gap-3 p-6">
-                <div className="col-span-3 rounded-lg bg-background/70 border border-border/60" />
-                <div className="col-span-9 grid grid-rows-6 gap-3">
-                  <div className="row-span-1 rounded-lg bg-background/70 border border-border/60" />
-                  <div className="row-span-5 grid grid-cols-3 gap-3">
-                    {[0, 1, 2].map((i) => (
-                      <div
-                        key={i}
-                        className="rounded-lg bg-gradient-to-br from-background/80 to-accent/40 border border-border/60"
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+            <div className="rounded-xl overflow-hidden relative aspect-[16/9]">
+              <img
+                src={dashboardPreview}
+                alt="Storely dashboard preview showing revenue, orders, and analytics"
+                width={1600}
+                height={900}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-background to-transparent pointer-events-none" />
             </div>
           </div>
         </motion.div>
