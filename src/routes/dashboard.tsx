@@ -6,6 +6,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { DashboardTopbar } from "@/components/dashboard/DashboardTopbar";
 import { TrialBanner } from "@/components/dashboard/TrialBanner";
+import { OnboardingWizard } from "@/components/dashboard/OnboardingWizard";
 import { SubscriptionProvider } from "@/hooks/use-subscription";
 
 export const Route = createFileRoute("/dashboard")({
@@ -26,6 +27,7 @@ function DashboardLayout() {
   const [trialEndDate, setTrialEndDate] = useState<string | null>(null);
   const [subscriptionStatus, setSubscriptionStatus] = useState<string>("trial");
   const [hadPaidSubscription, setHadPaidSubscription] = useState(false);
+  const [onboarded, setOnboarded] = useState<boolean | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -39,7 +41,7 @@ function DashboardLayout() {
       const { data } = await supabase
         .from("profiles")
         .select(
-          "name, avatar_url, trial_end_date, subscription_status, subscription_end_date",
+          "name, avatar_url, trial_end_date, subscription_status, subscription_end_date, onboarded",
         )
         .eq("id", user.id)
         .maybeSingle();
@@ -47,6 +49,7 @@ function DashboardLayout() {
       setName(data?.name ?? "");
       setAvatarUrl(data?.avatar_url ?? null);
       setTrialEndDate(data?.trial_end_date ?? null);
+      setOnboarded(data?.onboarded ?? false);
 
       let status = data?.subscription_status ?? "trial";
       const now = new Date();
@@ -150,6 +153,13 @@ function DashboardLayout() {
             </main>
           </SidebarInset>
         </div>
+        {onboarded === false && (
+          <OnboardingWizard
+            userId={user.id}
+            initialName={name}
+            onComplete={() => setOnboarded(true)}
+          />
+        )}
       </SidebarProvider>
     </SubscriptionProvider>
   );
