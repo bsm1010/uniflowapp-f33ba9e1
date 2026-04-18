@@ -8,6 +8,7 @@ import {
   ShoppingBag,
   Users,
   Palette,
+  Sparkles,
   BarChart3,
   Settings,
   ShieldCheck,
