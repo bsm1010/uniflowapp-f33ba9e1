@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Tag, Pencil, Trash2, Plus, Loader2, Search, Package } from "lucide-react";
+import { Tag, Pencil, Trash2, Plus, Loader2, Search, Package, ImageIcon, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -48,6 +48,7 @@ export const Route = createFileRoute("/dashboard/categories")({
 interface CategoryRow {
   name: string;
   count: number;
+  image_url: string | null;
 }
 
 function CategoriesPage() {
@@ -62,28 +63,44 @@ function CategoriesPage() {
   const [creating, setCreating] = useState(false);
   const [newName, setNewName] = useState("");
   const [busy, setBusy] = useState(false);
+  const [uploadingFor, setUploadingFor] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     if (!user) return;
     setLoading(true);
-    const { data, error } = await supabase
-      .from("products")
-      .select("category")
-      .eq("user_id", user.id);
+    const [pRes, iRes] = await Promise.all([
+      supabase.from("products").select("category").eq("user_id", user.id),
+      supabase
+        .from("category_images")
+        .select("category_name,image_url")
+        .eq("user_id", user.id),
+    ]);
     setLoading(false);
-    if (error) {
-      toast.error(error.message);
+    if (pRes.error) {
+      toast.error(pRes.error.message);
       return;
     }
+    const imageMap = new Map<string, string>();
+    (iRes.data ?? []).forEach((r) => imageMap.set(r.category_name, r.image_url));
+
     const map = new Map<string, number>();
-    (data ?? []).forEach((p) => {
+    (pRes.data ?? []).forEach((p) => {
       const c = (p.category ?? "").trim();
       if (!c) return;
       map.set(c, (map.get(c) ?? 0) + 1);
     });
+    // Include categories that only exist as image rows (placeholder/empty cats)
+    imageMap.forEach((_, name) => {
+      if (!map.has(name)) map.set(name, 0);
+    });
+
     setRows(
       Array.from(map.entries())
-        .map(([name, count]) => ({ name, count }))
+        .map(([name, count]) => ({
+          name,
+          count,
+          image_url: imageMap.get(name) ?? null,
+        }))
         .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name)),
     );
   }, [user]);
