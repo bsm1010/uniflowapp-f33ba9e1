@@ -14,7 +14,10 @@ export const Route = createFileRoute("/dashboard/apps")({
   head: () => ({
     meta: [
       { title: "App Store — Storely" },
-      { name: "description", content: "Browse and install apps to power up your store." },
+      {
+        name: "description",
+        content: "Browse and install apps to power up your store.",
+      },
     ],
   }),
 });
@@ -31,7 +34,6 @@ function AppsPage() {
       toast.error("Failed to install app");
       return;
     }
-    setInstalled((prev) => new Set(prev).add(appKey));
     toast.success(`${appName} installed`);
   };
 
@@ -78,9 +80,9 @@ function AppsPage() {
                     </p>
                   </div>
                   <Button
-                    variant={isInstalled ? "secondary" : "default"}
+                    variant={installed ? "secondary" : "default"}
                     size="sm"
-                    disabled={isInstalled || isPending}
+                    disabled={installed || isPending}
                     onClick={() => install(app.key, app.name)}
                     className="w-full"
                   >
@@ -89,7 +91,7 @@ function AppsPage() {
                         <Loader2 className="h-4 w-4 animate-spin" />
                         Installing...
                       </>
-                    ) : isInstalled ? (
+                    ) : installed ? (
                       <>
                         <Check className="h-4 w-4" />
                         Installed
