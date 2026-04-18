@@ -310,68 +310,120 @@ function CategoriesPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-muted/40 hover:bg-muted/40">
+                    <TableHead className="w-[80px]">Image</TableHead>
                     <TableHead>Category</TableHead>
                     <TableHead className="text-right">Products</TableHead>
-                    <TableHead className="w-[160px] text-right">Actions</TableHead>
+                    <TableHead className="w-[260px] text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {loading ? (
                     <TableRow>
-                      <TableCell colSpan={3} className="h-32 text-center text-muted-foreground">
+                      <TableCell colSpan={4} className="h-32 text-center text-muted-foreground">
                         <Loader2 className="h-5 w-5 animate-spin inline" />
                       </TableCell>
                     </TableRow>
                   ) : filtered.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={3} className="h-32 text-center text-muted-foreground">
+                      <TableCell colSpan={4} className="h-32 text-center text-muted-foreground">
                         No categories match "{search}".
                       </TableCell>
                     </TableRow>
                   ) : (
-                    filtered.map((r) => (
-                      <TableRow key={r.name} className="hover:bg-muted/30">
-                        <TableCell>
-                          <div className="flex items-center gap-2.5">
-                            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                              <Tag className="h-4 w-4 text-primary" />
+                    filtered.map((r) => {
+                      const isUploading = uploadingFor === r.name;
+                      return (
+                        <TableRow key={r.name} className="hover:bg-muted/30">
+                          <TableCell>
+                            <div className="h-12 w-12 rounded-lg bg-muted overflow-hidden flex items-center justify-center border border-border/60">
+                              {isUploading ? (
+                                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                              ) : r.image_url ? (
+                                <img src={r.image_url} alt={r.name} className="h-full w-full object-cover" />
+                              ) : (
+                                <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                              )}
                             </div>
-                            <span className="font-medium">{r.name}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {r.count === 0 ? (
-                            <Badge variant="outline" className="font-normal text-muted-foreground">
-                              <Package className="h-3 w-3 mr-1" /> Empty
-                            </Badge>
-                          ) : (
-                            <span className="text-sm font-medium">{r.count}</span>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-1">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8"
-                              onClick={() => openRename(r)}
-                              disabled={isExpired}
-                            >
-                              <Pencil className="h-3.5 w-3.5" /> Rename
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 text-destructive hover:text-destructive"
-                              onClick={() => setDeleting(r)}
-                              disabled={isExpired || r.count === 0}
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2.5">
+                              <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                                <Tag className="h-4 w-4 text-primary" />
+                              </div>
+                              <span className="font-medium">{r.name}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {r.count === 0 ? (
+                              <Badge variant="outline" className="font-normal text-muted-foreground">
+                                <Package className="h-3 w-3 mr-1" /> Empty
+                              </Badge>
+                            ) : (
+                              <span className="text-sm font-medium">{r.count}</span>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-1">
+                              <label>
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  className="hidden"
+                                  disabled={isExpired || isUploading}
+                                  onChange={(e) => {
+                                    const f = e.target.files?.[0];
+                                    if (f) uploadImage(r, f);
+                                    e.target.value = "";
+                                  }}
+                                />
+                                <Button
+                                  asChild
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-8"
+                                  disabled={isExpired || isUploading}
+                                >
+                                  <span>
+                                    <Upload className="h-3.5 w-3.5" />
+                                    {r.image_url ? "Replace" : "Image"}
+                                  </span>
+                                </Button>
+                              </label>
+                              {r.image_url && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-8 w-8 p-0 text-muted-foreground"
+                                  onClick={() => removeImage(r)}
+                                  disabled={isExpired || isUploading}
+                                  aria-label="Remove image"
+                                >
+                                  <X className="h-3.5 w-3.5" />
+                                </Button>
+                              )}
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8"
+                                onClick={() => openRename(r)}
+                                disabled={isExpired}
+                              >
+                                <Pencil className="h-3.5 w-3.5" /> Rename
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 text-destructive hover:text-destructive"
+                                onClick={() => setDeleting(r)}
+                                disabled={isExpired || (r.count === 0 && !r.image_url)}
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
                   )}
                 </TableBody>
               </Table>
