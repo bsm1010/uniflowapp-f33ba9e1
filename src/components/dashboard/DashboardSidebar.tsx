@@ -12,6 +12,7 @@ import {
   BarChart3,
   Settings,
   ShieldCheck,
+  FileText,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -44,6 +45,7 @@ const items: NavItem[] = [
   { title: "Customers", url: "/dashboard/customers", icon: Users },
   { title: "Theme presets", url: "/dashboard/theme-presets", icon: Sparkles },
   { title: "Customize", url: "/dashboard/themes", icon: Palette },
+  { title: "About page", url: "/dashboard/about", icon: FileText },
   { title: "Analytics", url: "/dashboard/analytics", icon: BarChart3 },
   { title: "Settings", url: "/dashboard/settings", icon: Settings },
 ];

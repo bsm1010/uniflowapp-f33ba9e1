@@ -25,8 +25,10 @@ import { Route as DashboardOrdersRouteImport } from './routes/dashboard.orders'
 import { Route as DashboardCustomersRouteImport } from './routes/dashboard.customers'
 import { Route as DashboardCategoriesRouteImport } from './routes/dashboard.categories'
 import { Route as DashboardAnalyticsRouteImport } from './routes/dashboard.analytics'
+import { Route as DashboardAboutRouteImport } from './routes/dashboard.about'
 import { Route as SSlugCheckoutRouteImport } from './routes/s.$slug.checkout'
 import { Route as SSlugCartRouteImport } from './routes/s.$slug.cart'
+import { Route as SSlugAboutRouteImport } from './routes/s.$slug.about'
 import { Route as DashboardAdminPaymentsRouteImport } from './routes/dashboard.admin.payments'
 import { Route as SSlugPProductIdRouteImport } from './routes/s.$slug.p.$productId'
 import { Route as SSlugCheckoutSuccessRouteImport } from './routes/s.$slug.checkout.success'
@@ -111,6 +113,11 @@ const DashboardAnalyticsRoute = DashboardAnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardAboutRoute = DashboardAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const SSlugCheckoutRoute = SSlugCheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
@@ -119,6 +126,11 @@ const SSlugCheckoutRoute = SSlugCheckoutRouteImport.update({
 const SSlugCartRoute = SSlugCartRouteImport.update({
   id: '/cart',
   path: '/cart',
+  getParentRoute: () => SSlugRoute,
+} as any)
+const SSlugAboutRoute = SSlugAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => SSlugRoute,
 } as any)
 const DashboardAdminPaymentsRoute = DashboardAdminPaymentsRouteImport.update({
@@ -142,6 +154,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/dashboard/about': typeof DashboardAboutRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/categories': typeof DashboardCategoriesRoute
   '/dashboard/customers': typeof DashboardCustomersRoute
@@ -155,6 +168,7 @@ export interface FileRoutesByFullPath {
   '/s/$slug': typeof SSlugRouteWithChildren
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
+  '/s/$slug/about': typeof SSlugAboutRoute
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
   '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
@@ -164,6 +178,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/dashboard/about': typeof DashboardAboutRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/categories': typeof DashboardCategoriesRoute
   '/dashboard/customers': typeof DashboardCustomersRoute
@@ -177,6 +192,7 @@ export interface FileRoutesByTo {
   '/s/$slug': typeof SSlugRouteWithChildren
   '/dashboard': typeof DashboardIndexRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
+  '/s/$slug/about': typeof SSlugAboutRoute
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
   '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
@@ -188,6 +204,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/dashboard/about': typeof DashboardAboutRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/categories': typeof DashboardCategoriesRoute
   '/dashboard/customers': typeof DashboardCustomersRoute
@@ -201,6 +218,7 @@ export interface FileRoutesById {
   '/s/$slug': typeof SSlugRouteWithChildren
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
+  '/s/$slug/about': typeof SSlugAboutRoute
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
   '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
@@ -213,6 +231,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/signup'
+    | '/dashboard/about'
     | '/dashboard/analytics'
     | '/dashboard/categories'
     | '/dashboard/customers'
@@ -226,6 +245,7 @@ export interface FileRouteTypes {
     | '/s/$slug'
     | '/dashboard/'
     | '/dashboard/admin/payments'
+    | '/s/$slug/about'
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
     | '/s/$slug/checkout/success'
@@ -235,6 +255,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/signup'
+    | '/dashboard/about'
     | '/dashboard/analytics'
     | '/dashboard/categories'
     | '/dashboard/customers'
@@ -248,6 +269,7 @@ export interface FileRouteTypes {
     | '/s/$slug'
     | '/dashboard'
     | '/dashboard/admin/payments'
+    | '/s/$slug/about'
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
     | '/s/$slug/checkout/success'
@@ -258,6 +280,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/signup'
+    | '/dashboard/about'
     | '/dashboard/analytics'
     | '/dashboard/categories'
     | '/dashboard/customers'
@@ -271,6 +294,7 @@ export interface FileRouteTypes {
     | '/s/$slug'
     | '/dashboard/'
     | '/dashboard/admin/payments'
+    | '/s/$slug/about'
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
     | '/s/$slug/checkout/success'
@@ -399,6 +423,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAnalyticsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/about': {
+      id: '/dashboard/about'
+      path: '/about'
+      fullPath: '/dashboard/about'
+      preLoaderRoute: typeof DashboardAboutRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/s/$slug/checkout': {
       id: '/s/$slug/checkout'
       path: '/checkout'
@@ -411,6 +442,13 @@ declare module '@tanstack/react-router' {
       path: '/cart'
       fullPath: '/s/$slug/cart'
       preLoaderRoute: typeof SSlugCartRouteImport
+      parentRoute: typeof SSlugRoute
+    }
+    '/s/$slug/about': {
+      id: '/s/$slug/about'
+      path: '/about'
+      fullPath: '/s/$slug/about'
+      preLoaderRoute: typeof SSlugAboutRouteImport
       parentRoute: typeof SSlugRoute
     }
     '/dashboard/admin/payments': {
@@ -438,6 +476,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface DashboardRouteChildren {
+  DashboardAboutRoute: typeof DashboardAboutRoute
   DashboardAnalyticsRoute: typeof DashboardAnalyticsRoute
   DashboardCategoriesRoute: typeof DashboardCategoriesRoute
   DashboardCustomersRoute: typeof DashboardCustomersRoute
@@ -453,6 +492,7 @@ interface DashboardRouteChildren {
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardAboutRoute: DashboardAboutRoute,
   DashboardAnalyticsRoute: DashboardAnalyticsRoute,
   DashboardCategoriesRoute: DashboardCategoriesRoute,
   DashboardCustomersRoute: DashboardCustomersRoute,
@@ -484,12 +524,14 @@ const SSlugCheckoutRouteWithChildren = SSlugCheckoutRoute._addFileChildren(
 )
 
 interface SSlugRouteChildren {
+  SSlugAboutRoute: typeof SSlugAboutRoute
   SSlugCartRoute: typeof SSlugCartRoute
   SSlugCheckoutRoute: typeof SSlugCheckoutRouteWithChildren
   SSlugPProductIdRoute: typeof SSlugPProductIdRoute
 }
 
 const SSlugRouteChildren: SSlugRouteChildren = {
+  SSlugAboutRoute: SSlugAboutRoute,
   SSlugCartRoute: SSlugCartRoute,
   SSlugCheckoutRoute: SSlugCheckoutRouteWithChildren,
   SSlugPProductIdRoute: SSlugPProductIdRoute,
