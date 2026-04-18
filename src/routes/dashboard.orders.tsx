@@ -33,8 +33,8 @@ const STATUS_VARIANT: Record<
     className:
       "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30",
   },
-  processing: {
-    label: "Processing",
+  confirmed: {
+    label: "Confirmed",
     className:
       "bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-500/30",
   },
@@ -43,8 +43,8 @@ const STATUS_VARIANT: Record<
     className:
       "bg-violet-500/10 text-violet-700 dark:text-violet-400 border-violet-500/30",
   },
-  fulfilled: {
-    label: "Fulfilled",
+  delivered: {
+    label: "Delivered",
     className:
       "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30",
   },
