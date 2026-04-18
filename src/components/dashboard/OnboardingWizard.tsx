@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Loader2, Check, ArrowRight, ArrowLeft, Upload, Store, Link2, DollarSign, ImageIcon } from "lucide-react";
+import { Loader2, Check, ArrowRight, ArrowLeft, Upload, Store, Link2, DollarSign, ImageIcon, Sparkles, Facebook, Instagram, Music2, Youtube, Users, Search, MoreHorizontal } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,16 @@ const CURRENCIES = [
   { code: "AUD", label: "Australian Dollar (A$)" },
 ];
 
+const SOURCES = [
+  { value: "facebook", label: "Facebook", Icon: Facebook },
+  { value: "instagram", label: "Instagram", Icon: Instagram },
+  { value: "tiktok", label: "TikTok", Icon: Music2 },
+  { value: "youtube", label: "YouTube", Icon: Youtube },
+  { value: "referral", label: "Friend / Referral", Icon: Users },
+  { value: "google", label: "Google Search", Icon: Search },
+  { value: "other", label: "Other", Icon: MoreHorizontal },
+];
+
 function slugify(input: string) {
   return input
     .toLowerCase()
@@ -49,6 +59,7 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [source, setSource] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Auto-derive slug from store name until user edits it
@@ -86,6 +97,12 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
   };
 
   const steps = [
+    {
+      title: "Where did you hear about us?",
+      subtitle: "Help us understand how you found Storely.",
+      icon: Sparkles,
+      valid: source.length > 0,
+    },
     {
       title: "Name your store",
       subtitle: "This appears on your storefront and in browser tabs.",
@@ -160,10 +177,10 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
         );
       if (storeErr) throw storeErr;
 
-      // Mark profile as onboarded
+      // Mark profile as onboarded and save discovery source
       const { error: profErr } = await supabase
         .from("profiles")
-        .update({ onboarded: true })
+        .update({ onboarded: true, source_of_user: source || null })
         .eq("id", userId);
       if (profErr) throw profErr;
 
