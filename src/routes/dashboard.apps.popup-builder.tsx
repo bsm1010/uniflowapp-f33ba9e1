@@ -36,12 +36,23 @@ type Popup = {
   active: boolean;
 };
 
-const empty = {
+type Draft = {
+  title: string;
+  content: string;
+  cta_label: string;
+  cta_url: string;
+  trigger_type: "timer" | "exit" | "scroll";
+  trigger_value: number;
+  background_color: string;
+  text_color: string;
+};
+
+const empty: Draft = {
   title: "Get 10% off",
   content: "Subscribe to our newsletter and get a coupon.",
   cta_label: "Subscribe",
   cta_url: "/",
-  trigger_type: "timer" as const,
+  trigger_type: "timer",
   trigger_value: 5,
   background_color: "#ffffff",
   text_color: "#111827",
