@@ -74,6 +74,54 @@ export type Database = {
         }
         Relationships: []
       }
+      email_campaigns: {
+        Row: {
+          audience_type: string
+          created_at: string
+          error: string | null
+          failed_count: number
+          id: string
+          message: string
+          recipients: string[]
+          sent_at: string | null
+          sent_count: number
+          status: string
+          subject: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          audience_type?: string
+          created_at?: string
+          error?: string | null
+          failed_count?: number
+          id?: string
+          message: string
+          recipients?: string[]
+          sent_at?: string | null
+          sent_count?: number
+          status?: string
+          subject: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          audience_type?: string
+          created_at?: string
+          error?: string | null
+          failed_count?: number
+          id?: string
+          message?: string
+          recipients?: string[]
+          sent_at?: string | null
+          sent_count?: number
+          status?: string
+          subject?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       installed_apps: {
         Row: {
           app_key: string
