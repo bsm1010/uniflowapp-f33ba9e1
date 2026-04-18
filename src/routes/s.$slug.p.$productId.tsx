@@ -8,6 +8,7 @@ import {
   StorefrontShell,
   getStoreTokens,
 } from "@/components/storefront/StorefrontShell";
+import { AlgerianCheckoutForm } from "@/components/storefront/AlgerianCheckoutForm";
 import { useCart } from "@/hooks/use-cart";
 
 type StoreSettings = Tables<"store_settings">;
@@ -130,7 +131,7 @@ function ProductPage() {
           <ArrowLeft className="h-4 w-4" /> Back to store
         </Link>
 
-        <div className="mt-6 grid gap-10 lg:grid-cols-2">
+        <div className="mt-6 grid gap-8 lg:grid-cols-[1.1fr_1fr]">
           {/* Gallery */}
           <div>
             <div
@@ -182,34 +183,34 @@ function ProductPage() {
             )}
           </div>
 
-          {/* Details */}
-          <div>
-            {product.category && (
-              <div
-                className="text-xs uppercase tracking-wider font-medium"
-                style={{ color: t.muted }}
-              >
-                {product.category}
+          {/* Details + Checkout */}
+          <div className="space-y-6">
+            <div>
+              {product.category && (
+                <div
+                  className="text-xs uppercase tracking-wider font-medium"
+                  style={{ color: t.muted }}
+                >
+                  {product.category}
+                </div>
+              )}
+              <h1 className="mt-2 text-2xl md:text-3xl font-bold tracking-tight">
+                {product.name}
+              </h1>
+              <div className="mt-3 text-2xl font-semibold" style={{ color: t.primary }}>
+                {Number(product.price).toFixed(2)} DA
               </div>
-            )}
-            <h1 className="mt-2 text-3xl md:text-4xl font-bold tracking-tight">
-              {product.name}
-            </h1>
-            <div className="mt-4 text-2xl font-semibold">
-              ${Number(product.price).toFixed(2)}
-            </div>
 
-            {product.description && (
-              <p
-                className="mt-6 text-sm leading-relaxed whitespace-pre-line"
-                style={{ color: t.muted }}
-              >
-                {product.description}
-              </p>
-            )}
+              {product.description && (
+                <p
+                  className="mt-4 text-sm leading-relaxed whitespace-pre-line"
+                  style={{ color: t.muted }}
+                >
+                  {product.description}
+                </p>
+              )}
 
-            <div className="mt-8 space-y-4">
-              <div>
+              <div className="mt-5">
                 <div
                   className="text-xs uppercase tracking-wider font-medium mb-2"
                   style={{ color: t.muted }}
@@ -254,34 +255,39 @@ function ProductPage() {
                       : "In stock"}
                 </div>
               </div>
+            </div>
 
-              <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                <button
-                  onClick={handleAdd}
-                  disabled={outOfStock}
-                  className="flex-1 inline-flex items-center justify-center gap-2 px-6 h-12 text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
-                  style={{
-                    backgroundColor: t.primary,
-                    color: t.onPrimary,
-                    borderRadius: radius / 2,
-                  }}
-                >
-                  <ShoppingBag className="h-4 w-4" />
-                  Add to cart
-                </button>
-                <button
-                  onClick={handleBuyNow}
-                  disabled={outOfStock}
-                  className="flex-1 inline-flex items-center justify-center px-6 h-12 text-sm font-medium transition-opacity hover:opacity-80 disabled:opacity-40 disabled:cursor-not-allowed"
-                  style={{
-                    backgroundColor: t.fg,
-                    color: t.bg,
-                    borderRadius: radius / 2,
-                  }}
-                >
-                  Buy now
-                </button>
-              </div>
+            {!outOfStock && (
+              <AlgerianCheckoutForm
+                storeOwnerId={settings.user_id}
+                storeSlug={slug}
+                product={{
+                  id: product.id,
+                  name: product.name,
+                  price: Number(product.price),
+                  image: product.images[0] ?? null,
+                }}
+                quantity={qty}
+                tokens={t}
+                radius={radius}
+              />
+            )}
+
+            <div className="flex gap-3">
+              <button
+                onClick={handleAdd}
+                disabled={outOfStock}
+                className="flex-1 inline-flex items-center justify-center gap-2 px-6 h-11 text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-40"
+                style={{
+                  backgroundColor: "transparent",
+                  color: t.fg,
+                  border: `1px solid ${t.border}`,
+                  borderRadius: radius / 2,
+                }}
+              >
+                <ShoppingBag className="h-4 w-4" />
+                Add to cart
+              </button>
             </div>
           </div>
         </div>
