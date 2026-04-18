@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowLeft, Loader2, Minus, Plus, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
@@ -21,7 +21,7 @@ export const Route = createFileRoute("/s/$slug/p/$productId")({
 
 function ProductPage() {
   const { slug, productId } = Route.useParams();
-  const navigate = useNavigate();
+  
   const [settings, setSettings] = useState<StoreSettings | null>(null);
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -104,19 +104,6 @@ function ProductPage() {
       qty,
     );
     toast.success(`${product.name} added to cart`);
-  };
-
-  const handleBuyNow = () => {
-    cart.add(
-      {
-        productId: product.id,
-        name: product.name,
-        price: Number(product.price),
-        image: product.images[0] ?? null,
-      },
-      qty,
-    );
-    navigate({ to: "/s/$slug/checkout", params: { slug } });
   };
 
   return (
