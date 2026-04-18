@@ -8,10 +8,26 @@ import dashboardPreview from "@/assets/dashboard-preview.jpg";
 export function Hero() {
   return (
     <section className="relative overflow-hidden pt-36 pb-24 md:pt-44 md:pb-32">
-      <div className="absolute inset-0 bg-soft-radial pointer-events-none" />
+      {/* Dotted grid base */}
       <div
         aria-hidden
-        className="absolute -top-40 left-1/2 -translate-x-1/2 h-[500px] w-[900px] rounded-full bg-gradient-brand opacity-20 blur-3xl pointer-events-none"
+        className="absolute inset-0 bg-grid-dots [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_75%)] pointer-events-none"
+      />
+      {/* Aurora gradient wash */}
+      <div className="absolute inset-0 bg-soft-radial pointer-events-none" />
+      {/* Floating blobs */}
+      <div
+        aria-hidden
+        className="absolute -top-32 -left-20 h-[420px] w-[420px] rounded-full bg-gradient-brand opacity-25 blur-3xl pointer-events-none animate-pulse"
+      />
+      <div
+        aria-hidden
+        className="absolute top-20 -right-20 h-[380px] w-[380px] rounded-full bg-accent opacity-20 blur-3xl pointer-events-none"
+      />
+      {/* Bottom fade into next section */}
+      <div
+        aria-hidden
+        className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-background pointer-events-none"
       />
 
       <div className="relative mx-auto max-w-6xl px-4 text-center">

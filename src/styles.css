@@ -160,9 +160,24 @@
 @theme inline {
   --gradient-brand: linear-gradient(135deg, var(--brand) 0%, var(--brand-glow) 100%);
   --gradient-soft: radial-gradient(
-    1200px 600px at 50% -10%,
-    color-mix(in oklch, var(--brand) 18%, transparent),
-    transparent 60%
+      900px 500px at 15% 0%,
+      color-mix(in oklch, var(--brand) 22%, transparent),
+      transparent 55%
+    ),
+    radial-gradient(
+      800px 500px at 85% 10%,
+      color-mix(in oklch, var(--brand-glow) 20%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      700px 400px at 50% 90%,
+      color-mix(in oklch, var(--accent) 15%, transparent),
+      transparent 65%
+    );
+  --bg-grid: radial-gradient(
+    circle at 1px 1px,
+    color-mix(in oklch, var(--foreground) 10%, transparent) 1px,
+    transparent 0
   );
   --shadow-soft: 0 1px 2px oklch(0.18 0.03 265 / 0.04), 0 8px 24px oklch(0.18 0.03 265 / 0.06);
   --shadow-glow: 0 20px 60px -15px color-mix(in oklch, var(--brand) 45%, transparent);
@@ -203,6 +218,10 @@
   }
   .bg-soft-radial {
     background-image: var(--gradient-soft);
+  }
+  .bg-grid-dots {
+    background-image: var(--bg-grid);
+    background-size: 24px 24px;
   }
   .shadow-soft {
     box-shadow: var(--shadow-soft);
