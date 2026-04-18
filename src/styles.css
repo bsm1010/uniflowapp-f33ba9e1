@@ -219,6 +219,10 @@
   .bg-soft-radial {
     background-image: var(--gradient-soft);
   }
+  .bg-grid-dots {
+    background-image: var(--bg-grid);
+    background-size: 24px 24px;
+  }
   .shadow-soft {
     box-shadow: var(--shadow-soft);
   }
