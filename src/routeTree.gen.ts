@@ -33,6 +33,7 @@ import { Route as SSlugContactRouteImport } from './routes/s.$slug.contact'
 import { Route as SSlugCheckoutRouteImport } from './routes/s.$slug.checkout'
 import { Route as SSlugCartRouteImport } from './routes/s.$slug.cart'
 import { Route as SSlugAboutRouteImport } from './routes/s.$slug.about'
+import { Route as DashboardAppsAppKeyRouteImport } from './routes/dashboard.apps.$appKey'
 import { Route as DashboardAdminPaymentsRouteImport } from './routes/dashboard.admin.payments'
 import { Route as SSlugPProductIdRouteImport } from './routes/s.$slug.p.$productId'
 import { Route as SSlugCheckoutSuccessRouteImport } from './routes/s.$slug.checkout.success'
@@ -157,6 +158,11 @@ const SSlugAboutRoute = SSlugAboutRouteImport.update({
   path: '/s/$slug/about',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardAppsAppKeyRoute = DashboardAppsAppKeyRouteImport.update({
+  id: '/$appKey',
+  path: '/$appKey',
+  getParentRoute: () => DashboardAppsRoute,
+} as any)
 const DashboardAdminPaymentsRoute = DashboardAdminPaymentsRouteImport.update({
   id: '/admin/payments',
   path: '/admin/payments',
@@ -180,7 +186,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/dashboard/about': typeof DashboardAboutRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
-  '/dashboard/apps': typeof DashboardAppsRoute
+  '/dashboard/apps': typeof DashboardAppsRouteWithChildren
   '/dashboard/categories': typeof DashboardCategoriesRoute
   '/dashboard/contact': typeof DashboardContactRoute
   '/dashboard/customers': typeof DashboardCustomersRoute
@@ -193,6 +199,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
+  '/dashboard/apps/$appKey': typeof DashboardAppsAppKeyRoute
   '/s/$slug/about': typeof SSlugAboutRoute
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
@@ -208,7 +215,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/dashboard/about': typeof DashboardAboutRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
-  '/dashboard/apps': typeof DashboardAppsRoute
+  '/dashboard/apps': typeof DashboardAppsRouteWithChildren
   '/dashboard/categories': typeof DashboardCategoriesRoute
   '/dashboard/contact': typeof DashboardContactRoute
   '/dashboard/customers': typeof DashboardCustomersRoute
@@ -221,6 +228,7 @@ export interface FileRoutesByTo {
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
   '/dashboard': typeof DashboardIndexRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
+  '/dashboard/apps/$appKey': typeof DashboardAppsAppKeyRoute
   '/s/$slug/about': typeof SSlugAboutRoute
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
@@ -238,7 +246,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/dashboard/about': typeof DashboardAboutRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
-  '/dashboard/apps': typeof DashboardAppsRoute
+  '/dashboard/apps': typeof DashboardAppsRouteWithChildren
   '/dashboard/categories': typeof DashboardCategoriesRoute
   '/dashboard/contact': typeof DashboardContactRoute
   '/dashboard/customers': typeof DashboardCustomersRoute
@@ -251,6 +259,7 @@ export interface FileRoutesById {
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
+  '/dashboard/apps/$appKey': typeof DashboardAppsAppKeyRoute
   '/s/$slug/about': typeof SSlugAboutRoute
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
@@ -282,6 +291,7 @@ export interface FileRouteTypes {
     | '/dashboard/upgrade'
     | '/dashboard/'
     | '/dashboard/admin/payments'
+    | '/dashboard/apps/$appKey'
     | '/s/$slug/about'
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
@@ -310,6 +320,7 @@ export interface FileRouteTypes {
     | '/dashboard/upgrade'
     | '/dashboard'
     | '/dashboard/admin/payments'
+    | '/dashboard/apps/$appKey'
     | '/s/$slug/about'
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
@@ -339,6 +350,7 @@ export interface FileRouteTypes {
     | '/dashboard/upgrade'
     | '/dashboard/'
     | '/dashboard/admin/payments'
+    | '/dashboard/apps/$appKey'
     | '/s/$slug/about'
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
@@ -533,6 +545,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SSlugAboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/apps/$appKey': {
+      id: '/dashboard/apps/$appKey'
+      path: '/$appKey'
+      fullPath: '/dashboard/apps/$appKey'
+      preLoaderRoute: typeof DashboardAppsAppKeyRouteImport
+      parentRoute: typeof DashboardAppsRoute
+    }
     '/dashboard/admin/payments': {
       id: '/dashboard/admin/payments'
       path: '/admin/payments'
@@ -557,10 +576,22 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface DashboardAppsRouteChildren {
+  DashboardAppsAppKeyRoute: typeof DashboardAppsAppKeyRoute
+}
+
+const DashboardAppsRouteChildren: DashboardAppsRouteChildren = {
+  DashboardAppsAppKeyRoute: DashboardAppsAppKeyRoute,
+}
+
+const DashboardAppsRouteWithChildren = DashboardAppsRoute._addFileChildren(
+  DashboardAppsRouteChildren,
+)
+
 interface DashboardRouteChildren {
   DashboardAboutRoute: typeof DashboardAboutRoute
   DashboardAnalyticsRoute: typeof DashboardAnalyticsRoute
-  DashboardAppsRoute: typeof DashboardAppsRoute
+  DashboardAppsRoute: typeof DashboardAppsRouteWithChildren
   DashboardCategoriesRoute: typeof DashboardCategoriesRoute
   DashboardContactRoute: typeof DashboardContactRoute
   DashboardCustomersRoute: typeof DashboardCustomersRoute
@@ -578,7 +609,7 @@ interface DashboardRouteChildren {
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAboutRoute: DashboardAboutRoute,
   DashboardAnalyticsRoute: DashboardAnalyticsRoute,
-  DashboardAppsRoute: DashboardAppsRoute,
+  DashboardAppsRoute: DashboardAppsRouteWithChildren,
   DashboardCategoriesRoute: DashboardCategoriesRoute,
   DashboardContactRoute: DashboardContactRoute,
   DashboardCustomersRoute: DashboardCustomersRoute,
