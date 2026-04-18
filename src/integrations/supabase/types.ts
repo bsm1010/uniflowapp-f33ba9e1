@@ -41,6 +41,39 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_messages: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          read: boolean
+          sender_email: string
+          sender_name: string
+          store_owner_id: string
+          store_slug: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          read?: boolean
+          sender_email: string
+          sender_name: string
+          store_owner_id: string
+          store_slug: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          read?: boolean
+          sender_email?: string
+          sender_name?: string
+          store_owner_id?: string
+          store_slug?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string
@@ -299,6 +332,12 @@ export type Database = {
           border_radius: string
           button_labels: Json
           button_style: string
+          contact_address: string
+          contact_email: string
+          contact_form_enabled: boolean
+          contact_intro: string
+          contact_map_url: string
+          contact_phone: string
           created_at: string
           currency: string
           font_family: string
@@ -336,6 +375,12 @@ export type Database = {
           border_radius?: string
           button_labels?: Json
           button_style?: string
+          contact_address?: string
+          contact_email?: string
+          contact_form_enabled?: boolean
+          contact_intro?: string
+          contact_map_url?: string
+          contact_phone?: string
           created_at?: string
           currency?: string
           font_family?: string
@@ -373,6 +418,12 @@ export type Database = {
           border_radius?: string
           button_labels?: Json
           button_style?: string
+          contact_address?: string
+          contact_email?: string
+          contact_form_enabled?: boolean
+          contact_intro?: string
+          contact_map_url?: string
+          contact_phone?: string
           created_at?: string
           currency?: string
           font_family?: string

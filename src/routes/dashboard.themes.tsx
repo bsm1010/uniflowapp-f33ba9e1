@@ -168,6 +168,12 @@ function defaults(userId: string): StoreSettings {
     about_title: "About us",
     about_content: "Welcome to our store. We are passionate about offering quality products and a delightful shopping experience. Thanks for stopping by!",
     about_image_url: null,
+    contact_email: "",
+    contact_phone: "",
+    contact_address: "",
+    contact_map_url: "",
+    contact_form_enabled: true,
+    contact_intro: "Have a question? We'd love to hear from you.",
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };
