@@ -16,6 +16,8 @@ import { useSubscription } from "@/hooks/use-subscription";
 import { ExpiredOverlay } from "@/components/dashboard/ExpiredOverlay";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { StorePreview } from "@/components/dashboard/StorePreview";
+import { ProductPagePreview } from "@/components/dashboard/ProductPagePreview";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import type { StoreSettings } from "@/lib/storeTheme";
 import {
   THEME_PRESETS,
@@ -31,7 +33,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
 } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/dashboard/theme-presets")({
@@ -221,55 +222,79 @@ function PresetsPage() {
         </Button>
       </div>
 
-      {/* Preview dialog */}
+      {/* Live preview dialog — fullscreen with Homepage / Product page tabs */}
       <Dialog open={!!previewing} onOpenChange={(o) => !o && setPreviewing(null)}>
-        <DialogContent className="max-w-5xl p-0 overflow-hidden gap-0">
-          <DialogHeader className="px-6 py-4 border-b border-border/60">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <DialogTitle className="text-xl">
+        <DialogContent className="max-w-[100vw] sm:max-w-[95vw] w-[95vw] h-[92vh] p-0 overflow-hidden gap-0 flex flex-col">
+          <DialogHeader className="px-6 py-3 border-b border-border/60 shrink-0">
+            <div className="flex items-center justify-between gap-4">
+              <div className="min-w-0">
+                <DialogTitle className="text-lg flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-primary" />
                   {previewing?.name} theme
+                  {previewing && isActive(previewing) && (
+                    <Badge className="bg-primary/15 text-primary hover:bg-primary/15 border-0 gap-1">
+                      <Check className="h-3 w-3" /> Active
+                    </Badge>
+                  )}
                 </DialogTitle>
-                <DialogDescription>
+                <DialogDescription className="truncate">
                   {previewing?.description}
                 </DialogDescription>
               </div>
+              <Button
+                size="sm"
+                onClick={() => previewing && apply(previewing)}
+                disabled={
+                  !previewing ||
+                  isExpired ||
+                  applyingId === previewing.id ||
+                  (previewing && isActive(previewing))
+                }
+              >
+                {previewing && applyingId === previewing.id ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : previewing && isActive(previewing) ? (
+                  <Check className="h-4 w-4" />
+                ) : (
+                  <Sparkles className="h-4 w-4" />
+                )}
+                {previewing && isActive(previewing) ? "Already applied" : "Apply this theme"}
+              </Button>
             </div>
           </DialogHeader>
-          <div className="bg-muted/30 p-4 sm:p-6 max-h-[70vh] overflow-y-auto">
-            <div
-              className="mx-auto bg-background rounded-xl border border-border overflow-hidden shadow-soft"
-              style={{ maxWidth: 980, height: 600 }}
-            >
-              {settings && previewing && (
-                <StorePreview
-                  settings={applyPreset(settings, previewing)}
-                  products={products}
-                />
-              )}
+
+          <Tabs defaultValue="home" className="flex-1 flex flex-col min-h-0">
+            <div className="px-6 py-2 border-b border-border/60 bg-muted/30 shrink-0">
+              <TabsList>
+                <TabsTrigger value="home">Homepage</TabsTrigger>
+                <TabsTrigger value="product">Product page</TabsTrigger>
+              </TabsList>
             </div>
-          </div>
-          <DialogFooter className="px-6 py-4 border-t border-border/60 bg-background">
-            <Button variant="ghost" onClick={() => setPreviewing(null)}>
-              Close
-            </Button>
-            <Button
-              onClick={() => previewing && apply(previewing)}
-              disabled={
-                !previewing ||
-                isExpired ||
-                applyingId === previewing.id ||
-                (previewing && isActive(previewing))
-              }
-            >
-              {previewing && applyingId === previewing.id ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Sparkles className="h-4 w-4" />
-              )}
-              Apply this theme
-            </Button>
-          </DialogFooter>
+
+            <div className="flex-1 min-h-0 bg-muted/40 p-3 sm:p-5 overflow-hidden">
+              <div
+                className="mx-auto h-full bg-background rounded-xl border border-border overflow-hidden shadow-soft"
+                style={{ maxWidth: 1180 }}
+              >
+                <TabsContent value="home" className="h-full m-0 data-[state=inactive]:hidden">
+                  {settings && previewing && (
+                    <StorePreview
+                      settings={applyPreset(settings, previewing)}
+                      products={products}
+                    />
+                  )}
+                </TabsContent>
+                <TabsContent value="product" className="h-full m-0 data-[state=inactive]:hidden">
+                  {settings && previewing && (
+                    <ProductPagePreview
+                      settings={applyPreset(settings, previewing)}
+                      products={products}
+                    />
+                  )}
+                </TabsContent>
+              </div>
+            </div>
+          </Tabs>
         </DialogContent>
       </Dialog>
     </div>
