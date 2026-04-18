@@ -28,7 +28,7 @@ import { useSubscription } from "@/hooks/use-subscription";
 import { ExpiredOverlay } from "@/components/dashboard/ExpiredOverlay";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { StorePreview } from "@/components/dashboard/StorePreview";
-import type { StoreSettings } from "@/lib/storeTheme";
+import { type StoreSettings, FONT_STACK } from "@/lib/storeTheme";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -403,26 +403,41 @@ function CustomizePage() {
                     <span className="font-medium">Typography</span>
                   </div>
                 </AccordionTrigger>
-                <AccordionContent className="px-2 pb-4">
-                  <div className="grid gap-2">
-                    {FONTS.map((f) => {
-                      const active = settings.font_family === f;
-                      return (
-                        <button
-                          key={f}
-                          onClick={() => update("font_family", f)}
-                          className={`text-left rounded-lg border px-3 py-2.5 transition-colors ${
-                            active ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"
-                          }`}
-                        >
-                          <div className="flex items-center justify-between">
-                            <span className="text-base" style={{ fontFamily: f === "Mono" ? "monospace" : f }}>{f}</span>
-                            {active && <Check className="h-4 w-4 text-primary" />}
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
+                <AccordionContent className="px-2 pb-4 space-y-4">
+                  {FONT_GROUPS.map((g) => (
+                    <div key={g.group}>
+                      <Label className="text-xs uppercase tracking-wider text-muted-foreground">
+                        {g.group}
+                      </Label>
+                      <div className="mt-2 grid gap-1.5">
+                        {g.fonts.map((f) => {
+                          const active = settings.font_family === f.id;
+                          const stack = FONT_STACK[f.id] ?? f.id;
+                          return (
+                            <button
+                              key={f.id}
+                              onClick={() => update("font_family", f.id)}
+                              className={`text-left rounded-lg border px-3 py-2 transition-colors ${
+                                active ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"
+                              }`}
+                            >
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="min-w-0">
+                                  <div className="text-sm font-medium truncate" style={{ fontFamily: stack }}>
+                                    {f.id}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground truncate" style={{ fontFamily: stack }}>
+                                    {f.preview}
+                                  </div>
+                                </div>
+                                {active && <Check className="h-4 w-4 text-primary shrink-0" />}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
                 </AccordionContent>
               </AccordionItem>
 
