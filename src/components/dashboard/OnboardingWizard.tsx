@@ -123,6 +123,12 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
       valid: source.length > 0,
     },
     {
+      title: "Where do you live?",
+      subtitle: "Pick your wilaya so we can tailor your experience.",
+      icon: MapPin,
+      valid: wilaya.length > 0,
+    },
+    {
       title: "Name your store",
       subtitle: "This appears on your storefront and in browser tabs.",
       icon: Store,
