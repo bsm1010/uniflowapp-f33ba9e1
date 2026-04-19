@@ -3,14 +3,14 @@ import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
-import shot1 from "@/assets/dashboard-shot-1.png";
-import shot2 from "@/assets/dashboard-shot-2.png";
-import shot3 from "@/assets/dashboard-shot-3.png";
+import shot1 from "@/assets/dashboard-shot-1.jpg";
+import shot2 from "@/assets/dashboard-shot-2.jpg";
+import shot3 from "@/assets/dashboard-shot-3.jpg";
 
 const SHOTS = [
-  { src: shot1, alt: "Storely dashboard overview" },
-  { src: shot2, alt: "Storely products catalog" },
-  { src: shot3, alt: "Storely analytics insights" },
+  { src: shot1, alt: "Storely analytics dashboard" },
+  { src: shot2, alt: "Storely products management" },
+  { src: shot3, alt: "Storely orders management" },
 ];
 
 
