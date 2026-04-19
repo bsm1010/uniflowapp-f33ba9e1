@@ -164,7 +164,5 @@ function Dashboard3DCarousel() {
         ))}
       </div>
     </motion.div>
-      </div>
-    </section>
   );
 }
