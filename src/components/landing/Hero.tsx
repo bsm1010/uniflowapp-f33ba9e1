@@ -162,7 +162,7 @@ function Dashboard3DCarousel() {
             </motion.div>
           );
         })}
-      </div>
+      </motion.div>
 
       <div className="mt-6 flex items-center justify-center gap-2">
         {SHOTS.map((_, i) => (
