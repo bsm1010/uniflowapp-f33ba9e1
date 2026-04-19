@@ -1,5 +1,6 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   LayoutDashboard,
   Store,
@@ -46,27 +47,13 @@ type NavItem = {
   end?: boolean;
 };
 
-const items: NavItem[] = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard, end: true },
-  { title: "My Store", url: "/dashboard/store", icon: Store },
-  { title: "Products", url: "/dashboard/products", icon: Package },
-  { title: "Categories", url: "/dashboard/categories", icon: Tag },
-  { title: "Orders", url: "/dashboard/orders", icon: ShoppingBag },
-  { title: "Customers", url: "/dashboard/customers", icon: Users },
-  { title: "Theme presets", url: "/dashboard/theme-presets", icon: Sparkles },
-  { title: "Customize", url: "/dashboard/themes", icon: Palette },
-  { title: "About page", url: "/dashboard/about", icon: FileText },
-  { title: "Contact page", url: "/dashboard/contact", icon: Mail },
-  { title: "Analytics", url: "/dashboard/analytics", icon: BarChart3 },
-  { title: "App Store", url: "/dashboard/apps", icon: Blocks },
-  { title: "Settings", url: "/dashboard/settings", icon: Settings },
-];
 
 export function DashboardSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const { pathname } = useLocation();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [isAdmin, setIsAdmin] = useState(false);
   const { installed } = useInstalledApps();
   const installedApps = Array.from(installed)
@@ -77,6 +64,22 @@ export function DashboardSidebar() {
   useEffect(() => {
     if (anyAppActive) setAppsOpen(true);
   }, [anyAppActive]);
+
+  const items: NavItem[] = [
+    { title: t("dashboard.nav.dashboard"), url: "/dashboard", icon: LayoutDashboard, end: true },
+    { title: t("dashboard.nav.store"), url: "/dashboard/store", icon: Store },
+    { title: t("dashboard.nav.products"), url: "/dashboard/products", icon: Package },
+    { title: t("dashboard.nav.categories"), url: "/dashboard/categories", icon: Tag },
+    { title: t("dashboard.nav.orders"), url: "/dashboard/orders", icon: ShoppingBag },
+    { title: t("dashboard.nav.customers"), url: "/dashboard/customers", icon: Users },
+    { title: t("dashboard.nav.themePresets"), url: "/dashboard/theme-presets", icon: Sparkles },
+    { title: t("dashboard.nav.customize"), url: "/dashboard/themes", icon: Palette },
+    { title: t("dashboard.nav.aboutPage"), url: "/dashboard/about", icon: FileText },
+    { title: t("dashboard.nav.contactPage"), url: "/dashboard/contact", icon: Mail },
+    { title: t("dashboard.nav.analytics"), url: "/dashboard/analytics", icon: BarChart3 },
+    { title: t("dashboard.nav.appStore"), url: "/dashboard/apps", icon: Blocks },
+    { title: t("dashboard.nav.settings"), url: "/dashboard/settings", icon: Settings },
+  ];
 
   useEffect(() => {
     if (!user) return;
@@ -104,7 +107,7 @@ export function DashboardSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Workspace</SidebarGroupLabel>
+          <SidebarGroupLabel>{t("dashboard.groupWorkspace")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => {
@@ -143,7 +146,7 @@ export function DashboardSidebar() {
                   className="cursor-pointer hover:bg-sidebar-accent/40 rounded-md transition-colors"
                 >
                   <button className="w-full flex items-center justify-between">
-                    <span>My Apps</span>
+                    <span>{t("dashboard.groupApps")}</span>
                     <ChevronDown
                       className={`h-3.5 w-3.5 transition-transform ${appsOpen ? "" : "-rotate-90"}`}
                     />
@@ -187,14 +190,14 @@ export function DashboardSidebar() {
         )}
         {isAdmin && (
           <SidebarGroup>
-            <SidebarGroupLabel>Admin</SidebarGroupLabel>
+            <SidebarGroupLabel>{t("dashboard.groupAdmin")}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     asChild
                     isActive={isActive("/dashboard/admin/payments")}
-                    tooltip="Payments"
+                    tooltip={t("dashboard.nav.payments")}
                   >
                     <Link
                       to="/dashboard/admin/payments"
@@ -205,7 +208,7 @@ export function DashboardSidebar() {
                       }
                     >
                       <ShieldCheck className="h-4 w-4" />
-                      <span>Payments</span>
+                      <span>{t("dashboard.nav.payments")}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
