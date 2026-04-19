@@ -97,16 +97,6 @@ function Dashboard3DCarousel() {
     return () => clearInterval(id);
   }, []);
 
-  const handleDragEnd = (_: unknown, info: { offset: { x: number } }) => {
-    const threshold = 60;
-    const dx = info.offset.x;
-    if (dx < -threshold) {
-      setActive((a) => (a + 1) % SHOTS.length);
-    } else if (dx > threshold) {
-      setActive((a) => (a - 1 + SHOTS.length) % SHOTS.length);
-    }
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -120,7 +110,14 @@ function Dashboard3DCarousel() {
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.2}
-        onDragEnd={handleDragEnd}
+        onDragEnd={(_, info) => {
+          const dx = info.offset.x;
+          if (dx < -60) {
+            setActive((a) => (a + 1) % SHOTS.length);
+          } else if (60 < dx) {
+            setActive((a) => (a - 1 + SHOTS.length) % SHOTS.length);
+          }
+        }}
       >
         {SHOTS.map((shot, i) => {
           const offset = ((i - active + SHOTS.length) % SHOTS.length);
