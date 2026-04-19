@@ -1,0 +1,212 @@
+{
+  "nav": {
+    "features": "Features",
+    "how": "How it works",
+    "pricing": "Pricing",
+    "testimonials": "Testimonials",
+    "signIn": "Sign in",
+    "getStarted": "Get Started"
+  },
+  "hero": {
+    "badge": "New — AI-powered store generation",
+    "titleA": "Build Your Online Store",
+    "titleB": "in Minutes",
+    "subtitle": "Create, customize, and launch your e-commerce business without code. Everything you need to sell online — in one beautifully simple platform.",
+    "getStarted": "Get Started",
+    "viewDemo": "View Demo"
+  },
+  "features": {
+    "kicker": "Features",
+    "titleA": "Everything you need to",
+    "titleB": "sell online",
+    "subtitle": "Powerful tools designed to grow your business — from your first sale to your millionth.",
+    "items": {
+      "builder": { "title": "Drag & Drop Builder", "desc": "Design beautiful storefronts visually — no code, no complexity." },
+      "themes": { "title": "Custom Themes", "desc": "Pixel-perfect themes you can tailor to match your brand identity." },
+      "products": { "title": "Product Management", "desc": "Inventory, variants, and collections — all in one clean dashboard." },
+      "payments": { "title": "Secure Payments", "desc": "PCI-compliant checkout with global payment methods built-in." },
+      "analytics": { "title": "Analytics Dashboard", "desc": "Real-time insights on sales, traffic, and customer behavior." }
+    }
+  },
+  "how": {
+    "kicker": "How it works",
+    "titleA": "From idea to live store in",
+    "titleB": "3 steps",
+    "steps": {
+      "create": { "title": "Create Account", "desc": "Sign up free in 30 seconds. No credit card required." },
+      "build": { "title": "Build Your Store", "desc": "Pick a theme, add your products, and customize everything." },
+      "launch": { "title": "Launch & Sell", "desc": "Go live with one click and start accepting orders worldwide." }
+    }
+  },
+  "pricing": {
+    "kicker": "Pricing",
+    "titleA": "Simple,",
+    "titleB": "transparent",
+    "titleC": "pricing",
+    "subtitle": "Start free, upgrade when you grow. No hidden fees, ever.",
+    "popular": "Most popular",
+    "forever": "/forever",
+    "month": "/month",
+    "free": { "name": "Free", "desc": "Perfect for testing your idea.", "cta": "Start free", "f": ["1 store", "Up to 10 products", "Basic themes", "Community support"] },
+    "pro": { "name": "Pro", "desc": "For growing businesses ready to scale.", "cta": "Start Pro trial", "f": ["Unlimited products", "All premium themes", "Custom domain", "Advanced analytics", "Priority support"] },
+    "business": { "name": "Business", "desc": "Advanced tools for serious sellers.", "cta": "Contact sales", "f": ["Everything in Pro", "Multi-store", "API access", "Dedicated manager", "99.99% SLA"] }
+  },
+  "testimonials": { "kicker": "Testimonials", "titleA": "Loved by", "titleB": "10,000+", "titleC": "founders" },
+  "cta": {
+    "title": "Ready to build your store?",
+    "subtitle": "Join thousands of founders building successful brands on Storely. Free forever to start.",
+    "primary": "Get Started Free",
+    "secondary": "Talk to sales"
+  },
+  "footer": {
+    "tagline": "The fastest way to build, launch, and grow your e-commerce business.",
+    "product": "Product",
+    "company": "Company",
+    "legal": "Legal",
+    "rights": "All rights reserved.",
+    "made": "Made with care for founders worldwide."
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Log in to manage your store.",
+      "newHere": "New to Storely?",
+      "createAccount": "Create an account",
+      "email": "Email",
+      "password": "Password",
+      "emailPh": "you@example.com",
+      "passwordPh": "••••••••",
+      "submit": "Login",
+      "errEmail": "Enter a valid email",
+      "errPasswordRequired": "Password is required"
+    },
+    "signup": {
+      "title": "Create your store",
+      "subtitle": "Start selling online in minutes — no credit card required.",
+      "haveAccount": "Already have an account?",
+      "login": "Login",
+      "name": "Name",
+      "namePh": "Jane Doe",
+      "passwordPh": "At least 8 characters",
+      "submit": "Create Store",
+      "checkEmail": "Check your email for a confirmation link to activate your store.",
+      "errName": "Name is required",
+      "errNameLong": "Name is too long",
+      "errPasswordShort": "Password must be at least 8 characters"
+    }
+  },
+  "dashboard": {
+    "groupWorkspace": "Workspace",
+    "groupApps": "My Apps",
+    "groupAdmin": "Admin",
+    "searchPh": "Search products, orders, customers…",
+    "myAccount": "My account",
+    "profile": "Profile & settings",
+    "signOut": "Sign out",
+    "account": "Account",
+    "nav": {
+      "dashboard": "Dashboard",
+      "store": "My Store",
+      "products": "Products",
+      "categories": "Categories",
+      "orders": "Orders",
+      "customers": "Customers",
+      "themePresets": "Theme presets",
+      "customize": "Customize",
+      "aboutPage": "About page",
+      "contactPage": "Contact page",
+      "analytics": "Analytics",
+      "appStore": "App Store",
+      "settings": "Settings",
+      "payments": "Payments"
+    },
+    "home": {
+      "kicker": "Dashboard",
+      "welcome": "Welcome back,",
+      "subtitle": "Here's what's happening with your store today.",
+      "storeActive": "Store active",
+      "stats": {
+        "products": "Total Products",
+        "orders": "Orders",
+        "revenue": "Revenue",
+        "customers": "Customers"
+      },
+      "actions": {
+        "addProduct": { "title": "Add Product", "desc": "List a new item in your catalog." },
+        "customize": { "title": "Customize Store", "desc": "Pick a theme and brand your store." },
+        "viewStore": { "title": "View Store", "desc": "See what your customers see." }
+      },
+      "recentOrders": "Recent orders",
+      "viewAll": "View all",
+      "noOrders": "No orders yet",
+      "noOrdersDesc": "Orders will appear here once your customers start shopping.",
+      "checklist": "Launch checklist",
+      "checklistDesc": "Complete a few steps to get your store ready for customers.",
+      "continueSetup": "Continue setup",
+      "subActive": "Subscription active",
+      "subActiveDesc": "Your plan is active. All features are unlocked.",
+      "subPending": "Payment under review",
+      "subPendingDesc": "We'll activate your subscription as soon as the admin approves it.",
+      "viewStatus": "View status",
+      "subExpired": "Subscription expired",
+      "trialExpired": "Trial expired",
+      "subExpiredDesc": "Renew to continue using your store. Your data is safe.",
+      "trialExpiredDesc": "Upgrade to a paid plan to keep using your store.",
+      "renew": "Renew now",
+      "upgradeNow": "Upgrade now",
+      "trialLeft": "Free trial · {{days}} {{unit}} left",
+      "day": "day",
+      "days": "days",
+      "trialDesc": "Upgrade anytime to unlock unlimited access.",
+      "upgrade": "Upgrade"
+    },
+    "settings": {
+      "title": "Settings",
+      "description": "Manage your profile, store, and payment preferences.",
+      "profile": "Profile",
+      "profileDesc": "Update your personal details and avatar.",
+      "fullName": "Full name",
+      "emailAddr": "Email address",
+      "uploadAvatar": "Upload avatar",
+      "removeAvatar": "Remove",
+      "saveProfile": "Save profile",
+      "saving": "Saving…",
+      "store": "Store",
+      "storeDesc": "Configure your storefront identity.",
+      "storeName": "Store name",
+      "tagline": "Tagline",
+      "saveStore": "Save store",
+      "domain": "Domain",
+      "domainDesc": "Your public store URL.",
+      "saveDomain": "Save domain",
+      "payments": "Payments",
+      "paymentsDesc": "Connect a provider to start accepting payments.",
+      "enablePayments": "Enable payments",
+      "currency": "Currency",
+      "payoutEmail": "Payout email",
+      "savePayments": "Save preferences",
+      "danger": "Danger zone",
+      "dangerDesc": "Sign out of your account on this device.",
+      "signOutBtn": "Sign out"
+    }
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "loading": "Loading…",
+    "search": "Search",
+    "yes": "Yes",
+    "no": "No",
+    "back": "Back"
+  },
+  "toast": {
+    "saved": "Saved successfully",
+    "error": "Something went wrong",
+    "copied": "Copied to clipboard",
+    "uploaded": "Uploaded",
+    "removed": "Removed"
+  }
+}
