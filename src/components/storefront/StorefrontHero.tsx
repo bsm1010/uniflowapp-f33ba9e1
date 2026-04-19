@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { StoreSettings, StoreTokens } from "@/lib/storeTheme";
 
 interface Props {
@@ -6,6 +7,7 @@ interface Props {
 }
 
 export function StorefrontHero({ settings, tokens: t }: Props) {
+  const { t: tr } = useTranslation();
   const layout = settings.hero_layout || "centered";
   const img = settings.hero_image_url;
 
@@ -80,7 +82,7 @@ export function StorefrontHero({ settings, tokens: t }: Props) {
                 borderRadius: t.radius.sm,
               }}
             >
-              New season
+              {tr("storefront.hero.newSeason")}
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05]">
               {settings.hero_heading}

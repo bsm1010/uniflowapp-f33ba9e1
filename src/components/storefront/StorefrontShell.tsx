@@ -1,6 +1,7 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { ShoppingBag, Instagram, Facebook, Twitter, Music2, Menu, X } from "lucide-react";
 import { useState, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { useCart } from "@/hooks/use-cart";
 import {
   getStoreTokens,
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export function StorefrontShell({ settings, children }: Props) {
+  const { t: tr } = useTranslation();
   const t = getStoreTokens(settings);
   const { count } = useCart(settings.slug);
   const location = useLocation();
@@ -24,10 +26,10 @@ export function StorefrontShell({ settings, children }: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const navItems = [
-    { label: "Home", to: "/s/$slug" as const, exact: true },
-    { label: "Shop", to: "/s/$slug" as const, hash: "shop" },
-    { label: "About", to: "/s/$slug/about" as const },
-    { label: "Contact", to: "/s/$slug/contact" as const },
+    { label: tr("storefront.nav.home"), to: "/s/$slug" as const, exact: true },
+    { label: tr("storefront.nav.shop"), to: "/s/$slug" as const, hash: "shop" },
+    { label: tr("storefront.nav.about"), to: "/s/$slug/about" as const },
+    { label: tr("storefront.nav.contact"), to: "/s/$slug/contact" as const },
   ];
 
   const isActive = (to: string, exact?: boolean, hash?: string) => {
@@ -108,7 +110,7 @@ export function StorefrontShell({ settings, children }: Props) {
               params={{ slug: settings.slug }}
               className="relative inline-flex items-center justify-center h-10 w-10 rounded-full transition-opacity hover:opacity-80"
               style={{ backgroundColor: t.surface }}
-              aria-label="Cart"
+              aria-label={tr("storefront.nav.cart")}
             >
               <ShoppingBag className="h-4 w-4" />
               {count > 0 && (
@@ -125,7 +127,7 @@ export function StorefrontShell({ settings, children }: Props) {
               onClick={() => setMobileOpen((v) => !v)}
               className="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-full transition-opacity hover:opacity-80"
               style={{ backgroundColor: t.surface }}
-              aria-label="Menu"
+              aria-label={tr("storefront.nav.menu")}
               aria-expanded={mobileOpen}
             >
               {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
@@ -214,27 +216,27 @@ export function StorefrontShell({ settings, children }: Props) {
               className="text-xs font-semibold uppercase tracking-wider mb-3"
               style={{ color: t.fg }}
             >
-              Shop
+              {tr("storefront.footer.shop")}
             </div>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link to="/s/$slug" params={{ slug: settings.slug }} className="hover:opacity-70">
-                  Home
+                  {tr("storefront.nav.home")}
                 </Link>
               </li>
               <li>
                 <Link to="/s/$slug" params={{ slug: settings.slug }} hash="shop" className="hover:opacity-70">
-                  Shop
+                  {tr("storefront.nav.shop")}
                 </Link>
               </li>
               <li>
                 <Link to="/s/$slug/about" params={{ slug: settings.slug }} className="hover:opacity-70">
-                  About
+                  {tr("storefront.nav.about")}
                 </Link>
               </li>
               <li>
                 <Link to="/s/$slug/contact" params={{ slug: settings.slug }} className="hover:opacity-70">
-                  Contact
+                  {tr("storefront.nav.contact")}
                 </Link>
               </li>
             </ul>
@@ -244,27 +246,27 @@ export function StorefrontShell({ settings, children }: Props) {
               className="text-xs font-semibold uppercase tracking-wider mb-3"
               style={{ color: t.fg }}
             >
-              Help
+              {tr("storefront.footer.help")}
             </div>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link to="/s/$slug/about" params={{ slug: settings.slug }} className="hover:opacity-70">
-                  About
+                  {tr("storefront.nav.about")}
                 </Link>
               </li>
               <li>
                 <Link to="/s/$slug/contact" params={{ slug: settings.slug }} className="hover:opacity-70">
-                  Contact
+                  {tr("storefront.nav.contact")}
                 </Link>
               </li>
               <li>
                 <Link to="/s/$slug/cart" params={{ slug: settings.slug }} className="hover:opacity-70">
-                  Cart
+                  {tr("storefront.nav.cart")}
                 </Link>
               </li>
               <li>
                 <Link to="/s/$slug/checkout" params={{ slug: settings.slug }} className="hover:opacity-70">
-                  Checkout
+                  {tr("storefront.footer.checkout")}
                 </Link>
               </li>
             </ul>
@@ -276,7 +278,7 @@ export function StorefrontShell({ settings, children }: Props) {
         >
           {settings.footer_copyright?.trim()
             ? settings.footer_copyright
-            : `© ${new Date().getFullYear()} ${settings.store_name}. All rights reserved.`}
+            : `© ${new Date().getFullYear()} ${settings.store_name}. ${tr("storefront.footer.rights")}`}
         </div>
       </footer>
     </div>

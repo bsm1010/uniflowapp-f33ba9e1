@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ShoppingBag } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { StoreTokens } from "@/lib/storeTheme";
 import { formatPrice } from "@/lib/storeTheme";
 
@@ -32,6 +33,7 @@ export function ProductCard({
   addLabel,
   onAdd,
 }: Props) {
+  const { t: tr } = useTranslation();
   const isMinimal = template === "minimal";
   const isEditorial = template === "editorial";
   const cardRadius = isMinimal ? 0 : t.radius.lg;
@@ -89,7 +91,7 @@ export function ProductCard({
                 borderRadius: t.radius.sm,
               }}
             >
-              Sold out
+              {tr("storefront.card.soldOut")}
             </span>
           )}
           {!out && (product.stock ?? 0) > 0 && (product.stock ?? 0) <= 5 && (
@@ -101,7 +103,7 @@ export function ProductCard({
                 borderRadius: t.radius.sm,
               }}
             >
-              Low stock
+              {tr("storefront.card.lowStock")}
             </span>
           )}
         </div>
