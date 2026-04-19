@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowLeft, Loader2, Minus, Plus, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import {
@@ -21,7 +22,8 @@ export const Route = createFileRoute("/s/$slug/p/$productId")({
 
 function ProductPage() {
   const { slug, productId } = Route.useParams();
-  
+  const { t: tr } = useTranslation();
+
   const [settings, setSettings] = useState<StoreSettings | null>(null);
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -76,13 +78,13 @@ function ProductPage() {
   if (notFound || !settings || !product) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4 text-center">
-        <h1 className="text-2xl font-bold">Product not found</h1>
+        <h1 className="text-2xl font-bold">{tr("storefront.product.notFound")}</h1>
         <Link
           to="/s/$slug"
           params={{ slug }}
           className="mt-4 text-sm text-primary underline"
         >
-          Back to store
+          {tr("storefront.product.back")}
         </Link>
       </div>
     );
@@ -103,7 +105,7 @@ function ProductPage() {
       },
       qty,
     );
-    toast.success(`${product.name} added to cart`);
+    toast.success(tr("storefront.product.addedToCart", { name: product.name }));
   };
 
   return (
@@ -115,7 +117,7 @@ function ProductPage() {
           className="inline-flex items-center gap-1.5 text-sm hover:opacity-70"
           style={{ color: t.muted }}
         >
-          <ArrowLeft className="h-4 w-4" /> Back to store
+          <ArrowLeft className="h-4 w-4" /> {tr("storefront.product.back")}
         </Link>
 
         <div className="mt-6 grid gap-8 lg:grid-cols-[1.1fr_1fr]">
@@ -202,7 +204,7 @@ function ProductPage() {
                   className="text-xs uppercase tracking-wider font-medium mb-2"
                   style={{ color: t.muted }}
                 >
-                  Quantity
+                  {tr("storefront.product.quantity")}
                 </div>
                 <div
                   className="inline-flex items-center"
@@ -215,7 +217,7 @@ function ProductPage() {
                     onClick={() => setQty((q) => Math.max(1, q - 1))}
                     className="h-10 w-10 inline-flex items-center justify-center hover:opacity-70 disabled:opacity-30"
                     disabled={qty <= 1}
-                    aria-label="Decrease quantity"
+                    aria-label={tr("storefront.product.decrease")}
                   >
                     <Minus className="h-3.5 w-3.5" />
                   </button>
@@ -229,17 +231,17 @@ function ProductPage() {
                       )
                     }
                     className="h-10 w-10 inline-flex items-center justify-center hover:opacity-70"
-                    aria-label="Increase quantity"
+                    aria-label={tr("storefront.product.increase")}
                   >
                     <Plus className="h-3.5 w-3.5" />
                   </button>
                 </div>
                 <div className="mt-2 text-xs" style={{ color: t.muted }}>
                   {outOfStock
-                    ? "Out of stock"
+                    ? tr("storefront.product.outOfStock")
                     : product.stock <= 5
-                      ? `Only ${product.stock} left in stock`
-                      : "In stock"}
+                      ? tr("storefront.product.lowStockLeft", { count: product.stock })
+                      : tr("storefront.product.inStock")}
                 </div>
               </div>
             </div>
@@ -273,7 +275,7 @@ function ProductPage() {
                 }}
               >
                 <ShoppingBag className="h-4 w-4" />
-                Add to cart
+                {tr("storefront.product.addToCart")}
               </button>
             </div>
           </div>

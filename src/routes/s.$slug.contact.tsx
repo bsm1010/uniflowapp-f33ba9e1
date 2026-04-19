@@ -2,6 +2,7 @@ import { createFileRoute, notFound } from "@tanstack/react-router";
 import { useState } from "react";
 import { Loader2, Mail, MapPin, Map as MapIcon, Phone, Send } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { StorefrontShell } from "@/components/storefront/StorefrontShell";
 import { getStoreTokens, type StoreSettings } from "@/lib/storeTheme";
@@ -30,18 +31,24 @@ export const Route = createFileRoute("/s/$slug/contact")({
     ],
   }),
   component: ContactPage,
-  notFoundComponent: () => (
+  notFoundComponent: NotFoundComp,
+});
+
+function NotFoundComp() {
+  const { t: tr } = useTranslation();
+  return (
     <div className="min-h-screen flex items-center justify-center text-center p-8">
       <div>
-        <h1 className="text-2xl font-semibold mb-2">Store not found</h1>
-        <p className="text-muted-foreground">This store does not exist.</p>
+        <h1 className="text-2xl font-semibold mb-2">{tr("storefront.notFound")}</h1>
+        <p className="text-muted-foreground">{tr("storefront.notFoundDesc", { slug: "" })}</p>
       </div>
     </div>
-  ),
-});
+  );
+}
 
 function ContactPage() {
   const { settings } = Route.useLoaderData();
+  const { t: tr } = useTranslation();
   const t = getStoreTokens(settings);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -52,11 +59,11 @@ function ContactPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !email.trim() || !message.trim()) {
-      toast.error("Please fill in all fields.");
+      toast.error(tr("storefront.contact.errFields"));
       return;
     }
     if (message.length > 4000) {
-      toast.error("Message is too long.");
+      toast.error(tr("storefront.contact.errLong"));
       return;
     }
     setSubmitting(true);
@@ -76,7 +83,7 @@ function ContactPage() {
     setName("");
     setEmail("");
     setMessage("");
-    toast.success("Message sent. We'll get back to you soon!");
+    toast.success(tr("storefront.contact.successToast"));
   };
 
   const hasAnyDetail =
@@ -96,22 +103,21 @@ function ContactPage() {
             className="text-4xl md:text-5xl font-semibold leading-tight tracking-tight"
             style={{ fontFamily: t.fontHeading, color: t.fg }}
           >
-            Get in touch
+            {tr("storefront.contact.title")}
           </h1>
           <p className="text-base md:text-lg max-w-2xl" style={{ color: t.muted }}>
-            {settings.contact_intro || "Have a question? We'd love to hear from you."}
+            {settings.contact_intro || tr("storefront.contact.introFallback")}
           </p>
         </div>
 
         <div className="grid gap-10 md:grid-cols-2">
-          {/* Details */}
           <div className="space-y-6">
             {hasAnyDetail ? (
               <div className="space-y-4">
                 {settings.contact_email && (
                   <DetailRow
                     icon={<Mail className="h-4 w-4" />}
-                    label="Email"
+                    label={tr("storefront.contact.email")}
                     href={`mailto:${settings.contact_email}`}
                     value={settings.contact_email}
                     t={t}
@@ -120,7 +126,7 @@ function ContactPage() {
                 {settings.contact_phone && (
                   <DetailRow
                     icon={<Phone className="h-4 w-4" />}
-                    label="Phone"
+                    label={tr("storefront.contact.phone")}
                     href={`tel:${settings.contact_phone.replace(/\s+/g, "")}`}
                     value={settings.contact_phone}
                     t={t}
@@ -129,16 +135,14 @@ function ContactPage() {
                 {settings.contact_address && (
                   <DetailRow
                     icon={<MapPin className="h-4 w-4" />}
-                    label="Address"
+                    label={tr("storefront.contact.address")}
                     value={settings.contact_address}
                     t={t}
                   />
                 )}
               </div>
             ) : (
-              <p style={{ color: t.muted }}>
-                The store hasn't added contact details yet.
-              </p>
+              <p style={{ color: t.muted }}>{tr("storefront.contact.noDetails")}</p>
             )}
 
             {settings.contact_map_url && (
@@ -153,12 +157,11 @@ function ContactPage() {
                   borderRadius: t.buttonRadius,
                 }}
               >
-                <MapIcon className="h-4 w-4" /> Get directions
+                <MapIcon className="h-4 w-4" /> {tr("storefront.contact.directions")}
               </a>
             )}
           </div>
 
-          {/* Form */}
           {settings.contact_form_enabled && (
             <div
               className="p-6 md:p-8"
@@ -172,23 +175,20 @@ function ContactPage() {
                 className="text-xl font-semibold mb-5"
                 style={{ fontFamily: t.fontHeading, color: t.fg }}
               >
-                Send us a message
+                {tr("storefront.contact.send")}
               </h2>
 
               {sent ? (
-                <div
-                  className="text-center py-10"
-                  style={{ color: t.fg }}
-                >
+                <div className="text-center py-10" style={{ color: t.fg }}>
                   <div
                     className="mx-auto h-12 w-12 rounded-full flex items-center justify-center mb-3"
                     style={{ backgroundColor: t.primary, color: t.onPrimary }}
                   >
                     <Send className="h-5 w-5" />
                   </div>
-                  <div className="font-medium">Thanks for reaching out!</div>
+                  <div className="font-medium">{tr("storefront.contact.sent")}</div>
                   <p className="text-sm mt-1" style={{ color: t.muted }}>
-                    We'll reply as soon as we can.
+                    {tr("storefront.contact.sentDesc")}
                   </p>
                   <button
                     type="button"
@@ -196,12 +196,12 @@ function ContactPage() {
                     className="mt-5 text-sm underline"
                     style={{ color: t.muted }}
                   >
-                    Send another
+                    {tr("storefront.contact.another")}
                   </button>
                 </div>
               ) : (
                 <form onSubmit={submit} className="space-y-4">
-                  <FormField label="Your name" t={t}>
+                  <FormField label={tr("storefront.contact.name")} t={t}>
                     <input
                       required
                       value={name}
@@ -216,7 +216,7 @@ function ContactPage() {
                       }}
                     />
                   </FormField>
-                  <FormField label="Your email" t={t}>
+                  <FormField label={tr("storefront.contact.yourEmail")} t={t}>
                     <input
                       required
                       type="email"
@@ -232,7 +232,7 @@ function ContactPage() {
                       }}
                     />
                   </FormField>
-                  <FormField label="Message" t={t}>
+                  <FormField label={tr("storefront.contact.message")} t={t}>
                     <textarea
                       required
                       value={message}
@@ -263,7 +263,7 @@ function ContactPage() {
                     ) : (
                       <Send className="h-4 w-4" />
                     )}
-                    Send message
+                    {tr("storefront.contact.sendBtn")}
                   </button>
                 </form>
               )}

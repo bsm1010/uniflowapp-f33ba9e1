@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Loader2, Search, Package, CheckCircle2, Truck, Home, Clock, XCircle } from "lucide-react";
 import { z } from "zod";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import {
@@ -26,17 +27,14 @@ export const Route = createFileRoute("/s/$slug/track")({
   head: () => ({ meta: [{ title: "Track your order" }] }),
 });
 
-const STEPS = [
-  { key: "pending", label: "Pending", icon: Clock, message: "Your order has been received and is awaiting confirmation." },
-  { key: "confirmed", label: "Confirmed", icon: CheckCircle2, message: "Your order is being processed." },
-  { key: "shipped", label: "Shipped", icon: Truck, message: "Your order has been shipped." },
-  { key: "delivered", label: "Delivered", icon: Home, message: "Your order has been delivered. Thank you!" },
-] as const;
+const STEP_KEYS = ["pending", "confirmed", "shipped", "delivered"] as const;
+const STEP_ICONS = { pending: Clock, confirmed: CheckCircle2, shipped: Truck, delivered: Home };
 
 function TrackPage() {
   const { slug } = Route.useParams();
   const { order: orderParam, phone: phoneParam } = Route.useSearch();
   const navigate = Route.useNavigate();
+  const { t: tr } = useTranslation();
 
   const [settings, setSettings] = useState<StoreSettings | null>(null);
   const [settingsLoading, setSettingsLoading] = useState(true);
@@ -104,7 +102,6 @@ function TrackPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settings, orderParam, phoneParam]);
 
-  // Realtime: refresh tracked orders when their status changes
   useEffect(() => {
     if (orders.length === 0) return;
     const ids = orders.map((o) => o.id);
@@ -143,7 +140,7 @@ function TrackPage() {
   if (!settings) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <p>Store not found.</p>
+        <p>{tr("storefront.notFound")}</p>
       </div>
     );
   }
@@ -162,9 +159,9 @@ function TrackPage() {
           >
             <Package className="h-7 w-7" />
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Track your order</h1>
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{tr("storefront.track.title")}</h1>
           <p className="mt-2 text-sm" style={{ color: t.muted }}>
-            Enter the phone number you used at checkout to see your order status.
+            {tr("storefront.track.subtitle")}
           </p>
         </div>
 
@@ -174,7 +171,7 @@ function TrackPage() {
         >
           <Input
             type="tel"
-            placeholder="e.g. 0555 12 34 56"
+            placeholder={tr("storefront.track.phonePh")}
             value={phoneInput}
             onChange={(e) => setPhoneInput(e.target.value)}
             className="flex-1"
@@ -185,7 +182,7 @@ function TrackPage() {
             style={{ backgroundColor: t.primary, color: t.onPrimary, borderRadius: radius / 2 }}
           >
             {searching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4 mr-2" />}
-            {!searching && "Search"}
+            {!searching && tr("storefront.track.search")}
           </Button>
         </form>
 
@@ -201,9 +198,9 @@ function TrackPage() {
             style={{ backgroundColor: t.surface, border: `1px solid ${t.border}`, borderRadius: radius / 2 }}
           >
             <XCircle className="h-10 w-10 mx-auto mb-2" style={{ color: t.muted }} />
-            <p className="font-medium">No orders found</p>
+            <p className="font-medium">{tr("storefront.track.none")}</p>
             <p className="text-sm mt-1" style={{ color: t.muted }}>
-              Double-check the phone number you entered at checkout.
+              {tr("storefront.track.noneDesc")}
             </p>
           </div>
         )}
@@ -221,7 +218,7 @@ function TrackPage() {
             className="text-sm underline"
             style={{ color: t.muted }}
           >
-            ← Back to store
+            {tr("storefront.track.back")}
           </Link>
         </div>
       </div>
@@ -238,14 +235,15 @@ function OrderTrackingCard({
   tokens: ReturnType<typeof getStoreTokens>;
   radius: number;
 }) {
+  const { t: tr } = useTranslation();
   const status = (order.status || "pending").toLowerCase();
   const isCancelled = status === "cancelled";
   const currentIndex = useMemo(() => {
-    const i = STEPS.findIndex((s) => s.key === status);
+    const i = STEP_KEYS.findIndex((s) => s === status);
     return i === -1 ? 0 : i;
   }, [status]);
-  const step = STEPS[currentIndex];
-  const progressPct = isCancelled ? 0 : ((currentIndex + 1) / STEPS.length) * 100;
+  const stepKey = STEP_KEYS[currentIndex];
+  const progressPct = isCancelled ? 0 : ((currentIndex + 1) / STEP_KEYS.length) * 100;
 
   return (
     <div
@@ -259,7 +257,7 @@ function OrderTrackingCard({
       <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
         <div>
           <div className="text-xs font-mono" style={{ color: t.muted }}>
-            Order #{order.id.slice(0, 8).toUpperCase()}
+            {tr("storefront.track.orderNo", { id: order.id.slice(0, 8).toUpperCase() })}
           </div>
           <div className="font-semibold mt-1">{order.customer_name}</div>
           <div className="text-sm" style={{ color: t.muted }}>
@@ -276,7 +274,7 @@ function OrderTrackingCard({
 
       {order.items.length > 0 && (
         <div className="mb-5 text-sm">
-          <div className="font-medium mb-1">Items</div>
+          <div className="font-medium mb-1">{tr("storefront.track.items")}</div>
           <ul className="space-y-1" style={{ color: t.muted }}>
             {order.items.map((it) => (
               <li key={it.id}>
@@ -293,7 +291,7 @@ function OrderTrackingCard({
           style={{ backgroundColor: "#fee2e2", color: "#991b1b", borderRadius: radius / 2 }}
         >
           <XCircle className="h-4 w-4" />
-          This order has been cancelled.
+          {tr("storefront.track.cancelled")}
         </div>
       ) : (
         <>
@@ -307,11 +305,11 @@ function OrderTrackingCard({
               style={{ backgroundColor: t.primary, width: `${progressPct}%` }}
             />
             <div className="relative flex justify-between">
-              {STEPS.map((s, i) => {
-                const Icon = s.icon;
+              {STEP_KEYS.map((key, i) => {
+                const Icon = STEP_ICONS[key];
                 const reached = i <= currentIndex;
                 return (
-                  <div key={s.key} className="flex flex-col items-center text-center" style={{ width: 80 }}>
+                  <div key={key} className="flex flex-col items-center text-center" style={{ width: 80 }}>
                     <div
                       className="h-8 w-8 rounded-full flex items-center justify-center transition-colors"
                       style={{
@@ -326,7 +324,7 @@ function OrderTrackingCard({
                       className="text-xs mt-2 font-medium"
                       style={{ color: reached ? t.fg : t.muted }}
                     >
-                      {s.label}
+                      {tr(`storefront.track.steps.${key}`)}
                     </div>
                   </div>
                 );
@@ -338,7 +336,7 @@ function OrderTrackingCard({
             className="p-3 rounded text-sm"
             style={{ backgroundColor: t.primary + "12", color: t.fg, borderRadius: radius / 2 }}
           >
-            {step.message}
+            {tr(`storefront.track.steps.${stepKey}Msg`)}
           </div>
         </>
       )}
