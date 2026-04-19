@@ -3,6 +3,7 @@ import { useState, type FormEvent } from "react";
 import { z } from "zod";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { Button } from "@/components/ui/button";
@@ -19,14 +20,9 @@ export const Route = createFileRoute("/signup")({
   }),
 });
 
-const schema = z.object({
-  name: z.string().trim().min(1, "Name is required").max(80, "Name is too long"),
-  email: z.string().trim().email("Enter a valid email").max(255),
-  password: z.string().min(8, "Password must be at least 8 characters").max(72),
-});
-
 function SignUpPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -34,6 +30,12 @@ function SignUpPage() {
   const [formError, setFormError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const schema = z.object({
+    name: z.string().trim().min(1, t("auth.signup.errName")).max(80, t("auth.signup.errNameLong")),
+    email: z.string().trim().email(t("auth.login.errEmail")).max(255),
+    password: z.string().min(8, t("auth.signup.errPasswordShort")).max(72),
+  });
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -70,57 +72,57 @@ function SignUpPage() {
     if (data.session) {
       navigate({ to: "/dashboard" });
     } else {
-      setSuccess("Check your email for a confirmation link to activate your store.");
+      setSuccess(t("auth.signup.checkEmail"));
     }
   };
 
   return (
     <AuthLayout
-      title="Create your store"
-      subtitle="Start selling online in minutes — no credit card required."
+      title={t("auth.signup.title")}
+      subtitle={t("auth.signup.subtitle")}
       footer={
         <>
-          Already have an account?{" "}
+          {t("auth.signup.haveAccount")}{" "}
           <Link to="/login" className="text-primary font-medium hover:underline">
-            Login
+            {t("auth.signup.login")}
           </Link>
         </>
       }
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-1.5">
-          <Label htmlFor="name">Name</Label>
+          <Label htmlFor="name">{t("auth.signup.name")}</Label>
           <Input
             id="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Jane Doe"
+            placeholder={t("auth.signup.namePh")}
             autoComplete="name"
             disabled={loading}
           />
           {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">{t("auth.login.email")}</Label>
           <Input
             id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
+            placeholder={t("auth.login.emailPh")}
             autoComplete="email"
             disabled={loading}
           />
           {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password">{t("auth.login.password")}</Label>
           <Input
             id="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="At least 8 characters"
+            placeholder={t("auth.signup.passwordPh")}
             autoComplete="new-password"
             disabled={loading}
           />
@@ -151,7 +153,7 @@ function SignUpPage() {
           disabled={loading}
           className="w-full bg-gradient-brand text-brand-foreground hover:opacity-90 shadow-glow"
         >
-          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Create Store"}
+          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("auth.signup.submit")}
         </Button>
       </form>
     </AuthLayout>
