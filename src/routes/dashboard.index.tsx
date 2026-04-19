@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import {
   Package,
   ShoppingBag,
@@ -30,43 +31,9 @@ export const Route = createFileRoute("/dashboard/")({
   }),
 });
 
-const stats = [
-  {
-    label: "Total Products",
-    value: "0",
-    delta: "+0%",
-    trend: "up" as const,
-    icon: Package,
-    accent: "from-violet-500/15 to-violet-500/5",
-  },
-  {
-    label: "Orders",
-    value: "0",
-    delta: "+0%",
-    trend: "up" as const,
-    icon: ShoppingBag,
-    accent: "from-fuchsia-500/15 to-fuchsia-500/5",
-  },
-  {
-    label: "Revenue",
-    value: "$0.00",
-    delta: "+0%",
-    trend: "up" as const,
-    icon: DollarSign,
-    accent: "from-emerald-500/15 to-emerald-500/5",
-  },
-  {
-    label: "Customers",
-    value: "0",
-    delta: "0%",
-    trend: "down" as const,
-    icon: Users,
-    accent: "from-sky-500/15 to-sky-500/5",
-  },
-];
-
 function DashboardHome() {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const { status, daysRemaining, hadPaidSubscription } = useSubscription();
   const [name, setName] = useState("");
   const [hasPendingPayment, setHasPendingPayment] = useState(false);
@@ -122,32 +89,32 @@ function DashboardHome() {
 
   const stats = [
     {
-      label: "Total Products",
+      label: t("dashboard.home.stats.products"),
       value: counts.products.toString(),
       icon: Package,
       accent: "from-violet-500/15 to-violet-500/5",
     },
     {
-      label: "Orders",
+      label: t("dashboard.home.stats.orders"),
       value: counts.orders.toString(),
       icon: ShoppingBag,
       accent: "from-fuchsia-500/15 to-fuchsia-500/5",
     },
     {
-      label: "Revenue",
+      label: t("dashboard.home.stats.revenue"),
       value: `$${counts.revenue.toFixed(2)}`,
       icon: DollarSign,
       accent: "from-emerald-500/15 to-emerald-500/5",
     },
     {
-      label: "Customers",
+      label: t("dashboard.home.stats.customers"),
       value: counts.customers.toString(),
       icon: Users,
       accent: "from-sky-500/15 to-sky-500/5",
     },
   ];
 
-  const displayName = name || user?.email?.split("@")[0] || "there";
+  const displayName = name || user?.email?.split("@")[0] || "—";
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -159,14 +126,14 @@ function DashboardHome() {
       >
         <div>
           <p className="text-xs uppercase tracking-wider text-primary font-semibold">
-            Dashboard
+            {t("dashboard.home.kicker")}
           </p>
           <h1 className="mt-1 text-3xl md:text-4xl font-bold font-display">
-            Welcome back,{" "}
+            {t("dashboard.home.welcome")}{" "}
             <span className="text-gradient-brand">{displayName}</span>
           </h1>
           <p className="mt-2 text-muted-foreground">
-            Here's what's happening with your store today.
+            {t("dashboard.home.subtitle")}
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -175,7 +142,7 @@ function DashboardHome() {
             className="gap-1.5 border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 px-3 py-1.5"
           >
             <CircleDot className="h-3 w-3 fill-emerald-500 text-emerald-500" />
-            Store active
+            {t("dashboard.home.storeActive")}
           </Badge>
         </div>
       </motion.div>
@@ -187,7 +154,6 @@ function DashboardHome() {
         hasPendingPayment={hasPendingPayment}
       />
 
-      {/* Stats */}
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((s, i) => (
           <motion.div
@@ -220,7 +186,6 @@ function DashboardHome() {
         ))}
       </div>
 
-      {/* Quick actions */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -230,25 +195,24 @@ function DashboardHome() {
         <QuickAction
           to="/dashboard/products"
           icon={Plus}
-          title="Add Product"
-          description="List a new item in your catalog."
+          title={t("dashboard.home.actions.addProduct.title")}
+          description={t("dashboard.home.actions.addProduct.desc")}
           variant="primary"
         />
         <QuickAction
           to="/dashboard/themes"
           icon={Palette}
-          title="Customize Store"
-          description="Pick a theme and brand your store."
+          title={t("dashboard.home.actions.customize.title")}
+          description={t("dashboard.home.actions.customize.desc")}
         />
         <QuickAction
           to="/dashboard/store"
           icon={ExternalLink}
-          title="View Store"
-          description="See what your customers see."
+          title={t("dashboard.home.actions.viewStore.title")}
+          description={t("dashboard.home.actions.viewStore.desc")}
         />
       </motion.div>
 
-      {/* Recent activity placeholder */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -258,18 +222,18 @@ function DashboardHome() {
         <Card className="lg:col-span-2 border-border/60 shadow-soft">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-lg">Recent orders</h3>
+              <h3 className="font-semibold text-lg">{t("dashboard.home.recentOrders")}</h3>
               <Button variant="ghost" size="sm" asChild>
-                <Link to="/dashboard/orders">View all</Link>
+                <Link to="/dashboard/orders">{t("dashboard.home.viewAll")}</Link>
               </Button>
             </div>
             <div className="mt-8 flex flex-col items-center justify-center py-12 text-center">
               <div className="h-12 w-12 rounded-xl bg-accent flex items-center justify-center">
                 <ShoppingBag className="h-6 w-6 text-accent-foreground" />
               </div>
-              <p className="mt-4 font-medium">No orders yet</p>
+              <p className="mt-4 font-medium">{t("dashboard.home.noOrders")}</p>
               <p className="mt-1 text-sm text-muted-foreground max-w-xs">
-                Orders will appear here once your customers start shopping.
+                {t("dashboard.home.noOrdersDesc")}
               </p>
             </div>
           </CardContent>
@@ -282,14 +246,14 @@ function DashboardHome() {
               <Palette className="h-5 w-5" />
             </div>
             <h3 className="mt-4 text-xl font-bold font-display">
-              Launch checklist
+              {t("dashboard.home.checklist")}
             </h3>
             <p className="mt-2 text-sm text-brand-foreground/80">
-              Complete a few steps to get your store ready for customers.
+              {t("dashboard.home.checklistDesc")}
             </p>
             <div className="mt-auto pt-6">
               <Button variant="secondary" size="sm" asChild className="w-full">
-                <Link to="/dashboard/store">Continue setup</Link>
+                <Link to="/dashboard/store">{t("dashboard.home.continueSetup")}</Link>
               </Button>
             </div>
           </CardContent>
@@ -360,6 +324,8 @@ function SubscriptionStatusCard({
   hadPaidSubscription: boolean;
   hasPendingPayment: boolean;
 }) {
+  const { t } = useTranslation();
+
   if (status === "active") {
     return (
       <Card className="mt-6 border-emerald-500/30 bg-emerald-500/5 shadow-soft">
@@ -369,9 +335,9 @@ function SubscriptionStatusCard({
               <CheckCircle2 className="size-5" />
             </div>
             <div>
-              <p className="font-semibold">Subscription active</p>
+              <p className="font-semibold">{t("dashboard.home.subActive")}</p>
               <p className="text-sm text-muted-foreground">
-                Your plan is active. All features are unlocked.
+                {t("dashboard.home.subActiveDesc")}
               </p>
             </div>
           </div>
@@ -389,14 +355,14 @@ function SubscriptionStatusCard({
               <Clock className="size-5" />
             </div>
             <div>
-              <p className="font-semibold">Payment under review</p>
+              <p className="font-semibold">{t("dashboard.home.subPending")}</p>
               <p className="text-sm text-muted-foreground">
-                We'll activate your subscription as soon as the admin approves it.
+                {t("dashboard.home.subPendingDesc")}
               </p>
             </div>
           </div>
           <Button variant="outline" size="sm" asChild>
-            <Link to="/dashboard/upgrade">View status</Link>
+            <Link to="/dashboard/upgrade">{t("dashboard.home.viewStatus")}</Link>
           </Button>
         </CardContent>
       </Card>
@@ -404,11 +370,15 @@ function SubscriptionStatusCard({
   }
 
   if (status === "expired") {
-    const title = hadPaidSubscription ? "Subscription expired" : "Trial expired";
+    const title = hadPaidSubscription
+      ? t("dashboard.home.subExpired")
+      : t("dashboard.home.trialExpired");
     const desc = hadPaidSubscription
-      ? "Renew to continue using your store. Your data is safe."
-      : "Upgrade to a paid plan to keep using your store.";
-    const cta = hadPaidSubscription ? "Renew now" : "Upgrade now";
+      ? t("dashboard.home.subExpiredDesc")
+      : t("dashboard.home.trialExpiredDesc");
+    const cta = hadPaidSubscription
+      ? t("dashboard.home.renew")
+      : t("dashboard.home.upgradeNow");
     return (
       <Card className="mt-6 border-destructive/30 bg-destructive/5 shadow-soft">
         <CardContent className="p-5 flex flex-wrap items-center justify-between gap-4">
@@ -441,15 +411,18 @@ function SubscriptionStatusCard({
           </div>
           <div>
             <p className="font-semibold">
-              Free trial · {daysRemaining} {daysRemaining === 1 ? "day" : "days"} left
+              {t("dashboard.home.trialLeft", {
+                days: daysRemaining,
+                unit: daysRemaining === 1 ? t("dashboard.home.day") : t("dashboard.home.days"),
+              })}
             </p>
             <p className="text-sm text-muted-foreground">
-              Upgrade anytime to unlock unlimited access.
+              {t("dashboard.home.trialDesc")}
             </p>
           </div>
         </div>
         <Button size="sm" variant="outline" asChild>
-          <Link to="/dashboard/upgrade">Upgrade</Link>
+          <Link to="/dashboard/upgrade">{t("dashboard.home.upgrade")}</Link>
         </Button>
       </CardContent>
     </Card>
