@@ -2,6 +2,7 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Loader2, Search, ShoppingBag, Mail, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import { StorefrontShell } from "@/components/storefront/StorefrontShell";
@@ -32,6 +33,7 @@ type SortKey = "newest" | "price-asc" | "price-desc" | "name";
 function StorefrontHome() {
   const { slug } = Route.useParams();
   const router = useRouter();
+  const { t: tr } = useTranslation();
   const [settings, setSettings] = useState<StoreSettings | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -117,16 +119,15 @@ function StorefrontHome() {
   if (notFound || !settings) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4 text-center">
-        <h1 className="text-3xl font-bold">Store not found</h1>
+        <h1 className="text-3xl font-bold">{tr("storefront.notFound")}</h1>
         <p className="mt-2 text-muted-foreground max-w-sm">
-          The storefront <code className="font-mono">{slug}</code> doesn't exist
-          or hasn't been published yet.
+          {tr("storefront.notFoundDesc", { slug })}
         </p>
         <button
           onClick={() => router.navigate({ to: "/" })}
           className="mt-6 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
         >
-          Go home
+          {tr("storefront.goHome")}
         </button>
       </div>
     );
@@ -158,7 +159,7 @@ function StorefrontHome() {
       price: Number(p.price),
       image: p.images[0] ?? null,
     });
-    toast.success(`${p.name} added to cart`);
+    toast.success(tr("storefront.product.addedToCart", { name: p.name }));
   };
 
   return (
@@ -268,11 +269,11 @@ function StorefrontHome() {
         <div className="flex flex-col gap-6 mb-8">
           <div>
             <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
-              All products
+              {tr("storefront.home.allProducts")}
             </h2>
             <p className="mt-1 text-sm" style={{ color: t.muted }}>
-              {filtered.length} {filtered.length === 1 ? "item" : "items"}
-              {activeCategory !== "All" && ` in ${activeCategory}`}
+              {tr("storefront.home.items", { count: filtered.length })}
+              {activeCategory !== "All" && tr("storefront.home.inCategory", { category: activeCategory })}
             </p>
           </div>
 
@@ -330,10 +331,10 @@ function StorefrontHome() {
                   color: t.fg,
                 }}
               >
-                <option value="newest" style={{ backgroundColor: t.bg }}>Newest</option>
-                <option value="price-asc" style={{ backgroundColor: t.bg }}>Price: Low to High</option>
-                <option value="price-desc" style={{ backgroundColor: t.bg }}>Price: High to Low</option>
-                <option value="name" style={{ backgroundColor: t.bg }}>Name A-Z</option>
+                <option value="newest" style={{ backgroundColor: t.bg }}>{tr("storefront.home.sort.newest")}</option>
+                <option value="price-asc" style={{ backgroundColor: t.bg }}>{tr("storefront.home.sort.priceAsc")}</option>
+                <option value="price-desc" style={{ backgroundColor: t.bg }}>{tr("storefront.home.sort.priceDesc")}</option>
+                <option value="name" style={{ backgroundColor: t.bg }}>{tr("storefront.home.sort.name")}</option>
               </select>
             </div>
           </div>
@@ -350,12 +351,12 @@ function StorefrontHome() {
           >
             <ShoppingBag className="h-8 w-8 mx-auto" style={{ color: t.muted }} />
             <p className="mt-4 font-medium">
-              {products.length === 0 ? "No products yet" : "No matches"}
+              {products.length === 0 ? tr("storefront.home.noProducts") : tr("storefront.home.noMatches")}
             </p>
             <p className="mt-1 text-sm" style={{ color: t.muted }}>
               {products.length === 0
-                ? "Check back soon — new items are on the way."
-                : "Try a different search or category."}
+                ? tr("storefront.home.noProductsDesc")
+                : tr("storefront.home.noMatchesDesc")}
             </p>
           </div>
         ) : (
@@ -405,14 +406,14 @@ function StorefrontHome() {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                toast.success("Thanks for subscribing!");
+                toast.success(tr("storefront.home.subscribed"));
               }}
               className="mt-6 flex max-w-md mx-auto gap-2"
             >
               <input
                 type="email"
                 required
-                placeholder="you@email.com"
+                placeholder={tr("storefront.home.emailPh")}
                 className="flex-1 px-4 py-3 text-sm outline-none focus:ring-2"
                 style={{
                   backgroundColor: t.bg,
