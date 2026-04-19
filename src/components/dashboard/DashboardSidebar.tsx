@@ -107,7 +107,7 @@ export function DashboardSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Workspace</SidebarGroupLabel>
+          <SidebarGroupLabel>{t("dashboard.groupWorkspace")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => {
@@ -146,7 +146,7 @@ export function DashboardSidebar() {
                   className="cursor-pointer hover:bg-sidebar-accent/40 rounded-md transition-colors"
                 >
                   <button className="w-full flex items-center justify-between">
-                    <span>My Apps</span>
+                    <span>{t("dashboard.groupApps")}</span>
                     <ChevronDown
                       className={`h-3.5 w-3.5 transition-transform ${appsOpen ? "" : "-rotate-90"}`}
                     />
@@ -190,14 +190,14 @@ export function DashboardSidebar() {
         )}
         {isAdmin && (
           <SidebarGroup>
-            <SidebarGroupLabel>Admin</SidebarGroupLabel>
+            <SidebarGroupLabel>{t("dashboard.groupAdmin")}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     asChild
                     isActive={isActive("/dashboard/admin/payments")}
-                    tooltip="Payments"
+                    tooltip={t("dashboard.nav.payments")}
                   >
                     <Link
                       to="/dashboard/admin/payments"
@@ -208,7 +208,7 @@ export function DashboardSidebar() {
                       }
                     >
                       <ShieldCheck className="h-4 w-4" />
-                      <span>Payments</span>
+                      <span>{t("dashboard.nav.payments")}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
