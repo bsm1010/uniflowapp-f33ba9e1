@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import {
@@ -20,6 +21,7 @@ export const Route = createFileRoute("/s/$slug/checkout")({
 function CheckoutPage() {
   const { slug } = Route.useParams();
   const navigate = useNavigate();
+  const { t: tr } = useTranslation();
   const [settings, setSettings] = useState<StoreSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -59,7 +61,7 @@ function CheckoutPage() {
     e.preventDefault();
     if (!settings) return;
     if (cart.items.length === 0) {
-      toast.error("Your cart is empty.");
+      toast.error(tr("storefront.checkout.errEmpty"));
       return;
     }
     if (
@@ -70,7 +72,7 @@ function CheckoutPage() {
       !form.postal.trim() ||
       !form.country.trim()
     ) {
-      toast.error("Please fill in all required fields.");
+      toast.error(tr("storefront.checkout.errFields"));
       return;
     }
 
@@ -95,7 +97,7 @@ function CheckoutPage() {
 
     if (error || !order) {
       setSubmitting(false);
-      toast.error(error?.message ?? "Could not place order.");
+      toast.error(error?.message ?? tr("storefront.checkout.errOrder"));
       return;
     }
 
@@ -136,7 +138,7 @@ function CheckoutPage() {
   if (!settings) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <p>Store not found.</p>
+        <p>{tr("storefront.notFound")}</p>
       </div>
     );
   }
@@ -161,11 +163,11 @@ function CheckoutPage() {
           className="inline-flex items-center gap-1.5 text-sm hover:opacity-70"
           style={{ color: t.muted }}
         >
-          <ArrowLeft className="h-4 w-4" /> Back to cart
+          <ArrowLeft className="h-4 w-4" /> {tr("storefront.checkout.back")}
         </Link>
 
         <h1 className="mt-6 text-3xl md:text-4xl font-bold tracking-tight">
-          Checkout
+          {tr("storefront.checkout.title")}
         </h1>
 
         {cart.items.length === 0 ? (
@@ -177,7 +179,7 @@ function CheckoutPage() {
               backgroundColor: t.surface,
             }}
           >
-            <p>Your cart is empty.</p>
+            <p>{tr("storefront.checkout.empty")}</p>
             <Link
               to="/s/$slug"
               params={{ slug }}
@@ -188,7 +190,7 @@ function CheckoutPage() {
                 borderRadius: radius / 2,
               }}
             >
-              Browse products
+              {tr("storefront.checkout.browse")}
             </Link>
           </div>
         ) : (
@@ -204,9 +206,9 @@ function CheckoutPage() {
                 borderRadius: radius,
               }}
             >
-              <h2 className="font-semibold">Contact & shipping</h2>
+              <h2 className="font-semibold">{tr("storefront.checkout.section")}</h2>
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                <Field label="Full name *" full>
+                <Field label={tr("storefront.checkout.fullName")} full>
                   <input
                     required
                     value={form.name}
@@ -215,7 +217,7 @@ function CheckoutPage() {
                     style={{ ...inputStyle, ['--tw-ring-color' as string]: t.primary }}
                   />
                 </Field>
-                <Field label="Email *" full>
+                <Field label={tr("storefront.checkout.email")} full>
                   <input
                     required
                     type="email"
@@ -225,17 +227,17 @@ function CheckoutPage() {
                     style={inputStyle}
                   />
                 </Field>
-                <Field label="Address *" full>
+                <Field label={tr("storefront.checkout.address")} full>
                   <input
                     required
                     value={form.address}
                     onChange={(e) => update("address", e.target.value)}
                     className="w-full px-3 py-2.5 text-sm outline-none focus:ring-2"
                     style={inputStyle}
-                    placeholder="Street and number"
+                    placeholder={tr("storefront.checkout.addressPh")}
                   />
                 </Field>
-                <Field label="City *">
+                <Field label={tr("storefront.checkout.city")}>
                   <input
                     required
                     value={form.city}
@@ -244,7 +246,7 @@ function CheckoutPage() {
                     style={inputStyle}
                   />
                 </Field>
-                <Field label="Postal code *">
+                <Field label={tr("storefront.checkout.postal")}>
                   <input
                     required
                     value={form.postal}
@@ -253,7 +255,7 @@ function CheckoutPage() {
                     style={inputStyle}
                   />
                 </Field>
-                <Field label="Country *" full>
+                <Field label={tr("storefront.checkout.country")} full>
                   <input
                     required
                     value={form.country}
@@ -262,14 +264,14 @@ function CheckoutPage() {
                     style={inputStyle}
                   />
                 </Field>
-                <Field label="Notes (optional)" full muted={t.muted}>
+                <Field label={tr("storefront.checkout.notes")} full muted={t.muted}>
                   <textarea
                     value={form.notes}
                     onChange={(e) => update("notes", e.target.value)}
                     rows={3}
                     className="w-full px-3 py-2.5 text-sm outline-none focus:ring-2 resize-none"
                     style={inputStyle}
-                    placeholder="Anything we should know?"
+                    placeholder={tr("storefront.checkout.notesPh")}
                   />
                 </Field>
               </div>
@@ -283,7 +285,7 @@ function CheckoutPage() {
                 borderRadius: radius,
               }}
             >
-              <h2 className="font-semibold">Order summary</h2>
+              <h2 className="font-semibold">{tr("storefront.checkout.summary")}</h2>
               <div className="mt-4 space-y-3 max-h-64 overflow-y-auto">
                 {cart.items.map((item) => (
                   <div
@@ -308,7 +310,7 @@ function CheckoutPage() {
                     <div className="flex-1 min-w-0">
                       <div className="font-medium truncate">{item.name}</div>
                       <div className="text-xs" style={{ color: t.muted }}>
-                        Qty {item.quantity}
+                        {tr("storefront.checkout.qty", { n: item.quantity })}
                       </div>
                     </div>
                     <div className="font-medium">
@@ -322,18 +324,18 @@ function CheckoutPage() {
                 style={{ borderTop: `1px solid ${t.border}` }}
               >
                 <div className="flex justify-between">
-                  <span style={{ color: t.muted }}>Subtotal</span>
+                  <span style={{ color: t.muted }}>{tr("storefront.checkout.subtotal")}</span>
                   <span>${cart.subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span style={{ color: t.muted }}>Shipping</span>
-                  <span style={{ color: t.muted }}>Free</span>
+                  <span style={{ color: t.muted }}>{tr("storefront.checkout.shipping")}</span>
+                  <span style={{ color: t.muted }}>{tr("storefront.checkout.free")}</span>
                 </div>
                 <div
                   className="flex justify-between text-base font-semibold pt-2"
                   style={{ borderTop: `1px solid ${t.border}` }}
                 >
-                  <span>Total</span>
+                  <span>{tr("storefront.checkout.total")}</span>
                   <span>${cart.subtotal.toFixed(2)}</span>
                 </div>
               </div>
@@ -350,11 +352,11 @@ function CheckoutPage() {
                 {submitting ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  `Place order — $${cart.subtotal.toFixed(2)}`
+                  tr("storefront.checkout.place", { amount: `$${cart.subtotal.toFixed(2)}` })
                 )}
               </button>
               <p className="mt-3 text-xs text-center" style={{ color: t.muted }}>
-                This is a demo checkout. No payment will be charged.
+                {tr("storefront.checkout.demo")}
               </p>
             </div>
           </form>

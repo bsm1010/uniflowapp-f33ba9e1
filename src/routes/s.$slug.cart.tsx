@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowLeft, Loader2, Minus, Plus, ShoppingBag, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import {
@@ -18,6 +19,7 @@ export const Route = createFileRoute("/s/$slug/cart")({
 
 function CartPage() {
   const { slug } = Route.useParams();
+  const { t: tr } = useTranslation();
   const [settings, setSettings] = useState<StoreSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const cart = useCart(slug);
@@ -50,7 +52,7 @@ function CartPage() {
   if (!settings) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <p>Store not found.</p>
+        <p>{tr("storefront.notFound")}</p>
       </div>
     );
   }
@@ -68,11 +70,11 @@ function CartPage() {
           className="inline-flex items-center gap-1.5 text-sm hover:opacity-70"
           style={{ color: t.muted }}
         >
-          <ArrowLeft className="h-4 w-4" /> Continue shopping
+          <ArrowLeft className="h-4 w-4" /> {tr("storefront.cart.continue")}
         </Link>
 
         <h1 className="mt-6 text-3xl md:text-4xl font-bold tracking-tight">
-          Your cart
+          {tr("storefront.cart.title")}
         </h1>
 
         {cart.items.length === 0 ? (
@@ -88,7 +90,7 @@ function CartPage() {
               className="h-8 w-8 mx-auto"
               style={{ color: t.muted }}
             />
-            <p className="mt-4 font-medium">Your cart is empty</p>
+            <p className="mt-4 font-medium">{tr("storefront.cart.empty")}</p>
             <Link
               to="/s/$slug"
               params={{ slug }}
@@ -99,7 +101,7 @@ function CartPage() {
                 borderRadius: radius / 2,
               }}
             >
-              Browse products
+              {tr("storefront.cart.browse")}
             </Link>
           </div>
         ) : (
@@ -153,14 +155,14 @@ function CartPage() {
                           className="text-xs mt-0.5"
                           style={{ color: t.muted }}
                         >
-                          ${item.price.toFixed(2)} each
+                          ${item.price.toFixed(2)} {tr("storefront.cart.each")}
                         </div>
                       </div>
                       <button
                         onClick={() => cart.remove(item.productId)}
                         className="hover:opacity-70"
                         style={{ color: t.muted }}
-                        aria-label="Remove"
+                        aria-label={tr("storefront.cart.remove")}
                       >
                         <X className="h-4 w-4" />
                       </button>
@@ -178,7 +180,7 @@ function CartPage() {
                             cart.setQty(item.productId, item.quantity - 1)
                           }
                           className="h-8 w-8 inline-flex items-center justify-center hover:opacity-70"
-                          aria-label="Decrease"
+                          aria-label={tr("storefront.cart.decrease")}
                         >
                           <Minus className="h-3 w-3" />
                         </button>
@@ -190,7 +192,7 @@ function CartPage() {
                             cart.setQty(item.productId, item.quantity + 1)
                           }
                           className="h-8 w-8 inline-flex items-center justify-center hover:opacity-70"
-                          aria-label="Increase"
+                          aria-label={tr("storefront.cart.increase")}
                         >
                           <Plus className="h-3 w-3" />
                         </button>
@@ -212,24 +214,24 @@ function CartPage() {
                 borderRadius: radius,
               }}
             >
-              <h2 className="font-semibold">Order summary</h2>
+              <h2 className="font-semibold">{tr("storefront.cart.summary")}</h2>
               <div className="mt-4 space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span style={{ color: t.muted }}>Subtotal</span>
+                  <span style={{ color: t.muted }}>{tr("storefront.cart.subtotal")}</span>
                   <span className="font-medium">
                     ${cart.subtotal.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span style={{ color: t.muted }}>Shipping</span>
-                  <span style={{ color: t.muted }}>Calculated at checkout</span>
+                  <span style={{ color: t.muted }}>{tr("storefront.cart.shipping")}</span>
+                  <span style={{ color: t.muted }}>{tr("storefront.cart.calcAtCheckout")}</span>
                 </div>
               </div>
               <div
                 className="mt-4 pt-4 flex justify-between text-base font-semibold"
                 style={{ borderTop: `1px solid ${t.border}` }}
               >
-                <span>Total</span>
+                <span>{tr("storefront.cart.total")}</span>
                 <span>${cart.subtotal.toFixed(2)}</span>
               </div>
               <Link
@@ -242,7 +244,7 @@ function CartPage() {
                   borderRadius: radius / 2,
                 }}
               >
-                Checkout
+                {tr("storefront.cart.checkout")}
               </Link>
             </div>
           </div>

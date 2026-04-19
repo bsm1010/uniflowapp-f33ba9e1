@@ -1,5 +1,6 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { StorefrontShell } from "@/components/storefront/StorefrontShell";
 import { getStoreTokens, type StoreSettings } from "@/lib/storeTheme";
@@ -28,24 +29,29 @@ export const Route = createFileRoute("/s/$slug/about")({
     ],
   }),
   component: AboutPage,
-  notFoundComponent: () => (
+  notFoundComponent: NotFoundComp,
+});
+
+function NotFoundComp() {
+  const { t: tr } = useTranslation();
+  return (
     <div className="min-h-screen flex items-center justify-center text-center p-8">
       <div>
-        <h1 className="text-2xl font-semibold mb-2">Store not found</h1>
-        <p className="text-muted-foreground">This store does not exist.</p>
+        <h1 className="text-2xl font-semibold mb-2">{tr("storefront.notFound")}</h1>
+        <p className="text-muted-foreground">{tr("storefront.notFoundDesc", { slug: "" })}</p>
       </div>
     </div>
-  ),
-});
+  );
+}
 
 function AboutPage() {
   const { settings } = Route.useLoaderData();
+  const { t: tr } = useTranslation();
   const t = getStoreTokens(settings);
 
-  const title = (settings.about_title as string) || "About us";
+  const title = (settings.about_title as string) || tr("storefront.about.fallbackTitle");
   const content =
-    (settings.about_content as string) ||
-    "Welcome to our store. We are passionate about offering quality products and a delightful shopping experience.";
+    (settings.about_content as string) || tr("storefront.about.fallbackContent");
 
   return (
     <StorefrontShell settings={settings}>
@@ -103,7 +109,7 @@ function AboutPage() {
               borderRadius: t.buttonRadius,
             }}
           >
-            Continue shopping
+            {tr("storefront.about.continue")}
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
