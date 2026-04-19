@@ -105,7 +105,20 @@ function Dashboard3DCarousel() {
       className="mt-20 mx-auto max-w-5xl"
       style={{ perspective: "1800px" }}
     >
-      <div className="relative h-[340px] sm:h-[440px] md:h-[520px] flex items-center justify-center [transform-style:preserve-3d]">
+      <motion.div
+        className="relative h-[340px] sm:h-[440px] md:h-[520px] flex items-center justify-center [transform-style:preserve-3d] touch-pan-y cursor-grab active:cursor-grabbing"
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.2}
+        onDragEnd={(_, info) => {
+          const threshold = 60;
+          if (info.offset.x < -threshold) {
+            setActive((a) => (a + 1) % SHOTS.length);
+          } else if (info.offset.x > threshold) {
+            setActive((a) => (a - 1 + SHOTS.length) % SHOTS.length);
+          }
+        }}
+      >
         {SHOTS.map((shot, i) => {
           const offset = ((i - active + SHOTS.length) % SHOTS.length);
           // normalize offset to -1, 0, 1 for 3 items
@@ -149,7 +162,7 @@ function Dashboard3DCarousel() {
             </motion.div>
           );
         })}
-      </div>
+      </motion.div>
 
       <div className="mt-6 flex items-center justify-center gap-2">
         {SHOTS.map((_, i) => (
