@@ -1,5 +1,6 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   LayoutDashboard,
   Store,
@@ -67,6 +68,7 @@ export function DashboardSidebar() {
   const collapsed = state === "collapsed";
   const { pathname } = useLocation();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [isAdmin, setIsAdmin] = useState(false);
   const { installed } = useInstalledApps();
   const installedApps = Array.from(installed)
@@ -77,6 +79,22 @@ export function DashboardSidebar() {
   useEffect(() => {
     if (anyAppActive) setAppsOpen(true);
   }, [anyAppActive]);
+
+  const items: NavItem[] = [
+    { title: t("dashboard.nav.dashboard"), url: "/dashboard", icon: LayoutDashboard, end: true },
+    { title: t("dashboard.nav.store"), url: "/dashboard/store", icon: Store },
+    { title: t("dashboard.nav.products"), url: "/dashboard/products", icon: Package },
+    { title: t("dashboard.nav.categories"), url: "/dashboard/categories", icon: Tag },
+    { title: t("dashboard.nav.orders"), url: "/dashboard/orders", icon: ShoppingBag },
+    { title: t("dashboard.nav.customers"), url: "/dashboard/customers", icon: Users },
+    { title: t("dashboard.nav.themePresets"), url: "/dashboard/theme-presets", icon: Sparkles },
+    { title: t("dashboard.nav.customize"), url: "/dashboard/themes", icon: Palette },
+    { title: t("dashboard.nav.aboutPage"), url: "/dashboard/about", icon: FileText },
+    { title: t("dashboard.nav.contactPage"), url: "/dashboard/contact", icon: Mail },
+    { title: t("dashboard.nav.analytics"), url: "/dashboard/analytics", icon: BarChart3 },
+    { title: t("dashboard.nav.appStore"), url: "/dashboard/apps", icon: Blocks },
+    { title: t("dashboard.nav.settings"), url: "/dashboard/settings", icon: Settings },
+  ];
 
   useEffect(() => {
     if (!user) return;
