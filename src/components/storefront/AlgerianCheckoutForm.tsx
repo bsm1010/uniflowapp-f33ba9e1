@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Loader2, ShoppingBag } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { SearchableSelect } from "@/components/ui/searchable-select";
 import {
@@ -35,19 +36,20 @@ type Props = {
   onSuccess?: (orderId: string) => void;
 };
 
-const schema = z.object({
-  firstName: z.string().trim().min(2, "First name is required").max(60),
-  lastName: z.string().trim().min(2, "Last name is required").max(60),
-  phone: z
-    .string()
-    .trim()
-    .min(1, "Phone is required")
-    .refine(isValidAlgerianPhone, "Invalid Algerian phone (e.g. 0555 12 34 56)"),
-  wilaya: z.string().min(1, "Wilaya is required"),
-  city: z.string().min(1, "City is required"),
-});
+const makeSchema = (tr: (k: string) => string) =>
+  z.object({
+    firstName: z.string().trim().min(2, tr("storefront.cod.errFirstName")).max(60),
+    lastName: z.string().trim().min(2, tr("storefront.cod.errLastName")).max(60),
+    phone: z
+      .string()
+      .trim()
+      .min(1, tr("storefront.cod.errPhoneReq"))
+      .refine(isValidAlgerianPhone, tr("storefront.cod.errPhoneInvalid")),
+    wilaya: z.string().min(1, tr("storefront.cod.errWilaya")),
+    city: z.string().min(1, tr("storefront.cod.errCity")),
+  });
 
-type FormErrors = Partial<Record<keyof z.infer<typeof schema>, string>>;
+type FormErrors = Partial<Record<"firstName" | "lastName" | "phone" | "wilaya" | "city", string>>;
 
 export function AlgerianCheckoutForm({
   storeOwnerId,
@@ -58,6 +60,7 @@ export function AlgerianCheckoutForm({
   radius,
   onSuccess,
 }: Props) {
+  const { t: tr } = useTranslation();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
@@ -82,6 +85,7 @@ export function AlgerianCheckoutForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const schema = makeSchema(tr);
     const parsed = schema.safeParse({ firstName, lastName, phone, wilaya, city });
     if (!parsed.success) {
       const errs: FormErrors = {};
@@ -124,8 +128,8 @@ export function AlgerianCheckoutForm({
       });
       if (itemErr) throw itemErr;
 
-      toast.success("Your order has been placed successfully 🎉", {
-        description: "We'll call you shortly to confirm delivery.",
+      toast.success(tr("storefront.cod.successToast"), {
+        description: tr("storefront.cod.successDesc"),
         duration: 5000,
       });
       setFirstName("");
@@ -136,7 +140,7 @@ export function AlgerianCheckoutForm({
       onSuccess?.(order.id);
     } catch (err) {
       console.error(err);
-      toast.error("Failed to place order. Please try again.");
+      toast.error(tr("storefront.cod.errOrder"));
     } finally {
       setSubmitting(false);
     }
@@ -154,15 +158,15 @@ export function AlgerianCheckoutForm({
     >
       <div>
         <h2 className="text-lg font-semibold" style={{ color: t.fg }}>
-          Order now — Cash on delivery
+          {tr("storefront.cod.title")}
         </h2>
         <p className="mt-1 text-xs" style={{ color: t.muted }}>
-          Fill in your details and we'll deliver to your wilaya.
+          {tr("storefront.cod.subtitle")}
         </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <Field label="First name" error={errors.firstName} mutedColor={t.muted}>
+        <Field label={tr("storefront.cod.firstName")} error={errors.firstName} mutedColor={t.muted}>
           <input
             type="text"
             value={firstName}
@@ -175,7 +179,7 @@ export function AlgerianCheckoutForm({
             placeholder="Ahmed"
           />
         </Field>
-        <Field label="Last name" error={errors.lastName} mutedColor={t.muted}>
+        <Field label={tr("storefront.cod.lastName")} error={errors.lastName} mutedColor={t.muted}>
           <input
             type="text"
             value={lastName}
@@ -187,7 +191,7 @@ export function AlgerianCheckoutForm({
         </Field>
       </div>
 
-      <Field label="Phone number" error={errors.phone} mutedColor={t.muted}>
+      <Field label={tr("storefront.cod.phone")} error={errors.phone} mutedColor={t.muted}>
         <input
           type="tel"
           value={phone}
@@ -200,7 +204,7 @@ export function AlgerianCheckoutForm({
       </Field>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <Field label="Wilaya" error={errors.wilaya} mutedColor={t.muted}>
+        <Field label={tr("storefront.cod.wilaya")} error={errors.wilaya} mutedColor={t.muted}>
           <SearchableSelect
             value={wilaya}
             onChange={(v) => {
@@ -208,20 +212,20 @@ export function AlgerianCheckoutForm({
               setCity("");
             }}
             options={WILAYA_LIST}
-            placeholder="Select wilaya…"
-            searchPlaceholder="Search wilaya…"
-            emptyMessage="No wilaya found."
+            placeholder={tr("storefront.cod.selectWilaya")}
+            searchPlaceholder={tr("storefront.cod.searchWilaya")}
+            emptyMessage={tr("storefront.cod.noWilaya")}
             triggerStyle={inputStyle}
           />
         </Field>
-        <Field label="City / Commune" error={errors.city} mutedColor={t.muted}>
+        <Field label={tr("storefront.cod.city")} error={errors.city} mutedColor={t.muted}>
           <SearchableSelect
             value={city}
             onChange={setCity}
             options={cities}
-            placeholder={wilaya ? "Select city…" : "Pick wilaya first"}
-            searchPlaceholder="Search city…"
-            emptyMessage="No city found."
+            placeholder={wilaya ? tr("storefront.cod.selectCity") : tr("storefront.cod.pickWilayaFirst")}
+            searchPlaceholder={tr("storefront.cod.searchCity")}
+            emptyMessage={tr("storefront.cod.noCity")}
             disabled={!wilaya}
             triggerStyle={inputStyle}
           />
@@ -233,7 +237,7 @@ export function AlgerianCheckoutForm({
         style={{ borderTop: `1px solid ${t.border}` }}
       >
         <div className="text-sm" style={{ color: t.muted }}>
-          Total ({quantity} item{quantity > 1 ? "s" : ""})
+          {tr("storefront.cod.totalLine", { count: quantity })}
         </div>
         <div className="text-xl font-bold" style={{ color: t.fg }}>
           {subtotal.toFixed(2)} DA
@@ -256,7 +260,7 @@ export function AlgerianCheckoutForm({
         ) : (
           <ShoppingBag className="h-4 w-4" />
         )}
-        {submitting ? "Placing order…" : "Order Now"}
+        {submitting ? tr("storefront.cod.placing") : tr("storefront.cod.orderNow")}
       </button>
     </form>
   );
