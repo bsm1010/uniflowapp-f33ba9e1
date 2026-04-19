@@ -47,21 +47,6 @@ type NavItem = {
   end?: boolean;
 };
 
-const items: NavItem[] = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard, end: true },
-  { title: "My Store", url: "/dashboard/store", icon: Store },
-  { title: "Products", url: "/dashboard/products", icon: Package },
-  { title: "Categories", url: "/dashboard/categories", icon: Tag },
-  { title: "Orders", url: "/dashboard/orders", icon: ShoppingBag },
-  { title: "Customers", url: "/dashboard/customers", icon: Users },
-  { title: "Theme presets", url: "/dashboard/theme-presets", icon: Sparkles },
-  { title: "Customize", url: "/dashboard/themes", icon: Palette },
-  { title: "About page", url: "/dashboard/about", icon: FileText },
-  { title: "Contact page", url: "/dashboard/contact", icon: Mail },
-  { title: "Analytics", url: "/dashboard/analytics", icon: BarChart3 },
-  { title: "App Store", url: "/dashboard/apps", icon: Blocks },
-  { title: "Settings", url: "/dashboard/settings", icon: Settings },
-];
 
 export function DashboardSidebar() {
   const { state } = useSidebar();
