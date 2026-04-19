@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { z } from "zod";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import {
@@ -24,6 +25,7 @@ export const Route = createFileRoute("/s/$slug/checkout/success")({
 function SuccessPage() {
   const { slug } = Route.useParams();
   const { order } = Route.useSearch();
+  const { t: tr } = useTranslation();
   const [settings, setSettings] = useState<StoreSettings | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -54,7 +56,7 @@ function SuccessPage() {
   if (!settings) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <p>Store not found.</p>
+        <p>{tr("storefront.notFound")}</p>
       </div>
     );
   }
@@ -73,11 +75,10 @@ function SuccessPage() {
           <CheckCircle2 className="h-8 w-8" />
         </div>
         <h1 className="mt-6 text-3xl md:text-4xl font-bold tracking-tight">
-          Thank you for your order!
+          {tr("storefront.success.title")}
         </h1>
         <p className="mt-3 text-sm" style={{ color: t.muted }}>
-          We've received your order and sent a confirmation to your email. The
-          shop will be in touch shortly to arrange shipping.
+          {tr("storefront.success.subtitle")}
         </p>
         {order && (
           <div
@@ -89,7 +90,7 @@ function SuccessPage() {
               color: t.muted,
             }}
           >
-            Order #{order.slice(0, 8).toUpperCase()}
+            {tr("storefront.success.orderNo", { id: order.slice(0, 8).toUpperCase() })}
           </div>
         )}
         <div className="mt-8 flex flex-wrap gap-3 justify-center">
@@ -105,7 +106,7 @@ function SuccessPage() {
                 borderRadius: radius / 2,
               }}
             >
-              Track your order
+              {tr("storefront.success.track")}
             </Link>
           )}
           <Link
@@ -119,7 +120,7 @@ function SuccessPage() {
               borderRadius: radius / 2,
             }}
           >
-            Continue shopping
+            {tr("storefront.success.continue")}
           </Link>
         </div>
       </div>
