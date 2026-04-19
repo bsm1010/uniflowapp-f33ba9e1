@@ -110,14 +110,7 @@ function Dashboard3DCarousel() {
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.2}
-        onDragEnd={(_, info) => {
-          const threshold = 60;
-          if (info.offset.x < -threshold) {
-            setActive((a) => (a + 1) % SHOTS.length);
-          } else if (info.offset.x > threshold) {
-            setActive((a) => (a - 1 + SHOTS.length) % SHOTS.length);
-          }
-        }}
+        onDragEnd={handleDragEnd}
       >
         {SHOTS.map((shot, i) => {
           const offset = ((i - active + SHOTS.length) % SHOTS.length);
