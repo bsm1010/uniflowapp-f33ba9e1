@@ -1,5 +1,9 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { AuthProvider } from "@/hooks/use-auth";
+import "@/lib/i18n";
+import { applyDirection } from "@/lib/i18n";
 
 import appCss from "../styles.css?url";
 
@@ -73,6 +77,10 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
+  const { i18n } = useTranslation();
+  useEffect(() => {
+    applyDirection(i18n.language);
+  }, [i18n.language]);
   return (
     <AuthProvider>
       <Outlet />
