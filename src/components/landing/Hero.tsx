@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -15,6 +16,7 @@ const SHOTS = [
 
 
 export function Hero() {
+  const { t } = useTranslation();
   return (
     <section className="relative overflow-hidden pt-36 pb-24 md:pt-44 md:pb-32">
       {/* Dotted grid base */}
@@ -36,7 +38,7 @@ export function Hero() {
           className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/60 backdrop-blur px-3 py-1.5 text-xs text-muted-foreground shadow-soft"
         >
           <Sparkles className="h-3.5 w-3.5 text-primary" />
-          New — AI-powered store generation
+          {t("hero.badge")}
         </motion.div>
 
         <motion.h1
@@ -45,8 +47,8 @@ export function Hero() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="mt-6 text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight"
         >
-          Build Your Online Store{" "}
-          <span className="text-gradient-brand">in Minutes</span>
+          {t("hero.titleA")}{" "}
+          <span className="text-gradient-brand">{t("hero.titleB")}</span>
         </motion.h1>
 
         <motion.p
@@ -55,8 +57,7 @@ export function Hero() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="mx-auto mt-6 max-w-2xl text-base sm:text-lg text-muted-foreground"
         >
-          Create, customize, and launch your e-commerce business بسهولة بدون برمجة.
-          Everything you need to sell online — in one beautifully simple platform.
+          {t("hero.subtitle")}
         </motion.p>
 
         <motion.div
@@ -71,13 +72,13 @@ export function Hero() {
             className="bg-gradient-brand text-brand-foreground hover:opacity-90 shadow-glow group"
           >
             <Link to="/signup">
-              Get Started
+              {t("hero.getStarted")}
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </Button>
           <Button size="lg" variant="outline" className="backdrop-blur">
             <Play className="h-4 w-4" />
-            View Demo
+            {t("hero.viewDemo")}
           </Button>
         </motion.div>
 

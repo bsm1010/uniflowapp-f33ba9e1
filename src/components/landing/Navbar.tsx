@@ -1,15 +1,18 @@
 import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-
-const links = [
-  { label: "Features", href: "#features" },
-  { label: "How it works", href: "#how" },
-  { label: "Pricing", href: "#pricing" },
-  { label: "Testimonials", href: "#testimonials" },
-];
+import { LanguageSwitcher } from "./LanguageSwitcher";
 
 export function Navbar() {
+  const { t } = useTranslation();
+  const links = [
+    { label: t("nav.features"), href: "#features" },
+    { label: t("nav.how"), href: "#how" },
+    { label: t("nav.pricing"), href: "#pricing" },
+    { label: t("nav.testimonials"), href: "#testimonials" },
+  ];
+
   return (
     <motion.header
       initial={{ y: -20, opacity: 0 }}
@@ -35,15 +38,16 @@ export function Navbar() {
             ))}
           </nav>
           <div className="flex items-center gap-2">
+            <LanguageSwitcher />
             <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex">
-              <Link to="/login">Sign in</Link>
+              <Link to="/login">{t("nav.signIn")}</Link>
             </Button>
             <Button
               size="sm"
               asChild
               className="bg-gradient-brand text-brand-foreground hover:opacity-90"
             >
-              <Link to="/signup">Get Started</Link>
+              <Link to="/signup">{t("nav.getStarted")}</Link>
             </Button>
           </div>
         </div>

@@ -1,19 +1,5 @@
+import { useTranslation } from "react-i18next";
 import { Twitter, Github, Linkedin, Instagram } from "lucide-react";
-
-const sections = [
-  {
-    title: "Product",
-    links: ["Features", "Pricing", "Themes", "Integrations"],
-  },
-  {
-    title: "Company",
-    links: ["About", "Contact", "Careers", "Blog"],
-  },
-  {
-    title: "Legal",
-    links: ["Privacy", "Terms", "Security", "Cookies"],
-  },
-];
 
 const socials = [
   { Icon: Twitter, href: "#", label: "Twitter" },
@@ -23,6 +9,13 @@ const socials = [
 ];
 
 export function Footer() {
+  const { t } = useTranslation();
+  const sections = [
+    { title: t("footer.product"), links: ["Features", "Pricing", "Themes", "Integrations"] },
+    { title: t("footer.company"), links: ["About", "Contact", "Careers", "Blog"] },
+    { title: t("footer.legal"), links: ["Privacy", "Terms", "Security", "Cookies"] },
+  ];
+
   return (
     <footer className="border-t border-border/60 bg-background">
       <div className="mx-auto max-w-6xl px-4 py-16">
@@ -33,7 +26,7 @@ export function Footer() {
               <span className="font-display font-semibold text-lg">Storely</span>
             </div>
             <p className="mt-4 text-sm text-muted-foreground max-w-xs">
-              The fastest way to build, launch, and grow your e-commerce business.
+              {t("footer.tagline")}
             </p>
             <div className="mt-6 flex gap-2">
               {socials.map(({ Icon, href, label }) => (
@@ -70,9 +63,9 @@ export function Footer() {
 
         <div className="mt-12 pt-8 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} Storely, Inc. All rights reserved.
+            © {new Date().getFullYear()} Storely, Inc. {t("footer.rights")}
           </p>
-          <p className="text-xs text-muted-foreground">Made with care for founders worldwide.</p>
+          <p className="text-xs text-muted-foreground">{t("footer.made")}</p>
         </div>
       </div>
     </footer>

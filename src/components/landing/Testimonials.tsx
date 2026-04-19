@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { Star } from "lucide-react";
 
 const testimonials = [
@@ -23,13 +24,14 @@ const testimonials = [
 ];
 
 export function Testimonials() {
+  const { t } = useTranslation();
   return (
     <section id="testimonials" className="py-24 md:py-32 bg-muted/30">
       <div className="mx-auto max-w-6xl px-4">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-sm font-medium text-primary uppercase tracking-wider">Testimonials</p>
+          <p className="text-sm font-medium text-primary uppercase tracking-wider">{t("testimonials.kicker")}</p>
           <h2 className="mt-3 text-3xl md:text-5xl font-bold">
-            Loved by <span className="text-gradient-brand">10,000+</span> founders
+            {t("testimonials.titleA")} <span className="text-gradient-brand">{t("testimonials.titleB")}</span> {t("testimonials.titleC")}
           </h2>
         </div>
 
