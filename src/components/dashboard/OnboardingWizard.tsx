@@ -341,14 +341,14 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
               <div className="space-y-2">
                 <Label htmlFor="wilaya-search">Your wilaya</Label>
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Search className="pointer-events-none absolute top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground start-3" />
                   <Input
                     id="wilaya-search"
                     autoFocus
                     value={wilayaSearch}
                     onChange={(e) => setWilayaSearch(e.target.value)}
                     placeholder="Search wilayas…"
-                    className="pl-9"
+                    className="ps-9"
                   />
                 </div>
                 <div className="max-h-48 overflow-y-auto rounded-md border border-input bg-background">
