@@ -241,4 +241,37 @@
     font-family: "Tajawal", var(--font-display);
     letter-spacing: 0;
   }
+
+  /* RTL: mirror directional icons (chevrons & arrows from lucide-react)
+     so they visually point the correct way. Excludes up/down variants and
+     icons that should never flip (logos, brand marks, checks, etc.). */
+  html[dir="rtl"] svg.lucide-chevron-right,
+  html[dir="rtl"] svg.lucide-chevron-left,
+  html[dir="rtl"] svg.lucide-chevrons-right,
+  html[dir="rtl"] svg.lucide-chevrons-left,
+  html[dir="rtl"] svg.lucide-arrow-right,
+  html[dir="rtl"] svg.lucide-arrow-left,
+  html[dir="rtl"] svg.lucide-arrow-up-right,
+  html[dir="rtl"] svg.lucide-arrow-down-right,
+  html[dir="rtl"] svg.lucide-arrow-up-left,
+  html[dir="rtl"] svg.lucide-arrow-down-left,
+  html[dir="rtl"] svg.lucide-corner-down-right,
+  html[dir="rtl"] svg.lucide-corner-down-left,
+  html[dir="rtl"] svg.lucide-move-right,
+  html[dir="rtl"] svg.lucide-move-left,
+  html[dir="rtl"] svg.lucide-square-arrow-right,
+  html[dir="rtl"] svg.lucide-square-arrow-left,
+  html[dir="rtl"] svg.lucide-circle-arrow-right,
+  html[dir="rtl"] svg.lucide-circle-arrow-left,
+  html[dir="rtl"] svg.lucide-log-out,
+  html[dir="rtl"] svg.lucide-log-in,
+  html[dir="rtl"] svg.lucide-send,
+  html[dir="rtl"] svg.lucide-undo,
+  html[dir="rtl"] svg.lucide-redo {
+    transform: scaleX(-1);
+  }
+  /* Opt-out hook: add .no-flip to any icon that must keep its orientation */
+  html[dir="rtl"] svg.no-flip {
+    transform: none;
+  }
 }
