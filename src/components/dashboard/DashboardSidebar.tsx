@@ -53,7 +53,8 @@ export function DashboardSidebar() {
   const collapsed = state === "collapsed";
   const { pathname } = useLocation();
   const { user } = useAuth();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.dir() === "rtl";
   const [isAdmin, setIsAdmin] = useState(false);
   const { installed } = useInstalledApps();
   const installedApps = Array.from(installed)
@@ -96,7 +97,11 @@ export function DashboardSidebar() {
     end ? pathname === url : pathname === url || pathname.startsWith(url + "/");
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-sidebar-border">
+    <Sidebar
+      collapsible="icon"
+      side={isRtl ? "right" : "left"}
+      className={isRtl ? "border-l border-sidebar-border" : "border-r border-sidebar-border"}
+    >
       <SidebarHeader className="border-b border-sidebar-border">
         <Link to="/dashboard" className="flex items-center gap-2 px-2 py-2">
           <div className="h-8 w-8 rounded-lg bg-gradient-brand shadow-glow shrink-0" />
