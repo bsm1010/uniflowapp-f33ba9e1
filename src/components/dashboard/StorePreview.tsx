@@ -5,6 +5,7 @@ import {
   getButtonLabels,
   getSectionTitles,
   getFooterSocials,
+  getSectionOrder,
   formatPrice,
   type StoreSettings,
 } from "@/lib/storeTheme";
