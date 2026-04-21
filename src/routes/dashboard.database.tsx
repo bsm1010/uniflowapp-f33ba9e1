@@ -126,6 +126,18 @@ const FIELD_TYPE_LABELS: Record<FieldType, string> = {
   relation: "Relation",
 };
 
+const FIELD_TYPE_ICONS: Record<FieldType, LucideIcon> = {
+  text: Type,
+  number: Hash,
+  date: CalendarIcon,
+  boolean: ToggleLeft,
+  select: ChevronDownSquare,
+  multi_select: Tags,
+  image: ImageIcon,
+  file: Paperclip,
+  relation: Link2,
+};
+
 function DatabasePage() {
   const { user } = useAuth();
   const { isExpired } = useSubscription();
