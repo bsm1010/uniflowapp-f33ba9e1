@@ -670,18 +670,22 @@ function TableGrid({
         </div>
       </div>
 
-      <div className="overflow-auto">
-        <table className="w-full text-sm">
-          <thead className="bg-muted/40 border-b border-border">
+      <div className="overflow-auto max-h-[calc(100vh-280px)]">
+        <table className="w-full text-sm border-separate border-spacing-0">
+          <thead className="sticky top-0 z-20 bg-muted/80 backdrop-blur">
             <tr>
+              {/* Row-number / select gutter */}
+              <th className="sticky left-0 z-30 bg-muted/80 backdrop-blur w-12 min-w-[3rem] border-b border-r border-border px-2 py-2 text-left text-[11px] font-medium text-muted-foreground">
+                #
+              </th>
               {fields.map((f) => (
                 <th
                   key={f.id}
-                  className="px-3 py-2 text-left font-medium whitespace-nowrap min-w-[160px]"
+                  className="px-3 py-2 text-left font-medium whitespace-nowrap min-w-[180px] border-b border-r border-border"
                 >
                   <div className="flex items-center gap-2">
-                    <span>{f.name}</span>
-                    <Badge variant="secondary" className="text-[10px]">
+                    <span className="truncate">{f.name}</span>
+                    <Badge variant="secondary" className="text-[10px] shrink-0">
                       {FIELD_TYPE_LABELS[f.field_type]}
                     </Badge>
                     <DropdownMenu>
@@ -705,31 +709,52 @@ function TableGrid({
                   </div>
                 </th>
               ))}
-              <th className="w-10 px-2"></th>
+              {/* Add column button */}
+              <th className="border-b border-border bg-muted/80 backdrop-blur min-w-[120px] px-2">
+                <button
+                  onClick={onAddField}
+                  className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded hover:bg-accent w-full"
+                  title="Add field"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  Add field
+                </button>
+              </th>
             </tr>
           </thead>
           <tbody>
             {records.length === 0 ? (
               <tr>
                 <td
-                  colSpan={Math.max(fields.length, 1) + 1}
-                  className="p-8 text-center text-muted-foreground text-sm"
+                  colSpan={fields.length + 2}
+                  className="p-12 text-center text-muted-foreground text-sm border-b border-border"
                 >
                   {fields.length === 0
                     ? "Add a field to get started."
-                    : "No records yet. Click 'Row' to add one."}
+                    : "No records yet. Click 'Add row' below to create one."}
                 </td>
               </tr>
             ) : (
-              records.map((rec) => (
-                <tr
-                  key={rec.id}
-                  className="border-b border-border last:border-0 hover:bg-muted/20"
-                >
+              records.map((rec, idx) => (
+                <tr key={rec.id} className="group hover:bg-muted/30">
+                  {/* Row number / delete gutter */}
+                  <td className="sticky left-0 z-10 bg-background group-hover:bg-muted/30 border-b border-r border-border w-12 min-w-[3rem] px-2 text-center align-middle">
+                    <span className="text-xs text-muted-foreground group-hover:hidden">
+                      {idx + 1}
+                    </span>
+                    <button
+                      className="hidden group-hover:inline-flex text-muted-foreground hover:text-destructive p-1 rounded hover:bg-destructive/10"
+                      onClick={() => onDeleteRecord(rec.id)}
+                      aria-label="Delete row"
+                      title="Delete row"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </td>
                   {fields.map((f) => (
                     <td
                       key={f.id}
-                      className="px-3 py-1.5 align-middle min-w-[160px]"
+                      className="px-2 py-1 align-middle min-w-[180px] border-b border-r border-border"
                     >
                       <CellEditor
                         field={f}
@@ -739,17 +764,25 @@ function TableGrid({
                       />
                     </td>
                   ))}
-                  <td className="px-2 text-right">
-                    <button
-                      className="opacity-50 hover:opacity-100 hover:text-destructive p-1"
-                      onClick={() => onDeleteRecord(rec.id)}
-                      aria-label="Delete row"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
-                  </td>
+                  <td className="border-b border-border" />
                 </tr>
               ))
+            )}
+            {fields.length > 0 && (
+              <tr>
+                <td
+                  colSpan={fields.length + 2}
+                  className="p-0 border-b border-border"
+                >
+                  <button
+                    onClick={onAddRecord}
+                    className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors px-3 py-2 w-full hover:bg-accent/40"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                    Add row
+                  </button>
+                </td>
+              </tr>
             )}
           </tbody>
         </table>
