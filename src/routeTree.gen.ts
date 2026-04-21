@@ -48,8 +48,10 @@ import { Route as DashboardAppsAiDescriptionsRouteImport } from './routes/dashbo
 import { Route as DashboardAppsAbandonedCartRouteImport } from './routes/dashboard.apps.abandoned-cart'
 import { Route as DashboardAppsAppKeyRouteImport } from './routes/dashboard.apps.$appKey'
 import { Route as DashboardAdminPaymentsRouteImport } from './routes/dashboard.admin.payments'
+import { Route as ApiDbTableIdRouteImport } from './routes/api.db.$tableId'
 import { Route as SSlugPProductIdRouteImport } from './routes/s.$slug.p.$productId'
 import { Route as SSlugCheckoutSuccessRouteImport } from './routes/s.$slug.checkout.success'
+import { Route as ApiDbTableIdRecordIdRouteImport } from './routes/api.db.$tableId.$recordId'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -254,6 +256,11 @@ const DashboardAdminPaymentsRoute = DashboardAdminPaymentsRouteImport.update({
   path: '/admin/payments',
   getParentRoute: () => DashboardRoute,
 } as any)
+const ApiDbTableIdRoute = ApiDbTableIdRouteImport.update({
+  id: '/api/db/$tableId',
+  path: '/api/db/$tableId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SSlugPProductIdRoute = SSlugPProductIdRouteImport.update({
   id: '/s/$slug/p/$productId',
   path: '/s/$slug/p/$productId',
@@ -263,6 +270,11 @@ const SSlugCheckoutSuccessRoute = SSlugCheckoutSuccessRouteImport.update({
   id: '/success',
   path: '/success',
   getParentRoute: () => SSlugCheckoutRoute,
+} as any)
+const ApiDbTableIdRecordIdRoute = ApiDbTableIdRecordIdRouteImport.update({
+  id: '/$recordId',
+  path: '/$recordId',
+  getParentRoute: () => ApiDbTableIdRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -286,6 +298,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/themes': typeof DashboardThemesRoute
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/api/db/$tableId': typeof ApiDbTableIdRouteWithChildren
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
   '/dashboard/apps/$appKey': typeof DashboardAppsAppKeyRoute
   '/dashboard/apps/abandoned-cart': typeof DashboardAppsAbandonedCartRoute
@@ -305,6 +318,7 @@ export interface FileRoutesByFullPath {
   '/s/$slug/track': typeof SSlugTrackRoute
   '/dashboard/apps/': typeof DashboardAppsIndexRoute
   '/s/$slug/': typeof SSlugIndexRoute
+  '/api/db/$tableId/$recordId': typeof ApiDbTableIdRecordIdRoute
   '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
   '/s/$slug/p/$productId': typeof SSlugPProductIdRoute
 }
@@ -327,6 +341,7 @@ export interface FileRoutesByTo {
   '/dashboard/themes': typeof DashboardThemesRoute
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/api/db/$tableId': typeof ApiDbTableIdRouteWithChildren
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
   '/dashboard/apps/$appKey': typeof DashboardAppsAppKeyRoute
   '/dashboard/apps/abandoned-cart': typeof DashboardAppsAbandonedCartRoute
@@ -346,6 +361,7 @@ export interface FileRoutesByTo {
   '/s/$slug/track': typeof SSlugTrackRoute
   '/dashboard/apps': typeof DashboardAppsIndexRoute
   '/s/$slug': typeof SSlugIndexRoute
+  '/api/db/$tableId/$recordId': typeof ApiDbTableIdRecordIdRoute
   '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
   '/s/$slug/p/$productId': typeof SSlugPProductIdRoute
 }
@@ -371,6 +387,7 @@ export interface FileRoutesById {
   '/dashboard/themes': typeof DashboardThemesRoute
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/api/db/$tableId': typeof ApiDbTableIdRouteWithChildren
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
   '/dashboard/apps/$appKey': typeof DashboardAppsAppKeyRoute
   '/dashboard/apps/abandoned-cart': typeof DashboardAppsAbandonedCartRoute
@@ -390,6 +407,7 @@ export interface FileRoutesById {
   '/s/$slug/track': typeof SSlugTrackRoute
   '/dashboard/apps/': typeof DashboardAppsIndexRoute
   '/s/$slug/': typeof SSlugIndexRoute
+  '/api/db/$tableId/$recordId': typeof ApiDbTableIdRecordIdRoute
   '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
   '/s/$slug/p/$productId': typeof SSlugPProductIdRoute
 }
@@ -416,6 +434,7 @@ export interface FileRouteTypes {
     | '/dashboard/themes'
     | '/dashboard/upgrade'
     | '/dashboard/'
+    | '/api/db/$tableId'
     | '/dashboard/admin/payments'
     | '/dashboard/apps/$appKey'
     | '/dashboard/apps/abandoned-cart'
@@ -435,6 +454,7 @@ export interface FileRouteTypes {
     | '/s/$slug/track'
     | '/dashboard/apps/'
     | '/s/$slug/'
+    | '/api/db/$tableId/$recordId'
     | '/s/$slug/checkout/success'
     | '/s/$slug/p/$productId'
   fileRoutesByTo: FileRoutesByTo
@@ -457,6 +477,7 @@ export interface FileRouteTypes {
     | '/dashboard/themes'
     | '/dashboard/upgrade'
     | '/dashboard'
+    | '/api/db/$tableId'
     | '/dashboard/admin/payments'
     | '/dashboard/apps/$appKey'
     | '/dashboard/apps/abandoned-cart'
@@ -476,6 +497,7 @@ export interface FileRouteTypes {
     | '/s/$slug/track'
     | '/dashboard/apps'
     | '/s/$slug'
+    | '/api/db/$tableId/$recordId'
     | '/s/$slug/checkout/success'
     | '/s/$slug/p/$productId'
   id:
@@ -500,6 +522,7 @@ export interface FileRouteTypes {
     | '/dashboard/themes'
     | '/dashboard/upgrade'
     | '/dashboard/'
+    | '/api/db/$tableId'
     | '/dashboard/admin/payments'
     | '/dashboard/apps/$appKey'
     | '/dashboard/apps/abandoned-cart'
@@ -519,6 +542,7 @@ export interface FileRouteTypes {
     | '/s/$slug/track'
     | '/dashboard/apps/'
     | '/s/$slug/'
+    | '/api/db/$tableId/$recordId'
     | '/s/$slug/checkout/success'
     | '/s/$slug/p/$productId'
   fileRoutesById: FileRoutesById
@@ -529,6 +553,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRouteWithChildren
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
+  ApiDbTableIdRoute: typeof ApiDbTableIdRouteWithChildren
   SSlugAboutRoute: typeof SSlugAboutRoute
   SSlugCartRoute: typeof SSlugCartRoute
   SSlugCheckoutRoute: typeof SSlugCheckoutRouteWithChildren
@@ -813,6 +838,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAdminPaymentsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/api/db/$tableId': {
+      id: '/api/db/$tableId'
+      path: '/api/db/$tableId'
+      fullPath: '/api/db/$tableId'
+      preLoaderRoute: typeof ApiDbTableIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/s/$slug/p/$productId': {
       id: '/s/$slug/p/$productId'
       path: '/s/$slug/p/$productId'
@@ -826,6 +858,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/s/$slug/checkout/success'
       preLoaderRoute: typeof SSlugCheckoutSuccessRouteImport
       parentRoute: typeof SSlugCheckoutRoute
+    }
+    '/api/db/$tableId/$recordId': {
+      id: '/api/db/$tableId/$recordId'
+      path: '/$recordId'
+      fullPath: '/api/db/$tableId/$recordId'
+      preLoaderRoute: typeof ApiDbTableIdRecordIdRouteImport
+      parentRoute: typeof ApiDbTableIdRoute
     }
   }
 }
@@ -906,6 +945,18 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
   DashboardRouteChildren,
 )
 
+interface ApiDbTableIdRouteChildren {
+  ApiDbTableIdRecordIdRoute: typeof ApiDbTableIdRecordIdRoute
+}
+
+const ApiDbTableIdRouteChildren: ApiDbTableIdRouteChildren = {
+  ApiDbTableIdRecordIdRoute: ApiDbTableIdRecordIdRoute,
+}
+
+const ApiDbTableIdRouteWithChildren = ApiDbTableIdRoute._addFileChildren(
+  ApiDbTableIdRouteChildren,
+)
+
 interface SSlugCheckoutRouteChildren {
   SSlugCheckoutSuccessRoute: typeof SSlugCheckoutSuccessRoute
 }
@@ -924,6 +975,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRouteWithChildren,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
+  ApiDbTableIdRoute: ApiDbTableIdRouteWithChildren,
   SSlugAboutRoute: SSlugAboutRoute,
   SSlugCartRoute: SSlugCartRoute,
   SSlugCheckoutRoute: SSlugCheckoutRouteWithChildren,
