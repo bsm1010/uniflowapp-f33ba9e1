@@ -12,7 +12,9 @@ import {
   getStoreTokens,
   getButtonLabels,
   getSectionTitles,
+  getSectionOrder,
   type StoreSettings,
+  type SectionKey,
 } from "@/lib/storeTheme";
 import { useCart } from "@/hooks/use-cart";
 
@@ -47,6 +49,7 @@ function StorefrontHome() {
 
   useEffect(() => {
     let active = true;
+    let channel: ReturnType<typeof supabase.channel> | null = null;
     (async () => {
       const { data: s } = await supabase
         .from("store_settings")
@@ -68,9 +71,28 @@ function StorefrontHome() {
       setSettings(s);
       setProducts(p ?? []);
       setLoading(false);
+
+      // Subscribe to live store_settings changes for this store
+      channel = supabase
+        .channel(`store-settings-${s.user_id}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "store_settings",
+            filter: `user_id=eq.${s.user_id}`,
+          },
+          (payload) => {
+            if (!active) return;
+            setSettings(payload.new as StoreSettings);
+          },
+        )
+        .subscribe();
     })();
     return () => {
       active = false;
+      if (channel) supabase.removeChannel(channel);
     };
   }, [slug]);
 
@@ -162,13 +184,16 @@ function StorefrontHome() {
     toast.success(tr("storefront.product.addedToCart", { name: p.name }));
   };
 
-  return (
-    <StorefrontShell settings={settings}>
-      {settings.show_hero && <StorefrontHero settings={settings} tokens={t} />}
+  const sectionRenderers: Record<SectionKey, () => React.ReactNode> = {
+    hero: () =>
+      settings.show_hero ? (
+        <StorefrontHero key="hero" settings={settings} tokens={t} />
+      ) : null,
 
-      {/* Categories strip */}
-      {settings.show_categories && categories.length > 1 && (
+    categories: () =>
+      settings.show_categories && categories.length > 1 ? (
         <section
+          key="categories"
           id="categories"
           className="px-4 sm:px-6 py-12 md:py-16 max-w-6xl mx-auto w-full"
         >
@@ -217,11 +242,12 @@ function StorefrontHome() {
             })}
           </div>
         </section>
-      )}
+      ) : null,
 
-      {/* Featured products */}
-      {settings.show_featured && featured.length > 0 && (
+    featured: () =>
+      settings.show_featured && featured.length > 0 ? (
         <section
+          key="featured"
           id="featured"
           className="px-4 sm:px-6 py-12 md:py-16 max-w-6xl mx-auto w-full"
           style={{ borderTop: `1px solid ${t.border}` }}
@@ -258,9 +284,78 @@ function StorefrontHome() {
             ))}
           </div>
         </section>
-      )}
+      ) : null,
 
-      {/* All products + search/filter */}
+    newsletter: () =>
+      settings.show_newsletter ? (
+        <section
+          key="newsletter"
+          id="contact"
+          className="px-4 sm:px-6 py-16 md:py-24 text-center"
+          style={{
+            backgroundColor: t.surface,
+            borderTop: `1px solid ${t.border}`,
+          }}
+        >
+          <div className="max-w-xl mx-auto">
+            <div
+              className="inline-flex items-center justify-center h-12 w-12 mb-5"
+              style={{
+                backgroundColor: t.primary + "22",
+                borderRadius: t.radius.md,
+              }}
+            >
+              <Mail className="h-5 w-5" style={{ color: t.primary }} />
+            </div>
+            <h3 className="text-2xl md:text-3xl font-bold tracking-tight">
+              {titles.newsletter}
+            </h3>
+            <p className="mt-2 text-sm md:text-base" style={{ color: t.muted }}>
+              {titles.newsletter_sub}
+            </p>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                toast.success(tr("storefront.home.subscribed"));
+              }}
+              className="mt-6 flex max-w-md mx-auto gap-2"
+            >
+              <input
+                type="email"
+                required
+                placeholder={tr("storefront.home.emailPh")}
+                className="flex-1 px-4 py-3 text-sm outline-none focus:ring-2"
+                style={{
+                  backgroundColor: t.bg,
+                  color: t.fg,
+                  border: `1px solid ${t.border}`,
+                  borderRadius: t.buttonRadius,
+                }}
+              />
+              <button
+                type="submit"
+                className="px-5 py-3 text-sm font-semibold transition-opacity hover:opacity-90"
+                style={{
+                  backgroundColor: t.primary,
+                  color: t.onPrimary,
+                  borderRadius: t.buttonRadius,
+                }}
+              >
+                {labels.subscribe}
+              </button>
+            </form>
+          </div>
+        </section>
+      ) : null,
+  };
+
+  const sectionOrder = getSectionOrder(settings);
+
+  return (
+    <StorefrontShell settings={settings}>
+      {sectionOrder.map((key) => sectionRenderers[key]())}
+
+      {/* All products + search/filter — always at the end */}
       <section
         id="shop"
         className="px-4 sm:px-6 py-12 md:py-16 max-w-6xl mx-auto w-full"
@@ -376,67 +471,6 @@ function StorefrontHome() {
           </div>
         )}
       </section>
-
-      {/* Newsletter */}
-      {settings.show_newsletter && (
-        <section
-          id="contact"
-          className="px-4 sm:px-6 py-16 md:py-24 text-center"
-          style={{
-            backgroundColor: t.surface,
-            borderTop: `1px solid ${t.border}`,
-          }}
-        >
-          <div className="max-w-xl mx-auto">
-            <div
-              className="inline-flex items-center justify-center h-12 w-12 mb-5"
-              style={{
-                backgroundColor: t.primary + "22",
-                borderRadius: t.radius.md,
-              }}
-            >
-              <Mail className="h-5 w-5" style={{ color: t.primary }} />
-            </div>
-            <h3 className="text-2xl md:text-3xl font-bold tracking-tight">
-              {titles.newsletter}
-            </h3>
-            <p className="mt-2 text-sm md:text-base" style={{ color: t.muted }}>
-              {titles.newsletter_sub}
-            </p>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                toast.success(tr("storefront.home.subscribed"));
-              }}
-              className="mt-6 flex max-w-md mx-auto gap-2"
-            >
-              <input
-                type="email"
-                required
-                placeholder={tr("storefront.home.emailPh")}
-                className="flex-1 px-4 py-3 text-sm outline-none focus:ring-2"
-                style={{
-                  backgroundColor: t.bg,
-                  color: t.fg,
-                  border: `1px solid ${t.border}`,
-                  borderRadius: t.buttonRadius,
-                }}
-              />
-              <button
-                type="submit"
-                className="px-5 py-3 text-sm font-semibold transition-opacity hover:opacity-90"
-                style={{
-                  backgroundColor: t.primary,
-                  color: t.onPrimary,
-                  borderRadius: t.buttonRadius,
-                }}
-              >
-                {labels.subscribe}
-              </button>
-            </form>
-          </div>
-        </section>
-      )}
     </StorefrontShell>
   );
 }

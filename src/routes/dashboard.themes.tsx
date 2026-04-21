@@ -28,7 +28,8 @@ import { useSubscription } from "@/hooks/use-subscription";
 import { ExpiredOverlay } from "@/components/dashboard/ExpiredOverlay";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { StorePreview } from "@/components/dashboard/StorePreview";
-import { type StoreSettings, FONT_STACK } from "@/lib/storeTheme";
+import { type StoreSettings, FONT_STACK, getSectionOrder } from "@/lib/storeTheme";
+import { SortableSections } from "@/components/dashboard/SortableSections";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -174,6 +175,7 @@ function defaults(userId: string): StoreSettings {
     contact_map_url: "",
     contact_form_enabled: true,
     contact_intro: "Have a question? We'd love to hear from you.",
+    section_order: ["hero", "categories", "featured", "newsletter"],
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };
@@ -769,6 +771,35 @@ function CustomizePage() {
                       />
                     </div>
                   </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* SECTION ORDER */}
+              <AccordionItem value="layout" className="border-b border-border/60">
+                <AccordionTrigger className="px-2 hover:no-underline">
+                  <div className="flex items-center gap-2">
+                    <Layers className="h-4 w-4 text-primary" />
+                    <span className="font-medium">Section order</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-2 pb-4 space-y-3">
+                  <p className="text-xs text-muted-foreground">
+                    Drag to reorder how sections appear on your storefront. Saves and updates live automatically.
+                  </p>
+                  <SortableSections
+                    order={getSectionOrder(settings)}
+                    onChange={(next) => {
+                      update("section_order", next as unknown as StoreSettings["section_order"]);
+                      // Auto-save the new order so storefronts update instantly
+                      void supabase
+                        .from("store_settings")
+                        .update({ section_order: next })
+                        .eq("user_id", user!.id)
+                        .then(({ error }) => {
+                          if (error) toast.error(error.message);
+                        });
+                    }}
+                  />
                 </AccordionContent>
               </AccordionItem>
             </Accordion>

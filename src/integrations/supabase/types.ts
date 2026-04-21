@@ -761,6 +761,7 @@ export type Database = {
           nav_links: Json
           primary_color: string
           secondary_color: string
+          section_order: string[]
           section_titles: Json
           show_categories: boolean
           show_featured: boolean
@@ -804,6 +805,7 @@ export type Database = {
           nav_links?: Json
           primary_color?: string
           secondary_color?: string
+          section_order?: string[]
           section_titles?: Json
           show_categories?: boolean
           show_featured?: boolean
@@ -847,6 +849,7 @@ export type Database = {
           nav_links?: Json
           primary_color?: string
           secondary_color?: string
+          section_order?: string[]
           section_titles?: Json
           show_categories?: boolean
           show_featured?: boolean
