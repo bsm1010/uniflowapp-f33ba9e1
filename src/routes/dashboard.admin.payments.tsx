@@ -309,10 +309,26 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function extractPath(url: string): string | null {
-  // Stored as full public URL like .../object/public/payment-proofs/<path> or signed URL.
-  // We standardize on extracting after "/payment-proofs/"
   const marker = "/payment-proofs/";
   const idx = url.indexOf(marker);
-  if (idx === -1) return url; // assume already a path
+  if (idx === -1) return url;
   return url.slice(idx + marker.length).split("?")[0];
+}
+
+const PLAN_META: Record<string, { label: string; credits: number }> = {
+  pack_50: { label: "Credit pack — 50", credits: 50 },
+  pack_150: { label: "Credit pack — 150", credits: 150 },
+  pack_500: { label: "Credit pack — 500", credits: 500 },
+  basic: { label: "Basic subscription", credits: 100 },
+  pro: { label: "Pro subscription", credits: 300 },
+  business: { label: "Business subscription", credits: 2000 },
+  monthly: { label: "Monthly (legacy)", credits: 0 },
+  yearly: { label: "Yearly (legacy)", credits: 0 },
+};
+
+function planLabel(plan: string): string {
+  return PLAN_META[plan]?.label ?? plan;
+}
+function planCredits(plan: string): number {
+  return PLAN_META[plan]?.credits ?? 0;
 }
