@@ -822,51 +822,6 @@ function TableGrid({
           </>
         );
       })()}
-
-      {view.mode === "grid" && (
-        <GridView
-          fields={fields}
-          records={records}
-          onEditField={onEditField}
-          onDeleteField={onDeleteField}
-          onAddField={onAddField}
-          onAddRecord={onAddRecord}
-          onDeleteRecord={onDeleteRecord}
-          onUpdateValue={onUpdateValue}
-          allTables={allTables}
-        />
-      )}
-      {view.mode === "gallery" && (
-        <GalleryView
-          fields={fields}
-          records={records}
-          imageFieldId={view.galleryImageFieldId ?? null}
-          titleFieldId={view.galleryTitleFieldId ?? null}
-          onChangeImageField={(id) => update({ galleryImageFieldId: id })}
-          onChangeTitleField={(id) => update({ galleryTitleFieldId: id })}
-          onAddRecord={onAddRecord}
-        />
-      )}
-      {view.mode === "kanban" && (
-        <KanbanView
-          fields={fields}
-          records={records}
-          groupFieldId={view.kanbanGroupFieldId ?? null}
-          onChangeGroupField={(id) => update({ kanbanGroupFieldId: id })}
-          onUpdateValue={onUpdateValue}
-          onAddRecord={onAddRecord}
-        />
-      )}
-      {view.mode === "calendar" && (
-        <CalendarView
-          fields={fields}
-          records={records}
-          dateFieldId={view.calendarDateFieldId ?? null}
-          titleFieldId={view.calendarTitleFieldId ?? null}
-          onChangeDateField={(id) => update({ calendarDateFieldId: id })}
-          onChangeTitleField={(id) => update({ calendarTitleFieldId: id })}
-        />
-      )}
     </div>
   );
 }
