@@ -280,14 +280,26 @@ function DatabasePage() {
   // ---------- Record CRUD ----------
   async function addRecord() {
     if (!user || !activeTableId) return;
-    const { error } = await supabase.from("db_records").insert({
-      user_id: user.id,
-      table_id: activeTableId,
-      data: {},
-      position: records.length,
-    });
+    const { data, error } = await supabase
+      .from("db_records")
+      .insert({
+        user_id: user.id,
+        table_id: activeTableId,
+        data: {},
+        position: records.length,
+      })
+      .select()
+      .single();
     if (error) return toast.error(error.message);
     await loadTableData(activeTableId);
+    if (data) {
+      runAutomations("record_created", {
+        userId: user.id,
+        tableId: activeTableId,
+        recordId: data.id,
+        recordData: (data.data as Record<string, unknown>) ?? {},
+      });
+    }
   }
 
   async function updateRecordValue(recordId: string, fieldId: string, value: unknown) {
@@ -301,7 +313,18 @@ function DatabasePage() {
       .from("db_records")
       .update({ data: newData as never })
       .eq("id", recordId);
-    if (error) toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    if (user && activeTableId) {
+      runAutomations("record_updated", {
+        userId: user.id,
+        tableId: activeTableId,
+        recordId,
+        recordData: newData,
+      });
+    }
   }
 
   async function deleteRecord(id: string) {
