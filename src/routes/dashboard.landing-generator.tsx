@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   DndContext,
   PointerSensor,
@@ -95,6 +96,8 @@ async function fileToCompressedDataUrl(file: File, maxDim = 1024): Promise<strin
 }
 
 function LandingGeneratorPage() {
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.dir() === "rtl";
   const [imageDataUrl, setImageDataUrl] = useState<string | null>(null);
   const [hint, setHint] = useState("");
   const [loading, setLoading] = useState(false);
@@ -183,15 +186,15 @@ function LandingGeneratorPage() {
   };
 
   return (
-    <div dir="rtl" className="space-y-6">
+    <div dir={isRtl ? "rtl" : "ltr"} className="space-y-6">
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl font-display font-bold flex items-center gap-2">
             <Sparkles className="h-6 w-6 text-primary" />
-            مُولّد صفحات الهبوط بالذكاء الاصطناعي
+            {t("dashboard.landingGenerator.title")}
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            ارفع صورة المنتج، ودع الذكاء الاصطناعي ينشئ صفحة بيع عربية كاملة جاهزة للنشر.
+            {t("dashboard.landingGenerator.description")}
           </p>
         </div>
         {content && (

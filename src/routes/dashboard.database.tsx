@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import {
   Database,
@@ -142,6 +143,7 @@ const FIELD_TYPE_ICONS: Record<FieldType, LucideIcon> = {
 
 function DatabasePage() {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const { isExpired } = useSubscription();
   const [tables, setTables] = useState<DBTable[]>([]);
   const [activeTableId, setActiveTableId] = useState<string | null>(null);
@@ -363,9 +365,9 @@ function DatabasePage() {
     >
       {isExpired && <ExpiredOverlay />}
       <PageHeader
-        eyebrow="Workspace"
-        title="Database"
-        description="Build custom tables with typed fields — like a mini Airtable inside your store."
+        eyebrow={t("dashboard.database.eyebrow")}
+        title={t("dashboard.database.title")}
+        description={t("dashboard.database.description")}
         actions={
           <div className="flex gap-2">
             {activeTable && (
@@ -381,7 +383,7 @@ function DatabasePage() {
               }}
             >
               <Plus className="h-4 w-4 mr-2" />
-              New table
+              {t("dashboard.database.newTable")}
             </Button>
           </div>
         }
@@ -392,8 +394,8 @@ function DatabasePage() {
       ) : tables.length === 0 ? (
         <EmptyState
           icon={Database}
-          title="No tables yet"
-          description="Create your first table to start storing structured data."
+          title={t("dashboard.database.noTables")}
+          description={t("dashboard.database.noTablesDesc")}
           action={
             <Button
               onClick={() => {
