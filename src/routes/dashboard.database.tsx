@@ -11,6 +11,14 @@ import {
   Image as ImageIcon,
   Kanban,
   Calendar as CalendarIcon,
+  Type,
+  Hash,
+  ToggleLeft,
+  ChevronDownSquare,
+  Tags,
+  Paperclip,
+  Link2,
+  type LucideIcon,
 } from "lucide-react";
 import {
   GalleryView,
@@ -116,6 +124,18 @@ const FIELD_TYPE_LABELS: Record<FieldType, string> = {
   image: "Image",
   file: "File",
   relation: "Relation",
+};
+
+const FIELD_TYPE_ICONS: Record<FieldType, LucideIcon> = {
+  text: Type,
+  number: Hash,
+  date: CalendarIcon,
+  boolean: ToggleLeft,
+  select: ChevronDownSquare,
+  multi_select: Tags,
+  image: ImageIcon,
+  file: Paperclip,
+  relation: Link2,
 };
 
 function DatabasePage() {
@@ -641,11 +661,17 @@ function FieldDialog({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {(Object.keys(FIELD_TYPE_LABELS) as FieldType[]).map((t) => (
-                  <SelectItem key={t} value={t}>
-                    {FIELD_TYPE_LABELS[t]}
-                  </SelectItem>
-                ))}
+                {(Object.keys(FIELD_TYPE_LABELS) as FieldType[]).map((t) => {
+                  const Icon = FIELD_TYPE_ICONS[t];
+                  return (
+                    <SelectItem key={t} value={t}>
+                      <div className="flex items-center gap-2">
+                        <Icon className="h-4 w-4 text-muted-foreground" />
+                        <span>{FIELD_TYPE_LABELS[t]}</span>
+                      </div>
+                    </SelectItem>
+                  );
+                })}
               </SelectContent>
             </Select>
           </div>
@@ -911,6 +937,12 @@ function GridView({
                   className="px-4 py-3 text-left font-semibold whitespace-nowrap min-w-[260px] border-b border-r border-border"
                 >
                   <div className="flex items-center gap-2">
+                    {(() => {
+                      const Icon = FIELD_TYPE_ICONS[f.field_type];
+                      return (
+                        <Icon className="h-4 w-4 text-muted-foreground shrink-0" />
+                      );
+                    })()}
                     <span className="truncate">{f.name}</span>
                     <Badge variant="secondary" className="text-[10px] shrink-0">
                       {FIELD_TYPE_LABELS[f.field_type]}
