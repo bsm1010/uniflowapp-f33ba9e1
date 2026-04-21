@@ -186,15 +186,15 @@ function LandingGeneratorPage() {
   };
 
   return (
-    <div dir="rtl" className="space-y-6">
+    <div dir={isRtl ? "rtl" : "ltr"} className="space-y-6">
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl font-display font-bold flex items-center gap-2">
             <Sparkles className="h-6 w-6 text-primary" />
-            مُولّد صفحات الهبوط بالذكاء الاصطناعي
+            {t("dashboard.landingGenerator.title")}
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            ارفع صورة المنتج، ودع الذكاء الاصطناعي ينشئ صفحة بيع عربية كاملة جاهزة للنشر.
+            {t("dashboard.landingGenerator.description")}
           </p>
         </div>
         {content && (
