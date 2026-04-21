@@ -5,6 +5,7 @@ import {
   ImageIcon,
   MoreHorizontal,
   Package,
+  PackageSearch,
   Pencil,
   Plus,
   Search,
