@@ -807,7 +807,13 @@ function TableGrid({
   ];
 
   return (
-    <div className="space-y-3">
+    <div
+      className={
+        fullscreen
+          ? "fixed inset-0 z-50 bg-background p-4 overflow-auto space-y-3"
+          : "space-y-3"
+      }
+    >
       <Card className="p-3 flex items-center justify-between gap-3 flex-wrap">
         <div className="min-w-0">
           <h2 className="font-semibold truncate">{table.name}</h2>
