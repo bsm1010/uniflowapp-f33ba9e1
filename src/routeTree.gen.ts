@@ -22,6 +22,7 @@ import { Route as DashboardStoreRouteImport } from './routes/dashboard.store'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
 import { Route as DashboardProductsRouteImport } from './routes/dashboard.products'
 import { Route as DashboardOrdersRouteImport } from './routes/dashboard.orders'
+import { Route as DashboardLandingGeneratorRouteImport } from './routes/dashboard.landing-generator'
 import { Route as DashboardDatabaseRouteImport } from './routes/dashboard.database'
 import { Route as DashboardCustomersRouteImport } from './routes/dashboard.customers'
 import { Route as DashboardContactRouteImport } from './routes/dashboard.contact'
@@ -118,6 +119,12 @@ const DashboardOrdersRoute = DashboardOrdersRouteImport.update({
   path: '/orders',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardLandingGeneratorRoute =
+  DashboardLandingGeneratorRouteImport.update({
+    id: '/landing-generator',
+    path: '/landing-generator',
+    getParentRoute: () => DashboardRoute,
+  } as any)
 const DashboardDatabaseRoute = DashboardDatabaseRouteImport.update({
   id: '/database',
   path: '/database',
@@ -290,6 +297,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/contact': typeof DashboardContactRoute
   '/dashboard/customers': typeof DashboardCustomersRoute
   '/dashboard/database': typeof DashboardDatabaseRoute
+  '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
@@ -333,6 +341,7 @@ export interface FileRoutesByTo {
   '/dashboard/contact': typeof DashboardContactRoute
   '/dashboard/customers': typeof DashboardCustomersRoute
   '/dashboard/database': typeof DashboardDatabaseRoute
+  '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
@@ -379,6 +388,7 @@ export interface FileRoutesById {
   '/dashboard/contact': typeof DashboardContactRoute
   '/dashboard/customers': typeof DashboardCustomersRoute
   '/dashboard/database': typeof DashboardDatabaseRoute
+  '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
@@ -426,6 +436,7 @@ export interface FileRouteTypes {
     | '/dashboard/contact'
     | '/dashboard/customers'
     | '/dashboard/database'
+    | '/dashboard/landing-generator'
     | '/dashboard/orders'
     | '/dashboard/products'
     | '/dashboard/settings'
@@ -469,6 +480,7 @@ export interface FileRouteTypes {
     | '/dashboard/contact'
     | '/dashboard/customers'
     | '/dashboard/database'
+    | '/dashboard/landing-generator'
     | '/dashboard/orders'
     | '/dashboard/products'
     | '/dashboard/settings'
@@ -514,6 +526,7 @@ export interface FileRouteTypes {
     | '/dashboard/contact'
     | '/dashboard/customers'
     | '/dashboard/database'
+    | '/dashboard/landing-generator'
     | '/dashboard/orders'
     | '/dashboard/products'
     | '/dashboard/settings'
@@ -654,6 +667,13 @@ declare module '@tanstack/react-router' {
       path: '/orders'
       fullPath: '/dashboard/orders'
       preLoaderRoute: typeof DashboardOrdersRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/landing-generator': {
+      id: '/dashboard/landing-generator'
+      path: '/landing-generator'
+      fullPath: '/dashboard/landing-generator'
+      preLoaderRoute: typeof DashboardLandingGeneratorRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/database': {
@@ -911,6 +931,7 @@ interface DashboardRouteChildren {
   DashboardContactRoute: typeof DashboardContactRoute
   DashboardCustomersRoute: typeof DashboardCustomersRoute
   DashboardDatabaseRoute: typeof DashboardDatabaseRoute
+  DashboardLandingGeneratorRoute: typeof DashboardLandingGeneratorRoute
   DashboardOrdersRoute: typeof DashboardOrdersRoute
   DashboardProductsRoute: typeof DashboardProductsRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
@@ -930,6 +951,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardContactRoute: DashboardContactRoute,
   DashboardCustomersRoute: DashboardCustomersRoute,
   DashboardDatabaseRoute: DashboardDatabaseRoute,
+  DashboardLandingGeneratorRoute: DashboardLandingGeneratorRoute,
   DashboardOrdersRoute: DashboardOrdersRoute,
   DashboardProductsRoute: DashboardProductsRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
@@ -987,12 +1009,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

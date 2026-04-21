@@ -359,32 +359,35 @@ function SortableSection({
   );
 }
 
+type EditableTag = "span" | "p" | "h2" | "h3" | "h4";
+
 function Editable({
   value,
   onChange,
   className = "",
-  as: As = "span",
+  as = "span",
   multiline = false,
 }: {
   value: string;
   onChange: (v: string) => void;
   className?: string;
-  as?: keyof JSX.IntrinsicElements;
+  as?: EditableTag;
   multiline?: boolean;
 }) {
-  return (
-    <As
-      // @ts-expect-error contentEditable on dynamic element
-      contentEditable
-      suppressContentEditableWarning
-      onBlur={(e: React.FocusEvent<HTMLElement>) => onChange(e.currentTarget.innerText)}
-      className={`outline-none focus:ring-2 focus:ring-primary/40 focus:bg-primary/5 rounded px-1 -mx-1 transition-colors ${
-        multiline ? "whitespace-pre-wrap" : ""
-      } ${className}`}
-    >
-      {value}
-    </As>
-  );
+  const props = {
+    contentEditable: true,
+    suppressContentEditableWarning: true,
+    onBlur: (e: React.FocusEvent<HTMLElement>) => onChange(e.currentTarget.innerText),
+    className: `outline-none focus:ring-2 focus:ring-primary/40 focus:bg-primary/5 rounded px-1 -mx-1 transition-colors ${
+      multiline ? "whitespace-pre-wrap" : ""
+    } ${className}`,
+    children: value,
+  };
+  if (as === "p") return <p {...props} />;
+  if (as === "h2") return <h2 {...props} />;
+  if (as === "h3") return <h3 {...props} />;
+  if (as === "h4") return <h4 {...props} />;
+  return <span {...props} />;
 }
 
 function renderSection(
