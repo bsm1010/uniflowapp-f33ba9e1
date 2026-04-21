@@ -655,14 +655,16 @@ type ViewSettings = {
   kanbanGroupFieldId?: string | null;
   calendarDateFieldId?: string | null;
   calendarTitleFieldId?: string | null;
+  filterSort?: FilterSortConfig;
 };
 
 function loadViewSettings(tableId: string): ViewSettings {
-  if (typeof window === "undefined") return { mode: "grid" };
+  if (typeof window === "undefined") return { mode: "grid", filterSort: DEFAULT_FILTER_SORT };
   try {
     const raw = localStorage.getItem(`db_view_${tableId}`);
-    if (!raw) return { mode: "grid" };
-    return JSON.parse(raw) as ViewSettings;
+    if (!raw) return { mode: "grid", filterSort: DEFAULT_FILTER_SORT };
+    const parsed = JSON.parse(raw) as ViewSettings;
+    return { ...parsed, filterSort: parsed.filterSort ?? DEFAULT_FILTER_SORT };
   } catch {
     return { mode: "grid" };
   }
