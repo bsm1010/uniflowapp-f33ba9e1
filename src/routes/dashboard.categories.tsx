@@ -270,6 +270,8 @@ function CategoriesPage() {
         eyebrow="Catalog"
         title="Categories"
         description="Organize your products into categories. Rename or delete to keep your catalog tidy."
+        icon={Tag}
+        gradient="from-amber-500 via-orange-500 to-rose-500"
         actions={
           <Button onClick={() => { setNewName(""); setCreating(true); }} disabled={isExpired}>
             <Plus className="h-4 w-4" /> New category

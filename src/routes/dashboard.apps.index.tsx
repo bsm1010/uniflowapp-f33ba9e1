@@ -40,8 +40,11 @@ function AppsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
+        eyebrow="Marketplace"
         title="App Store"
         description="Extend your store with powerful apps. Install with one click."
+        icon={LayoutGrid}
+        gradient="from-fuchsia-500 via-pink-500 to-rose-500"
       />
 
       {loading ? (

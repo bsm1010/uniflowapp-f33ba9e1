@@ -368,6 +368,8 @@ function DatabasePage() {
         eyebrow={t("dashboard.database.eyebrow")}
         title={t("dashboard.database.title")}
         description={t("dashboard.database.description")}
+        icon={Database}
+        gradient="from-indigo-500 via-blue-500 to-sky-500"
         actions={
           <div className="flex gap-2">
             {activeTable && (

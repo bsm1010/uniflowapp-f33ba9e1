@@ -170,6 +170,8 @@ function UpgradePage() {
         eyebrow="Billing"
         title="Upgrade your plan"
         description="Choose a plan, send payment via CCP or BaridiMob, then upload your proof. We'll activate your subscription after review."
+        icon={Sparkles}
+        gradient="from-violet-500 via-fuchsia-500 to-pink-500"
       />
 
       {pendingSubmission && (
