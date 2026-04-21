@@ -889,6 +889,7 @@ function TableGrid({
                 onDeleteRecord={onDeleteRecord}
                 onUpdateValue={onUpdateValue}
                 allTables={allTables}
+                fullscreen={fullscreen}
               />
             )}
             {view.mode === "gallery" && (
