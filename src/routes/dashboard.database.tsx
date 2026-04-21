@@ -27,6 +27,9 @@ import {
   ImageUploadCell,
   FileUploadCell,
 } from "@/components/dashboard/database/UploadCells";
+import { AutomationsDialog } from "@/components/dashboard/database/AutomationsDialog";
+import { runAutomations } from "@/components/dashboard/database/automations";
+import { Zap } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -128,6 +131,7 @@ function DatabasePage() {
   const [editingTable, setEditingTable] = useState<DBTable | null>(null);
   const [fieldDialogOpen, setFieldDialogOpen] = useState(false);
   const [editingField, setEditingField] = useState<DBField | null>(null);
+  const [automationsOpen, setAutomationsOpen] = useState(false);
 
   const loadTables = useCallback(async () => {
     if (!user) return;
@@ -276,14 +280,26 @@ function DatabasePage() {
   // ---------- Record CRUD ----------
   async function addRecord() {
     if (!user || !activeTableId) return;
-    const { error } = await supabase.from("db_records").insert({
-      user_id: user.id,
-      table_id: activeTableId,
-      data: {},
-      position: records.length,
-    });
+    const { data, error } = await supabase
+      .from("db_records")
+      .insert({
+        user_id: user.id,
+        table_id: activeTableId,
+        data: {},
+        position: records.length,
+      })
+      .select()
+      .single();
     if (error) return toast.error(error.message);
     await loadTableData(activeTableId);
+    if (data) {
+      runAutomations("record_created", {
+        userId: user.id,
+        tableId: activeTableId,
+        recordId: data.id,
+        recordData: (data.data as Record<string, unknown>) ?? {},
+      });
+    }
   }
 
   async function updateRecordValue(recordId: string, fieldId: string, value: unknown) {
@@ -297,7 +313,18 @@ function DatabasePage() {
       .from("db_records")
       .update({ data: newData as never })
       .eq("id", recordId);
-    if (error) toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    if (user && activeTableId) {
+      runAutomations("record_updated", {
+        userId: user.id,
+        tableId: activeTableId,
+        recordId,
+        recordData: newData,
+      });
+    }
   }
 
   async function deleteRecord(id: string) {
@@ -318,15 +345,23 @@ function DatabasePage() {
         title="Database"
         description="Build custom tables with typed fields — like a mini Airtable inside your store."
         actions={
-          <Button
-            onClick={() => {
-              setEditingTable(null);
-              setTableDialogOpen(true);
-            }}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            New table
-          </Button>
+          <div className="flex gap-2">
+            {activeTable && (
+              <Button variant="outline" onClick={() => setAutomationsOpen(true)}>
+                <Zap className="h-4 w-4 mr-2" />
+                Automations
+              </Button>
+            )}
+            <Button
+              onClick={() => {
+                setEditingTable(null);
+                setTableDialogOpen(true);
+              }}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              New table
+            </Button>
+          </div>
         }
       />
 
@@ -451,6 +486,13 @@ function DatabasePage() {
         editing={editingField}
         otherTables={tables.filter((t) => t.id !== activeTableId)}
         onSave={saveField}
+      />
+      <AutomationsDialog
+        open={automationsOpen}
+        onOpenChange={setAutomationsOpen}
+        table={activeTable}
+        fields={fields}
+        allTables={tables}
       />
     </motion.div>
   );
