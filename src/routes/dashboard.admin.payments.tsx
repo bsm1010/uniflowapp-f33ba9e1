@@ -120,33 +120,17 @@ function AdminPaymentsPage() {
 
   const handleApprove = async (sub: Submission) => {
     setActingId(sub.id);
-    const days = sub.plan === "yearly" ? 365 : 30;
-    const endDate = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
-
-    const { error: profErr } = await supabase
-      .from("profiles")
-      .update({
-        subscription_status: "active",
-        subscription_type: sub.plan,
-        subscription_end_date: endDate,
-      })
-      .eq("id", sub.user_id);
-
-    if (profErr) {
-      toast.error("Failed to activate subscription");
-      setActingId(null);
-      return;
-    }
-
+    // Credits / plan are granted automatically by the notify_payment_reviewed trigger
+    // when status flips to 'approved'. We just update the submission row.
     const { error: subErr } = await supabase
       .from("payment_submissions")
       .update({ status: "approved", reviewed_at: new Date().toISOString() })
       .eq("id", sub.id);
 
     if (subErr) {
-      toast.error("Subscription activated but submission update failed");
+      toast.error("Failed to approve payment");
     } else {
-      toast.success("Payment approved and subscription activated");
+      toast.success("Payment approved — credits granted to user");
     }
     setActingId(null);
     loadSubmissions();
