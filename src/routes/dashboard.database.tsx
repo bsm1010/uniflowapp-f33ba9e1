@@ -27,6 +27,9 @@ import {
   ImageUploadCell,
   FileUploadCell,
 } from "@/components/dashboard/database/UploadCells";
+import { AutomationsDialog } from "@/components/dashboard/database/AutomationsDialog";
+import { runAutomations } from "@/components/dashboard/database/automations";
+import { Zap } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
