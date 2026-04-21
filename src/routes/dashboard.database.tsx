@@ -661,11 +661,17 @@ function FieldDialog({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {(Object.keys(FIELD_TYPE_LABELS) as FieldType[]).map((t) => (
-                  <SelectItem key={t} value={t}>
-                    {FIELD_TYPE_LABELS[t]}
-                  </SelectItem>
-                ))}
+                {(Object.keys(FIELD_TYPE_LABELS) as FieldType[]).map((t) => {
+                  const Icon = FIELD_TYPE_ICONS[t];
+                  return (
+                    <SelectItem key={t} value={t}>
+                      <div className="flex items-center gap-2">
+                        <Icon className="h-4 w-4 text-muted-foreground" />
+                        <span>{FIELD_TYPE_LABELS[t]}</span>
+                      </div>
+                    </SelectItem>
+                  );
+                })}
               </SelectContent>
             </Select>
           </div>
