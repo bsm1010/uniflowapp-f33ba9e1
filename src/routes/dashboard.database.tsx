@@ -487,6 +487,13 @@ function DatabasePage() {
         otherTables={tables.filter((t) => t.id !== activeTableId)}
         onSave={saveField}
       />
+      <AutomationsDialog
+        open={automationsOpen}
+        onOpenChange={setAutomationsOpen}
+        table={activeTable}
+        fields={fields}
+        allTables={tables}
+      />
     </motion.div>
   );
 }
