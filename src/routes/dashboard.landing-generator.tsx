@@ -33,6 +33,8 @@ import {
   generateLandingPage,
   type LandingPageContent,
 } from "@/lib/ai/generate-landing-page";
+import { supabase } from "@/integrations/supabase/client";
+import { useCredits, CREDIT_COSTS } from "@/hooks/use-credits";
 
 export const Route = createFileRoute("/dashboard/landing-generator")({
   component: LandingGeneratorPage,
@@ -101,6 +103,7 @@ function LandingGeneratorPage() {
   const [dragOver, setDragOver] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
+  const { credits, plan, triggerPaywall, refresh } = useCredits();
 
   const handleFile = useCallback(async (file: File) => {
     if (!file.type.startsWith("image/")) {
@@ -127,14 +130,30 @@ function LandingGeneratorPage() {
       toast.error("الرجاء رفع صورة المنتج أولاً");
       return;
     }
+    if (plan !== "business" && credits < CREDIT_COSTS.landingPage) {
+      triggerPaywall();
+      return;
+    }
+    const { data: sessionData } = await supabase.auth.getSession();
+    const accessToken = sessionData.session?.access_token;
+    if (!accessToken) {
+      toast.error("يجب تسجيل الدخول");
+      return;
+    }
     setLoading(true);
     try {
-      const res = await generateLandingPage({ data: { imageDataUrl, hint } });
+      const res = await generateLandingPage({ data: { imageDataUrl, hint, accessToken } });
       setContent(res.content);
       setOrder(DEFAULT_ORDER);
       toast.success("تم إنشاء صفحة الهبوط بنجاح ✨");
+      refresh();
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "حدث خطأ");
+      const msg = e instanceof Error ? e.message : "حدث خطأ";
+      if (msg.includes("INSUFFICIENT_CREDITS")) {
+        triggerPaywall();
+      } else {
+        toast.error(msg);
+      }
     } finally {
       setLoading(false);
     }
