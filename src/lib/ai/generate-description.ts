@@ -1,10 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { consumeCreditsServer, INSUFFICIENT_CREDITS_ERROR } from "@/lib/credits/consume-server";
 
 const Schema = z.object({
   productName: z.string().min(1).max(200),
   keywords: z.string().max(500).optional().default(""),
   tone: z.enum(["professional", "playful", "luxury", "minimal"]).default("professional"),
+  accessToken: z.string().min(1),
 });
 
 export const generateDescription = createServerFn({ method: "POST" })
@@ -12,6 +14,15 @@ export const generateDescription = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const LOVABLE_API_KEY = process.env.LOVABLE_API_KEY;
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
+
+    const credit = await consumeCreditsServer({
+      accessToken: data.accessToken,
+      amount: 2,
+      reason: "ai_product_description",
+    });
+    if (!credit.ok) {
+      throw new Error(credit.reason === "insufficient" ? INSUFFICIENT_CREDITS_ERROR : "Unauthorized");
+    }
 
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

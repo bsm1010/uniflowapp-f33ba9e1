@@ -79,6 +79,37 @@ export const sendCampaign = createServerFn({ method: "POST" })
       throw new Error("No valid recipients found");
     }
 
+    // Credit cost: 1 credit per 10 recipients (rounded up), unlimited for business
+    const creditsRequired = Math.max(1, Math.ceil(recipients.length / 10));
+    const { data: profile } = await admin
+      .from("profiles")
+      .select("credits, plan")
+      .eq("id", user.id)
+      .maybeSingle();
+    const isUnlimited = profile?.plan === "business";
+    if (!isUnlimited) {
+      if (!profile || (profile.credits ?? 0) < creditsRequired) {
+        throw new Error("INSUFFICIENT_CREDITS");
+      }
+      await admin
+        .from("profiles")
+        .update({ credits: (profile.credits ?? 0) - creditsRequired })
+        .eq("id", user.id);
+      await admin.from("credit_transactions").insert({
+        user_id: user.id,
+        amount: -creditsRequired,
+        reason: "email_send",
+        metadata: { campaign_id: campaign.id, recipients: recipients.length },
+      });
+    } else {
+      await admin.from("credit_transactions").insert({
+        user_id: user.id,
+        amount: 0,
+        reason: "email_send",
+        metadata: { campaign_id: campaign.id, recipients: recipients.length, unlimited: true },
+      });
+    }
+
     await admin
       .from("email_campaigns")
       .update({ status: "sending" })
