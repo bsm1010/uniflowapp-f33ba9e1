@@ -120,33 +120,17 @@ function AdminPaymentsPage() {
 
   const handleApprove = async (sub: Submission) => {
     setActingId(sub.id);
-    const days = sub.plan === "yearly" ? 365 : 30;
-    const endDate = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
-
-    const { error: profErr } = await supabase
-      .from("profiles")
-      .update({
-        subscription_status: "active",
-        subscription_type: sub.plan,
-        subscription_end_date: endDate,
-      })
-      .eq("id", sub.user_id);
-
-    if (profErr) {
-      toast.error("Failed to activate subscription");
-      setActingId(null);
-      return;
-    }
-
+    // Credits / plan are granted automatically by the notify_payment_reviewed trigger
+    // when status flips to 'approved'. We just update the submission row.
     const { error: subErr } = await supabase
       .from("payment_submissions")
       .update({ status: "approved", reviewed_at: new Date().toISOString() })
       .eq("id", sub.id);
 
     if (subErr) {
-      toast.error("Subscription activated but submission update failed");
+      toast.error("Failed to approve payment");
     } else {
-      toast.success("Payment approved and subscription activated");
+      toast.success("Payment approved — credits granted to user");
     }
     setActingId(null);
     loadSubmissions();
@@ -237,7 +221,10 @@ function AdminPaymentsPage() {
                     <div className="font-medium">{s.profile?.name || "Unnamed"}</div>
                     <div className="text-xs text-muted-foreground">{s.profile?.email}</div>
                   </TableCell>
-                  <TableCell className="capitalize">{s.plan}</TableCell>
+                  <TableCell>
+                    <div className="font-medium">{planLabel(s.plan)}</div>
+                    <div className="text-xs text-muted-foreground">+{planCredits(s.plan)} credits</div>
+                  </TableCell>
                   <TableCell>{Number(s.amount).toLocaleString()} DZD</TableCell>
                   <TableCell className="capitalize">{s.payment_method}</TableCell>
                   <TableCell>
@@ -322,10 +309,26 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function extractPath(url: string): string | null {
-  // Stored as full public URL like .../object/public/payment-proofs/<path> or signed URL.
-  // We standardize on extracting after "/payment-proofs/"
   const marker = "/payment-proofs/";
   const idx = url.indexOf(marker);
-  if (idx === -1) return url; // assume already a path
+  if (idx === -1) return url;
   return url.slice(idx + marker.length).split("?")[0];
+}
+
+const PLAN_META: Record<string, { label: string; credits: number }> = {
+  pack_50: { label: "Credit pack — 50", credits: 50 },
+  pack_150: { label: "Credit pack — 150", credits: 150 },
+  pack_500: { label: "Credit pack — 500", credits: 500 },
+  basic: { label: "Basic subscription", credits: 100 },
+  pro: { label: "Pro subscription", credits: 300 },
+  business: { label: "Business subscription", credits: 2000 },
+  monthly: { label: "Monthly (legacy)", credits: 0 },
+  yearly: { label: "Yearly (legacy)", credits: 0 },
+};
+
+function planLabel(plan: string): string {
+  return PLAN_META[plan]?.label ?? plan;
+}
+function planCredits(plan: string): number {
+  return PLAN_META[plan]?.credits ?? 0;
 }
