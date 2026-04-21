@@ -17,6 +17,12 @@ import {
   KanbanView,
   CalendarView,
 } from "@/components/dashboard/database/TableViews";
+import {
+  FilterSortBar,
+  applyFilterSort,
+  DEFAULT_FILTER_SORT,
+  type FilterSortConfig,
+} from "@/components/dashboard/database/FilterSortBar";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
