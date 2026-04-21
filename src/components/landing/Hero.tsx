@@ -274,6 +274,8 @@ function Dashboard3DCarousel() {
                   width={1600}
                   height={900}
                   loading={i === 0 ? "eager" : "lazy"}
+                  fetchPriority={i === 0 ? "high" : "low"}
+                  decoding="async"
                   className="w-full h-full object-cover"
                 />
                 {isActive && (
