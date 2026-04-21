@@ -45,6 +45,8 @@ type NavItem = {
   url: string;
   icon: typeof LayoutDashboard;
   end?: boolean;
+  /** When true, render as <a target="_blank"> instead of in-app <Link> */
+  external?: boolean;
 };
 
 
@@ -74,7 +76,7 @@ export function DashboardSidebar() {
     { title: t("dashboard.nav.orders"), url: "/dashboard/orders", icon: ShoppingBag },
     { title: t("dashboard.nav.customers"), url: "/dashboard/customers", icon: Users },
     { title: t("dashboard.nav.themePresets"), url: "/dashboard/theme-presets", icon: Sparkles },
-    { title: t("dashboard.nav.customize"), url: "/dashboard/themes", icon: Palette },
+    { title: t("dashboard.nav.customize"), url: "/customize", icon: Palette, external: true },
     { title: t("dashboard.nav.aboutPage"), url: "/dashboard/about", icon: FileText },
     { title: t("dashboard.nav.contactPage"), url: "/dashboard/contact", icon: Mail },
     { title: t("dashboard.nav.analytics"), url: "/dashboard/analytics", icon: BarChart3 },
@@ -116,7 +118,10 @@ export function DashboardSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => {
-                const active = isActive(item.url, item.end);
+                const active = !item.external && isActive(item.url, item.end);
+                const linkClass = active
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                  : "hover:bg-sidebar-accent/60";
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton
@@ -124,17 +129,22 @@ export function DashboardSidebar() {
                       isActive={active}
                       tooltip={item.title}
                     >
-                      <Link
-                        to={item.url}
-                        className={
-                          active
-                            ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                            : "hover:bg-sidebar-accent/60"
-                        }
-                      >
-                        <item.icon className="h-4 w-4" />
-                        <span>{item.title}</span>
-                      </Link>
+                      {item.external ? (
+                        <a
+                          href={item.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={linkClass}
+                        >
+                          <item.icon className="h-4 w-4" />
+                          <span>{item.title}</span>
+                        </a>
+                      ) : (
+                        <Link to={item.url} className={linkClass}>
+                          <item.icon className="h-4 w-4" />
+                          <span>{item.title}</span>
+                        </Link>
+                      )}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 );
