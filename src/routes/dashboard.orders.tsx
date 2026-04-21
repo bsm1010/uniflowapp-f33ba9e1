@@ -174,12 +174,14 @@ function OrdersPage() {
           title="No orders yet"
           description="Once customers buy, their orders show up here."
           action={
-            <Link
-              to="/dashboard/themes"
+            <a
+              href="/customize"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-sm font-medium text-primary hover:underline"
             >
               Customize your store →
-            </Link>
+            </a>
           }
         />
       ) : (

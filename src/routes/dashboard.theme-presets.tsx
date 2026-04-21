@@ -108,9 +108,9 @@ function PresetsPage() {
         description="Pick a starting point for your store. You can fine-tune everything afterwards."
         actions={
           <Button variant="outline" asChild>
-            <Link to="/dashboard/themes">
+            <a href="/customize" target="_blank" rel="noopener noreferrer">
               <Palette className="h-4 w-4" /> Advanced editor
-            </Link>
+            </a>
           </Button>
         }
       />
@@ -216,9 +216,9 @@ function PresetsPage() {
           </p>
         </div>
         <Button asChild variant="outline">
-          <Link to="/dashboard/themes">
+          <a href="/customize" target="_blank" rel="noopener noreferrer">
             Open advanced editor <ArrowRight className="h-4 w-4" />
-          </Link>
+          </a>
         </Button>
       </div>
 
