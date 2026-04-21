@@ -1149,17 +1149,26 @@ function RelationCell({
   }
 
   return (
-    <Select value={value || "__none__"} onValueChange={(v) => onChange(v === "__none__" ? null : v)}>
+    <Select
+      value={value || "__none__"}
+      onValueChange={(v) => onChange(v === "__none__" ? null : v)}
+    >
       <SelectTrigger className="h-8 border-transparent bg-transparent">
-        <SelectValue placeholder="—" />
+        <SelectValue placeholder={`Link a ${targetTable.name}…`} />
       </SelectTrigger>
       <SelectContent>
         <SelectItem value="__none__">— None —</SelectItem>
-        {linkedRecords.map((r) => (
-          <SelectItem key={r.id} value={r.id}>
-            {labelFor(r)}
-          </SelectItem>
-        ))}
+        {linkedRecords.length === 0 ? (
+          <div className="px-2 py-1.5 text-xs text-muted-foreground">
+            No records in {targetTable.name} yet.
+          </div>
+        ) : (
+          linkedRecords.map((r) => (
+            <SelectItem key={r.id} value={r.id}>
+              {labelFor(r)}
+            </SelectItem>
+          ))
+        )}
       </SelectContent>
     </Select>
   );
