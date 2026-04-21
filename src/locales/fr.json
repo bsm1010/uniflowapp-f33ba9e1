@@ -116,6 +116,10 @@
       "aboutPage": "Page À propos",
       "contactPage": "Page Contact",
       "analytics": "Statistiques",
+      "database": "Base de données",
+      "landingGenerator": "Générateur de page",
+      "credits": "Crédits",
+      "referrals": "Parrainages",
       "appStore": "Boutique d'applications",
       "settings": "Paramètres",
       "payments": "Paiements"
