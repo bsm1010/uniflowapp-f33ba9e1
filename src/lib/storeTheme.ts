@@ -187,3 +187,31 @@ export function getButtonLabels(s: StoreSettings): Required<ButtonLabels> {
 export function getFooterSocials(s: StoreSettings): FooterSocials {
   return ((s.footer_socials as FooterSocials) ?? {}) as FooterSocials;
 }
+
+export type SectionKey = "hero" | "categories" | "featured" | "newsletter";
+export const ALL_SECTIONS: SectionKey[] = [
+  "hero",
+  "categories",
+  "featured",
+  "newsletter",
+];
+
+export function getSectionOrder(s: StoreSettings): SectionKey[] {
+  const raw = (s as { section_order?: unknown }).section_order;
+  const fallback = ALL_SECTIONS;
+  if (!Array.isArray(raw)) return fallback;
+  const seen = new Set<SectionKey>();
+  const ordered: SectionKey[] = [];
+  for (const k of raw) {
+    if (typeof k === "string" && (ALL_SECTIONS as string[]).includes(k)) {
+      const key = k as SectionKey;
+      if (!seen.has(key)) {
+        seen.add(key);
+        ordered.push(key);
+      }
+    }
+  }
+  // Append any sections that were missing (e.g. new sections added later)
+  for (const k of ALL_SECTIONS) if (!seen.has(k)) ordered.push(k);
+  return ordered;
+}

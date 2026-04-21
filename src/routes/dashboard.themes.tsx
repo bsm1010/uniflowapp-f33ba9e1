@@ -174,6 +174,7 @@ function defaults(userId: string): StoreSettings {
     contact_map_url: "",
     contact_form_enabled: true,
     contact_intro: "Have a question? We'd love to hear from you.",
+    section_order: ["hero", "categories", "featured", "newsletter"],
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };
