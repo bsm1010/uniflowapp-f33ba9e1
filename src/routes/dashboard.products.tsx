@@ -5,6 +5,7 @@ import {
   ImageIcon,
   MoreHorizontal,
   Package,
+  PackageSearch,
   Pencil,
   Plus,
   Search,
@@ -137,6 +138,8 @@ function ProductsPage() {
         eyebrow="Catalog"
         title="Products"
         description="Manage everything you sell in one place."
+        icon={PackageSearch}
+        gradient="from-violet-500 via-fuchsia-500 to-pink-500"
         actions={
           <Button onClick={handleAdd} disabled={isExpired}>
             <Plus className="h-4 w-4" /> Add product

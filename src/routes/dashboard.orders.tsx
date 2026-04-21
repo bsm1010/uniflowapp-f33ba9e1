@@ -162,6 +162,8 @@ function OrdersPage() {
         eyebrow="Sales"
         title="Orders"
         description="Manage incoming orders and update their delivery status."
+        icon={ShoppingBag}
+        gradient="from-emerald-500 via-teal-500 to-cyan-500"
       />
 
       {orders === null ? (

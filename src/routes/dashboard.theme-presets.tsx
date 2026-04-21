@@ -106,6 +106,8 @@ function PresetsPage() {
         eyebrow="Storefront"
         title="Theme presets"
         description="Pick a starting point for your store. You can fine-tune everything afterwards."
+        icon={Palette}
+        gradient="from-pink-500 via-rose-500 to-orange-500"
         actions={
           <Button variant="outline" asChild>
             <a href="/customize" target="_blank" rel="noopener noreferrer">

@@ -8,6 +8,7 @@ import {
   Loader2,
   Package,
   Palette,
+  Store,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
@@ -115,6 +116,8 @@ function StorePage() {
         eyebrow="Storefront"
         title="My Store"
         description="Your storefront at a glance."
+        icon={Store}
+        gradient="from-sky-500 via-blue-500 to-indigo-500"
         actions={
           slug ? (
             <Button variant="outline" asChild>

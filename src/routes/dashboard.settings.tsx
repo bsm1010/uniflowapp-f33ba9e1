@@ -221,6 +221,8 @@ function SettingsPage() {
         eyebrow="Account"
         title="Settings"
         description="Manage your store, domain, payments, and profile."
+        icon={User}
+        gradient="from-slate-500 via-zinc-500 to-stone-500"
       />
 
       {/* Store */}

@@ -14,6 +14,8 @@ function CustomersPage() {
         eyebrow="Audience"
         title="Customers"
         description="Get to know the people buying from your store."
+        icon={Users}
+        gradient="from-cyan-500 via-sky-500 to-blue-500"
       />
       <EmptyState
         icon={Users}

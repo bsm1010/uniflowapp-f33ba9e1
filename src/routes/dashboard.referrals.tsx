@@ -41,6 +41,8 @@ function ReferralsPage() {
         eyebrow={t("dashboard.referrals.eyebrow")}
         title={t("dashboard.referrals.title")}
         description={t("dashboard.referrals.description")}
+        icon={Gift}
+        gradient="from-pink-500 via-rose-500 to-orange-500"
       />
 
       <div className="grid sm:grid-cols-2 gap-4">

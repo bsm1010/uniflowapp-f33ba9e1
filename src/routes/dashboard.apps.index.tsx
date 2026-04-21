@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Check, Loader2, ExternalLink } from "lucide-react";
+import { Check, Loader2, ExternalLink, LayoutGrid } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -40,8 +40,11 @@ function AppsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
+        eyebrow="Marketplace"
         title="App Store"
         description="Extend your store with powerful apps. Install with one click."
+        icon={LayoutGrid}
+        gradient="from-fuchsia-500 via-pink-500 to-rose-500"
       />
 
       {loading ? (

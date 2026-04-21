@@ -9,24 +9,30 @@ export const Route = createFileRoute("/dashboard/analytics")({
 });
 
 function AnalyticsPage() {
+  const stats = [
+    { label: "Sessions (7d)", value: "0", gradient: "from-violet-500 to-fuchsia-500" },
+    { label: "Conversion rate", value: "0.0%", gradient: "from-emerald-500 to-teal-500" },
+    { label: "Avg. order value", value: "$0.00", gradient: "from-amber-500 to-orange-500" },
+  ];
   return (
     <div className="max-w-7xl mx-auto">
       <PageHeader
         eyebrow="Insights"
         title="Analytics"
         description="Understand how your store is performing."
+        icon={BarChart3}
+        gradient="from-emerald-500 via-teal-500 to-cyan-500"
       />
       <div className="grid gap-4 md:grid-cols-3">
-        {[
-          { label: "Sessions (7d)", value: "0" },
-          { label: "Conversion rate", value: "0.0%" },
-          { label: "Avg. order value", value: "$0.00" },
-        ].map((k) => (
-          <Card key={k.label} className="border-border/60 shadow-soft">
-            <CardContent className="p-6">
+        {stats.map((k) => (
+          <Card key={k.label} className="relative overflow-hidden border-border/60 shadow-soft">
+            <div className={`absolute -top-12 -right-12 h-32 w-32 rounded-full blur-3xl opacity-25 bg-gradient-to-br ${k.gradient}`} />
+            <CardContent className="relative p-6">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">{k.label}</span>
-                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                <div className={`grid size-9 place-items-center rounded-xl text-white bg-gradient-to-br ${k.gradient}`}>
+                  <TrendingUp className="h-4 w-4" />
+                </div>
               </div>
               <div className="mt-3 text-3xl font-bold font-display">{k.value}</div>
             </CardContent>
