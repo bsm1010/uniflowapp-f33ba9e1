@@ -17,6 +17,12 @@ import {
   KanbanView,
   CalendarView,
 } from "@/components/dashboard/database/TableViews";
+import {
+  FilterSortBar,
+  applyFilterSort,
+  DEFAULT_FILTER_SORT,
+  type FilterSortConfig,
+} from "@/components/dashboard/database/FilterSortBar";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -649,16 +655,18 @@ type ViewSettings = {
   kanbanGroupFieldId?: string | null;
   calendarDateFieldId?: string | null;
   calendarTitleFieldId?: string | null;
+  filterSort?: FilterSortConfig;
 };
 
 function loadViewSettings(tableId: string): ViewSettings {
-  if (typeof window === "undefined") return { mode: "grid" };
+  if (typeof window === "undefined") return { mode: "grid", filterSort: DEFAULT_FILTER_SORT };
   try {
     const raw = localStorage.getItem(`db_view_${tableId}`);
-    if (!raw) return { mode: "grid" };
-    return JSON.parse(raw) as ViewSettings;
+    if (!raw) return { mode: "grid", filterSort: DEFAULT_FILTER_SORT };
+    const parsed = JSON.parse(raw) as ViewSettings;
+    return { ...parsed, filterSort: parsed.filterSort ?? DEFAULT_FILTER_SORT };
   } catch {
-    return { mode: "grid" };
+    return { mode: "grid", filterSort: DEFAULT_FILTER_SORT };
   }
 }
 
@@ -745,6 +753,11 @@ function TableGrid({
               );
             })}
           </div>
+          <FilterSortBar
+            fields={fields}
+            config={view.filterSort ?? DEFAULT_FILTER_SORT}
+            onChange={(fs) => update({ filterSort: fs })}
+          />
           <Button size="sm" variant="outline" onClick={onAddField}>
             <Plus className="h-4 w-4 mr-1" /> Field
           </Button>
@@ -754,50 +767,61 @@ function TableGrid({
         </div>
       </Card>
 
-      {view.mode === "grid" && (
-        <GridView
-          fields={fields}
-          records={records}
-          onEditField={onEditField}
-          onDeleteField={onDeleteField}
-          onAddField={onAddField}
-          onAddRecord={onAddRecord}
-          onDeleteRecord={onDeleteRecord}
-          onUpdateValue={onUpdateValue}
-          allTables={allTables}
-        />
-      )}
-      {view.mode === "gallery" && (
-        <GalleryView
-          fields={fields}
-          records={records}
-          imageFieldId={view.galleryImageFieldId ?? null}
-          titleFieldId={view.galleryTitleFieldId ?? null}
-          onChangeImageField={(id) => update({ galleryImageFieldId: id })}
-          onChangeTitleField={(id) => update({ galleryTitleFieldId: id })}
-          onAddRecord={onAddRecord}
-        />
-      )}
-      {view.mode === "kanban" && (
-        <KanbanView
-          fields={fields}
-          records={records}
-          groupFieldId={view.kanbanGroupFieldId ?? null}
-          onChangeGroupField={(id) => update({ kanbanGroupFieldId: id })}
-          onUpdateValue={onUpdateValue}
-          onAddRecord={onAddRecord}
-        />
-      )}
-      {view.mode === "calendar" && (
-        <CalendarView
-          fields={fields}
-          records={records}
-          dateFieldId={view.calendarDateFieldId ?? null}
-          titleFieldId={view.calendarTitleFieldId ?? null}
-          onChangeDateField={(id) => update({ calendarDateFieldId: id })}
-          onChangeTitleField={(id) => update({ calendarTitleFieldId: id })}
-        />
-      )}
+      {(() => {
+        const visibleRecords = applyFilterSort(
+          records,
+          fields,
+          view.filterSort ?? DEFAULT_FILTER_SORT,
+        ) as DBRecord[];
+        return (
+          <>
+            {view.mode === "grid" && (
+              <GridView
+                fields={fields}
+                records={visibleRecords}
+                onEditField={onEditField}
+                onDeleteField={onDeleteField}
+                onAddField={onAddField}
+                onAddRecord={onAddRecord}
+                onDeleteRecord={onDeleteRecord}
+                onUpdateValue={onUpdateValue}
+                allTables={allTables}
+              />
+            )}
+            {view.mode === "gallery" && (
+              <GalleryView
+                fields={fields}
+                records={visibleRecords}
+                imageFieldId={view.galleryImageFieldId ?? null}
+                titleFieldId={view.galleryTitleFieldId ?? null}
+                onChangeImageField={(id) => update({ galleryImageFieldId: id })}
+                onChangeTitleField={(id) => update({ galleryTitleFieldId: id })}
+                onAddRecord={onAddRecord}
+              />
+            )}
+            {view.mode === "kanban" && (
+              <KanbanView
+                fields={fields}
+                records={visibleRecords}
+                groupFieldId={view.kanbanGroupFieldId ?? null}
+                onChangeGroupField={(id) => update({ kanbanGroupFieldId: id })}
+                onUpdateValue={onUpdateValue}
+                onAddRecord={onAddRecord}
+              />
+            )}
+            {view.mode === "calendar" && (
+              <CalendarView
+                fields={fields}
+                records={visibleRecords}
+                dateFieldId={view.calendarDateFieldId ?? null}
+                titleFieldId={view.calendarTitleFieldId ?? null}
+                onChangeDateField={(id) => update({ calendarDateFieldId: id })}
+                onChangeTitleField={(id) => update({ calendarTitleFieldId: id })}
+              />
+            )}
+          </>
+        );
+      })()}
     </div>
   );
 }
