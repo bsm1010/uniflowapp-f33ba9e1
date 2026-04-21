@@ -18,6 +18,8 @@ import {
   Tags,
   Paperclip,
   Link2,
+  Maximize2,
+  Minimize2,
   type LucideIcon,
 } from "lucide-react";
 import {
