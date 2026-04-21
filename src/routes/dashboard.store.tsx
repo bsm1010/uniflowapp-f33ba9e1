@@ -76,7 +76,8 @@ function StorePage() {
   const checklist: {
     title: string;
     done: boolean;
-    to: "/dashboard/products" | "/dashboard/themes";
+    to: string;
+    external?: boolean;
     icon: React.ComponentType<{ className?: string }>;
   }[] = [
     {
@@ -88,13 +89,15 @@ function StorePage() {
     {
       title: "Customize your storefront",
       done: themePicked,
-      to: "/dashboard/themes",
+      to: "/customize",
+      external: true,
       icon: Palette,
     },
     {
       title: "Share your store URL",
       done: false,
-      to: "/dashboard/themes",
+      to: "/customize",
+      external: true,
       icon: Globe,
     },
   ];
@@ -182,8 +185,8 @@ function StorePage() {
       <div className="mt-8">
         <h3 className="font-semibold mb-4">Setup checklist</h3>
         <div className="grid gap-3">
-          {checklist.map((item) => (
-            <Link key={item.title} to={item.to}>
+          {checklist.map((item) => {
+            const card = (
               <Card className="border-border/60 shadow-soft hover:border-primary/40 transition-colors">
                 <CardContent className="p-4 flex items-center gap-4">
                   <div
@@ -206,8 +209,28 @@ function StorePage() {
                   </Button>
                 </CardContent>
               </Card>
-            </Link>
-          ))}
+            );
+            if (item.external) {
+              return (
+                <a
+                  key={item.title}
+                  href={item.to}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {card}
+                </a>
+              );
+            }
+            return (
+              <Link
+                key={item.title}
+                to={item.to as "/dashboard/products"}
+              >
+                {card}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </div>

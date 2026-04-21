@@ -200,7 +200,8 @@ function DashboardHome() {
           variant="primary"
         />
         <QuickAction
-          to="/dashboard/themes"
+          to="/customize"
+          external
           icon={Palette}
           title={t("dashboard.home.actions.customize.title")}
           description={t("dashboard.home.actions.customize.desc")}
@@ -271,44 +272,57 @@ function QuickAction({
   title,
   description,
   variant,
+  external,
 }: {
-  to: "/dashboard/products" | "/dashboard/themes" | "/dashboard/store";
+  to: "/dashboard/products" | "/dashboard/store" | "/customize";
   icon: React.ComponentType<{ className?: string }>;
   title: string;
   description: string;
   variant?: "primary";
+  external?: boolean;
 }) {
-  return (
-    <Link to={to} className="group">
-      <Card
-        className={`border-border/60 shadow-soft transition-all hover:shadow-glow/30 hover:-translate-y-0.5 ${
-          variant === "primary" ? "bg-foreground text-background" : ""
-        }`}
-      >
-        <CardContent className="p-6 flex items-start gap-4">
-          <div
-            className={`h-11 w-11 rounded-xl flex items-center justify-center shrink-0 ${
+  const inner = (
+    <Card
+      className={`border-border/60 shadow-soft transition-all hover:shadow-glow/30 hover:-translate-y-0.5 ${
+        variant === "primary" ? "bg-foreground text-background" : ""
+      }`}
+    >
+      <CardContent className="p-6 flex items-start gap-4">
+        <div
+          className={`h-11 w-11 rounded-xl flex items-center justify-center shrink-0 ${
+            variant === "primary"
+              ? "bg-background/15"
+              : "bg-accent text-accent-foreground"
+          }`}
+        >
+          <Icon className="h-5 w-5" />
+        </div>
+        <div className="min-w-0">
+          <div className="font-semibold">{title}</div>
+          <p
+            className={`mt-1 text-sm ${
               variant === "primary"
-                ? "bg-background/15"
-                : "bg-accent text-accent-foreground"
+                ? "text-background/70"
+                : "text-muted-foreground"
             }`}
           >
-            <Icon className="h-5 w-5" />
-          </div>
-          <div className="min-w-0">
-            <div className="font-semibold">{title}</div>
-            <p
-              className={`mt-1 text-sm ${
-                variant === "primary"
-                  ? "text-background/70"
-                  : "text-muted-foreground"
-              }`}
-            >
-              {description}
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+            {description}
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  if (external) {
+    return (
+      <a href={to} target="_blank" rel="noopener noreferrer" className="group">
+        {inner}
+      </a>
+    );
+  }
+  return (
+    <Link to={to as "/dashboard/products" | "/dashboard/store"} className="group">
+      {inner}
     </Link>
   );
 }
