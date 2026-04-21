@@ -1045,11 +1045,18 @@ function CellEditor({
     }
     case "image":
       return (
-        <Input
+        <ImageUploadCell
           value={(value as string) ?? ""}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder="https://…"
-          className="h-8 border-transparent focus:border-input bg-transparent"
+          userId={user?.id ?? null}
+          onChange={onChange}
+        />
+      );
+    case "file":
+      return (
+        <FileUploadCell
+          value={(value as string) ?? ""}
+          userId={user?.id ?? null}
+          onChange={onChange}
         />
       );
     case "relation":
