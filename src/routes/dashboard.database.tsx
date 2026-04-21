@@ -70,6 +70,7 @@ type FieldType =
   | "select"
   | "multi_select"
   | "image"
+  | "file"
   | "relation";
 
 type DBTable = {
