@@ -855,6 +855,18 @@ function TableGrid({
           <Button size="sm" onClick={onAddRecord} disabled={fields.length === 0}>
             <Plus className="h-4 w-4 mr-1" /> Row
           </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setFullscreen((v) => !v)}
+            title={fullscreen ? "Exit fullscreen (Esc)" : "Fullscreen"}
+          >
+            {fullscreen ? (
+              <Minimize2 className="h-4 w-4" />
+            ) : (
+              <Maximize2 className="h-4 w-4" />
+            )}
+          </Button>
         </div>
       </Card>
 
