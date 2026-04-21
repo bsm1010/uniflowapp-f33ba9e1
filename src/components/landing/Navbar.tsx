@@ -22,8 +22,10 @@ export function Navbar() {
     >
       <div className="mx-auto max-w-6xl px-4 mt-4">
         <div className="flex items-center justify-between rounded-2xl border border-border/60 bg-background/70 backdrop-blur-xl px-4 py-3 shadow-soft">
-          <a href="#" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-gradient-brand shadow-glow" />
+          <a href="#" className="flex items-center gap-2 group">
+            <div className="relative h-9 w-9 rounded-xl bg-gradient-to-br from-violet-500 via-fuchsia-500 to-pink-500 shadow-glow group-hover:scale-110 transition-transform duration-300">
+              <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/40 to-transparent" />
+            </div>
             <span className="font-display font-semibold text-lg">Storely</span>
           </a>
           <nav className="hidden md:flex items-center gap-7">
