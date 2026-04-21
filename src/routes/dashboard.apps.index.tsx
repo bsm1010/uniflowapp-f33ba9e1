@@ -93,7 +93,7 @@ function AppsPage() {
                       asChild
                       className="w-full transition-all duration-300 animate-in fade-in"
                     >
-                      <Link to={`/dashboard/apps/${app.key}`}>
+                      <Link to="/dashboard/apps/$appKey" params={{ appKey: app.key }}>
                         <ExternalLink className="h-4 w-4" />
                         Open App
                       </Link>

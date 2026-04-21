@@ -135,7 +135,7 @@ export function InstalledAppsSection() {
                       className="flex-1"
                       asChild
                     >
-                      <Link to={`/dashboard/apps/${app.key}`}>
+                      <Link to="/dashboard/apps/$appKey" params={{ appKey: app.key }}>
                         <ExternalLink className="h-4 w-4" />
                         Open
                       </Link>
