@@ -1,9 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { consumeCreditsServer, INSUFFICIENT_CREDITS_ERROR } from "@/lib/credits/consume-server";
 
 const Schema = z.object({
   imageDataUrl: z.string().min(20).max(8_000_000), // base64 data URL, ~6MB max
   hint: z.string().max(300).optional().default(""),
+  accessToken: z.string().min(1),
 });
 
 const TOOL = {
@@ -124,6 +126,15 @@ export const generateLandingPage = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<{ content: LandingPageContent }> => {
     const LOVABLE_API_KEY = process.env.LOVABLE_API_KEY;
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
+
+    const credit = await consumeCreditsServer({
+      accessToken: data.accessToken,
+      amount: 5,
+      reason: "ai_landing_page",
+    });
+    if (!credit.ok) {
+      throw new Error(credit.reason === "insufficient" ? INSUFFICIENT_CREDITS_ERROR : "Unauthorized");
+    }
 
     const systemPrompt = `أنت كاتب إعلانات (Copywriter) محترف لأكبر متاجر التجارة الإلكترونية العربية مثل نمشي، نون، وجولي شيك. مهمتك إنشاء صفحة هبوط عربية تبيع فعلاً.
 

@@ -215,6 +215,41 @@ export type Database = {
         }
         Relationships: []
       }
+      credit_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          metadata: Json
+          reason: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          metadata?: Json
+          reason: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          metadata?: Json
+          reason?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_transactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       currency_settings: {
         Row: {
           auto_detect: boolean
@@ -773,11 +808,16 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
+          credits: number
           email: string | null
           id: string
           name: string | null
           onboarded: boolean
           onboarding_completed: boolean
+          plan: string
+          plan_renews_at: string | null
+          referral_code: string | null
+          referred_by: string | null
           source_of_user: string | null
           subscription_end_date: string | null
           subscription_status: string
@@ -790,11 +830,16 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string
+          credits?: number
           email?: string | null
           id: string
           name?: string | null
           onboarded?: boolean
           onboarding_completed?: boolean
+          plan?: string
+          plan_renews_at?: string | null
+          referral_code?: string | null
+          referred_by?: string | null
           source_of_user?: string | null
           subscription_end_date?: string | null
           subscription_status?: string
@@ -807,11 +852,16 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string
+          credits?: number
           email?: string | null
           id?: string
           name?: string | null
           onboarded?: boolean
           onboarding_completed?: boolean
+          plan?: string
+          plan_renews_at?: string | null
+          referral_code?: string | null
+          referred_by?: string | null
           source_of_user?: string | null
           subscription_end_date?: string | null
           subscription_status?: string
@@ -821,7 +871,54 @@ export type Database = {
           updated_at?: string
           user_wilaya?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referrals: {
+        Row: {
+          created_at: string
+          id: string
+          referee_id: string
+          referrer_id: string
+          reward_granted: boolean
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          referee_id: string
+          referrer_id: string
+          reward_granted?: boolean
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          referee_id?: string
+          referrer_id?: string
+          reward_granted?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_referee_id_fkey"
+            columns: ["referee_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_referrer_id_fkey"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       seo_settings: {
         Row: {
@@ -1077,6 +1174,28 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_set_plan: {
+        Args: { _credits: number; _plan: string; _user_id: string }
+        Returns: undefined
+      }
+      apply_referral_bonus: {
+        Args: { _referee_id: string; _referrer_id: string }
+        Returns: undefined
+      }
+      consume_credits: {
+        Args: { _amount: number; _metadata?: Json; _reason: string }
+        Returns: boolean
+      }
+      generate_referral_code: { Args: never; Returns: string }
+      grant_credits: {
+        Args: {
+          _amount: number
+          _metadata?: Json
+          _reason: string
+          _user_id: string
+        }
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

@@ -17,6 +17,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { NotificationsBell } from "./NotificationsBell";
 import { ThemeToggle } from "./ThemeToggle";
 import { LanguageSwitcher } from "@/components/landing/LanguageSwitcher";
+import { CreditsBadge } from "./CreditsBadge";
 
 export function DashboardTopbar({ name, avatarUrl }: { name: string; avatarUrl?: string | null }) {
   const { user, signOut } = useAuth();
@@ -47,6 +48,7 @@ export function DashboardTopbar({ name, avatarUrl }: { name: string; avatarUrl?:
       </div>
       <div className="flex-1 md:hidden" />
       <div className="flex items-center gap-2">
+        <CreditsBadge />
         <LanguageSwitcher />
         <ThemeToggle />
         <NotificationsBell />

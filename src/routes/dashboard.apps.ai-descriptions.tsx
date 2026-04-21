@@ -61,12 +61,21 @@ function AiDescPage() {
 
   const run = async () => {
     if (!name.trim()) return toast.error("Enter a product name");
+    const { data: sessionData } = await supabase.auth.getSession();
+    const accessToken = sessionData.session?.access_token;
+    if (!accessToken) return toast.error("You must be signed in");
     setBusy(true);
     try {
-      const res = await generate({ data: { productName: name, keywords, tone } });
+      const res = await generate({ data: { productName: name, keywords, tone, accessToken } });
       setOutput(res.description);
     } catch (e: any) {
-      toast.error(e?.message ?? "Failed");
+      const msg = e?.message ?? "Failed";
+      if (msg.includes("INSUFFICIENT_CREDITS")) {
+        toast.error("لقد انتهى رصيدك. قم بالشحن للمتابعة.");
+        window.location.href = "/dashboard/credits";
+      } else {
+        toast.error(msg);
+      }
     } finally {
       setBusy(false);
     }

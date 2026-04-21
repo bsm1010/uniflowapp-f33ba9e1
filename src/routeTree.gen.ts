@@ -20,11 +20,13 @@ import { Route as DashboardThemesRouteImport } from './routes/dashboard.themes'
 import { Route as DashboardThemePresetsRouteImport } from './routes/dashboard.theme-presets'
 import { Route as DashboardStoreRouteImport } from './routes/dashboard.store'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
+import { Route as DashboardReferralsRouteImport } from './routes/dashboard.referrals'
 import { Route as DashboardProductsRouteImport } from './routes/dashboard.products'
 import { Route as DashboardOrdersRouteImport } from './routes/dashboard.orders'
 import { Route as DashboardLandingGeneratorRouteImport } from './routes/dashboard.landing-generator'
 import { Route as DashboardDatabaseRouteImport } from './routes/dashboard.database'
 import { Route as DashboardCustomersRouteImport } from './routes/dashboard.customers'
+import { Route as DashboardCreditsRouteImport } from './routes/dashboard.credits'
 import { Route as DashboardContactRouteImport } from './routes/dashboard.contact'
 import { Route as DashboardCategoriesRouteImport } from './routes/dashboard.categories'
 import { Route as DashboardAppsRouteImport } from './routes/dashboard.apps'
@@ -109,6 +111,11 @@ const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardReferralsRoute = DashboardReferralsRouteImport.update({
+  id: '/referrals',
+  path: '/referrals',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardProductsRoute = DashboardProductsRouteImport.update({
   id: '/products',
   path: '/products',
@@ -133,6 +140,11 @@ const DashboardDatabaseRoute = DashboardDatabaseRouteImport.update({
 const DashboardCustomersRoute = DashboardCustomersRouteImport.update({
   id: '/customers',
   path: '/customers',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardCreditsRoute = DashboardCreditsRouteImport.update({
+  id: '/credits',
+  path: '/credits',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardContactRoute = DashboardContactRouteImport.update({
@@ -295,11 +307,13 @@ export interface FileRoutesByFullPath {
   '/dashboard/apps': typeof DashboardAppsRouteWithChildren
   '/dashboard/categories': typeof DashboardCategoriesRoute
   '/dashboard/contact': typeof DashboardContactRoute
+  '/dashboard/credits': typeof DashboardCreditsRoute
   '/dashboard/customers': typeof DashboardCustomersRoute
   '/dashboard/database': typeof DashboardDatabaseRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
+  '/dashboard/referrals': typeof DashboardReferralsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/store': typeof DashboardStoreRoute
   '/dashboard/theme-presets': typeof DashboardThemePresetsRoute
@@ -339,11 +353,13 @@ export interface FileRoutesByTo {
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/categories': typeof DashboardCategoriesRoute
   '/dashboard/contact': typeof DashboardContactRoute
+  '/dashboard/credits': typeof DashboardCreditsRoute
   '/dashboard/customers': typeof DashboardCustomersRoute
   '/dashboard/database': typeof DashboardDatabaseRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
+  '/dashboard/referrals': typeof DashboardReferralsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/store': typeof DashboardStoreRoute
   '/dashboard/theme-presets': typeof DashboardThemePresetsRoute
@@ -386,11 +402,13 @@ export interface FileRoutesById {
   '/dashboard/apps': typeof DashboardAppsRouteWithChildren
   '/dashboard/categories': typeof DashboardCategoriesRoute
   '/dashboard/contact': typeof DashboardContactRoute
+  '/dashboard/credits': typeof DashboardCreditsRoute
   '/dashboard/customers': typeof DashboardCustomersRoute
   '/dashboard/database': typeof DashboardDatabaseRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
+  '/dashboard/referrals': typeof DashboardReferralsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/store': typeof DashboardStoreRoute
   '/dashboard/theme-presets': typeof DashboardThemePresetsRoute
@@ -434,11 +452,13 @@ export interface FileRouteTypes {
     | '/dashboard/apps'
     | '/dashboard/categories'
     | '/dashboard/contact'
+    | '/dashboard/credits'
     | '/dashboard/customers'
     | '/dashboard/database'
     | '/dashboard/landing-generator'
     | '/dashboard/orders'
     | '/dashboard/products'
+    | '/dashboard/referrals'
     | '/dashboard/settings'
     | '/dashboard/store'
     | '/dashboard/theme-presets'
@@ -478,11 +498,13 @@ export interface FileRouteTypes {
     | '/dashboard/analytics'
     | '/dashboard/categories'
     | '/dashboard/contact'
+    | '/dashboard/credits'
     | '/dashboard/customers'
     | '/dashboard/database'
     | '/dashboard/landing-generator'
     | '/dashboard/orders'
     | '/dashboard/products'
+    | '/dashboard/referrals'
     | '/dashboard/settings'
     | '/dashboard/store'
     | '/dashboard/theme-presets'
@@ -524,11 +546,13 @@ export interface FileRouteTypes {
     | '/dashboard/apps'
     | '/dashboard/categories'
     | '/dashboard/contact'
+    | '/dashboard/credits'
     | '/dashboard/customers'
     | '/dashboard/database'
     | '/dashboard/landing-generator'
     | '/dashboard/orders'
     | '/dashboard/products'
+    | '/dashboard/referrals'
     | '/dashboard/settings'
     | '/dashboard/store'
     | '/dashboard/theme-presets'
@@ -655,6 +679,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardSettingsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/referrals': {
+      id: '/dashboard/referrals'
+      path: '/referrals'
+      fullPath: '/dashboard/referrals'
+      preLoaderRoute: typeof DashboardReferralsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/products': {
       id: '/dashboard/products'
       path: '/products'
@@ -688,6 +719,13 @@ declare module '@tanstack/react-router' {
       path: '/customers'
       fullPath: '/dashboard/customers'
       preLoaderRoute: typeof DashboardCustomersRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/credits': {
+      id: '/dashboard/credits'
+      path: '/credits'
+      fullPath: '/dashboard/credits'
+      preLoaderRoute: typeof DashboardCreditsRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/contact': {
@@ -929,11 +967,13 @@ interface DashboardRouteChildren {
   DashboardAppsRoute: typeof DashboardAppsRouteWithChildren
   DashboardCategoriesRoute: typeof DashboardCategoriesRoute
   DashboardContactRoute: typeof DashboardContactRoute
+  DashboardCreditsRoute: typeof DashboardCreditsRoute
   DashboardCustomersRoute: typeof DashboardCustomersRoute
   DashboardDatabaseRoute: typeof DashboardDatabaseRoute
   DashboardLandingGeneratorRoute: typeof DashboardLandingGeneratorRoute
   DashboardOrdersRoute: typeof DashboardOrdersRoute
   DashboardProductsRoute: typeof DashboardProductsRoute
+  DashboardReferralsRoute: typeof DashboardReferralsRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardStoreRoute: typeof DashboardStoreRoute
   DashboardThemePresetsRoute: typeof DashboardThemePresetsRoute
@@ -949,11 +989,13 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAppsRoute: DashboardAppsRouteWithChildren,
   DashboardCategoriesRoute: DashboardCategoriesRoute,
   DashboardContactRoute: DashboardContactRoute,
+  DashboardCreditsRoute: DashboardCreditsRoute,
   DashboardCustomersRoute: DashboardCustomersRoute,
   DashboardDatabaseRoute: DashboardDatabaseRoute,
   DashboardLandingGeneratorRoute: DashboardLandingGeneratorRoute,
   DashboardOrdersRoute: DashboardOrdersRoute,
   DashboardProductsRoute: DashboardProductsRoute,
+  DashboardReferralsRoute: DashboardReferralsRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardStoreRoute: DashboardStoreRoute,
   DashboardThemePresetsRoute: DashboardThemePresetsRoute,
