@@ -963,23 +963,23 @@ function GridView({
             ) : (
               records.map((rec, idx) => (
                 <tr key={rec.id} className="group hover:bg-muted/30">
-                  <td className="sticky left-0 z-10 bg-background group-hover:bg-muted/30 border-b border-r border-border w-12 min-w-[3rem] px-2 text-center align-middle">
-                    <span className="text-xs text-muted-foreground group-hover:hidden">
+                  <td className="sticky left-0 z-10 bg-background group-hover:bg-muted/30 border-b border-r border-border w-14 min-w-[3.5rem] px-2 text-center align-middle">
+                    <span className="text-sm text-muted-foreground group-hover:hidden">
                       {idx + 1}
                     </span>
                     <button
-                      className="hidden group-hover:inline-flex text-muted-foreground hover:text-destructive p-1 rounded hover:bg-destructive/10"
+                      className="hidden group-hover:inline-flex text-muted-foreground hover:text-destructive p-1.5 rounded hover:bg-destructive/10"
                       onClick={() => onDeleteRecord(rec.id)}
                       aria-label="Delete row"
                       title="Delete row"
                     >
-                      <Trash2 className="h-3.5 w-3.5" />
+                      <Trash2 className="h-4 w-4" />
                     </button>
                   </td>
                   {fields.map((f) => (
                     <td
                       key={f.id}
-                      className="px-2 py-1 align-middle min-w-[180px] border-b border-r border-border"
+                      className="px-3 py-3 align-middle min-w-[260px] border-b border-r border-border"
                     >
                       <CellEditor
                         field={f}
