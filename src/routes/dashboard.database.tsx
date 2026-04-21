@@ -143,6 +143,7 @@ const FIELD_TYPE_ICONS: Record<FieldType, LucideIcon> = {
 
 function DatabasePage() {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const { isExpired } = useSubscription();
   const [tables, setTables] = useState<DBTable[]>([]);
   const [activeTableId, setActiveTableId] = useState<string | null>(null);
