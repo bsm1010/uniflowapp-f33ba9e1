@@ -779,6 +779,15 @@ function TableGrid({
   onUpdateValue: (recordId: string, fieldId: string, value: unknown) => void;
 }) {
   const [view, setView] = useState<ViewSettings>(() => loadViewSettings(table.id));
+  const [fullscreen, setFullscreen] = useState(false);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setFullscreen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   useEffect(() => {
     setView(loadViewSettings(table.id));
