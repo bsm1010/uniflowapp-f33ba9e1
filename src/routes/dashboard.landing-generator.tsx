@@ -96,6 +96,8 @@ async function fileToCompressedDataUrl(file: File, maxDim = 1024): Promise<strin
 }
 
 function LandingGeneratorPage() {
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.dir() === "rtl";
   const [imageDataUrl, setImageDataUrl] = useState<string | null>(null);
   const [hint, setHint] = useState("");
   const [loading, setLoading] = useState(false);
