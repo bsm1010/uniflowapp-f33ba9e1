@@ -753,6 +753,11 @@ function TableGrid({
               );
             })}
           </div>
+          <FilterSortBar
+            fields={fields}
+            config={view.filterSort ?? DEFAULT_FILTER_SORT}
+            onChange={(fs) => update({ filterSort: fs })}
+          />
           <Button size="sm" variant="outline" onClick={onAddField}>
             <Plus className="h-4 w-4 mr-1" /> Field
           </Button>
@@ -761,6 +766,62 @@ function TableGrid({
           </Button>
         </div>
       </Card>
+
+      {(() => {
+        const visibleRecords = applyFilterSort(
+          records,
+          fields,
+          view.filterSort ?? DEFAULT_FILTER_SORT,
+        );
+        return (
+          <>
+            {view.mode === "grid" && (
+              <GridView
+                fields={fields}
+                records={visibleRecords}
+                onEditField={onEditField}
+                onDeleteField={onDeleteField}
+                onAddField={onAddField}
+                onAddRecord={onAddRecord}
+                onDeleteRecord={onDeleteRecord}
+                onUpdateValue={onUpdateValue}
+                allTables={allTables}
+              />
+            )}
+            {view.mode === "gallery" && (
+              <GalleryView
+                fields={fields}
+                records={visibleRecords}
+                imageFieldId={view.galleryImageFieldId ?? null}
+                titleFieldId={view.galleryTitleFieldId ?? null}
+                onChangeImageField={(id) => update({ galleryImageFieldId: id })}
+                onChangeTitleField={(id) => update({ galleryTitleFieldId: id })}
+                onAddRecord={onAddRecord}
+              />
+            )}
+            {view.mode === "kanban" && (
+              <KanbanView
+                fields={fields}
+                records={visibleRecords}
+                groupFieldId={view.kanbanGroupFieldId ?? null}
+                onChangeGroupField={(id) => update({ kanbanGroupFieldId: id })}
+                onUpdateValue={onUpdateValue}
+                onAddRecord={onAddRecord}
+              />
+            )}
+            {view.mode === "calendar" && (
+              <CalendarView
+                fields={fields}
+                records={visibleRecords}
+                dateFieldId={view.calendarDateFieldId ?? null}
+                titleFieldId={view.calendarTitleFieldId ?? null}
+                onChangeDateField={(id) => update({ calendarDateFieldId: id })}
+                onChangeTitleField={(id) => update({ calendarTitleFieldId: id })}
+              />
+            )}
+          </>
+        );
+      })()}
 
       {view.mode === "grid" && (
         <GridView
