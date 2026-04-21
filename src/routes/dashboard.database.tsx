@@ -131,6 +131,7 @@ function DatabasePage() {
   const [editingTable, setEditingTable] = useState<DBTable | null>(null);
   const [fieldDialogOpen, setFieldDialogOpen] = useState(false);
   const [editingField, setEditingField] = useState<DBField | null>(null);
+  const [automationsOpen, setAutomationsOpen] = useState(false);
 
   const loadTables = useCallback(async () => {
     if (!user) return;
