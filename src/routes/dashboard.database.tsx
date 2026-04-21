@@ -666,7 +666,7 @@ function loadViewSettings(tableId: string): ViewSettings {
     const parsed = JSON.parse(raw) as ViewSettings;
     return { ...parsed, filterSort: parsed.filterSort ?? DEFAULT_FILTER_SORT };
   } catch {
-    return { mode: "grid" };
+    return { mode: "grid", filterSort: DEFAULT_FILTER_SORT };
   }
 }
 
