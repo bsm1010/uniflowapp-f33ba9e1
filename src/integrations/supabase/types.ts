@@ -248,6 +248,50 @@ export type Database = {
         }
         Relationships: []
       }
+      db_automations: {
+        Row: {
+          actions: Json
+          created_at: string
+          enabled: boolean
+          id: string
+          name: string
+          table_id: string
+          trigger: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          actions?: Json
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          name?: string
+          table_id: string
+          trigger?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          actions?: Json
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          name?: string
+          table_id?: string
+          trigger?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "db_automations_table_id_fkey"
+            columns: ["table_id"]
+            isOneToOne: false
+            referencedRelation: "db_tables"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       db_fields: {
         Row: {
           created_at: string
