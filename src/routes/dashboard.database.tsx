@@ -11,6 +11,14 @@ import {
   Image as ImageIcon,
   Kanban,
   Calendar as CalendarIcon,
+  Type,
+  Hash,
+  ToggleLeft,
+  ChevronDownSquare,
+  Tags,
+  Paperclip,
+  Link2,
+  type LucideIcon,
 } from "lucide-react";
 import {
   GalleryView,
