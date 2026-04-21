@@ -345,15 +345,23 @@ function DatabasePage() {
         title="Database"
         description="Build custom tables with typed fields — like a mini Airtable inside your store."
         actions={
-          <Button
-            onClick={() => {
-              setEditingTable(null);
-              setTableDialogOpen(true);
-            }}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            New table
-          </Button>
+          <div className="flex gap-2">
+            {activeTable && (
+              <Button variant="outline" onClick={() => setAutomationsOpen(true)}>
+                <Zap className="h-4 w-4 mr-2" />
+                Automations
+              </Button>
+            )}
+            <Button
+              onClick={() => {
+                setEditingTable(null);
+                setTableDialogOpen(true);
+              }}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              New table
+            </Button>
+          </div>
         }
       />
 
