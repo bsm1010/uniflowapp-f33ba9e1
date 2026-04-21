@@ -16,6 +16,7 @@ import {
   FileText,
   Mail,
   Blocks,
+  Database,
   ChevronDown,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -76,6 +77,7 @@ export function DashboardSidebar() {
     { title: t("dashboard.nav.orders"), url: "/dashboard/orders", icon: ShoppingBag },
     { title: t("dashboard.nav.customers"), url: "/dashboard/customers", icon: Users },
     { title: t("dashboard.nav.themePresets"), url: "/dashboard/theme-presets", icon: Sparkles },
+    { title: "Database", url: "/dashboard/database", icon: Database },
     { title: t("dashboard.nav.customize"), url: "/customize", icon: Palette, external: true },
     { title: t("dashboard.nav.aboutPage"), url: "/dashboard/about", icon: FileText },
     { title: t("dashboard.nav.contactPage"), url: "/dashboard/contact", icon: Mail },
