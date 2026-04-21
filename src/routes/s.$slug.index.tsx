@@ -12,7 +12,9 @@ import {
   getStoreTokens,
   getButtonLabels,
   getSectionTitles,
+  getSectionOrder,
   type StoreSettings,
+  type SectionKey,
 } from "@/lib/storeTheme";
 import { useCart } from "@/hooks/use-cart";
 
@@ -47,6 +49,7 @@ function StorefrontHome() {
 
   useEffect(() => {
     let active = true;
+    let channel: ReturnType<typeof supabase.channel> | null = null;
     (async () => {
       const { data: s } = await supabase
         .from("store_settings")
@@ -68,9 +71,28 @@ function StorefrontHome() {
       setSettings(s);
       setProducts(p ?? []);
       setLoading(false);
+
+      // Subscribe to live store_settings changes for this store
+      channel = supabase
+        .channel(`store-settings-${s.user_id}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "store_settings",
+            filter: `user_id=eq.${s.user_id}`,
+          },
+          (payload) => {
+            if (!active) return;
+            setSettings(payload.new as StoreSettings);
+          },
+        )
+        .subscribe();
     })();
     return () => {
       active = false;
+      if (channel) supabase.removeChannel(channel);
     };
   }, [slug]);
 
