@@ -54,7 +54,7 @@ type FieldType =
 type DBTable = {
   id: string;
   name: string;
-  description: string;
+  description: string | null;
   position: number;
 };
 
@@ -268,7 +268,7 @@ function DatabasePage() {
     );
     const { error } = await supabase
       .from("db_records")
-      .update({ data: newData })
+      .update({ data: newData as never })
       .eq("id", recordId);
     if (error) toast.error(error.message);
   }
