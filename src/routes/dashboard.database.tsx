@@ -23,6 +23,10 @@ import {
   DEFAULT_FILTER_SORT,
   type FilterSortConfig,
 } from "@/components/dashboard/database/FilterSortBar";
+import {
+  ImageUploadCell,
+  FileUploadCell,
+} from "@/components/dashboard/database/UploadCells";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
