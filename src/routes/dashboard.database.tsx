@@ -18,6 +18,8 @@ import {
   Tags,
   Paperclip,
   Link2,
+  Maximize2,
+  Minimize2,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -777,6 +779,15 @@ function TableGrid({
   onUpdateValue: (recordId: string, fieldId: string, value: unknown) => void;
 }) {
   const [view, setView] = useState<ViewSettings>(() => loadViewSettings(table.id));
+  const [fullscreen, setFullscreen] = useState(false);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setFullscreen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   useEffect(() => {
     setView(loadViewSettings(table.id));
@@ -796,7 +807,13 @@ function TableGrid({
   ];
 
   return (
-    <div className="space-y-3">
+    <div
+      className={
+        fullscreen
+          ? "fixed inset-0 z-50 bg-background p-4 overflow-auto space-y-3"
+          : "space-y-3"
+      }
+    >
       <Card className="p-3 flex items-center justify-between gap-3 flex-wrap">
         <div className="min-w-0">
           <h2 className="font-semibold truncate">{table.name}</h2>
@@ -838,6 +855,18 @@ function TableGrid({
           <Button size="sm" onClick={onAddRecord} disabled={fields.length === 0}>
             <Plus className="h-4 w-4 mr-1" /> Row
           </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setFullscreen((v) => !v)}
+            title={fullscreen ? "Exit fullscreen (Esc)" : "Fullscreen"}
+          >
+            {fullscreen ? (
+              <Minimize2 className="h-4 w-4" />
+            ) : (
+              <Maximize2 className="h-4 w-4" />
+            )}
+          </Button>
         </div>
       </Card>
 
@@ -860,6 +889,7 @@ function TableGrid({
                 onDeleteRecord={onDeleteRecord}
                 onUpdateValue={onUpdateValue}
                 allTables={allTables}
+                fullscreen={fullscreen}
               />
             )}
             {view.mode === "gallery" && (
@@ -911,6 +941,7 @@ function GridView({
   onAddRecord,
   onDeleteRecord,
   onUpdateValue,
+  fullscreen = false,
 }: {
   fields: DBField[];
   records: DBRecord[];
@@ -921,10 +952,14 @@ function GridView({
   onAddRecord: () => void;
   onDeleteRecord: (id: string) => void;
   onUpdateValue: (recordId: string, fieldId: string, value: unknown) => void;
+  fullscreen?: boolean;
 }) {
   return (
     <Card className="overflow-hidden">
-      <div className="overflow-auto max-h-[calc(100vh-220px)]">
+      <div
+        className="overflow-auto"
+        style={{ maxHeight: fullscreen ? "calc(100vh - 160px)" : "calc(100vh - 220px)" }}
+      >
         <table className="w-full text-base border-separate border-spacing-0">
           <thead className="sticky top-0 z-20 bg-muted/80 backdrop-blur">
             <tr>
