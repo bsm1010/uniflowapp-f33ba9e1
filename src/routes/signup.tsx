@@ -54,12 +54,15 @@ function SignUpPage() {
     }
 
     setLoading(true);
+    const refCode = typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("ref") ?? undefined
+      : undefined;
     const { data, error } = await supabase.auth.signUp({
       email: parsed.data.email,
       password: parsed.data.password,
       options: {
         emailRedirectTo: `${window.location.origin}/dashboard`,
-        data: { name: parsed.data.name },
+        data: { name: parsed.data.name, ...(refCode ? { referral_code: refCode } : {}) },
       },
     });
     setLoading(false);
