@@ -986,6 +986,7 @@ function CellEditor({
   allTables: DBTable[];
   onChange: (v: unknown) => void;
 }) {
+  const { user } = useAuth();
   switch (field.field_type) {
     case "text":
       return (
