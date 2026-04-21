@@ -772,7 +772,7 @@ function TableGrid({
           records,
           fields,
           view.filterSort ?? DEFAULT_FILTER_SORT,
-        );
+        ) as DBRecord[];
         return (
           <>
             {view.mode === "grid" && (
