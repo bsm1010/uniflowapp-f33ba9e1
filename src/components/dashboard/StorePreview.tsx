@@ -93,147 +93,150 @@ export function StorePreview({ settings, products = [] }: Props) {
         </div>
       </div>
 
-      {/* Hero */}
-      {settings.show_hero && (
-        <HeroPreview settings={settings} t={t} />
-      )}
-
-      {/* Categories */}
-      {settings.show_categories && (
-        <div className="px-6 py-10">
-          <div className="mb-5">
-            <h2 className="text-lg font-bold">{titles.categories}</h2>
-            <p className="text-xs mt-0.5" style={{ color: t.muted }}>
-              {titles.categories_sub}
-            </p>
-          </div>
-          <div className="grid grid-cols-4 gap-3">
-            {["Apparel", "Accessories", "Home", "Beauty"].map((c) => (
-              <div
-                key={c}
-                className="aspect-[4/3] flex items-end p-3 text-xs font-medium"
-                style={{
-                  backgroundColor: t.surface,
-                  border: `1px solid ${t.border}`,
-                  borderRadius: t.radius.md,
-                }}
-              >
-                {c}
+      {/* Sections in user-defined order */}
+      {getSectionOrder(settings).map((section) => {
+        if (section === "hero" && settings.show_hero) {
+          return <HeroPreview key="hero" settings={settings} t={t} />;
+        }
+        if (section === "categories" && settings.show_categories) {
+          return (
+            <div key="categories" className="px-6 py-10">
+              <div className="mb-5">
+                <h2 className="text-lg font-bold">{titles.categories}</h2>
+                <p className="text-xs mt-0.5" style={{ color: t.muted }}>
+                  {titles.categories_sub}
+                </p>
               </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Featured */}
-      {settings.show_featured && (
-        <div className="px-6 py-10" style={{ borderTop: `1px solid ${t.border}` }}>
-          <div className="flex items-end justify-between mb-5">
-            <div>
-              <h2 className="text-lg font-bold">{titles.featured}</h2>
-              <p className="text-xs mt-0.5" style={{ color: t.muted }}>
-                {titles.featured_sub}
-              </p>
+              <div className="grid grid-cols-4 gap-3">
+                {["Apparel", "Accessories", "Home", "Beauty"].map((c) => (
+                  <div
+                    key={c}
+                    className="aspect-[4/3] flex items-end p-3 text-xs font-medium"
+                    style={{
+                      backgroundColor: t.surface,
+                      border: `1px solid ${t.border}`,
+                      borderRadius: t.radius.md,
+                    }}
+                  >
+                    {c}
+                  </div>
+                ))}
+              </div>
             </div>
-            <span className="text-xs font-medium" style={{ color: t.primary }}>
-              {labels.view_all}
-            </span>
-          </div>
+          );
+        }
+        if (section === "featured" && settings.show_featured) {
+          return (
+            <div key="featured" className="px-6 py-10" style={{ borderTop: `1px solid ${t.border}` }}>
+              <div className="flex items-end justify-between mb-5">
+                <div>
+                  <h2 className="text-lg font-bold">{titles.featured}</h2>
+                  <p className="text-xs mt-0.5" style={{ color: t.muted }}>
+                    {titles.featured_sub}
+                  </p>
+                </div>
+                <span className="text-xs font-medium" style={{ color: t.primary }}>
+                  {labels.view_all}
+                </span>
+              </div>
 
-          {/* Search bar preview */}
-          {settings.show_search && (
-            <div
-              className="flex items-center gap-2 mb-4 px-3 py-2"
-              style={{
-                backgroundColor: t.surface,
-                border: `1px solid ${t.border}`,
-                borderRadius: t.radius.md,
-              }}
-            >
-              <Search className="h-3.5 w-3.5" style={{ color: t.muted }} />
-              <span className="text-xs" style={{ color: t.muted }}>
-                {labels.search_placeholder}
-              </span>
-            </div>
-          )}
-
-          <div className={`grid ${grid}`}>
-            {sample.map((p, i) => (
-              <div key={i} className="group">
+              {settings.show_search && (
                 <div
-                  className="overflow-hidden relative"
+                  className="flex items-center gap-2 mb-4 px-3 py-2"
                   style={{
                     backgroundColor: t.surface,
-                    border: template === "minimal" ? "none" : `1px solid ${t.border}`,
-                    borderRadius: cardRadius,
-                    aspectRatio: aspect,
+                    border: `1px solid ${t.border}`,
+                    borderRadius: t.radius.md,
                   }}
                 >
-                  {p.images[0] ? (
-                    <img
-                      src={p.images[0]}
-                      alt={p.name}
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <div
-                      className="h-full w-full"
-                      style={{
-                        background: `linear-gradient(135deg, ${t.primary}22, ${t.accent}10)`,
-                      }}
-                    />
-                  )}
-                </div>
-                <div className="mt-2.5 flex items-start justify-between gap-2">
-                  <span className="text-xs font-medium line-clamp-1">{p.name}</span>
-                  <span className="text-xs font-semibold whitespace-nowrap">
-                    {formatPrice(p.price, currency)}
+                  <Search className="h-3.5 w-3.5" style={{ color: t.muted }} />
+                  <span className="text-xs" style={{ color: t.muted }}>
+                    {labels.search_placeholder}
                   </span>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+              )}
 
-      {/* Newsletter */}
-      {settings.show_newsletter && (
-        <div
-          className="px-6 py-12 text-center"
-          style={{
-            backgroundColor: t.surface,
-            borderTop: `1px solid ${t.border}`,
-          }}
-        >
-          <Mail className="h-6 w-6 mx-auto" style={{ color: t.primary }} />
-          <h3 className="mt-3 text-xl font-bold">{titles.newsletter}</h3>
-          <p className="mt-1 text-sm" style={{ color: t.muted }}>
-            {titles.newsletter_sub}
-          </p>
-          <div className="mt-5 flex max-w-sm mx-auto gap-2">
-            <input
-              placeholder="you@email.com"
-              className="flex-1 px-3 py-2 text-sm outline-none"
+              <div className={`grid ${grid}`}>
+                {sample.map((p, i) => (
+                  <div key={i} className="group">
+                    <div
+                      className="overflow-hidden relative"
+                      style={{
+                        backgroundColor: t.surface,
+                        border: template === "minimal" ? "none" : `1px solid ${t.border}`,
+                        borderRadius: cardRadius,
+                        aspectRatio: aspect,
+                      }}
+                    >
+                      {p.images[0] ? (
+                        <img
+                          src={p.images[0]}
+                          alt={p.name}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div
+                          className="h-full w-full"
+                          style={{
+                            background: `linear-gradient(135deg, ${t.primary}22, ${t.accent}10)`,
+                          }}
+                        />
+                      )}
+                    </div>
+                    <div className="mt-2.5 flex items-start justify-between gap-2">
+                      <span className="text-xs font-medium line-clamp-1">{p.name}</span>
+                      <span className="text-xs font-semibold whitespace-nowrap">
+                        {formatPrice(p.price, currency)}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        }
+        if (section === "newsletter" && settings.show_newsletter) {
+          return (
+            <div
+              key="newsletter"
+              className="px-6 py-12 text-center"
               style={{
-                backgroundColor: t.bg,
-                color: t.fg,
-                border: `1px solid ${t.border}`,
-                borderRadius: t.buttonRadius,
-              }}
-            />
-            <button
-              className="px-4 py-2 text-sm font-medium"
-              style={{
-                backgroundColor: t.primary,
-                color: t.onPrimary,
-                borderRadius: t.buttonRadius,
+                backgroundColor: t.surface,
+                borderTop: `1px solid ${t.border}`,
               }}
             >
-              {labels.subscribe}
-            </button>
-          </div>
-        </div>
-      )}
+              <Mail className="h-6 w-6 mx-auto" style={{ color: t.primary }} />
+              <h3 className="mt-3 text-xl font-bold">{titles.newsletter}</h3>
+              <p className="mt-1 text-sm" style={{ color: t.muted }}>
+                {titles.newsletter_sub}
+              </p>
+              <div className="mt-5 flex max-w-sm mx-auto gap-2">
+                <input
+                  placeholder="you@email.com"
+                  className="flex-1 px-3 py-2 text-sm outline-none"
+                  style={{
+                    backgroundColor: t.bg,
+                    color: t.fg,
+                    border: `1px solid ${t.border}`,
+                    borderRadius: t.buttonRadius,
+                  }}
+                />
+                <button
+                  className="px-4 py-2 text-sm font-medium"
+                  style={{
+                    backgroundColor: t.primary,
+                    color: t.onPrimary,
+                    borderRadius: t.buttonRadius,
+                  }}
+                >
+                  {labels.subscribe}
+                </button>
+              </div>
+            </div>
+          );
+        }
+        return null;
+      })}
 
       {/* Footer */}
       <div
