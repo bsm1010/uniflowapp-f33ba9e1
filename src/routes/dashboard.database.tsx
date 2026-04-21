@@ -931,6 +931,12 @@ function GridView({
                   className="px-4 py-3 text-left font-semibold whitespace-nowrap min-w-[260px] border-b border-r border-border"
                 >
                   <div className="flex items-center gap-2">
+                    {(() => {
+                      const Icon = FIELD_TYPE_ICONS[f.field_type];
+                      return (
+                        <Icon className="h-4 w-4 text-muted-foreground shrink-0" />
+                      );
+                    })()}
                     <span className="truncate">{f.name}</span>
                     <Badge variant="secondary" className="text-[10px] shrink-0">
                       {FIELD_TYPE_LABELS[f.field_type]}
