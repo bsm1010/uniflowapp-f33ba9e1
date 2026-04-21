@@ -365,9 +365,9 @@ function DatabasePage() {
     >
       {isExpired && <ExpiredOverlay />}
       <PageHeader
-        eyebrow="Workspace"
-        title="Database"
-        description="Build custom tables with typed fields — like a mini Airtable inside your store."
+        eyebrow={t("dashboard.database.eyebrow")}
+        title={t("dashboard.database.title")}
+        description={t("dashboard.database.description")}
         actions={
           <div className="flex gap-2">
             {activeTable && (
@@ -383,7 +383,7 @@ function DatabasePage() {
               }}
             >
               <Plus className="h-4 w-4 mr-2" />
-              New table
+              {t("dashboard.database.newTable")}
             </Button>
           </div>
         }
