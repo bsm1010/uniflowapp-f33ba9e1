@@ -1,7 +1,22 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Database, Plus, Trash2, Pencil, Table as TableIcon } from "lucide-react";
+import {
+  Database,
+  Plus,
+  Trash2,
+  Pencil,
+  Table as TableIcon,
+  LayoutGrid,
+  Image as ImageIcon,
+  Kanban,
+  Calendar as CalendarIcon,
+} from "lucide-react";
+import {
+  GalleryView,
+  KanbanView,
+  CalendarView,
+} from "@/components/dashboard/database/TableViews";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
