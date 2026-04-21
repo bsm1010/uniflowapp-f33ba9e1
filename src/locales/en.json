@@ -116,6 +116,10 @@
       "aboutPage": "About page",
       "contactPage": "Contact page",
       "analytics": "Analytics",
+      "database": "Database",
+      "landingGenerator": "Landing Generator",
+      "credits": "Credits",
+      "referrals": "Referrals",
       "appStore": "App Store",
       "settings": "Settings",
       "payments": "Payments"
