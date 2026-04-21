@@ -640,7 +640,37 @@ function FieldDialog({
   );
 }
 
-// ===================== Table Grid =====================
+// ===================== Table Grid (with view switcher) =====================
+type ViewMode = "grid" | "gallery" | "kanban" | "calendar";
+type ViewSettings = {
+  mode: ViewMode;
+  galleryImageFieldId?: string | null;
+  galleryTitleFieldId?: string | null;
+  kanbanGroupFieldId?: string | null;
+  calendarDateFieldId?: string | null;
+  calendarTitleFieldId?: string | null;
+};
+
+function loadViewSettings(tableId: string): ViewSettings {
+  if (typeof window === "undefined") return { mode: "grid" };
+  try {
+    const raw = localStorage.getItem(`db_view_${tableId}`);
+    if (!raw) return { mode: "grid" };
+    return JSON.parse(raw) as ViewSettings;
+  } catch {
+    return { mode: "grid" };
+  }
+}
+
+function saveViewSettings(tableId: string, settings: ViewSettings) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(`db_view_${tableId}`, JSON.stringify(settings));
+  } catch {
+    /* ignore */
+  }
+}
+
 function TableGrid({
   table,
   fields,
@@ -664,9 +694,28 @@ function TableGrid({
   onDeleteRecord: (id: string) => void;
   onUpdateValue: (recordId: string, fieldId: string, value: unknown) => void;
 }) {
+  const [view, setView] = useState<ViewSettings>(() => loadViewSettings(table.id));
+
+  useEffect(() => {
+    setView(loadViewSettings(table.id));
+  }, [table.id]);
+
+  function update(patch: Partial<ViewSettings>) {
+    const next = { ...view, ...patch };
+    setView(next);
+    saveViewSettings(table.id, next);
+  }
+
+  const VIEW_TABS: { key: ViewMode; label: string; icon: typeof LayoutGrid }[] = [
+    { key: "grid", label: "Grid", icon: LayoutGrid },
+    { key: "gallery", label: "Gallery", icon: ImageIcon },
+    { key: "kanban", label: "Kanban", icon: Kanban },
+    { key: "calendar", label: "Calendar", icon: CalendarIcon },
+  ];
+
   return (
-    <Card className="overflow-hidden">
-      <div className="flex items-center justify-between p-3 border-b border-border">
+    <div className="space-y-3">
+      <Card className="p-3 flex items-center justify-between gap-3 flex-wrap">
         <div className="min-w-0">
           <h2 className="font-semibold truncate">{table.name}</h2>
           {table.description && (
@@ -675,7 +724,27 @@ function TableGrid({
             </p>
           )}
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="inline-flex rounded-md border border-border bg-background p-0.5">
+            {VIEW_TABS.map((t) => {
+              const Icon = t.icon;
+              const active = view.mode === t.key;
+              return (
+                <button
+                  key={t.key}
+                  onClick={() => update({ mode: t.key })}
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors ${
+                    active
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Icon className="h-3.5 w-3.5" />
+                  {t.label}
+                </button>
+              );
+            })}
+          </div>
           <Button size="sm" variant="outline" onClick={onAddField}>
             <Plus className="h-4 w-4 mr-1" /> Field
           </Button>
@@ -683,13 +752,84 @@ function TableGrid({
             <Plus className="h-4 w-4 mr-1" /> Row
           </Button>
         </div>
-      </div>
+      </Card>
 
-      <div className="overflow-auto max-h-[calc(100vh-280px)]">
+      {view.mode === "grid" && (
+        <GridView
+          fields={fields}
+          records={records}
+          onEditField={onEditField}
+          onDeleteField={onDeleteField}
+          onAddField={onAddField}
+          onAddRecord={onAddRecord}
+          onDeleteRecord={onDeleteRecord}
+          onUpdateValue={onUpdateValue}
+          allTables={allTables}
+        />
+      )}
+      {view.mode === "gallery" && (
+        <GalleryView
+          fields={fields}
+          records={records}
+          imageFieldId={view.galleryImageFieldId ?? null}
+          titleFieldId={view.galleryTitleFieldId ?? null}
+          onChangeImageField={(id) => update({ galleryImageFieldId: id })}
+          onChangeTitleField={(id) => update({ galleryTitleFieldId: id })}
+          onAddRecord={onAddRecord}
+        />
+      )}
+      {view.mode === "kanban" && (
+        <KanbanView
+          fields={fields}
+          records={records}
+          groupFieldId={view.kanbanGroupFieldId ?? null}
+          onChangeGroupField={(id) => update({ kanbanGroupFieldId: id })}
+          onUpdateValue={onUpdateValue}
+          onAddRecord={onAddRecord}
+        />
+      )}
+      {view.mode === "calendar" && (
+        <CalendarView
+          fields={fields}
+          records={records}
+          dateFieldId={view.calendarDateFieldId ?? null}
+          titleFieldId={view.calendarTitleFieldId ?? null}
+          onChangeDateField={(id) => update({ calendarDateFieldId: id })}
+          onChangeTitleField={(id) => update({ calendarTitleFieldId: id })}
+        />
+      )}
+    </div>
+  );
+}
+
+// ===================== Grid View (spreadsheet) =====================
+function GridView({
+  fields,
+  records,
+  allTables,
+  onAddField,
+  onEditField,
+  onDeleteField,
+  onAddRecord,
+  onDeleteRecord,
+  onUpdateValue,
+}: {
+  fields: DBField[];
+  records: DBRecord[];
+  allTables: DBTable[];
+  onAddField: () => void;
+  onEditField: (f: DBField) => void;
+  onDeleteField: (id: string) => void;
+  onAddRecord: () => void;
+  onDeleteRecord: (id: string) => void;
+  onUpdateValue: (recordId: string, fieldId: string, value: unknown) => void;
+}) {
+  return (
+    <Card className="overflow-hidden">
+      <div className="overflow-auto max-h-[calc(100vh-320px)]">
         <table className="w-full text-sm border-separate border-spacing-0">
           <thead className="sticky top-0 z-20 bg-muted/80 backdrop-blur">
             <tr>
-              {/* Row-number / select gutter */}
               <th className="sticky left-0 z-30 bg-muted/80 backdrop-blur w-12 min-w-[3rem] border-b border-r border-border px-2 py-2 text-left text-[11px] font-medium text-muted-foreground">
                 #
               </th>
@@ -724,7 +864,6 @@ function TableGrid({
                   </div>
                 </th>
               ))}
-              {/* Add column button */}
               <th className="border-b border-border bg-muted/80 backdrop-blur min-w-[120px] px-2">
                 <button
                   onClick={onAddField}
@@ -752,7 +891,6 @@ function TableGrid({
             ) : (
               records.map((rec, idx) => (
                 <tr key={rec.id} className="group hover:bg-muted/30">
-                  {/* Row number / delete gutter */}
                   <td className="sticky left-0 z-10 bg-background group-hover:bg-muted/30 border-b border-r border-border w-12 min-w-[3rem] px-2 text-center align-middle">
                     <span className="text-xs text-muted-foreground group-hover:hidden">
                       {idx + 1}
