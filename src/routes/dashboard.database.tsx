@@ -394,8 +394,8 @@ function DatabasePage() {
       ) : tables.length === 0 ? (
         <EmptyState
           icon={Database}
-          title="No tables yet"
-          description="Create your first table to start storing structured data."
+          title={t("dashboard.database.noTables")}
+          description={t("dashboard.database.noTablesDesc")}
           action={
             <Button
               onClick={() => {
