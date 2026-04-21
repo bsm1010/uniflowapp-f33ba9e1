@@ -18,6 +18,7 @@ import {
   Blocks,
   Database,
   ChevronDown,
+  Wand2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -78,6 +79,7 @@ export function DashboardSidebar() {
     { title: t("dashboard.nav.customers"), url: "/dashboard/customers", icon: Users },
     { title: t("dashboard.nav.themePresets"), url: "/dashboard/theme-presets", icon: Sparkles },
     { title: "Database", url: "/dashboard/database", icon: Database },
+    { title: "Landing Generator", url: "/dashboard/landing-generator", icon: Wand2 },
     { title: t("dashboard.nav.customize"), url: "/customize", icon: Palette, external: true },
     { title: t("dashboard.nav.aboutPage"), url: "/dashboard/about", icon: FileText },
     { title: t("dashboard.nav.contactPage"), url: "/dashboard/contact", icon: Mail },
