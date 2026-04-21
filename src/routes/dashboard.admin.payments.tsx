@@ -221,7 +221,10 @@ function AdminPaymentsPage() {
                     <div className="font-medium">{s.profile?.name || "Unnamed"}</div>
                     <div className="text-xs text-muted-foreground">{s.profile?.email}</div>
                   </TableCell>
-                  <TableCell className="capitalize">{s.plan}</TableCell>
+                  <TableCell>
+                    <div className="font-medium">{planLabel(s.plan)}</div>
+                    <div className="text-xs text-muted-foreground">+{planCredits(s.plan)} credits</div>
+                  </TableCell>
                   <TableCell>{Number(s.amount).toLocaleString()} DZD</TableCell>
                   <TableCell className="capitalize">{s.payment_method}</TableCell>
                   <TableCell>
