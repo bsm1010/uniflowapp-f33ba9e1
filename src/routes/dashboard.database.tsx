@@ -941,6 +941,7 @@ function GridView({
   onAddRecord,
   onDeleteRecord,
   onUpdateValue,
+  fullscreen = false,
 }: {
   fields: DBField[];
   records: DBRecord[];
@@ -951,10 +952,14 @@ function GridView({
   onAddRecord: () => void;
   onDeleteRecord: (id: string) => void;
   onUpdateValue: (recordId: string, fieldId: string, value: unknown) => void;
+  fullscreen?: boolean;
 }) {
   return (
     <Card className="overflow-hidden">
-      <div className="overflow-auto max-h-[calc(100vh-220px)]">
+      <div
+        className="overflow-auto"
+        style={{ maxHeight: fullscreen ? "calc(100vh - 160px)" : "calc(100vh - 220px)" }}
+      >
         <table className="w-full text-base border-separate border-spacing-0">
           <thead className="sticky top-0 z-20 bg-muted/80 backdrop-blur">
             <tr>
