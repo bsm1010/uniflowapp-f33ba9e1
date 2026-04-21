@@ -23,6 +23,10 @@ import {
   DEFAULT_FILTER_SORT,
   type FilterSortConfig,
 } from "@/components/dashboard/database/FilterSortBar";
+import {
+  ImageUploadCell,
+  FileUploadCell,
+} from "@/components/dashboard/database/UploadCells";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -70,6 +74,7 @@ type FieldType =
   | "select"
   | "multi_select"
   | "image"
+  | "file"
   | "relation";
 
 type DBTable = {
@@ -106,6 +111,7 @@ const FIELD_TYPE_LABELS: Record<FieldType, string> = {
   select: "Select",
   multi_select: "Multi-select",
   image: "Image",
+  file: "File",
   relation: "Relation",
 };
 
@@ -980,6 +986,7 @@ function CellEditor({
   allTables: DBTable[];
   onChange: (v: unknown) => void;
 }) {
+  const { user } = useAuth();
   switch (field.field_type) {
     case "text":
       return (
@@ -1043,11 +1050,18 @@ function CellEditor({
     }
     case "image":
       return (
-        <Input
+        <ImageUploadCell
           value={(value as string) ?? ""}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder="https://…"
-          className="h-8 border-transparent focus:border-input bg-transparent"
+          userId={user?.id ?? null}
+          onChange={onChange}
+        />
+      );
+    case "file":
+      return (
+        <FileUploadCell
+          value={(value as string) ?? ""}
+          userId={user?.id ?? null}
+          onChange={onChange}
         />
       );
     case "relation":

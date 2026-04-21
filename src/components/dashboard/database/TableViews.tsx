@@ -19,6 +19,7 @@ export type FieldType =
   | "select"
   | "multi_select"
   | "image"
+  | "file"
   | "relation";
 
 export type DBField = {
