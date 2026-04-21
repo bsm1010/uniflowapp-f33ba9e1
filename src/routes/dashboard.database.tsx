@@ -107,6 +107,7 @@ const FIELD_TYPE_LABELS: Record<FieldType, string> = {
   select: "Select",
   multi_select: "Multi-select",
   image: "Image",
+  file: "File",
   relation: "Relation",
 };
 
