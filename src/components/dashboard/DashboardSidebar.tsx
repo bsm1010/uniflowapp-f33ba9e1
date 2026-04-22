@@ -145,7 +145,7 @@ export function DashboardSidebar() {
           )}
         </Link>
       </SidebarHeader>
-      <SidebarContent className="px-1.5 py-2 group-data-[collapsible=icon]:overflow-y-auto">
+      <SidebarContent className="px-1.5 py-2">
         <SidebarGroup>
           <SidebarGroupLabel className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70 px-2">
             {t("dashboard.groupWorkspace")}
