@@ -49,6 +49,8 @@ type NavItem = {
   url: string;
   icon: typeof LayoutDashboard;
   end?: boolean;
+  /** Tailwind gradient classes for the icon tile */
+  gradient: string;
   /** When true, render as <a target="_blank"> instead of in-app <Link> */
   external?: boolean;
 };
