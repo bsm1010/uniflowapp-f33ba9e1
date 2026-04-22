@@ -8,6 +8,7 @@ import { DashboardTopbar } from "@/components/dashboard/DashboardTopbar";
 import { OnboardingWizard } from "@/components/dashboard/OnboardingWizard";
 import { CreditsProvider } from "@/hooks/use-credits";
 import { PaywallDialog } from "@/components/dashboard/PaywallDialog";
+import { HelpChatbot } from "@/components/dashboard/HelpChatbot";
 
 export const Route = createFileRoute("/dashboard")({
   component: DashboardLayout,
@@ -99,6 +100,7 @@ function DashboardLayout() {
           </SidebarInset>
         </div>
         <PaywallDialog />
+        <HelpChatbot />
       </SidebarProvider>
     </CreditsProvider>
   );
