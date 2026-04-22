@@ -154,7 +154,7 @@ export function DashboardSidebar() {
             <SidebarMenu className="gap-0.5">
               {items.map((item) => {
                 const active = !item.external && isActive(item.url, item.end);
-                const linkClass = `group/menu-item relative rounded-lg transition-all duration-200 ${
+                const linkClass = `group/menu-item relative rounded-lg transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
                   active
                     ? "bg-gradient-to-r from-sidebar-accent to-sidebar-accent/40 text-sidebar-accent-foreground font-medium shadow-sm"
                     : "hover:bg-sidebar-accent/50"
