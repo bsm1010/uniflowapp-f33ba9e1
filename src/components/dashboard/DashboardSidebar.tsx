@@ -264,7 +264,7 @@ export function DashboardSidebar() {
                   >
                     <Link
                       to="/dashboard/admin/payments"
-                      className={`group/menu-item relative rounded-lg transition-all duration-200 ${
+                      className={`group/menu-item relative rounded-lg transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
                         isActive("/dashboard/admin/payments")
                           ? "bg-gradient-to-r from-sidebar-accent to-sidebar-accent/40 text-sidebar-accent-foreground font-medium shadow-sm"
                           : "hover:bg-sidebar-accent/50"
