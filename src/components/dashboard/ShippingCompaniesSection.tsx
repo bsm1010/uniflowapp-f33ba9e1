@@ -173,18 +173,17 @@ export function ShippingCompaniesSection() {
       return;
     }
     // Expected format: { secretKey, tenantId, createdAt?, expireInDays? }
-    // Accept legacy aliases (apiKey/token, apiSecret/id) for backwards compatibility.
     const obj = parsed as Record<string, unknown>;
-    const sk = obj.secretKey ?? obj.secret_key ?? obj.apiKey ?? obj.api_key ?? obj.token ?? obj.key;
-    const tid = obj.tenantId ?? obj.tenant_id ?? obj.apiSecret ?? obj.api_secret ?? obj.id ?? "";
-    if (typeof sk !== "string" || !sk.trim()) {
-      const msg = 'Missing "secretKey" field in credentials.';
+    const sk = obj.secretKey;
+    const tid = obj.tenantId;
+    if (typeof sk !== "string" || !sk.trim() || typeof tid !== "string" || !tid.trim()) {
+      const msg = "Missing required fields (secretKey or tenantId)";
       setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
       toast.error(msg);
       return;
     }
     apiKey = sk.trim();
-    apiSecret = typeof tid === "string" ? tid.trim() : "";
+    apiSecret = tid.trim();
     if (!user || !session?.access_token) {
       const msg = "Please sign in again to connect.";
       setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
