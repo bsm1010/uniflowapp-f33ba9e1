@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { Search, Save, Loader2, Truck, Home, Store } from "lucide-react";
+import { Search, Save, Loader2, Truck, Home, Store, Zap, Info } from "lucide-react";
 import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import {
   Accordion,
   AccordionContent,
@@ -21,6 +22,32 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { ALGERIA_GEO, getCitiesForWilaya } from "@/lib/algeriaWilayas";
+
+const AUTO_TARIFFS_STORAGE_KEY = "fennecly:auto-tariffs";
+
+function loadAutoTariffsMap(): Record<string, boolean> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = window.localStorage.getItem(AUTO_TARIFFS_STORAGE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw) as unknown;
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+      return parsed as Record<string, boolean>;
+    }
+  } catch {
+    /* ignore */
+  }
+  return {};
+}
+
+function saveAutoTariffsMap(map: Record<string, boolean>) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(AUTO_TARIFFS_STORAGE_KEY, JSON.stringify(map));
+  } catch {
+    /* ignore */
+  }
+}
 
 type Company = { id: string; name: string };
 type DeliveryType = "domicile" | "stopdesk";
