@@ -24,6 +24,7 @@ import {
   Mic,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import fennecyIcon from "@/assets/fennecly-icon.png";
 import { useAuth } from "@/hooks/use-auth";
 import { useInstalledApps } from "@/hooks/use-installed-apps";
 import { APPS_BY_KEY } from "@/lib/apps";
@@ -128,17 +129,17 @@ export function DashboardSidebar() {
     >
       <SidebarHeader className="border-b border-sidebar-border/60 bg-sidebar/40 backdrop-blur-sm">
         <Link to="/dashboard" className="flex items-center gap-2.5 px-2 py-2.5 group">
-          <div className="relative h-9 w-9 shrink-0">
-            <div className="absolute inset-0 rounded-xl bg-gradient-brand shadow-glow group-hover:shadow-lg transition-shadow" />
-            <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/20 to-transparent" />
-            <div className="relative h-full w-full rounded-xl flex items-center justify-center">
-              <Sparkles className="h-4 w-4 text-white" />
-            </div>
+          <div className="relative h-10 w-10 shrink-0 flex items-center justify-center">
+            <img
+              src={fennecyIcon}
+              alt="Fennecly"
+              className="h-10 w-10 object-contain transition-transform group-hover:scale-105"
+            />
           </div>
           {!collapsed && (
             <div className="flex flex-col leading-tight">
               <span className="font-display font-bold text-lg bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-                Storely
+                Fennecly
               </span>
               <span className="text-[10px] text-muted-foreground font-medium tracking-wide uppercase">
                 Dashboard
