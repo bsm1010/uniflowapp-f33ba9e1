@@ -24,7 +24,7 @@ import {
   Mic,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import fennecyIcon from "@/assets/fennecly-icon.png";
+import fennecyIcon from "@/assets/fennecly-icon.webp";
 import { useAuth } from "@/hooks/use-auth";
 import { useInstalledApps } from "@/hooks/use-installed-apps";
 import { APPS_BY_KEY } from "@/lib/apps";
@@ -133,6 +133,11 @@ export function DashboardSidebar() {
             <img
               src={fennecyIcon}
               alt="Fennecly"
+              width={40}
+              height={40}
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
               className="h-10 w-10 object-contain transition-transform group-hover:scale-105"
             />
           </div>
