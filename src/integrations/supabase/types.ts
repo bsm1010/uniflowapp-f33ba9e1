@@ -439,8 +439,36 @@ export type Database = {
         }
         Relationships: []
       }
+      delivery_companies: {
+        Row: {
+          api_key: string
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          api_key?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          api_key?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       delivery_tariffs: {
         Row: {
+          company_id: string | null
           created_at: string
           id: string
           price: number
@@ -449,6 +477,7 @@ export type Database = {
           wilaya: string
         }
         Insert: {
+          company_id?: string | null
           created_at?: string
           id?: string
           price?: number
@@ -457,6 +486,7 @@ export type Database = {
           wilaya: string
         }
         Update: {
+          company_id?: string | null
           created_at?: string
           id?: string
           price?: number
@@ -464,7 +494,15 @@ export type Database = {
           updated_at?: string
           wilaya?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "delivery_tariffs_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "delivery_companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       discount_codes: {
         Row: {
@@ -982,6 +1020,47 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      shipments: {
+        Row: {
+          company_id: string | null
+          created_at: string
+          id: string
+          order_id: string
+          status: string
+          store_id: string
+          tracking_number: string
+          updated_at: string
+        }
+        Insert: {
+          company_id?: string | null
+          created_at?: string
+          id?: string
+          order_id: string
+          status?: string
+          store_id: string
+          tracking_number?: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string | null
+          created_at?: string
+          id?: string
+          order_id?: string
+          status?: string
+          store_id?: string
+          tracking_number?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shipments_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "delivery_companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       store_languages: {
         Row: {
