@@ -282,9 +282,10 @@ export function ShippingCompaniesSection() {
                         type={visible ? "text" : "password"}
                         placeholder={`${c.name} API key / token`}
                         value={draftKey[c.id] ?? ""}
-                        onChange={(e) =>
-                          setDraftKey((p) => ({ ...p, [c.id]: e.target.value }))
-                        }
+                        onChange={(e) => {
+                          setDraftKey((p) => ({ ...p, [c.id]: e.target.value }));
+                          setValidationStatus((p) => ({ ...p, [c.id]: undefined }));
+                        }}
                         className="pr-10 font-mono text-sm"
                       />
                       <button
@@ -306,9 +307,10 @@ export function ShippingCompaniesSection() {
                       type={visible ? "text" : "password"}
                       placeholder="API secret / ID (if required)"
                       value={draftSecret[c.id] ?? ""}
-                      onChange={(e) =>
-                        setDraftSecret((p) => ({ ...p, [c.id]: e.target.value }))
-                      }
+                      onChange={(e) => {
+                        setDraftSecret((p) => ({ ...p, [c.id]: e.target.value }));
+                        setValidationStatus((p) => ({ ...p, [c.id]: undefined }));
+                      }}
                       className="font-mono text-sm"
                     />
                     <Button
@@ -323,13 +325,40 @@ export function ShippingCompaniesSection() {
                       ) : (
                         <ShieldCheck className="h-3.5 w-3.5" />
                       )}
-                      {isValidating
-                        ? "Validating…"
-                        : r?.enabled && !dirty
-                          ? "Re-validate"
-                          : "Validate & Activate"}
+                      {isValidating ? "Validating…" : "Validate API Key"}
                     </Button>
                   </div>
+
+                  {(isValidating || validationStatus[c.id]) && (
+                    <div
+                      role="status"
+                      aria-live="polite"
+                      className={`mt-3 flex items-start gap-2 rounded-md border px-3 py-2 text-sm ${
+                        isValidating
+                          ? "border-border bg-muted/40 text-muted-foreground"
+                          : validationStatus[c.id]?.ok
+                            ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+                            : "border-destructive/30 bg-destructive/10 text-destructive"
+                      }`}
+                    >
+                      {isValidating ? (
+                        <>
+                          <Loader2 className="mt-0.5 h-4 w-4 shrink-0 animate-spin" />
+                          <span>Validating API key…</span>
+                        </>
+                      ) : validationStatus[c.id]?.ok ? (
+                        <>
+                          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+                          <span>{validationStatus[c.id]?.message}</span>
+                        </>
+                      ) : (
+                        <>
+                          <XCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                          <span>{validationStatus[c.id]?.message}</span>
+                        </>
+                      )}
+                    </div>
+                  )}
                 </li>
               );
             })}
