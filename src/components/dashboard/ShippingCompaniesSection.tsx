@@ -135,14 +135,35 @@ export function ShippingCompaniesSection() {
       toast.error(msg);
       return;
     }
+    if (!user) {
+      const msg = "Please sign in again to validate your API key.";
+      setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
+      toast.error(msg);
+      return;
+    }
     setValidatingId(companyId);
     setValidationStatus((p) => ({ ...p, [companyId]: undefined }));
     try {
+      // Ensure a fresh access token is attached to the server-fn request.
+      await supabase.auth.getSession();
       const res = await validateFn({
         data: { companyId, apiKey, apiSecret, setDefault: false },
+      }).catch((err: unknown) => {
+        // Auth middleware throws a Response on 401 — convert to a structured result
+        // so the caller never sees a raw `[object Response]` rejection.
+        if (err instanceof Response) {
+          return {
+            ok: false as const,
+            message:
+              err.status === 401
+                ? "Your session expired. Please sign in again."
+                : `Server error (${err.status}).`,
+          };
+        }
+        throw err;
       });
       if (!res.ok) {
-        const msg = "Invalid API key. Please check and try again";
+        const msg = res.message || "Invalid API key. Please check and try again";
         setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
         toast.error(msg);
         return;
