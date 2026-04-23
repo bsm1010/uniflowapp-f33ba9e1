@@ -44,11 +44,23 @@ export interface TrackingResult {
   raw?: unknown;
 }
 
+export interface ValidationResult {
+  ok: boolean;
+  message: string;
+}
+
 export interface DeliveryAdapter {
   /** Stable provider key matching delivery_companies.name (lowercased). */
   readonly key: string;
   /** Human-friendly label. */
   readonly label: string;
+
+  /**
+   * Validate the credentials by issuing a lightweight authenticated request
+   * against the provider. Returns ok=false with a human-friendly message on
+   * any auth/permission/transport error.
+   */
+  validateCredentials(): Promise<ValidationResult>;
 
   createShipment(input: CreateShipmentInput): Promise<CreateShipmentResult>;
   trackShipment(trackingNumber: string): Promise<TrackingResult>;
