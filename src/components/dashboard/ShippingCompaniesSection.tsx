@@ -157,23 +157,34 @@ export function ShippingCompaniesSection() {
     }
     let apiKey = "";
     let apiSecret = "";
+    let parsed: unknown;
     try {
-      const parsed = JSON.parse(raw);
-      if (!parsed || typeof parsed !== "object") throw new Error("Expected a JSON object");
-      const obj = parsed as Record<string, unknown>;
-      const k = obj.apiKey ?? obj.api_key ?? obj.token ?? obj.key;
-      const s = obj.apiSecret ?? obj.api_secret ?? obj.id ?? obj.secret ?? "";
-      if (typeof k !== "string" || !k.trim()) {
-        throw new Error('Missing "apiKey" (or "token") field');
-      }
-      apiKey = k.trim();
-      apiSecret = typeof s === "string" ? s.trim() : "";
-    } catch (e) {
-      const msg = `Invalid JSON: ${e instanceof Error ? e.message : "could not parse"}`;
+      parsed = JSON.parse(raw);
+    } catch {
+      const msg = "Invalid JSON format. Please paste valid credentials.";
       setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
       toast.error(msg);
       return;
     }
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      const msg = "Invalid JSON format. Please paste valid credentials.";
+      setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
+      toast.error(msg);
+      return;
+    }
+    // Expected format: { secretKey, tenantId, createdAt?, expireInDays? }
+    // Accept legacy aliases (apiKey/token, apiSecret/id) for backwards compatibility.
+    const obj = parsed as Record<string, unknown>;
+    const sk = obj.secretKey ?? obj.secret_key ?? obj.apiKey ?? obj.api_key ?? obj.token ?? obj.key;
+    const tid = obj.tenantId ?? obj.tenant_id ?? obj.apiSecret ?? obj.api_secret ?? obj.id ?? "";
+    if (typeof sk !== "string" || !sk.trim()) {
+      const msg = 'Missing "secretKey" field in credentials.';
+      setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
+      toast.error(msg);
+      return;
+    }
+    apiKey = sk.trim();
+    apiSecret = typeof tid === "string" ? tid.trim() : "";
     if (!user || !session?.access_token) {
       const msg = "Please sign in again to connect.";
       setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
