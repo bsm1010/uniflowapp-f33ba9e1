@@ -69,6 +69,9 @@ export function AlgerianCheckoutForm({
   const [phone, setPhone] = useState("");
   const [wilaya, setWilaya] = useState("");
   const [city, setCity] = useState("");
+  const [deliveryType, setDeliveryType] = useState<"domicile" | "stopdesk">("domicile");
+  const [shippingPrice, setShippingPrice] = useState<number | null>(null);
+  const [shippingLoading, setShippingLoading] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
 
@@ -78,6 +81,51 @@ export function AlgerianCheckoutForm({
   );
 
   const subtotal = product.price * quantity;
+  const total = subtotal + (shippingPrice ?? 0);
+
+  // Look up delivery price from synced tariffs whenever the selection changes.
+  // No external API call — purely from the local database for performance.
+  useEffect(() => {
+    if (!wilaya) {
+      setShippingPrice(null);
+      return;
+    }
+    let cancelled = false;
+    setShippingLoading(true);
+    (async () => {
+      const wilayaNorm = wilaya.trim();
+      const cityNorm = (city ?? "").trim();
+
+      const { data, error } = await supabase
+        .from("delivery_tariffs")
+        .select("price, city")
+        .eq("store_id", storeOwnerId)
+        .eq("wilaya", wilayaNorm)
+        .eq("delivery_type", deliveryType);
+
+      if (cancelled) return;
+      if (error || !data || data.length === 0) {
+        setShippingPrice(null);
+        setShippingLoading(false);
+        return;
+      }
+
+      // Prefer exact city match, then a wilaya-level row with empty city,
+      // then any row for this wilaya as a final fallback.
+      const exact = cityNorm
+        ? data.find(
+            (r) => (r.city ?? "").trim().toLowerCase() === cityNorm.toLowerCase(),
+          )
+        : null;
+      const wilayaDefault = data.find((r) => !r.city || r.city.trim() === "");
+      const chosen = exact ?? wilayaDefault ?? data[0];
+      setShippingPrice(chosen ? Number(chosen.price) : null);
+      setShippingLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [wilaya, city, deliveryType, storeOwnerId]);
 
   const inputStyle = {
     backgroundColor: t.bg,
