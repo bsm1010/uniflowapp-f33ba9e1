@@ -10,7 +10,15 @@ import {
   getStoreTokens,
 } from "@/components/storefront/StorefrontShell";
 import { useCart } from "@/hooks/use-cart";
-import { ALGERIAN_WILAYAS } from "@/lib/algeriaWilayas";
+import { ALGERIA_GEO, getCitiesForWilaya } from "@/lib/algeriaWilayas";
+
+type DeliveryType = "domicile" | "stopdesk";
+const tariffKey = (
+  companyId: string,
+  wilaya: string,
+  city: string,
+  type: DeliveryType,
+) => `${companyId}:${wilaya}:${city}:${type}`;
 
 type StoreSettings = Tables<"store_settings">;
 type Company = { id: string; name: string };
