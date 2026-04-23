@@ -252,7 +252,10 @@ function OrderTrackingCard({
   tokens: t,
   radius,
 }: {
-  order: Order & { items: OrderItem[] };
+  order: Order & {
+    items: OrderItem[];
+    shipment?: (Shipment & { carrier?: CarrierInfo }) | null;
+  };
   tokens: ReturnType<typeof getStoreTokens>;
   radius: number;
 }) {
