@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { Truck, Loader2, Star, Eye, EyeOff, ShieldCheck, AlertCircle, CheckCircle2, XCircle, Lock } from "lucide-react";
+import { Truck, Loader2, Star, ShieldCheck, AlertCircle, CheckCircle2, XCircle, Lock, Plug, PlugZap } from "lucide-react";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
