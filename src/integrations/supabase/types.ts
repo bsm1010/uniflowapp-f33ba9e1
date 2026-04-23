@@ -439,6 +439,33 @@ export type Database = {
         }
         Relationships: []
       }
+      delivery_tariffs: {
+        Row: {
+          created_at: string
+          id: string
+          price: number
+          store_id: string
+          updated_at: string
+          wilaya: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          price?: number
+          store_id: string
+          updated_at?: string
+          wilaya: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          price?: number
+          store_id?: string
+          updated_at?: string
+          wilaya?: string
+        }
+        Relationships: []
+      }
       discount_codes: {
         Row: {
           active: boolean
