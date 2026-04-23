@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -10,6 +10,7 @@ import {
   getStoreTokens,
 } from "@/components/storefront/StorefrontShell";
 import { useCart } from "@/hooks/use-cart";
+import { ALGERIAN_WILAYAS } from "@/lib/algeriaWilayas";
 
 type StoreSettings = Tables<"store_settings">;
 
@@ -25,6 +26,7 @@ function CheckoutPage() {
   const [settings, setSettings] = useState<StoreSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [tariffs, setTariffs] = useState<Record<string, number>>({});
   const cart = useCart(slug);
 
   const [form, setForm] = useState({
@@ -32,8 +34,7 @@ function CheckoutPage() {
     email: "",
     address: "",
     city: "",
-    postal: "",
-    country: "",
+    wilaya: "",
     notes: "",
   });
 
@@ -47,6 +48,16 @@ function CheckoutPage() {
         .maybeSingle();
       if (!active) return;
       setSettings(data);
+      if (data?.user_id) {
+        const { data: rows } = await supabase
+          .from("delivery_tariffs")
+          .select("wilaya, price")
+          .eq("store_id", data.user_id);
+        if (!active) return;
+        const map: Record<string, number> = {};
+        for (const r of rows ?? []) map[r.wilaya] = Number(r.price);
+        setTariffs(map);
+      }
       setLoading(false);
     })();
     return () => {
@@ -56,6 +67,12 @@ function CheckoutPage() {
 
   const update = (k: keyof typeof form, v: string) =>
     setForm((f) => ({ ...f, [k]: v }));
+
+  const deliveryPrice = useMemo(
+    () => (form.wilaya && tariffs[form.wilaya] != null ? tariffs[form.wilaya] : 0),
+    [form.wilaya, tariffs],
+  );
+  const total = cart.subtotal + deliveryPrice;
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -69,8 +86,7 @@ function CheckoutPage() {
       !form.email.trim() ||
       !form.address.trim() ||
       !form.city.trim() ||
-      !form.postal.trim() ||
-      !form.country.trim()
+      !form.wilaya.trim()
     ) {
       toast.error(tr("storefront.checkout.errFields"));
       return;
@@ -86,11 +102,11 @@ function CheckoutPage() {
         customer_email: form.email.trim(),
         shipping_address: form.address.trim(),
         shipping_city: form.city.trim(),
-        shipping_postal_code: form.postal.trim(),
-        shipping_country: form.country.trim(),
+        shipping_postal_code: form.wilaya.trim(),
+        shipping_country: "Algeria",
         notes: form.notes.trim() || null,
         subtotal: cart.subtotal,
-        total: cart.subtotal,
+        total,
       })
       .select("id")
       .single();
@@ -246,23 +262,26 @@ function CheckoutPage() {
                     style={inputStyle}
                   />
                 </Field>
-                <Field label={tr("storefront.checkout.postal")}>
-                  <input
+                <Field label="Wilaya">
+                  <select
                     required
-                    value={form.postal}
-                    onChange={(e) => update("postal", e.target.value)}
+                    value={form.wilaya}
+                    onChange={(e) => update("wilaya", e.target.value)}
                     className="w-full px-3 py-2.5 text-sm outline-none focus:ring-2"
                     style={inputStyle}
-                  />
-                </Field>
-                <Field label={tr("storefront.checkout.country")} full>
-                  <input
-                    required
-                    value={form.country}
-                    onChange={(e) => update("country", e.target.value)}
-                    className="w-full px-3 py-2.5 text-sm outline-none focus:ring-2"
-                    style={inputStyle}
-                  />
+                  >
+                    <option value="">— Select wilaya —</option>
+                    {ALGERIAN_WILAYAS.map((w, i) => {
+                      const code = String(i + 1).padStart(2, "0");
+                      const price = tariffs[w];
+                      return (
+                        <option key={w} value={w}>
+                          {code} — {w}
+                          {price != null ? ` (${price} DZD)` : ""}
+                        </option>
+                      );
+                    })}
+                  </select>
                 </Field>
                 <Field label={tr("storefront.checkout.notes")} full muted={t.muted}>
                   <textarea
@@ -314,7 +333,7 @@ function CheckoutPage() {
                       </div>
                     </div>
                     <div className="font-medium">
-                      ${(item.price * item.quantity).toFixed(2)}
+                      {(item.price * item.quantity).toFixed(2)} DZD
                     </div>
                   </div>
                 ))}
@@ -325,18 +344,25 @@ function CheckoutPage() {
               >
                 <div className="flex justify-between">
                   <span style={{ color: t.muted }}>{tr("storefront.checkout.subtotal")}</span>
-                  <span>${cart.subtotal.toFixed(2)}</span>
+                  <span>{cart.subtotal.toFixed(2)} DZD</span>
                 </div>
                 <div className="flex justify-between">
-                  <span style={{ color: t.muted }}>{tr("storefront.checkout.shipping")}</span>
-                  <span style={{ color: t.muted }}>{tr("storefront.checkout.free")}</span>
+                  <span style={{ color: t.muted }}>
+                    {tr("storefront.checkout.shipping")}
+                    {form.wilaya ? ` · ${form.wilaya}` : ""}
+                  </span>
+                  <span>
+                    {form.wilaya
+                      ? `${deliveryPrice.toFixed(2)} DZD`
+                      : "— Select wilaya"}
+                  </span>
                 </div>
                 <div
                   className="flex justify-between text-base font-semibold pt-2"
                   style={{ borderTop: `1px solid ${t.border}` }}
                 >
                   <span>{tr("storefront.checkout.total")}</span>
-                  <span>${cart.subtotal.toFixed(2)}</span>
+                  <span>{total.toFixed(2)} DZD</span>
                 </div>
               </div>
               <button
@@ -352,7 +378,7 @@ function CheckoutPage() {
                 {submitting ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  tr("storefront.checkout.place", { amount: `$${cart.subtotal.toFixed(2)}` })
+                  tr("storefront.checkout.place", { amount: `${total.toFixed(2)} DZD` })
                 )}
               </button>
               <p className="mt-3 text-xs text-center" style={{ color: t.muted }}>
