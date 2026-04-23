@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { Loader2, Upload, X } from "lucide-react";
+import { Loader2, Upload, X, Mic } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { generateVoice } from "@/lib/ai/voice-generator";
 import {
   Dialog,
   DialogContent,
@@ -72,6 +74,9 @@ export function ProductFormDialog({ open, onOpenChange, product, onSaved }: Prop
   const [images, setImages] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [generatingVoice, setGeneratingVoice] = useState(false);
+  const [voiceUrl, setVoiceUrl] = useState<string | null>(null);
+  const generateVoiceFn = useServerFn(generateVoice);
 
   useEffect(() => {
     if (open) {
@@ -81,8 +86,35 @@ export function ProductFormDialog({ open, onOpenChange, product, onSaved }: Prop
       setStock(product ? String(product.stock) : "0");
       setCategory(product?.category ?? "");
       setImages(product?.images ?? []);
+      setVoiceUrl(null);
     }
   }, [open, product]);
+
+  const handleGenerateVoice = async () => {
+    if (!name.trim()) {
+      toast.error("Please add a product name first");
+      return;
+    }
+    const script = description.trim()
+      ? `${name.trim()}. ${description.trim()}`
+      : name.trim();
+    setGeneratingVoice(true);
+    setVoiceUrl(null);
+    try {
+      const res = await generateVoiceFn({ data: { text: script } });
+      if (res.error || !res.audio) {
+        toast.error(res.error || "Failed to generate voice");
+        return;
+      }
+      setVoiceUrl(`data:audio/mpeg;base64,${res.audio}`);
+      toast.success("Product voice generated!");
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong while generating audio");
+    } finally {
+      setGeneratingVoice(false);
+    }
+  };
 
   const handleFiles = async (files: FileList | null) => {
     if (!files || !user) return;
@@ -236,6 +268,44 @@ export function ProductFormDialog({ open, onOpenChange, product, onSaved }: Prop
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          <div className="space-y-2 rounded-lg border border-border bg-muted/30 p-4">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <div>
+                <Label className="text-sm font-medium">Product audio narration</Label>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Generate an AI voice-over from the product title and description.
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={handleGenerateVoice}
+                disabled={generatingVoice || !name.trim()}
+              >
+                {generatingVoice ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Generating…
+                  </>
+                ) : (
+                  <>
+                    <Mic className="h-4 w-4" />
+                    Generate Product Voice
+                  </>
+                )}
+              </Button>
+            </div>
+            {voiceUrl && (
+              <audio
+                key={voiceUrl}
+                src={voiceUrl}
+                controls
+                className="w-full mt-2"
+              />
+            )}
           </div>
 
           <div className="space-y-2">
