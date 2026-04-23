@@ -147,17 +147,35 @@ export function ShippingCompaniesSection() {
     }
   };
 
-  const validateAndActivate = async (companyId: string) => {
-    const apiKey = (draftKey[companyId] ?? "").trim();
-    const apiSecret = (draftSecret[companyId] ?? "").trim();
-    if (!apiKey) {
-      const msg = "API key is required.";
+  const connect = async (companyId: string) => {
+    const raw = (draftJson[companyId] ?? "").trim();
+    if (!raw) {
+      const msg = "Please paste your API credentials as JSON.";
+      setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
+      toast.error(msg);
+      return;
+    }
+    let apiKey = "";
+    let apiSecret = "";
+    try {
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== "object") throw new Error("Expected a JSON object");
+      const obj = parsed as Record<string, unknown>;
+      const k = obj.apiKey ?? obj.api_key ?? obj.token ?? obj.key;
+      const s = obj.apiSecret ?? obj.api_secret ?? obj.id ?? obj.secret ?? "";
+      if (typeof k !== "string" || !k.trim()) {
+        throw new Error('Missing "apiKey" (or "token") field');
+      }
+      apiKey = k.trim();
+      apiSecret = typeof s === "string" ? s.trim() : "";
+    } catch (e) {
+      const msg = `Invalid JSON: ${e instanceof Error ? e.message : "could not parse"}`;
       setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
       toast.error(msg);
       return;
     }
     if (!user || !session?.access_token) {
-      const msg = "Please sign in again to validate your API key.";
+      const msg = "Please sign in again to connect.";
       setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
       toast.error(msg);
       return;
@@ -175,12 +193,12 @@ export function ShippingCompaniesSection() {
         },
       });
       if (!res.ok) {
-        const msg = res.message || "Invalid API key. Please check and try again";
+        const msg = res.message || "Could not connect. Check your credentials and try again.";
         setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
         toast.error(msg);
         return;
       }
-      const msg = "API key is valid and connected successfully";
+      const msg = "Connected successfully.";
       setValidationStatus((p) => ({ ...p, [companyId]: { ok: true, message: msg } }));
       toast.success(msg);
       setRows((p) => ({
@@ -193,10 +211,9 @@ export function ShippingCompaniesSection() {
           key_tail: apiKey.slice(-4),
         },
       }));
-      setDraftKey((p) => ({ ...p, [companyId]: "" }));
-      setDraftSecret((p) => ({ ...p, [companyId]: "" }));
+      setDraftJson((p) => ({ ...p, [companyId]: "" }));
     } catch {
-      const msg = "Invalid API key. Please check and try again";
+      const msg = "Could not connect. Check your credentials and try again.";
       setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
       toast.error(msg);
     } finally {
