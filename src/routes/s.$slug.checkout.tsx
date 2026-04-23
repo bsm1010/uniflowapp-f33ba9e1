@@ -177,15 +177,24 @@ function CheckoutPage() {
     }
   };
 
+  // Prefetch BOTH delivery types so we can compare prices and suggest the cheaper one.
+  const refreshBothTariffs = (wilaya: string, city: string, compId: string) => {
+    if (!wilaya || !city || !compId) return;
+    void refreshTariff(wilaya, city, "domicile", compId);
+    void refreshTariff(wilaya, city, "stopdesk", compId);
+  };
+
   const onWilayaChange = (wilaya: string) => {
-    setForm((f) => ({ ...f, wilaya, city: "" }));
+    // Auto-select first city so price loads immediately for a snappier UX.
+    const cities = getCitiesForWilaya(wilaya);
+    const city = cities[0] ?? "";
+    setForm((f) => ({ ...f, wilaya, city }));
+    if (city && companyId) refreshBothTariffs(wilaya, city, companyId);
   };
 
   const onCityChange = (city: string) => {
     update("city", city);
-    if (form.wilaya && companyId) {
-      void refreshTariff(form.wilaya, city, form.deliveryType, companyId);
-    }
+    if (form.wilaya && companyId) refreshBothTariffs(form.wilaya, city, companyId);
   };
 
   const onDeliveryTypeChange = (type: DeliveryType) => {
@@ -197,9 +206,7 @@ function CheckoutPage() {
 
   const onCompanyChange = (id: string) => {
     setCompanyId(id);
-    if (form.wilaya && form.city) {
-      void refreshTariff(form.wilaya, form.city, form.deliveryType, id);
-    }
+    if (form.wilaya && form.city) refreshBothTariffs(form.wilaya, form.city, id);
   };
 
   const tariffEntryKey = useMemo(
