@@ -392,7 +392,7 @@ export function ShippingCompaniesSection() {
                     </label>
                     <Textarea
                       id={`creds-${c.id}`}
-                      placeholder={`{\n  "apiKey": "your-api-key",\n  "apiSecret": "optional-secret"\n}`}
+                      placeholder={`{\n  "secretKey": "...",\n  "tenantId": "...",\n  "createdAt": "...",\n  "expireInDays": 365\n}`}
                       autoComplete="off"
                       spellCheck={false}
                       rows={5}
