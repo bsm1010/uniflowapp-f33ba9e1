@@ -76,7 +76,7 @@ function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [companyId, setCompanyId] = useState<string>("");
-  // Tariffs keyed by `${companyId}:${wilaya}` -> price
+  // Tariffs keyed by `${companyId}:${wilaya}:${city}:${type}` -> price
   const [tariffs, setTariffs] = useState<Record<string, number>>({});
   const [fetchingPrice, setFetchingPrice] = useState(false);
   const cart = useCart(slug);
@@ -87,6 +87,7 @@ function CheckoutPage() {
     address: "",
     city: "",
     wilaya: "",
+    deliveryType: "domicile" as DeliveryType,
     notes: "",
   });
 
@@ -102,7 +103,6 @@ function CheckoutPage() {
       if (!active) return;
       setSettings(data);
       if (data?.user_id) {
-        // Get enabled companies for this store, plus tariffs
         const [{ data: storeComps }, { data: rows }] = await Promise.all([
           supabase
             .from("store_delivery_companies")
@@ -111,7 +111,7 @@ function CheckoutPage() {
             .eq("enabled", true),
           supabase
             .from("delivery_tariffs")
-            .select("wilaya, price, company_id")
+            .select("wilaya, city, delivery_type, price, company_id")
             .eq("store_id", data.user_id),
         ]);
         if (!active) return;
@@ -131,8 +131,8 @@ function CheckoutPage() {
 
         const map: Record<string, number> = {};
         for (const r of rows ?? []) {
-          const key = `${r.company_id ?? ""}:${r.wilaya}`;
-          map[key] = Number(r.price);
+          const type = (r.delivery_type === "stopdesk" ? "stopdesk" : "domicile") as DeliveryType;
+          map[tariffKey(r.company_id ?? "", r.wilaya, r.city ?? "", type)] = Number(r.price);
         }
         setTariffs(map);
       }
@@ -143,46 +143,71 @@ function CheckoutPage() {
     };
   }, [slug]);
 
-  const update = (k: keyof typeof form, v: string) =>
+  const update = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
 
-  // Refresh the specific tariff for selected wilaya + company
-  const refreshTariff = async (wilaya: string, compId: string) => {
-    if (!wilaya || !settings?.user_id) return;
+  // Refresh the specific tariff for selected wilaya + city + type + company
+  const refreshTariff = async (
+    wilaya: string,
+    city: string,
+    type: DeliveryType,
+    compId: string,
+  ) => {
+    if (!wilaya || !city || !settings?.user_id || !compId) return;
     setFetchingPrice(true);
     try {
-      let q = supabase
+      const { data } = await supabase
         .from("delivery_tariffs")
-        .select("price, company_id")
+        .select("price")
         .eq("store_id", settings.user_id)
-        .eq("wilaya", wilaya);
-      if (compId) q = q.eq("company_id", compId);
-      const { data } = await q.maybeSingle();
-      const key = `${compId}:${wilaya}`;
-      setTariffs((prev) => ({
-        ...prev,
-        [key]: data ? Number(data.price) : 0,
-      }));
+        .eq("company_id", compId)
+        .eq("wilaya", wilaya)
+        .eq("city", city)
+        .eq("delivery_type", type)
+        .maybeSingle();
+      const key = tariffKey(compId, wilaya, city, type);
+      setTariffs((prev) => {
+        const next = { ...prev };
+        if (data) next[key] = Number(data.price);
+        else delete next[key];
+        return next;
+      });
     } finally {
       setFetchingPrice(false);
     }
   };
 
   const onWilayaChange = (wilaya: string) => {
-    update("wilaya", wilaya);
-    void refreshTariff(wilaya, companyId);
+    setForm((f) => ({ ...f, wilaya, city: "" }));
+  };
+
+  const onCityChange = (city: string) => {
+    update("city", city);
+    if (form.wilaya && companyId) {
+      void refreshTariff(form.wilaya, city, form.deliveryType, companyId);
+    }
+  };
+
+  const onDeliveryTypeChange = (type: DeliveryType) => {
+    update("deliveryType", type);
+    if (form.wilaya && form.city && companyId) {
+      void refreshTariff(form.wilaya, form.city, type, companyId);
+    }
   };
 
   const onCompanyChange = (id: string) => {
     setCompanyId(id);
-    if (form.wilaya) void refreshTariff(form.wilaya, id);
+    if (form.wilaya && form.city) {
+      void refreshTariff(form.wilaya, form.city, form.deliveryType, id);
+    }
   };
 
-  const deliveryPrice = useMemo(() => {
-    if (!form.wilaya) return 0;
-    const key = `${companyId}:${form.wilaya}`;
-    return tariffs[key] != null ? tariffs[key] : 0;
-  }, [form.wilaya, companyId, tariffs]);
+  const tariffEntryKey = useMemo(
+    () => tariffKey(companyId, form.wilaya, form.city, form.deliveryType),
+    [companyId, form.wilaya, form.city, form.deliveryType],
+  );
+  const tariffAvailable = tariffs[tariffEntryKey] != null;
+  const deliveryPrice = tariffAvailable ? tariffs[tariffEntryKey] : 0;
 
   const total = cart.subtotal + deliveryPrice;
   const animatedTotal = useAnimatedNumber(total);
@@ -203,6 +228,10 @@ function CheckoutPage() {
       !form.wilaya.trim()
     ) {
       toast.error(tr("storefront.checkout.errFields"));
+      return;
+    }
+    if (form.wilaya && form.city && !tariffAvailable) {
+      toast.error("Delivery not available for this selection");
       return;
     }
 
