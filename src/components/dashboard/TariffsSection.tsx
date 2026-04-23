@@ -68,6 +68,22 @@ export function TariffsSection() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
+  const [autoMap, setAutoMap] = useState<Record<string, boolean>>(() =>
+    loadAutoTariffsMap(),
+  );
+  const autoEnabled = !!autoMap[companyId];
+
+  const setAutoEnabled = (enabled: boolean) => {
+    if (!companyId) return;
+    const next = { ...autoMap, [companyId]: enabled };
+    setAutoMap(next);
+    saveAutoTariffsMap(next);
+    toast.success(
+      enabled
+        ? "Automatic tariffs enabled — manual editing disabled."
+        : "Switched to manual tariffs.",
+    );
+  };
 
   // Load companies + pick default
   useEffect(() => {
