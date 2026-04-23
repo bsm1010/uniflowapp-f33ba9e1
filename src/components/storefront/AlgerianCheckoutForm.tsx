@@ -47,9 +47,12 @@ const makeSchema = (tr: (k: string) => string) =>
       .refine(isValidAlgerianPhone, tr("storefront.cod.errPhoneInvalid")),
     wilaya: z.string().min(1, tr("storefront.cod.errWilaya")),
     city: z.string().min(1, tr("storefront.cod.errCity")),
+    deliveryType: z.enum(["domicile", "stopdesk"]),
   });
 
-type FormErrors = Partial<Record<"firstName" | "lastName" | "phone" | "wilaya" | "city", string>>;
+type FormErrors = Partial<
+  Record<"firstName" | "lastName" | "phone" | "wilaya" | "city" | "deliveryType", string>
+>;
 
 export function AlgerianCheckoutForm({
   storeOwnerId,
