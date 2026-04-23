@@ -17,6 +17,7 @@ import {
   type StoreCompanyView,
 } from "@/lib/delivery/store-companies.functions";
 import zrExpressLogo from "@/assets/zrexpress-logo.png";
+import yalidineLogo from "@/assets/yalidine-logo.png";
 
 type Company = { id: string; name: string };
 
@@ -24,6 +25,8 @@ type Company = { id: string; name: string };
 const COMPANY_LOGOS: Record<string, string> = {
   zrexpress: zrExpressLogo,
   zr_express: zrExpressLogo,
+  yalidine: yalidineLogo,
+  yalidine_express: yalidineLogo,
 };
 
 function getCompanyLogo(name: string): string | undefined {
