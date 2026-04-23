@@ -439,11 +439,13 @@ export function TariffsSection() {
                                 <PriceInput
                                   value={dVal}
                                   dirty={dDirty}
+                                  disabled={autoEnabled}
                                   onChange={(v) => setOne(wilaya, city, "domicile", v)}
                                 />
                                 <PriceInput
                                   value={sVal}
                                   dirty={sDirty}
+                                  disabled={autoEnabled}
                                   onChange={(v) => setOne(wilaya, city, "stopdesk", v)}
                                 />
                               </div>
