@@ -18,6 +18,8 @@ import {
   History,
   Sparkles,
   Volume2,
+  Languages,
+  Info,
 } from "lucide-react";
 import { toast } from "sonner";
 import { generateVoice } from "@/lib/ai/voice-generator";
@@ -102,6 +104,17 @@ type HistoryItem = {
 
 const HISTORY_KEY = "voice-generator-history";
 const MAX_HISTORY = 10;
+
+const ARABIC_REGEX = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+function detectLanguage(input: string): "arabic" | "mixed" | "latin" | "empty" {
+  const trimmed = input.trim();
+  if (!trimmed) return "empty";
+  const hasArabic = ARABIC_REGEX.test(trimmed);
+  const hasLatin = /[A-Za-z]/.test(trimmed);
+  if (hasArabic && hasLatin) return "mixed";
+  if (hasArabic) return "arabic";
+  return "latin";
+}
 
 function VoiceGeneratorPage() {
   const generate = useServerFn(generateVoice);
@@ -221,23 +234,54 @@ function VoiceGeneratorPage() {
             <CardContent className="space-y-6">
               {/* Text input */}
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-2">
                   <Label htmlFor="tts-text" className="text-sm font-medium">
                     Your text
                   </Label>
-                  <span className="text-xs text-muted-foreground tabular-nums">
-                    {text.length} / 5000
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      variant="secondary"
+                      className="text-[10px] gap-1 font-normal"
+                    >
+                      <Languages className="h-3 w-3" />
+                      {(() => {
+                        const lang = detectLanguage(text);
+                        if (lang === "arabic") return "Arabic detected";
+                        if (lang === "mixed") return "Arabic + English detected";
+                        if (lang === "latin") return "English / Latin detected";
+                        return "Auto-detected (Arabic supported)";
+                      })()}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground tabular-nums">
+                      {text.length} / 5000
+                    </span>
+                  </div>
                 </div>
                 <Textarea
                   id="tts-text"
                   value={text}
                   onChange={(e) => setText(e.target.value)}
-                  placeholder="Hello! Welcome to my store. Today we have amazing offers just for you..."
+                  placeholder="Hello! Welcome to my store... | مرحباً! أهلاً بكم في متجري..."
                   rows={7}
                   maxLength={5000}
+                  dir="auto"
+                  lang={detectLanguage(text) === "arabic" ? "ar" : undefined}
                   className="resize-none border-border/70 focus-visible:ring-1"
+                  style={{
+                    fontFamily:
+                      detectLanguage(text) === "arabic"
+                        ? "'Noto Sans Arabic', 'Segoe UI', system-ui, sans-serif"
+                        : undefined,
+                  }}
                 />
+                <div className="flex items-start gap-2 rounded-md bg-primary/5 border border-primary/10 px-3 py-2">
+                  <Info className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    This tool supports <span className="font-medium text-foreground">Arabic voice generation</span>{" "}
+                    (including mixed Arabic-English text). Punctuation, diacritics, and tone
+                    are preserved using the multilingual model.
+                  </p>
+                </div>
               </div>
 
               {/* Voice presets */}
