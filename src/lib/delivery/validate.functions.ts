@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { getAdapterCtor } from "./registry";
+import { validateApiKeyForCompany } from "./services";
 
 const InputSchema = z.object({
   companyId: z.string().uuid(),
@@ -44,18 +44,12 @@ export const validateAndActivateDeliveryCompany = createServerFn({ method: "POST
       return { ok: false, message: "This delivery company is not available." };
     }
 
-    const Ctor = getAdapterCtor(company.name);
-    if (!Ctor) {
-      return { ok: false, message: `No adapter registered for ${company.name}.` };
-    }
-
-    const adapter = new Ctor({
-      apiKey: data.apiKey.trim(),
-      apiSecret: data.apiSecret.trim(),
-    });
-
-    const result = await adapter.validateCredentials();
-    if (!result.ok) {
+    const result = await validateApiKeyForCompany(
+      company.name,
+      data.apiKey,
+      data.apiSecret,
+    );
+    if (!result.success) {
       // Do NOT persist credentials or activate.
       return { ok: false, message: result.message };
     }
