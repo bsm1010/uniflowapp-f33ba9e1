@@ -549,15 +549,24 @@ function CheckoutPage() {
                   <span style={{ color: t.muted }}>
                     {tr("storefront.checkout.shipping")}
                     {form.wilaya ? ` · ${form.wilaya}` : ""}
+                    {form.city ? ` · ${form.city}` : ""}
+                    {form.deliveryType === "stopdesk" ? " · Stop desk" : " · Domicile"}
                     {selectedCompanyName ? ` · ${selectedCompanyName}` : ""}
                   </span>
                   <span className="tabular-nums inline-flex items-center gap-1.5 transition-opacity" style={{ opacity: fetchingPrice ? 0.55 : 1 }}>
                     {fetchingPrice && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-                    {form.wilaya
-                      ? formatDZD(animatedDelivery)
-                      : "— Select wilaya"}
+                    {!form.wilaya || !form.city
+                      ? "— Select location"
+                      : tariffAvailable
+                        ? formatDZD(animatedDelivery)
+                        : "Not available"}
                   </span>
                 </div>
+                {form.wilaya && form.city && !tariffAvailable && !fetchingPrice && (
+                  <p className="text-xs" style={{ color: "#dc2626" }}>
+                    Delivery not available for this city / type. Try another option.
+                  </p>
+                )}
                 <div
                   className="flex justify-between text-base font-semibold pt-2"
                   style={{ borderTop: `1px solid ${t.border}` }}
