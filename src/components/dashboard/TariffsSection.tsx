@@ -1,6 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
-import { Search, Save, Loader2, Truck, Home, Store, Zap, Info } from "lucide-react";
+import {
+  Search,
+  Save,
+  Loader2,
+  Truck,
+  Home,
+  Store,
+  Zap,
+  Info,
+  RefreshCw,
+} from "lucide-react";
 import { toast } from "sonner";
+import { syncDeliveryCompanyTariffs } from "@/lib/delivery/sync-tariffs.functions";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -71,7 +82,14 @@ export function TariffsSection() {
   const [autoMap, setAutoMap] = useState<Record<string, boolean>>(() =>
     loadAutoTariffsMap(),
   );
+  const [syncing, setSyncing] = useState(false);
   const autoEnabled = !!autoMap[companyId];
+  const selectedCompany = companies.find((c) => c.id === companyId);
+  const isZRExpress = (selectedCompany?.name ?? "")
+    .toLowerCase()
+    .replace(/[\s-]+/g, "_")
+    .includes("zr_express")
+    || (selectedCompany?.name ?? "").toLowerCase().includes("zrexpress");
 
   const setAutoEnabled = (enabled: boolean) => {
     if (!companyId) return;
@@ -111,29 +129,59 @@ export function TariffsSection() {
   }, [user]);
 
   // Load tariffs for selected company
-  useEffect(() => {
+  const reloadTariffs = async () => {
     if (!user || !companyId) return;
-    (async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("delivery_tariffs")
-        .select("wilaya, city, delivery_type, price")
-        .eq("store_id", user.id)
-        .eq("company_id", companyId);
-      if (error) {
-        toast.error("Failed to load delivery prices");
-      } else {
-        const map: PriceMap = {};
-        for (const row of data ?? []) {
-          const type = (row.delivery_type === "stopdesk" ? "stopdesk" : "domicile") as DeliveryType;
-          map[cellKey(row.wilaya, row.city ?? "", type)] = String(row.price);
-        }
-        setPrices(map);
-        setInitialPrices(map);
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("delivery_tariffs")
+      .select("wilaya, city, delivery_type, price")
+      .eq("store_id", user.id)
+      .eq("company_id", companyId);
+    if (error) {
+      toast.error("Failed to load delivery prices");
+    } else {
+      const map: PriceMap = {};
+      for (const row of data ?? []) {
+        const type = (row.delivery_type === "stopdesk" ? "stopdesk" : "domicile") as DeliveryType;
+        map[cellKey(row.wilaya, row.city ?? "", type)] = String(row.price);
       }
-      setLoading(false);
-    })();
+      setPrices(map);
+      setInitialPrices(map);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    void reloadTariffs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, companyId]);
+
+  const handleSyncFromZR = async () => {
+    if (!user || !companyId) return;
+    const session = await supabase.auth.getSession();
+    const accessToken = session.data.session?.access_token;
+    if (!accessToken) {
+      toast.error("Your session expired. Please sign in again.");
+      return;
+    }
+    setSyncing(true);
+    try {
+      const res = await syncDeliveryCompanyTariffs({
+        data: { accessToken, companyId },
+      });
+      if (res.ok) {
+        toast.success("Tariffs updated successfully");
+        await reloadTariffs();
+      } else {
+        toast.error(res.message);
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to sync tariffs");
+    } finally {
+      setSyncing(false);
+    }
+  };
+
 
   const dirtyKeys = useMemo(() => {
     const all = new Set([...Object.keys(prices), ...Object.keys(initialPrices)]);
@@ -317,6 +365,21 @@ export function TariffsSection() {
               className="h-9 w-56 pl-8"
             />
           </div>
+          {isZRExpress && (
+            <Button
+              variant="outline"
+              onClick={handleSyncFromZR}
+              disabled={syncing || loading || saving}
+              className="h-9 gap-2"
+            >
+              {syncing ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4" />
+              )}
+              {syncing ? "Syncing…" : "Sync Tariffs from ZR Express"}
+            </Button>
+          )}
           <Button
             onClick={saveAll}
             disabled={saving || loading || dirtyKeys.length === 0 || autoEnabled}
