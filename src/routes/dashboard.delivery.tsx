@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { ALGERIAN_WILAYAS } from "@/lib/algeriaWilayas";
+import { ShippingCompaniesSection } from "@/components/dashboard/ShippingCompaniesSection";
 
 export const Route = createFileRoute("/dashboard/delivery")({
   component: DeliverySettingsPage,
@@ -137,6 +138,8 @@ function DeliverySettingsPage() {
         title="Delivery Settings"
         description="Set delivery prices per Algerian wilaya. Customers will see these at checkout."
       />
+
+      <ShippingCompaniesSection />
 
       <Card className="overflow-hidden">
         <div className="flex flex-col gap-3 border-b bg-muted/30 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
