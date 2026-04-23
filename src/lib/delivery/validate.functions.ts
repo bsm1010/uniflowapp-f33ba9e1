@@ -53,10 +53,12 @@ export const validateAndActivateDeliveryCompany = createServerFn({ method: "POST
           data.apiSecret,
         );
       } catch (e) {
-        console.error("[validateAndActivateDeliveryCompany] validator threw:", e);
+        // Never log credentials. Log only a generic marker + error name/code.
+        const tag = e instanceof Error ? e.name : "UnknownError";
+        console.error(`[validateAndActivateDeliveryCompany] validator failed: ${tag}`);
         return {
           ok: false,
-          message: e instanceof Error ? e.message : "Validation request failed.",
+          message: "Could not reach the delivery provider. Please try again.",
         };
       }
 
