@@ -406,7 +406,7 @@ function CheckoutPage() {
                       </div>
                     </div>
                     <div className="font-medium">
-                      {(item.price * item.quantity).toFixed(2)} DZD
+                      {formatDZD(item.price * item.quantity)}
                     </div>
                   </div>
                 ))}
@@ -417,16 +417,17 @@ function CheckoutPage() {
               >
                 <div className="flex justify-between">
                   <span style={{ color: t.muted }}>{tr("storefront.checkout.subtotal")}</span>
-                  <span>{cart.subtotal.toFixed(2)} DZD</span>
+                  <span className="tabular-nums">{formatDZD(cart.subtotal)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span style={{ color: t.muted }}>
                     {tr("storefront.checkout.shipping")}
                     {form.wilaya ? ` · ${form.wilaya}` : ""}
                   </span>
-                  <span>
+                  <span className="tabular-nums inline-flex items-center gap-1.5 transition-opacity" style={{ opacity: fetchingPrice ? 0.55 : 1 }}>
+                    {fetchingPrice && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                     {form.wilaya
-                      ? `${deliveryPrice.toFixed(2)} DZD`
+                      ? formatDZD(animatedDelivery)
                       : "— Select wilaya"}
                   </span>
                 </div>
@@ -435,7 +436,9 @@ function CheckoutPage() {
                   style={{ borderTop: `1px solid ${t.border}` }}
                 >
                   <span>{tr("storefront.checkout.total")}</span>
-                  <span>{total.toFixed(2)} DZD</span>
+                  <span key={total} className="tabular-nums animate-[scale-in_0.2s_ease-out]">
+                    {formatDZD(animatedTotal)}
+                  </span>
                 </div>
               </div>
               <button
@@ -451,7 +454,7 @@ function CheckoutPage() {
                 {submitting ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  tr("storefront.checkout.place", { amount: `${total.toFixed(2)} DZD` })
+                  tr("storefront.checkout.place", { amount: formatDZD(animatedTotal) })
                 )}
               </button>
               <p className="mt-3 text-xs text-center" style={{ color: t.muted }}>
