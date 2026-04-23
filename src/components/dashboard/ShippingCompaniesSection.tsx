@@ -251,28 +251,28 @@ export function ShippingCompaniesSection() {
           <ul className="divide-y">
             {companies.map((c) => {
               const r = rows[c.id];
-              const visible = !!showKey[c.id];
-              const draftHasKey = !!(draftKey[c.id] ?? "").trim();
+              const draftJsonRaw = (draftJson[c.id] ?? "").trim();
+              const draftHasJson = draftJsonRaw.length > 0;
               const status = validationStatus[c.id];
-              // valid = persisted key on file (and no in-flight edit) OR a fresh successful validation
-              const validity: "valid" | "invalid" | "none" = status
-                ? status.ok
-                  ? "valid"
-                  : "invalid"
-                : r?.has_key && !draftHasKey
-                  ? "valid"
-                  : "none";
-              const canEnable = validity === "valid";
               const isValidating = validatingId === c.id;
-              const inputBorder =
-                draftHasKey && validity === "invalid"
+              // Connection state: error > connecting > connected > not_connected
+              const connState: "not_connected" | "connecting" | "connected" | "error" =
+                isValidating
+                  ? "connecting"
+                  : status
+                    ? status.ok
+                      ? "connected"
+                      : "error"
+                    : r?.has_key && !draftHasJson
+                      ? "connected"
+                      : "not_connected";
+              const canEnable = connState === "connected";
+              const textareaBorder =
+                connState === "error"
                   ? "border-destructive/70 focus-visible:ring-destructive/40"
-                  : draftHasKey && validity === "valid"
+                  : connState === "connected" && draftHasJson
                     ? "border-emerald-500/60 focus-visible:ring-emerald-500/40"
                     : "";
-              const maskedPlaceholder = r?.has_key
-                ? `••••••••${r.key_tail}`
-                : `${c.name} API key / token`;
 
               return (
                 <li key={c.id} className="px-5 py-4">
