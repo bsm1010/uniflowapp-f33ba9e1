@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { createAuthenticatedDeliveryClient } from "./authenticated-client";
 
 /**
  * Secrets-safe data layer for `store_delivery_companies`.
@@ -27,13 +27,20 @@ function tail(value: string | null | undefined): string {
   return trimmed.slice(-4);
 }
 
+const AccessTokenInput = z.object({ accessToken: z.string().min(1).max(4096) });
+
 /** List the caller's store delivery company rows in a secrets-safe shape. */
 export const listStoreDeliveryCompanies = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<{ rows: StoreCompanyView[] }> => {
+  .inputValidator((input: unknown) => AccessTokenInput.parse(input))
+  .handler(async ({ data }): Promise<{ rows: StoreCompanyView[] }> => {
     try {
-      const { supabase, userId } = context;
-      const { data, error } = await supabase
+      const auth = await createAuthenticatedDeliveryClient(data.accessToken);
+      if ("error" in auth) {
+        return { rows: [] };
+      }
+
+      const { client: supabase, userId } = auth;
+      const { data: rowsData, error } = await supabase
         .from("store_delivery_companies")
         .select("company_id, enabled, is_default, api_key, api_secret")
         .eq("store_id", userId);
@@ -43,7 +50,7 @@ export const listStoreDeliveryCompanies = createServerFn({ method: "GET" })
         return { rows: [] };
       }
 
-      const rows: StoreCompanyView[] = (data ?? []).map((r) => ({
+      const rows: StoreCompanyView[] = (rowsData ?? []).map((r) => ({
         company_id: r.company_id,
         enabled: !!r.enabled,
         is_default: !!r.is_default,
@@ -62,6 +69,7 @@ export const listStoreDeliveryCompanies = createServerFn({ method: "GET" })
   });
 
 const ToggleEnabledInput = z.object({
+  accessToken: z.string().min(1).max(4096),
   companyId: z.string().uuid(),
   enabled: z.boolean(),
 });
@@ -72,92 +80,93 @@ const ToggleEnabledInput = z.object({
  * — the user must run the validate flow first.
  */
 export const setStoreDeliveryCompanyEnabled = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => ToggleEnabledInput.parse(input))
-  .handler(
-    async ({
-      data,
-      context,
-    }): Promise<{ ok: boolean; message: string }> => {
-      try {
-        const { supabase, userId } = context;
-        const { data: row, error } = await supabase
-          .from("store_delivery_companies")
-          .select("api_key")
-          .eq("store_id", userId)
-          .eq("company_id", data.companyId)
-          .maybeSingle();
-
-        if (error) {
-          return { ok: false, message: "Could not load carrier." };
-        }
-
-        if (data.enabled && !(row?.api_key && row.api_key.trim())) {
-          return {
-            ok: false,
-            message: "Validate an API key before enabling this carrier.",
-          };
-        }
-
-        const { error: updErr } = await supabase
-          .from("store_delivery_companies")
-          .update({
-            enabled: data.enabled,
-            ...(data.enabled ? {} : { is_default: false }),
-          })
-          .eq("store_id", userId)
-          .eq("company_id", data.companyId);
-
-        if (updErr) return { ok: false, message: "Failed to update carrier." };
-        return { ok: true, message: data.enabled ? "Enabled" : "Disabled" };
-      } catch {
-        return { ok: false, message: "Unexpected server error." };
+  .handler(async ({ data }): Promise<{ ok: boolean; message: string }> => {
+    try {
+      const auth = await createAuthenticatedDeliveryClient(data.accessToken);
+      if ("error" in auth) {
+        return { ok: false, message: "Your session expired. Please sign in again." };
       }
-    },
-  );
 
-const SetDefaultInput = z.object({ companyId: z.string().uuid() });
+      const { client: supabase, userId } = auth;
+      const { data: row, error } = await supabase
+        .from("store_delivery_companies")
+        .select("api_key")
+        .eq("store_id", userId)
+        .eq("company_id", data.companyId)
+        .maybeSingle();
+
+      if (error) {
+        return { ok: false, message: "Could not load carrier." };
+      }
+
+      if (data.enabled && !(row?.api_key && row.api_key.trim())) {
+        return {
+          ok: false,
+          message: "Validate an API key before enabling this carrier.",
+        };
+      }
+
+      const { error: updErr } = await supabase
+        .from("store_delivery_companies")
+        .update({
+          enabled: data.enabled,
+          ...(data.enabled ? {} : { is_default: false }),
+        })
+        .eq("store_id", userId)
+        .eq("company_id", data.companyId);
+
+      if (updErr) return { ok: false, message: "Failed to update carrier." };
+      return { ok: true, message: data.enabled ? "Enabled" : "Disabled" };
+    } catch {
+      return { ok: false, message: "Unexpected server error." };
+    }
+  });
+
+const SetDefaultInput = z.object({
+  accessToken: z.string().min(1).max(4096),
+  companyId: z.string().uuid(),
+});
 
 /** Mark a single carrier as default — must already be enabled. */
 export const setStoreDeliveryCompanyDefault = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => SetDefaultInput.parse(input))
-  .handler(
-    async ({
-      data,
-      context,
-    }): Promise<{ ok: boolean; message: string }> => {
-      try {
-        const { supabase, userId } = context;
-
-        const { data: row, error: rowErr } = await supabase
-          .from("store_delivery_companies")
-          .select("enabled")
-          .eq("store_id", userId)
-          .eq("company_id", data.companyId)
-          .maybeSingle();
-
-        if (rowErr || !row) return { ok: false, message: "Carrier not found." };
-        if (!row.enabled) {
-          return { ok: false, message: "Enable the carrier before setting it as default." };
-        }
-
-        await supabase
-          .from("store_delivery_companies")
-          .update({ is_default: false })
-          .eq("store_id", userId)
-          .neq("company_id", data.companyId);
-
-        const { error: updErr } = await supabase
-          .from("store_delivery_companies")
-          .update({ is_default: true })
-          .eq("store_id", userId)
-          .eq("company_id", data.companyId);
-
-        if (updErr) return { ok: false, message: "Failed to set default." };
-        return { ok: true, message: "Default carrier updated." };
-      } catch {
-        return { ok: false, message: "Unexpected server error." };
+  .handler(async ({ data }): Promise<{ ok: boolean; message: string }> => {
+    try {
+      const auth = await createAuthenticatedDeliveryClient(data.accessToken);
+      if ("error" in auth) {
+        return { ok: false, message: "Your session expired. Please sign in again." };
       }
-    },
-  );
+
+      const { client: supabase, userId } = auth;
+
+      const { data: row, error: rowErr } = await supabase
+        .from("store_delivery_companies")
+        .select("enabled")
+        .eq("store_id", userId)
+        .eq("company_id", data.companyId)
+        .maybeSingle();
+
+      if (rowErr || !row) return { ok: false, message: "Carrier not found." };
+      if (!row.enabled) {
+        return { ok: false, message: "Enable the carrier before setting it as default." };
+      }
+
+      await supabase
+        .from("store_delivery_companies")
+        .update({ is_default: false })
+        .eq("store_id", userId)
+        .neq("company_id", data.companyId);
+
+      const { error: updErr } = await supabase
+        .from("store_delivery_companies")
+        .update({ is_default: true })
+        .eq("store_id", userId)
+        .eq("company_id", data.companyId);
+
+      if (updErr) return { ok: false, message: "Failed to set default." };
+      return { ok: true, message: "Default carrier updated." };
+    } catch {
+      return { ok: false, message: "Unexpected server error." };
+    }
+  });

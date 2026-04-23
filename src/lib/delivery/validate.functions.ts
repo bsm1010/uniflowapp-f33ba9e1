@@ -1,9 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { validateApiKeyForCompany } from "./services";
+import { createAuthenticatedDeliveryClient } from "./authenticated-client";
 
 const InputSchema = z.object({
+  accessToken: z.string().min(1).max(4096),
   companyId: z.string().uuid(),
   apiKey: z.string().min(1).max(512),
   apiSecret: z.string().max(512).optional().default(""),
@@ -16,21 +17,21 @@ export type ValidateAndActivateResult =
 
 /**
  * Server-side validation + persistence flow:
- *   1. Look up the company by id (must be active).
- *   2. Resolve its adapter from the registry.
+ *   1. Authenticate the caller from their current session token.
+ *   2. Look up the company by id (must be active).
  *   3. Run an authenticated test request against the provider.
  *   4. Only on success — upsert credentials and mark `enabled = true`.
- *
- * Credentials never round-trip through the client beyond the form input;
- * validation happens on the server so the provider hostname/keys are not
- * exposed to the browser network panel of unrelated visitors.
  */
 export const validateAndActivateDeliveryCompany = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => InputSchema.parse(input))
-  .handler(async ({ data, context }): Promise<ValidateAndActivateResult> => {
+  .handler(async ({ data }): Promise<ValidateAndActivateResult> => {
     try {
-      const { supabase, userId } = context;
+      const auth = await createAuthenticatedDeliveryClient(data.accessToken);
+      if ("error" in auth) {
+        return { ok: false, message: "Your session expired. Please sign in again." };
+      }
+
+      const { client: supabase, userId } = auth;
 
       const { data: company, error: companyErr } = await supabase
         .from("delivery_companies")
@@ -53,7 +54,6 @@ export const validateAndActivateDeliveryCompany = createServerFn({ method: "POST
           data.apiSecret,
         );
       } catch (e) {
-        // Never log credentials. Log only a generic marker + error name/code.
         const tag = e instanceof Error ? e.name : "UnknownError";
         console.error(`[validateAndActivateDeliveryCompany] validator failed: ${tag}`);
         return {
