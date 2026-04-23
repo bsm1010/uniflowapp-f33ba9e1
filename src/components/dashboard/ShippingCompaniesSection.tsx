@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Truck, Loader2, Star, Eye, EyeOff, Save } from "lucide-react";
+import { Truck, Loader2, Star, Eye, EyeOff, ShieldCheck, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
 import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
@@ -8,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
+import { validateAndActivateDeliveryCompany } from "@/lib/delivery/validate.functions";
 
 type Company = { id: string; name: string };
 type StoreRow = {
@@ -15,15 +17,20 @@ type StoreRow = {
   enabled: boolean;
   is_default: boolean;
   api_key: string;
+  api_secret: string;
 };
 
 export function ShippingCompaniesSection() {
   const { user } = useAuth();
+  const validateFn = useServerFn(validateAndActivateDeliveryCompany);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [rows, setRows] = useState<Record<string, StoreRow>>({});
   const [showKey, setShowKey] = useState<Record<string, boolean>>({});
+  const [draftKey, setDraftKey] = useState<Record<string, string>>({});
+  const [draftSecret, setDraftSecret] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
-  const [savingId, setSavingId] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [validatingId, setValidatingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -37,59 +44,128 @@ export function ShippingCompaniesSection() {
           .order("name"),
         supabase
           .from("store_delivery_companies")
-          .select("company_id, enabled, is_default, api_key")
+          .select("company_id, enabled, is_default, api_key, api_secret")
           .eq("store_id", user.id),
       ]);
       const list = (comps ?? []) as Company[];
       setCompanies(list);
       const map: Record<string, StoreRow> = {};
+      const dk: Record<string, string> = {};
+      const ds: Record<string, string> = {};
       for (const c of list) {
-        map[c.id] = { company_id: c.id, enabled: false, is_default: false, api_key: "" };
+        map[c.id] = {
+          company_id: c.id,
+          enabled: false,
+          is_default: false,
+          api_key: "",
+          api_secret: "",
+        };
+        dk[c.id] = "";
+        ds[c.id] = "";
       }
       for (const r of (store ?? []) as StoreRow[]) {
         map[r.company_id] = { ...map[r.company_id], ...r };
+        dk[r.company_id] = r.api_key ?? "";
+        ds[r.company_id] = r.api_secret ?? "";
       }
       setRows(map);
+      setDraftKey(dk);
+      setDraftSecret(ds);
       setLoading(false);
     })();
   }, [user]);
 
-  const persist = async (companyId: string, patch: Partial<StoreRow>) => {
+  /** Disable a company without re-validating credentials. */
+  const setEnabled = async (companyId: string, enabled: boolean) => {
     if (!user) return;
-    const next = { ...rows[companyId], ...patch };
-    setRows((p) => ({ ...p, [companyId]: next }));
-    setSavingId(companyId);
+    if (enabled) {
+      toast.info("Enter your API key and click Validate & Activate.");
+      return;
+    }
+    setBusyId(companyId);
     try {
-      // If setting as default, unset others first
-      if (patch.is_default === true) {
-        await supabase
-          .from("store_delivery_companies")
-          .update({ is_default: false })
-          .eq("store_id", user.id)
-          .neq("company_id", companyId);
-        setRows((p) => {
-          const copy = { ...p };
-          for (const id of Object.keys(copy)) {
-            if (id !== companyId) copy[id] = { ...copy[id], is_default: false };
-          }
-          return copy;
-        });
-      }
       const { error } = await supabase.from("store_delivery_companies").upsert(
         {
           store_id: user.id,
           company_id: companyId,
-          enabled: next.enabled,
-          is_default: next.is_default,
-          api_key: next.api_key,
+          enabled: false,
+          is_default: false,
+          api_key: rows[companyId]?.api_key ?? "",
+          api_secret: rows[companyId]?.api_secret ?? "",
         },
         { onConflict: "store_id,company_id" },
       );
       if (error) throw error;
+      setRows((p) => ({
+        ...p,
+        [companyId]: { ...p[companyId], enabled: false, is_default: false },
+      }));
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed to save");
+      toast.error(e instanceof Error ? e.message : "Failed to update");
     } finally {
-      setSavingId(null);
+      setBusyId(null);
+    }
+  };
+
+  const setAsDefault = async (companyId: string) => {
+    if (!user) return;
+    setBusyId(companyId);
+    try {
+      await supabase
+        .from("store_delivery_companies")
+        .update({ is_default: false })
+        .eq("store_id", user.id)
+        .neq("company_id", companyId);
+      const { error } = await supabase
+        .from("store_delivery_companies")
+        .update({ is_default: true })
+        .eq("store_id", user.id)
+        .eq("company_id", companyId);
+      if (error) throw error;
+      setRows((p) => {
+        const copy = { ...p };
+        for (const id of Object.keys(copy)) {
+          copy[id] = { ...copy[id], is_default: id === companyId };
+        }
+        return copy;
+      });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to set default");
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const validateAndActivate = async (companyId: string) => {
+    const apiKey = (draftKey[companyId] ?? "").trim();
+    const apiSecret = (draftSecret[companyId] ?? "").trim();
+    if (!apiKey) {
+      toast.error("API key is required.");
+      return;
+    }
+    setValidatingId(companyId);
+    try {
+      const res = await validateFn({
+        data: { companyId, apiKey, apiSecret, setDefault: false },
+      });
+      if (!res.ok) {
+        toast.error(res.message);
+        return;
+      }
+      toast.success(res.message);
+      setRows((p) => ({
+        ...p,
+        [companyId]: {
+          ...p[companyId],
+          enabled: true,
+          api_key: apiKey,
+          api_secret: apiSecret,
+        },
+      }));
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Validation failed");
+    } finally {
+      setValidatingId(null);
     }
   };
 
@@ -103,7 +179,7 @@ export function ShippingCompaniesSection() {
           <div>
             <h3 className="font-semibold leading-none">Shipping Companies</h3>
             <p className="mt-1 text-xs text-muted-foreground">
-              Enable carriers, add API keys, and set a default.
+              Add an API key and validate it to activate a carrier.
             </p>
           </div>
         </div>
@@ -124,6 +200,10 @@ export function ShippingCompaniesSection() {
             {companies.map((c) => {
               const r = rows[c.id];
               const visible = !!showKey[c.id];
+              const dirty =
+                (draftKey[c.id] ?? "") !== (r?.api_key ?? "") ||
+                (draftSecret[c.id] ?? "") !== (r?.api_secret ?? "");
+              const isValidating = validatingId === c.id;
               return (
                 <li key={c.id} className="px-5 py-4">
                   <div className="flex flex-wrap items-center justify-between gap-4">
@@ -141,16 +221,27 @@ export function ShippingCompaniesSection() {
                             </Badge>
                           )}
                           {r?.enabled && !r?.is_default && (
-                            <Badge variant="secondary">Enabled</Badge>
+                            <Badge className="gap-1 bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500/20">
+                              <ShieldCheck className="h-3 w-3" />
+                              Verified
+                            </Badge>
+                          )}
+                          {!r?.enabled && (
+                            <Badge variant="outline" className="gap-1 text-muted-foreground">
+                              <AlertCircle className="h-3 w-3" />
+                              Not verified
+                            </Badge>
                           )}
                         </div>
                         <p className="mt-0.5 text-xs text-muted-foreground">
-                          {r?.enabled ? "Active for your store" : "Disabled"}
+                          {r?.enabled
+                            ? "Active for your store"
+                            : "Validate an API key to activate"}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      {savingId === c.id && (
+                      {busyId === c.id && (
                         <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                       )}
                       <Button
@@ -158,7 +249,7 @@ export function ShippingCompaniesSection() {
                         size="sm"
                         variant={r?.is_default ? "secondary" : "outline"}
                         disabled={!r?.enabled || r?.is_default}
-                        onClick={() => persist(c.id, { is_default: true })}
+                        onClick={() => setAsDefault(c.id)}
                         className="gap-1.5"
                       >
                         <Star
@@ -168,55 +259,65 @@ export function ShippingCompaniesSection() {
                       </Button>
                       <Switch
                         checked={!!r?.enabled}
-                        onCheckedChange={(v) =>
-                          persist(c.id, { enabled: v, is_default: v ? r?.is_default : false })
-                        }
+                        onCheckedChange={(v) => setEnabled(c.id, v)}
                       />
                     </div>
                   </div>
 
-                  {r?.enabled && (
-                    <div className="mt-3 flex items-center gap-2 pl-13">
-                      <div className="relative flex-1">
-                        <Input
-                          type={visible ? "text" : "password"}
-                          placeholder={`${c.name} API key`}
-                          value={r.api_key}
-                          onChange={(e) =>
-                            setRows((p) => ({
-                              ...p,
-                              [c.id]: { ...p[c.id], api_key: e.target.value },
-                            }))
-                          }
-                          className="pr-10 font-mono text-sm"
-                        />
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setShowKey((p) => ({ ...p, [c.id]: !p[c.id] }))
-                          }
-                          className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                          aria-label={visible ? "Hide key" : "Show key"}
-                        >
-                          {visible ? (
-                            <EyeOff className="h-4 w-4" />
-                          ) : (
-                            <Eye className="h-4 w-4" />
-                          )}
-                        </button>
-                      </div>
-                      <Button
+                  <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
+                    <div className="relative">
+                      <Input
+                        type={visible ? "text" : "password"}
+                        placeholder={`${c.name} API key / token`}
+                        value={draftKey[c.id] ?? ""}
+                        onChange={(e) =>
+                          setDraftKey((p) => ({ ...p, [c.id]: e.target.value }))
+                        }
+                        className="pr-10 font-mono text-sm"
+                      />
+                      <button
                         type="button"
-                        size="sm"
-                        variant="outline"
-                        onClick={() => persist(c.id, { api_key: r.api_key })}
-                        className="gap-1.5"
+                        onClick={() =>
+                          setShowKey((p) => ({ ...p, [c.id]: !p[c.id] }))
+                        }
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        aria-label={visible ? "Hide key" : "Show key"}
                       >
-                        <Save className="h-3.5 w-3.5" />
-                        Save key
-                      </Button>
+                        {visible ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
                     </div>
-                  )}
+                    <Input
+                      type={visible ? "text" : "password"}
+                      placeholder="API secret / ID (if required)"
+                      value={draftSecret[c.id] ?? ""}
+                      onChange={(e) =>
+                        setDraftSecret((p) => ({ ...p, [c.id]: e.target.value }))
+                      }
+                      className="font-mono text-sm"
+                    />
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={() => validateAndActivate(c.id)}
+                      disabled={isValidating || !(draftKey[c.id] ?? "").trim()}
+                      className="gap-1.5"
+                    >
+                      {isValidating ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <ShieldCheck className="h-3.5 w-3.5" />
+                      )}
+                      {isValidating
+                        ? "Validating…"
+                        : r?.enabled && !dirty
+                          ? "Re-validate"
+                          : "Validate & Activate"}
+                    </Button>
+                  </div>
                 </li>
               );
             })}
