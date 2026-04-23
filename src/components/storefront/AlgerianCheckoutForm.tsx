@@ -137,7 +137,7 @@ export function AlgerianCheckoutForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const schema = makeSchema(tr);
-    const parsed = schema.safeParse({ firstName, lastName, phone, wilaya, city });
+    const parsed = schema.safeParse({ firstName, lastName, phone, wilaya, city, deliveryType });
     if (!parsed.success) {
       const errs: FormErrors = {};
       for (const issue of parsed.error.issues) {
