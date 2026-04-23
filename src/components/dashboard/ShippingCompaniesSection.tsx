@@ -216,6 +216,22 @@ export function ShippingCompaniesSection() {
                 (draftKey[c.id] ?? "") !== (r?.api_key ?? "") ||
                 (draftSecret[c.id] ?? "") !== (r?.api_secret ?? "");
               const isValidating = validatingId === c.id;
+              const status = validationStatus[c.id];
+              // Status priority: live status > persisted enabled > nothing
+              const validity: "valid" | "invalid" | "none" = status
+                ? status.ok && !dirty
+                  ? "valid"
+                  : "invalid"
+                : r?.enabled && !dirty
+                  ? "valid"
+                  : "none";
+              const canEnable = validity === "valid";
+              const inputBorder =
+                validity === "valid"
+                  ? "border-emerald-500/60 focus-visible:ring-emerald-500/40"
+                  : validity === "invalid"
+                    ? "border-destructive/70 focus-visible:ring-destructive/40"
+                    : "";
               return (
                 <li key={c.id} className="px-5 py-4">
                   <div className="flex flex-wrap items-center justify-between gap-4">
@@ -232,23 +248,31 @@ export function ShippingCompaniesSection() {
                               Default
                             </Badge>
                           )}
-                          {r?.enabled && !r?.is_default && (
+                          {validity === "valid" && (
                             <Badge className="gap-1 bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500/20">
                               <ShieldCheck className="h-3 w-3" />
-                              Verified
+                              Valid
                             </Badge>
                           )}
-                          {!r?.enabled && (
+                          {validity === "invalid" && (
+                            <Badge className="gap-1 bg-destructive/15 text-destructive hover:bg-destructive/20">
+                              <XCircle className="h-3 w-3" />
+                              Invalid
+                            </Badge>
+                          )}
+                          {validity === "none" && (
                             <Badge variant="outline" className="gap-1 text-muted-foreground">
                               <AlertCircle className="h-3 w-3" />
-                              Not verified
+                              Not validated
                             </Badge>
                           )}
                         </div>
                         <p className="mt-0.5 text-xs text-muted-foreground">
                           {r?.enabled
                             ? "Active for your store"
-                            : "Validate an API key to activate"}
+                            : canEnable
+                              ? "Key validated — toggle to enable"
+                              : "Validate an API key to activate"}
                         </p>
                       </div>
                     </div>
@@ -271,7 +295,13 @@ export function ShippingCompaniesSection() {
                       </Button>
                       <Switch
                         checked={!!r?.enabled}
+                        disabled={!r?.enabled && !canEnable}
                         onCheckedChange={(v) => setEnabled(c.id, v)}
+                        aria-label={
+                          !r?.enabled && !canEnable
+                            ? "Validate API key first"
+                            : "Toggle company"
+                        }
                       />
                     </div>
                   </div>
@@ -286,7 +316,7 @@ export function ShippingCompaniesSection() {
                           setDraftKey((p) => ({ ...p, [c.id]: e.target.value }));
                           setValidationStatus((p) => ({ ...p, [c.id]: undefined }));
                         }}
-                        className="pr-10 font-mono text-sm"
+                        className={`pr-10 font-mono text-sm transition-colors ${inputBorder}`}
                       />
                       <button
                         type="button"
@@ -311,7 +341,7 @@ export function ShippingCompaniesSection() {
                         setDraftSecret((p) => ({ ...p, [c.id]: e.target.value }));
                         setValidationStatus((p) => ({ ...p, [c.id]: undefined }));
                       }}
-                      className="font-mono text-sm"
+                      className={`font-mono text-sm transition-colors ${inputBorder}`}
                     />
                     <Button
                       type="button"
