@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import {
@@ -43,8 +43,17 @@ function DashboardHome() {
     revenue: 0,
     customers: 0,
   });
+  const [recentOrders, setRecentOrders] = useState<
+    Array<{
+      id: string;
+      customer_name: string;
+      total: number;
+      status: string;
+      created_at: string;
+    }>
+  >([]);
 
-  useEffect(() => {
+  const loadDashboard = useCallback(() => {
     if (!user) return;
     supabase
       .from("profiles")
@@ -70,8 +79,9 @@ function DashboardHome() {
         .eq("user_id", user.id),
       supabase
         .from("orders")
-        .select("total,customer_email")
-        .eq("store_owner_id", user.id),
+        .select("id,customer_name,customer_email,total,status,created_at")
+        .eq("store_owner_id", user.id)
+        .order("created_at", { ascending: false }),
     ]).then(([prodRes, ordersRes]) => {
       const orders = ordersRes.data ?? [];
       const revenue = orders.reduce((n, o) => n + Number(o.total ?? 0), 0);
@@ -84,8 +94,36 @@ function DashboardHome() {
         revenue,
         customers,
       });
+      setRecentOrders(orders.slice(0, 5));
     });
   }, [user]);
+
+  useEffect(() => {
+    loadDashboard();
+  }, [loadDashboard]);
+
+  useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel(`dashboard-orders-${user.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "orders",
+          filter: `store_owner_id=eq.${user.id}`,
+        },
+        () => loadDashboard(),
+      )
+      .subscribe();
+    const onFocus = () => loadDashboard();
+    window.addEventListener("focus", onFocus);
+    return () => {
+      supabase.removeChannel(channel);
+      window.removeEventListener("focus", onFocus);
+    };
+  }, [user, loadDashboard]);
 
   const stats = [
     {
@@ -228,15 +266,48 @@ function DashboardHome() {
                 <Link to="/dashboard/orders">{t("dashboard.home.viewAll")}</Link>
               </Button>
             </div>
-            <div className="mt-8 flex flex-col items-center justify-center py-12 text-center">
-              <div className="h-12 w-12 rounded-xl bg-accent flex items-center justify-center">
-                <ShoppingBag className="h-6 w-6 text-accent-foreground" />
+            {recentOrders.length === 0 ? (
+              <div className="mt-8 flex flex-col items-center justify-center py-12 text-center">
+                <div className="h-12 w-12 rounded-xl bg-accent flex items-center justify-center">
+                  <ShoppingBag className="h-6 w-6 text-accent-foreground" />
+                </div>
+                <p className="mt-4 font-medium">{t("dashboard.home.noOrders")}</p>
+                <p className="mt-1 text-sm text-muted-foreground max-w-xs">
+                  {t("dashboard.home.noOrdersDesc")}
+                </p>
               </div>
-              <p className="mt-4 font-medium">{t("dashboard.home.noOrders")}</p>
-              <p className="mt-1 text-sm text-muted-foreground max-w-xs">
-                {t("dashboard.home.noOrdersDesc")}
-              </p>
-            </div>
+            ) : (
+              <ul className="mt-4 divide-y divide-border/60">
+                {recentOrders.map((o) => (
+                  <li
+                    key={o.id}
+                    className="flex items-center justify-between gap-3 py-3"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="h-9 w-9 rounded-lg bg-accent flex items-center justify-center shrink-0">
+                        <ShoppingBag className="h-4 w-4 text-accent-foreground" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-medium text-sm truncate">
+                          {o.customer_name}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(o.created_at).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0">
+                      <Badge variant="outline" className="capitalize text-xs">
+                        {o.status}
+                      </Badge>
+                      <span className="font-semibold text-sm tabular-nums">
+                        ${Number(o.total).toFixed(2)}
+                      </span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
           </CardContent>
         </Card>
 
