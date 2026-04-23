@@ -11,7 +11,7 @@ const stepKeys = [
 export function HowItWorks() {
   const { t } = useTranslation();
   return (
-    <section id="how" className="py-24 md:py-32 bg-muted/30 relative overflow-hidden">
+    <section id="how" className="py-14 md:py-20 bg-muted/30 relative overflow-hidden">
       <div className="mx-auto max-w-6xl px-4">
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-sm font-medium text-primary uppercase tracking-wider">{t("how.kicker")}</p>
