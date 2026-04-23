@@ -319,7 +319,7 @@ export function TariffsSection() {
           </div>
           <Button
             onClick={saveAll}
-            disabled={saving || loading || dirtyKeys.length === 0}
+            disabled={saving || loading || dirtyKeys.length === 0 || autoEnabled}
             className="h-9 gap-2"
           >
             {saving ? (
