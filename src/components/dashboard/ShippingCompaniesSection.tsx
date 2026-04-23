@@ -208,7 +208,7 @@ export function ShippingCompaniesSection() {
         toast.error(msg);
         return;
       }
-      const msg = "Connected successfully.";
+      const msg = res.message || "Credentials saved successfully";
       setValidationStatus((p) => ({ ...p, [companyId]: { ok: true, message: msg } }));
       toast.success(msg);
       setRows((p) => ({
