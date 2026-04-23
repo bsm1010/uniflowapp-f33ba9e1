@@ -31,6 +31,9 @@ export function ShippingCompaniesSection() {
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [validatingId, setValidatingId] = useState<string | null>(null);
+  const [validationStatus, setValidationStatus] = useState<
+    Record<string, { ok: boolean; message: string } | undefined>
+  >({});
 
   useEffect(() => {
     if (!user) return;
