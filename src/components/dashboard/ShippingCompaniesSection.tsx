@@ -313,8 +313,8 @@ export function ShippingCompaniesSection() {
                           )}
                           {connState === "connected" && (
                             <Badge className="gap-1 bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500/20">
-                              <PlugZap className="h-3 w-3" />
-                              Connected
+                              <CheckCircle2 className="h-3 w-3" />
+                              Connected ✅
                             </Badge>
                           )}
                           {connState === "connecting" && (
@@ -326,13 +326,13 @@ export function ShippingCompaniesSection() {
                           {connState === "error" && (
                             <Badge className="gap-1 bg-destructive/15 text-destructive hover:bg-destructive/20">
                               <XCircle className="h-3 w-3" />
-                              Error
+                              Error ❌
                             </Badge>
                           )}
                           {connState === "not_connected" && (
                             <Badge variant="outline" className="gap-1 text-muted-foreground">
                               <AlertCircle className="h-3 w-3" />
-                              Not connected
+                              Not connected ❌
                             </Badge>
                           )}
                           {r?.has_key && (
