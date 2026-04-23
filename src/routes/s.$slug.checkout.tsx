@@ -10,7 +10,15 @@ import {
   getStoreTokens,
 } from "@/components/storefront/StorefrontShell";
 import { useCart } from "@/hooks/use-cart";
-import { ALGERIAN_WILAYAS } from "@/lib/algeriaWilayas";
+import { ALGERIA_GEO, getCitiesForWilaya } from "@/lib/algeriaWilayas";
+
+type DeliveryType = "domicile" | "stopdesk";
+const tariffKey = (
+  companyId: string,
+  wilaya: string,
+  city: string,
+  type: DeliveryType,
+) => `${companyId}:${wilaya}:${city}:${type}`;
 
 type StoreSettings = Tables<"store_settings">;
 type Company = { id: string; name: string };
@@ -68,7 +76,7 @@ function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [companyId, setCompanyId] = useState<string>("");
-  // Tariffs keyed by `${companyId}:${wilaya}` -> price
+  // Tariffs keyed by `${companyId}:${wilaya}:${city}:${type}` -> price
   const [tariffs, setTariffs] = useState<Record<string, number>>({});
   const [fetchingPrice, setFetchingPrice] = useState(false);
   const cart = useCart(slug);
@@ -79,6 +87,7 @@ function CheckoutPage() {
     address: "",
     city: "",
     wilaya: "",
+    deliveryType: "domicile" as DeliveryType,
     notes: "",
   });
 
@@ -94,7 +103,6 @@ function CheckoutPage() {
       if (!active) return;
       setSettings(data);
       if (data?.user_id) {
-        // Get enabled companies for this store, plus tariffs
         const [{ data: storeComps }, { data: rows }] = await Promise.all([
           supabase
             .from("store_delivery_companies")
@@ -103,7 +111,7 @@ function CheckoutPage() {
             .eq("enabled", true),
           supabase
             .from("delivery_tariffs")
-            .select("wilaya, price, company_id")
+            .select("wilaya, city, delivery_type, price, company_id")
             .eq("store_id", data.user_id),
         ]);
         if (!active) return;
@@ -123,8 +131,8 @@ function CheckoutPage() {
 
         const map: Record<string, number> = {};
         for (const r of rows ?? []) {
-          const key = `${r.company_id ?? ""}:${r.wilaya}`;
-          map[key] = Number(r.price);
+          const type = (r.delivery_type === "stopdesk" ? "stopdesk" : "domicile") as DeliveryType;
+          map[tariffKey(r.company_id ?? "", r.wilaya, r.city ?? "", type)] = Number(r.price);
         }
         setTariffs(map);
       }
@@ -135,46 +143,71 @@ function CheckoutPage() {
     };
   }, [slug]);
 
-  const update = (k: keyof typeof form, v: string) =>
+  const update = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
 
-  // Refresh the specific tariff for selected wilaya + company
-  const refreshTariff = async (wilaya: string, compId: string) => {
-    if (!wilaya || !settings?.user_id) return;
+  // Refresh the specific tariff for selected wilaya + city + type + company
+  const refreshTariff = async (
+    wilaya: string,
+    city: string,
+    type: DeliveryType,
+    compId: string,
+  ) => {
+    if (!wilaya || !city || !settings?.user_id || !compId) return;
     setFetchingPrice(true);
     try {
-      let q = supabase
+      const { data } = await supabase
         .from("delivery_tariffs")
-        .select("price, company_id")
+        .select("price")
         .eq("store_id", settings.user_id)
-        .eq("wilaya", wilaya);
-      if (compId) q = q.eq("company_id", compId);
-      const { data } = await q.maybeSingle();
-      const key = `${compId}:${wilaya}`;
-      setTariffs((prev) => ({
-        ...prev,
-        [key]: data ? Number(data.price) : 0,
-      }));
+        .eq("company_id", compId)
+        .eq("wilaya", wilaya)
+        .eq("city", city)
+        .eq("delivery_type", type)
+        .maybeSingle();
+      const key = tariffKey(compId, wilaya, city, type);
+      setTariffs((prev) => {
+        const next = { ...prev };
+        if (data) next[key] = Number(data.price);
+        else delete next[key];
+        return next;
+      });
     } finally {
       setFetchingPrice(false);
     }
   };
 
   const onWilayaChange = (wilaya: string) => {
-    update("wilaya", wilaya);
-    void refreshTariff(wilaya, companyId);
+    setForm((f) => ({ ...f, wilaya, city: "" }));
+  };
+
+  const onCityChange = (city: string) => {
+    update("city", city);
+    if (form.wilaya && companyId) {
+      void refreshTariff(form.wilaya, city, form.deliveryType, companyId);
+    }
+  };
+
+  const onDeliveryTypeChange = (type: DeliveryType) => {
+    update("deliveryType", type);
+    if (form.wilaya && form.city && companyId) {
+      void refreshTariff(form.wilaya, form.city, type, companyId);
+    }
   };
 
   const onCompanyChange = (id: string) => {
     setCompanyId(id);
-    if (form.wilaya) void refreshTariff(form.wilaya, id);
+    if (form.wilaya && form.city) {
+      void refreshTariff(form.wilaya, form.city, form.deliveryType, id);
+    }
   };
 
-  const deliveryPrice = useMemo(() => {
-    if (!form.wilaya) return 0;
-    const key = `${companyId}:${form.wilaya}`;
-    return tariffs[key] != null ? tariffs[key] : 0;
-  }, [form.wilaya, companyId, tariffs]);
+  const tariffEntryKey = useMemo(
+    () => tariffKey(companyId, form.wilaya, form.city, form.deliveryType),
+    [companyId, form.wilaya, form.city, form.deliveryType],
+  );
+  const tariffAvailable = tariffs[tariffEntryKey] != null;
+  const deliveryPrice = tariffAvailable ? tariffs[tariffEntryKey] : 0;
 
   const total = cart.subtotal + deliveryPrice;
   const animatedTotal = useAnimatedNumber(total);
@@ -195,6 +228,10 @@ function CheckoutPage() {
       !form.wilaya.trim()
     ) {
       toast.error(tr("storefront.checkout.errFields"));
+      return;
+    }
+    if (form.wilaya && form.city && !tariffAvailable) {
+      toast.error("Delivery not available for this selection");
       return;
     }
 
@@ -371,46 +408,66 @@ function CheckoutPage() {
                     placeholder={tr("storefront.checkout.addressPh")}
                   />
                 </Field>
-                <Field label={tr("storefront.checkout.city")}>
-                  <input
+                <Field label="Wilaya">
+                  <select
+                    required
+                    value={form.wilaya}
+                    onChange={(e) => onWilayaChange(e.target.value)}
+                    className="w-full px-3 py-2.5 pr-9 text-sm outline-none focus:ring-2 appearance-none transition-colors"
+                    style={inputStyle}
+                  >
+                    <option value="">— Select wilaya —</option>
+                    {ALGERIA_GEO.map(({ wilaya, code }) => (
+                      <option key={wilaya} value={wilaya}>
+                        {String(code).padStart(2, "0")} — {wilaya}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+                <Field label="City / Commune">
+                  <select
                     required
                     value={form.city}
-                    onChange={(e) => update("city", e.target.value)}
-                    className="w-full px-3 py-2.5 text-sm outline-none focus:ring-2"
+                    onChange={(e) => onCityChange(e.target.value)}
+                    disabled={!form.wilaya}
+                    className="w-full px-3 py-2.5 pr-9 text-sm outline-none focus:ring-2 appearance-none transition-colors disabled:opacity-50"
                     style={inputStyle}
-                  />
+                  >
+                    <option value="">
+                      {form.wilaya ? "— Select city —" : "Select wilaya first"}
+                    </option>
+                    {getCitiesForWilaya(form.wilaya).map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
                 </Field>
-                <Field label="Wilaya">
-                  <div className="relative">
-                    <select
-                      required
-                      value={form.wilaya}
-                      onChange={(e) => onWilayaChange(e.target.value)}
-                      className="w-full px-3 py-2.5 pr-9 text-sm outline-none focus:ring-2 appearance-none transition-colors"
-                      style={inputStyle}
-                    >
-                      <option value="">— Select wilaya —</option>
-                      {ALGERIAN_WILAYAS.map((w, i) => {
-                        const code = String(i + 1).padStart(2, "0");
-                        const price = tariffs[`${companyId}:${w}`];
-                        return (
-                          <option key={w} value={w}>
-                            {code} — {w}
-                            {price != null ? ` (${formatDZD(price)})` : ""}
-                          </option>
-                        );
-                      })}
-                    </select>
-                    {fetchingPrice && (
-                      <Loader2
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin"
-                        style={{ color: t.muted }}
-                      />
-                    )}
+                <Field label="Delivery type" full>
+                  <div className="grid grid-cols-2 gap-2">
+                    {(["domicile", "stopdesk"] as const).map((type) => {
+                      const active = form.deliveryType === type;
+                      return (
+                        <button
+                          type="button"
+                          key={type}
+                          onClick={() => onDeliveryTypeChange(type)}
+                          className="px-3 py-2.5 text-sm font-medium transition-all"
+                          style={{
+                            border: `1px solid ${active ? t.primary : t.border}`,
+                            backgroundColor: active ? t.primary : t.bg,
+                            color: active ? t.onPrimary : t.fg,
+                            borderRadius: radius / 2,
+                          }}
+                        >
+                          {type === "domicile" ? "Home delivery" : "Stop desk"}
+                        </button>
+                      );
+                    })}
                   </div>
                 </Field>
                 {companies.length > 0 && (
-                  <Field label="Delivery company (optional)">
+                  <Field label="Delivery company" full>
                     <select
                       value={companyId}
                       onChange={(e) => onCompanyChange(e.target.value)}
@@ -492,15 +549,24 @@ function CheckoutPage() {
                   <span style={{ color: t.muted }}>
                     {tr("storefront.checkout.shipping")}
                     {form.wilaya ? ` · ${form.wilaya}` : ""}
+                    {form.city ? ` · ${form.city}` : ""}
+                    {form.deliveryType === "stopdesk" ? " · Stop desk" : " · Domicile"}
                     {selectedCompanyName ? ` · ${selectedCompanyName}` : ""}
                   </span>
                   <span className="tabular-nums inline-flex items-center gap-1.5 transition-opacity" style={{ opacity: fetchingPrice ? 0.55 : 1 }}>
                     {fetchingPrice && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-                    {form.wilaya
-                      ? formatDZD(animatedDelivery)
-                      : "— Select wilaya"}
+                    {!form.wilaya || !form.city
+                      ? "— Select location"
+                      : tariffAvailable
+                        ? formatDZD(animatedDelivery)
+                        : "Not available"}
                   </span>
                 </div>
+                {form.wilaya && form.city && !tariffAvailable && !fetchingPrice && (
+                  <p className="text-xs" style={{ color: "#dc2626" }}>
+                    Delivery not available for this city / type. Try another option.
+                  </p>
+                )}
                 <div
                   className="flex justify-between text-base font-semibold pt-2"
                   style={{ borderTop: `1px solid ${t.border}` }}
