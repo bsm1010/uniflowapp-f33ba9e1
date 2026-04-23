@@ -188,6 +188,8 @@ export function AlgerianCheckoutForm({
       setPhone("");
       setWilaya("");
       setCity("");
+      setDeliveryType("domicile");
+      setShippingPrice(null);
       onSuccess?.(order.id);
     } catch (err) {
       console.error(err);
