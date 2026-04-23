@@ -43,8 +43,17 @@ function DashboardHome() {
     revenue: 0,
     customers: 0,
   });
+  const [recentOrders, setRecentOrders] = useState<
+    Array<{
+      id: string;
+      customer_name: string;
+      total: number;
+      status: string;
+      created_at: string;
+    }>
+  >([]);
 
-  useEffect(() => {
+  const loadDashboard = useCallback(() => {
     if (!user) return;
     supabase
       .from("profiles")
@@ -70,8 +79,9 @@ function DashboardHome() {
         .eq("user_id", user.id),
       supabase
         .from("orders")
-        .select("total,customer_email")
-        .eq("store_owner_id", user.id),
+        .select("id,customer_name,customer_email,total,status,created_at")
+        .eq("store_owner_id", user.id)
+        .order("created_at", { ascending: false }),
     ]).then(([prodRes, ordersRes]) => {
       const orders = ordersRes.data ?? [];
       const revenue = orders.reduce((n, o) => n + Number(o.total ?? 0), 0);
@@ -84,8 +94,36 @@ function DashboardHome() {
         revenue,
         customers,
       });
+      setRecentOrders(orders.slice(0, 5));
     });
   }, [user]);
+
+  useEffect(() => {
+    loadDashboard();
+  }, [loadDashboard]);
+
+  useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel(`dashboard-orders-${user.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "orders",
+          filter: `store_owner_id=eq.${user.id}`,
+        },
+        () => loadDashboard(),
+      )
+      .subscribe();
+    const onFocus = () => loadDashboard();
+    window.addEventListener("focus", onFocus);
+    return () => {
+      supabase.removeChannel(channel);
+      window.removeEventListener("focus", onFocus);
+    };
+  }, [user, loadDashboard]);
 
   const stats = [
     {
