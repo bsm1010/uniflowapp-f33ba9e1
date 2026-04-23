@@ -224,6 +224,7 @@ function OrdersPage() {
                     <TableHead>Status</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead className="text-right">Total</TableHead>
+                    <TableHead className="text-right">Shipment</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -317,6 +318,29 @@ function OrdersPage() {
                         <TableCell className="text-right font-semibold whitespace-nowrap">
                           {Number(o.total).toFixed(2)} DA
                         </TableCell>
+                        <TableCell className="text-right whitespace-nowrap">
+                          {shipments[o.id] ? (
+                            <div className="inline-flex flex-col items-end gap-0.5">
+                              <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                                <CheckCircle2 className="h-3.5 w-3.5" />
+                                {shipments[o.id].status}
+                              </span>
+                              <span className="text-[11px] font-mono text-muted-foreground">
+                                {shipments[o.id].tracking_number}
+                              </span>
+                            </div>
+                          ) : (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setShipOrder(o)}
+                              className="h-8"
+                            >
+                              <Truck className="h-3.5 w-3.5" />
+                              Create Shipment
+                            </Button>
+                          )}
+                        </TableCell>
                       </TableRow>
                     );
                   })}
@@ -326,6 +350,13 @@ function OrdersPage() {
           </CardContent>
         </Card>
       )}
+
+      <CreateShipmentDialog
+        order={shipOrder}
+        open={!!shipOrder}
+        onOpenChange={(v) => !v && setShipOrder(null)}
+        onCreated={loadOrders}
+      />
     </div>
   );
 }
