@@ -21,6 +21,7 @@ import {
   Wand2,
   Coins,
   Gift,
+  Mic,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -84,6 +85,7 @@ export function DashboardSidebar() {
     { title: t("dashboard.nav.themePresets"), url: "/dashboard/theme-presets", icon: Sparkles, gradient: "from-fuchsia-500 to-purple-500" },
     { title: t("dashboard.nav.database"), url: "/dashboard/database", icon: Database, gradient: "from-slate-600 to-slate-800" },
     { title: t("dashboard.nav.landingGenerator"), url: "/dashboard/landing-generator", icon: Wand2, gradient: "from-purple-500 to-indigo-500" },
+    { title: "AI Voice Generator", url: "/dashboard/voice-generator", icon: Mic, gradient: "from-pink-500 to-purple-500" },
     { title: t("dashboard.nav.credits"), url: "/dashboard/credits", icon: Coins, gradient: "from-yellow-500 to-amber-500" },
     { title: t("dashboard.nav.referrals"), url: "/dashboard/referrals", icon: Gift, gradient: "from-rose-500 to-pink-500" },
     { title: t("dashboard.nav.customize"), url: "/customize", icon: Palette, external: true, gradient: "from-teal-500 to-emerald-500" },

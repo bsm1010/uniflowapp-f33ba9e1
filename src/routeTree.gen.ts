@@ -15,6 +15,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CustomizeRouteImport } from './routes/customize'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
+import { Route as DashboardVoiceGeneratorRouteImport } from './routes/dashboard.voice-generator'
 import { Route as DashboardUpgradeRouteImport } from './routes/dashboard.upgrade'
 import { Route as DashboardThemesRouteImport } from './routes/dashboard.themes'
 import { Route as DashboardThemePresetsRouteImport } from './routes/dashboard.theme-presets'
@@ -84,6 +85,11 @@ const IndexRoute = IndexRouteImport.update({
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardVoiceGeneratorRoute = DashboardVoiceGeneratorRouteImport.update({
+  id: '/voice-generator',
+  path: '/voice-generator',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardUpgradeRoute = DashboardUpgradeRouteImport.update({
@@ -319,6 +325,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/theme-presets': typeof DashboardThemePresetsRoute
   '/dashboard/themes': typeof DashboardThemesRoute
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
+  '/dashboard/voice-generator': typeof DashboardVoiceGeneratorRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/db/$tableId': typeof ApiDbTableIdRouteWithChildren
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
@@ -365,6 +372,7 @@ export interface FileRoutesByTo {
   '/dashboard/theme-presets': typeof DashboardThemePresetsRoute
   '/dashboard/themes': typeof DashboardThemesRoute
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
+  '/dashboard/voice-generator': typeof DashboardVoiceGeneratorRoute
   '/dashboard': typeof DashboardIndexRoute
   '/api/db/$tableId': typeof ApiDbTableIdRouteWithChildren
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
@@ -414,6 +422,7 @@ export interface FileRoutesById {
   '/dashboard/theme-presets': typeof DashboardThemePresetsRoute
   '/dashboard/themes': typeof DashboardThemesRoute
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
+  '/dashboard/voice-generator': typeof DashboardVoiceGeneratorRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/db/$tableId': typeof ApiDbTableIdRouteWithChildren
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
@@ -464,6 +473,7 @@ export interface FileRouteTypes {
     | '/dashboard/theme-presets'
     | '/dashboard/themes'
     | '/dashboard/upgrade'
+    | '/dashboard/voice-generator'
     | '/dashboard/'
     | '/api/db/$tableId'
     | '/dashboard/admin/payments'
@@ -510,6 +520,7 @@ export interface FileRouteTypes {
     | '/dashboard/theme-presets'
     | '/dashboard/themes'
     | '/dashboard/upgrade'
+    | '/dashboard/voice-generator'
     | '/dashboard'
     | '/api/db/$tableId'
     | '/dashboard/admin/payments'
@@ -558,6 +569,7 @@ export interface FileRouteTypes {
     | '/dashboard/theme-presets'
     | '/dashboard/themes'
     | '/dashboard/upgrade'
+    | '/dashboard/voice-generator'
     | '/dashboard/'
     | '/api/db/$tableId'
     | '/dashboard/admin/payments'
@@ -642,6 +654,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/dashboard/'
       preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/voice-generator': {
+      id: '/dashboard/voice-generator'
+      path: '/voice-generator'
+      fullPath: '/dashboard/voice-generator'
+      preLoaderRoute: typeof DashboardVoiceGeneratorRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/upgrade': {
@@ -979,6 +998,7 @@ interface DashboardRouteChildren {
   DashboardThemePresetsRoute: typeof DashboardThemePresetsRoute
   DashboardThemesRoute: typeof DashboardThemesRoute
   DashboardUpgradeRoute: typeof DashboardUpgradeRoute
+  DashboardVoiceGeneratorRoute: typeof DashboardVoiceGeneratorRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   DashboardAdminPaymentsRoute: typeof DashboardAdminPaymentsRoute
 }
@@ -1001,6 +1021,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardThemePresetsRoute: DashboardThemePresetsRoute,
   DashboardThemesRoute: DashboardThemesRoute,
   DashboardUpgradeRoute: DashboardUpgradeRoute,
+  DashboardVoiceGeneratorRoute: DashboardVoiceGeneratorRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   DashboardAdminPaymentsRoute: DashboardAdminPaymentsRoute,
 }
