@@ -408,46 +408,66 @@ function CheckoutPage() {
                     placeholder={tr("storefront.checkout.addressPh")}
                   />
                 </Field>
-                <Field label={tr("storefront.checkout.city")}>
-                  <input
+                <Field label="Wilaya">
+                  <select
+                    required
+                    value={form.wilaya}
+                    onChange={(e) => onWilayaChange(e.target.value)}
+                    className="w-full px-3 py-2.5 pr-9 text-sm outline-none focus:ring-2 appearance-none transition-colors"
+                    style={inputStyle}
+                  >
+                    <option value="">— Select wilaya —</option>
+                    {ALGERIA_GEO.map(({ wilaya, code }) => (
+                      <option key={wilaya} value={wilaya}>
+                        {String(code).padStart(2, "0")} — {wilaya}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+                <Field label="City / Commune">
+                  <select
                     required
                     value={form.city}
-                    onChange={(e) => update("city", e.target.value)}
-                    className="w-full px-3 py-2.5 text-sm outline-none focus:ring-2"
+                    onChange={(e) => onCityChange(e.target.value)}
+                    disabled={!form.wilaya}
+                    className="w-full px-3 py-2.5 pr-9 text-sm outline-none focus:ring-2 appearance-none transition-colors disabled:opacity-50"
                     style={inputStyle}
-                  />
+                  >
+                    <option value="">
+                      {form.wilaya ? "— Select city —" : "Select wilaya first"}
+                    </option>
+                    {getCitiesForWilaya(form.wilaya).map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
                 </Field>
-                <Field label="Wilaya">
-                  <div className="relative">
-                    <select
-                      required
-                      value={form.wilaya}
-                      onChange={(e) => onWilayaChange(e.target.value)}
-                      className="w-full px-3 py-2.5 pr-9 text-sm outline-none focus:ring-2 appearance-none transition-colors"
-                      style={inputStyle}
-                    >
-                      <option value="">— Select wilaya —</option>
-                      {ALGERIAN_WILAYAS.map((w, i) => {
-                        const code = String(i + 1).padStart(2, "0");
-                        const price = tariffs[`${companyId}:${w}`];
-                        return (
-                          <option key={w} value={w}>
-                            {code} — {w}
-                            {price != null ? ` (${formatDZD(price)})` : ""}
-                          </option>
-                        );
-                      })}
-                    </select>
-                    {fetchingPrice && (
-                      <Loader2
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin"
-                        style={{ color: t.muted }}
-                      />
-                    )}
+                <Field label="Delivery type" full>
+                  <div className="grid grid-cols-2 gap-2">
+                    {(["domicile", "stopdesk"] as const).map((type) => {
+                      const active = form.deliveryType === type;
+                      return (
+                        <button
+                          type="button"
+                          key={type}
+                          onClick={() => onDeliveryTypeChange(type)}
+                          className="px-3 py-2.5 text-sm font-medium transition-all"
+                          style={{
+                            border: `1px solid ${active ? t.primary : t.border}`,
+                            backgroundColor: active ? t.primary : t.bg,
+                            color: active ? t.onPrimary : t.fg,
+                            borderRadius: radius / 2,
+                          }}
+                        >
+                          {type === "domicile" ? "Home delivery" : "Stop desk"}
+                        </button>
+                      );
+                    })}
                   </div>
                 </Field>
                 {companies.length > 0 && (
-                  <Field label="Delivery company (optional)">
+                  <Field label="Delivery company" full>
                     <select
                       value={companyId}
                       onChange={(e) => onCompanyChange(e.target.value)}
