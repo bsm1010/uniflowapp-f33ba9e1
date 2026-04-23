@@ -321,15 +321,27 @@ function DashboardHome() {
                     className="flex items-center justify-between gap-3 py-3"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="h-9 w-9 rounded-lg bg-accent flex items-center justify-center shrink-0">
-                        <ShoppingBag className="h-4 w-4 text-accent-foreground" />
-                      </div>
+                      {o.product_image ? (
+                        <img
+                          src={o.product_image}
+                          alt={o.product_name ?? ""}
+                          className="h-11 w-11 rounded-lg object-cover border border-border/60 shrink-0"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="h-11 w-11 rounded-lg bg-accent flex items-center justify-center shrink-0">
+                          <ShoppingBag className="h-4 w-4 text-accent-foreground" />
+                        </div>
+                      )}
                       <div className="min-w-0">
                         <p className="font-medium text-sm truncate">
-                          {o.customer_name}
+                          {o.product_name ?? o.customer_name}
                         </p>
-                        <p className="text-xs text-muted-foreground">
-                          {new Date(o.created_at).toLocaleString()}
+                        <p className="text-xs text-muted-foreground truncate">
+                          {o.customer_name}
+                          {o.item_count > 1 && ` • +${o.item_count - 1} more`}
+                          {" • "}
+                          {new Date(o.created_at).toLocaleDateString()}
                         </p>
                       </div>
                     </div>
