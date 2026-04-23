@@ -94,10 +94,8 @@ export const validateAndActivateDeliveryCompany = createServerFn({ method: "POST
 
       return { ok: true, message: result.message };
     } catch (e) {
-      console.error("[validateAndActivateDeliveryCompany] unexpected:", e);
-      return {
-        ok: false,
-        message: e instanceof Error ? e.message : "Unexpected server error.",
-      };
+      const tag = e instanceof Error ? e.name : "UnknownError";
+      console.error(`[validateAndActivateDeliveryCompany] unexpected: ${tag}`);
+      return { ok: false, message: "Unexpected server error." };
     }
   });
