@@ -332,6 +332,41 @@ export function TariffsSection() {
         </div>
       </div>
 
+      <div className="flex flex-col gap-3 border-b bg-background px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-3">
+          <div
+            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md ${
+              autoEnabled
+                ? "bg-emerald-500/15 text-emerald-600"
+                : "bg-muted text-muted-foreground"
+            }`}
+          >
+            <Zap className="h-4 w-4" />
+          </div>
+          <div>
+            <label
+              htmlFor="auto-tariffs-toggle"
+              className="cursor-pointer text-sm font-medium"
+            >
+              Use automatic tariffs from delivery company
+            </label>
+            <p className="mt-0.5 flex items-start gap-1 text-xs text-muted-foreground">
+              <Info className="mt-0.5 h-3 w-3 shrink-0" />
+              {autoEnabled
+                ? "Manual editing is disabled. Tariffs will be fetched from the provider's API."
+                : "Turn on to fetch live tariffs from the carrier API instead of editing them manually."}
+            </p>
+          </div>
+        </div>
+        <Switch
+          id="auto-tariffs-toggle"
+          checked={autoEnabled}
+          onCheckedChange={setAutoEnabled}
+          disabled={!companyId}
+          aria-label="Use automatic tariffs from delivery company"
+        />
+      </div>
+
       <CardContent className="p-0">
         {loading ? (
           <div className="flex items-center justify-center py-16 text-muted-foreground">
