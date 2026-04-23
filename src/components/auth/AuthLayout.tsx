@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
-import fennecyLogo from "@/assets/fennecly-logo.png";
+import fennecyLogo from "@/assets/fennecly-logo.webp";
 
 export function AuthLayout({
   title,

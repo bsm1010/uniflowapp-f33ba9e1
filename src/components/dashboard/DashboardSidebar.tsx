@@ -24,7 +24,7 @@ import {
   Mic,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import fennecyIcon from "@/assets/fennecly-icon.png";
+import fennecyIcon from "@/assets/fennecly-icon.webp";
 import { useAuth } from "@/hooks/use-auth";
 import { useInstalledApps } from "@/hooks/use-installed-apps";
 import { APPS_BY_KEY } from "@/lib/apps";

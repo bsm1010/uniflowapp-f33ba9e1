@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "./LanguageSwitcher";
-import fennecyLogo from "@/assets/fennecly-logo.png";
+import fennecyLogo from "@/assets/fennecly-logo.webp";
 
 export function Navbar() {
   const { t } = useTranslation();
