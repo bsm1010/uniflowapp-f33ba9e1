@@ -29,7 +29,7 @@ export function AuthLayout({
         className="relative w-full max-w-md"
       >
         <Link to="/" className="flex items-center justify-center mb-8">
-          <img src={fennecyLogo} alt="Fennecly" width={300} height={96} loading="eager" fetchPriority="high" decoding="async" className="h-24 w-auto object-contain" />
+          <img src={fennecyLogo} alt="Fennecly" width={300} height={96} loading="eager" fetchPriority="high" decoding="async" className="h-24 w-auto object-contain dark:brightness-0 dark:invert" />
         </Link>
         <div className="rounded-2xl border border-border/60 bg-card/80 backdrop-blur-xl p-8 shadow-soft">
           <div className="text-center mb-7">
