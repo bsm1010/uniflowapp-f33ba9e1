@@ -473,10 +473,12 @@ export function TariffsSection() {
 function PriceInput({
   value,
   dirty,
+  disabled = false,
   onChange,
 }: {
   value: string;
   dirty: boolean;
+  disabled?: boolean;
   onChange: (v: string) => void;
 }) {
   return (
@@ -484,12 +486,13 @@ function PriceInput({
       <Input
         type="text"
         inputMode="decimal"
-        placeholder="—"
+        placeholder={disabled ? "Auto" : "—"}
         value={value}
+        disabled={disabled}
         onChange={(e) => onChange(e.target.value)}
         className={`h-9 pr-12 text-right tabular-nums ${
-          dirty ? "border-amber-400 ring-1 ring-amber-200" : ""
-        }`}
+          dirty && !disabled ? "border-amber-400 ring-1 ring-amber-200" : ""
+        } ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
       />
       <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-muted-foreground">
         DZD
