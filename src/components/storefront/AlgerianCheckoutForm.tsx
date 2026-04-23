@@ -162,7 +162,7 @@ export function AlgerianCheckoutForm({
           shipping_country: "Algeria",
           shipping_postal_code: parsed.data.wilaya,
           subtotal,
-          total: subtotal,
+          total,
           status: "pending",
         })
         .select("id")
