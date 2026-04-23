@@ -27,7 +27,7 @@ type Company = { id: string; name: string };
  * are done via dedicated server functions so the client never holds credentials.
  */
 export function ShippingCompaniesSection() {
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const validateFn = useServerFn(validateAndActivateDeliveryCompany);
   const listFn = useServerFn(listStoreDeliveryCompanies);
   const setEnabledFn = useServerFn(setStoreDeliveryCompanyEnabled);
@@ -46,7 +46,7 @@ export function ShippingCompaniesSection() {
   >({});
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || !session?.access_token) return;
     (async () => {
       setLoading(true);
       try {
@@ -56,7 +56,7 @@ export function ShippingCompaniesSection() {
             .select("id, name")
             .eq("is_active", true)
             .order("name"),
-          listFn(),
+          listFn({ data: { accessToken: session.access_token } }),
         ]);
         const list = (comps ?? []) as Company[];
         setCompanies(list);
@@ -79,12 +79,16 @@ export function ShippingCompaniesSection() {
         setLoading(false);
       }
     })();
-  }, [user, listFn]);
+  }, [user, session?.access_token, listFn]);
 
   const setEnabled = async (companyId: string, enabled: boolean) => {
+    if (!session?.access_token) {
+      toast.error("Please sign in again.");
+      return;
+    }
     setBusyId(companyId);
     try {
-      const res = await setEnabledFn({ data: { companyId, enabled } });
+      const res = await setEnabledFn({ data: { accessToken: session.access_token, companyId, enabled } });
       if (!res.ok) {
         toast.error(res.message);
         return;
@@ -105,9 +109,13 @@ export function ShippingCompaniesSection() {
   };
 
   const setAsDefault = async (companyId: string) => {
+    if (!session?.access_token) {
+      toast.error("Please sign in again.");
+      return;
+    }
     setBusyId(companyId);
     try {
-      const res = await setDefaultFn({ data: { companyId } });
+      const res = await setDefaultFn({ data: { accessToken: session.access_token, companyId } });
       if (!res.ok) {
         toast.error(res.message);
         return;
@@ -135,7 +143,7 @@ export function ShippingCompaniesSection() {
       toast.error(msg);
       return;
     }
-    if (!user) {
+    if (!user || !session?.access_token) {
       const msg = "Please sign in again to validate your API key.";
       setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
       toast.error(msg);
@@ -144,23 +152,14 @@ export function ShippingCompaniesSection() {
     setValidatingId(companyId);
     setValidationStatus((p) => ({ ...p, [companyId]: undefined }));
     try {
-      // Ensure a fresh access token is attached to the server-fn request.
-      await supabase.auth.getSession();
       const res = await validateFn({
-        data: { companyId, apiKey, apiSecret, setDefault: false },
-      }).catch((err: unknown) => {
-        // Auth middleware throws a Response on 401 — convert to a structured result
-        // so the caller never sees a raw `[object Response]` rejection.
-        if (err instanceof Response) {
-          return {
-            ok: false as const,
-            message:
-              err.status === 401
-                ? "Your session expired. Please sign in again."
-                : `Server error (${err.status}).`,
-          };
-        }
-        throw err;
+        data: {
+          accessToken: session.access_token,
+          companyId,
+          apiKey,
+          apiSecret,
+          setDefault: false,
+        },
       });
       if (!res.ok) {
         const msg = res.message || "Invalid API key. Please check and try again";
@@ -171,7 +170,6 @@ export function ShippingCompaniesSection() {
       const msg = "API key is valid and connected successfully";
       setValidationStatus((p) => ({ ...p, [companyId]: { ok: true, message: msg } }));
       toast.success(msg);
-      // Update local state with masked metadata only — never store the raw key.
       setRows((p) => ({
         ...p,
         [companyId]: {
@@ -182,7 +180,6 @@ export function ShippingCompaniesSection() {
           key_tail: apiKey.slice(-4),
         },
       }));
-      // Clear input fields so the raw value doesn't linger in the DOM.
       setDraftKey((p) => ({ ...p, [companyId]: "" }));
       setDraftSecret((p) => ({ ...p, [companyId]: "" }));
     } catch {
