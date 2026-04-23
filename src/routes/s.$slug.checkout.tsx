@@ -468,12 +468,13 @@ function CheckoutPage() {
                   <div className="grid grid-cols-2 gap-2">
                     {(["domicile", "stopdesk"] as const).map((type) => {
                       const active = form.deliveryType === type;
+                      const price = type === "domicile" ? domicilePrice : stopdeskPrice;
                       return (
                         <button
                           type="button"
                           key={type}
                           onClick={() => onDeliveryTypeChange(type)}
-                          className="px-3 py-2.5 text-sm font-medium transition-all"
+                          className="px-3 py-2.5 text-sm font-medium transition-all flex flex-col items-center gap-0.5"
                           style={{
                             border: `1px solid ${active ? t.primary : t.border}`,
                             backgroundColor: active ? t.primary : t.bg,
@@ -481,11 +482,31 @@ function CheckoutPage() {
                             borderRadius: radius / 2,
                           }}
                         >
-                          {type === "domicile" ? "Home delivery" : "Stop desk"}
+                          <span>{type === "domicile" ? "Home delivery" : "Stop desk"}</span>
+                          {typeof price === "number" && (
+                            <span className="text-[11px] opacity-80 tabular-nums">
+                              {formatDZD(price)}
+                            </span>
+                          )}
                         </button>
                       );
                     })}
                   </div>
+                  {stopdeskCheaper && (
+                    <button
+                      type="button"
+                      onClick={() => onDeliveryTypeChange("stopdesk")}
+                      className="mt-2 w-full text-left text-xs px-3 py-2 rounded-md animate-fade-in transition-opacity hover:opacity-80"
+                      style={{
+                        backgroundColor: `${t.primary}15`,
+                        color: t.primary,
+                        border: `1px dashed ${t.primary}`,
+                        borderRadius: radius / 2,
+                      }}
+                    >
+                      💡 Stop desk is cheaper — save {formatDZD(stopdeskSavings)}. Tap to switch.
+                    </button>
+                  )}
                 </Field>
                 {companies.length > 0 && (
                   <Field label="Delivery company" full>
