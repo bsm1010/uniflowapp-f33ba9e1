@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, Search, ShoppingBag, Phone, MapPin } from "lucide-react";
+import { Loader2, Search, ShoppingBag, Phone, MapPin, Truck, CheckCircle2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { CreateShipmentDialog } from "@/components/dashboard/CreateShipmentDialog";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,6 +29,7 @@ import {
 
 type Order = Tables<"orders">;
 type OrderItem = Tables<"order_items">;
+type Shipment = Tables<"shipments">;
 
 export const Route = createFileRoute("/dashboard/orders")({
   component: OrdersPage,
@@ -68,7 +71,9 @@ function OrdersPage() {
   const { user } = useAuth();
   const [orders, setOrders] = useState<Order[] | null>(null);
   const [items, setItems] = useState<Record<string, OrderItem[]>>({});
+  const [shipments, setShipments] = useState<Record<string, Shipment>>({});
   const [query, setQuery] = useState("");
+  const [shipOrder, setShipOrder] = useState<Order | null>(null);
 
   const loadOrders = async () => {
     if (!user) return;
@@ -80,17 +85,22 @@ function OrdersPage() {
     const list = ords ?? [];
     setOrders(list);
     if (list.length) {
-      const { data: its } = await supabase
-        .from("order_items")
-        .select("*")
-        .in("order_id", list.map((o) => o.id));
+      const ids = list.map((o) => o.id);
+      const [{ data: its }, { data: ships }] = await Promise.all([
+        supabase.from("order_items").select("*").in("order_id", ids),
+        supabase.from("shipments").select("*").in("order_id", ids),
+      ]);
       const grouped: Record<string, OrderItem[]> = {};
       for (const it of its ?? []) {
         (grouped[it.order_id] ??= []).push(it);
       }
       setItems(grouped);
+      const shipMap: Record<string, Shipment> = {};
+      for (const s of ships ?? []) shipMap[s.order_id] = s;
+      setShipments(shipMap);
     } else {
       setItems({});
+      setShipments({});
     }
   };
 
