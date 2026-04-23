@@ -1,7 +1,7 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Tajawal:wght@400;500;700;800&display=swap");
+/* Fonts loaded via <link> in __root.tsx */
 
 @custom-variant dark (&:is(.dark *));
 
