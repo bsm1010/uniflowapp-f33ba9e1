@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { Truck, Loader2, Star, Eye, EyeOff, ShieldCheck, AlertCircle, CheckCircle2, XCircle, Lock } from "lucide-react";
+import { Truck, Loader2, Star, ShieldCheck, AlertCircle, CheckCircle2, XCircle, Lock, Plug, PlugZap } from "lucide-react";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
@@ -50,9 +50,7 @@ export function ShippingCompaniesSection() {
 
   const [companies, setCompanies] = useState<Company[]>([]);
   const [rows, setRows] = useState<Record<string, StoreCompanyView>>({});
-  const [showKey, setShowKey] = useState<Record<string, boolean>>({});
-  const [draftKey, setDraftKey] = useState<Record<string, string>>({});
-  const [draftSecret, setDraftSecret] = useState<Record<string, string>>({});
+  const [draftJson, setDraftJson] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [validatingId, setValidatingId] = useState<string | null>(null);
@@ -149,17 +147,35 @@ export function ShippingCompaniesSection() {
     }
   };
 
-  const validateAndActivate = async (companyId: string) => {
-    const apiKey = (draftKey[companyId] ?? "").trim();
-    const apiSecret = (draftSecret[companyId] ?? "").trim();
-    if (!apiKey) {
-      const msg = "API key is required.";
+  const connect = async (companyId: string) => {
+    const raw = (draftJson[companyId] ?? "").trim();
+    if (!raw) {
+      const msg = "Please paste your API credentials as JSON.";
+      setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
+      toast.error(msg);
+      return;
+    }
+    let apiKey = "";
+    let apiSecret = "";
+    try {
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== "object") throw new Error("Expected a JSON object");
+      const obj = parsed as Record<string, unknown>;
+      const k = obj.apiKey ?? obj.api_key ?? obj.token ?? obj.key;
+      const s = obj.apiSecret ?? obj.api_secret ?? obj.id ?? obj.secret ?? "";
+      if (typeof k !== "string" || !k.trim()) {
+        throw new Error('Missing "apiKey" (or "token") field');
+      }
+      apiKey = k.trim();
+      apiSecret = typeof s === "string" ? s.trim() : "";
+    } catch (e) {
+      const msg = `Invalid JSON: ${e instanceof Error ? e.message : "could not parse"}`;
       setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
       toast.error(msg);
       return;
     }
     if (!user || !session?.access_token) {
-      const msg = "Please sign in again to validate your API key.";
+      const msg = "Please sign in again to connect.";
       setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
       toast.error(msg);
       return;
@@ -177,12 +193,12 @@ export function ShippingCompaniesSection() {
         },
       });
       if (!res.ok) {
-        const msg = res.message || "Invalid API key. Please check and try again";
+        const msg = res.message || "Could not connect. Check your credentials and try again.";
         setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
         toast.error(msg);
         return;
       }
-      const msg = "API key is valid and connected successfully";
+      const msg = "Connected successfully.";
       setValidationStatus((p) => ({ ...p, [companyId]: { ok: true, message: msg } }));
       toast.success(msg);
       setRows((p) => ({
@@ -195,10 +211,9 @@ export function ShippingCompaniesSection() {
           key_tail: apiKey.slice(-4),
         },
       }));
-      setDraftKey((p) => ({ ...p, [companyId]: "" }));
-      setDraftSecret((p) => ({ ...p, [companyId]: "" }));
+      setDraftJson((p) => ({ ...p, [companyId]: "" }));
     } catch {
-      const msg = "Invalid API key. Please check and try again";
+      const msg = "Could not connect. Check your credentials and try again.";
       setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
       toast.error(msg);
     } finally {
@@ -236,28 +251,28 @@ export function ShippingCompaniesSection() {
           <ul className="divide-y">
             {companies.map((c) => {
               const r = rows[c.id];
-              const visible = !!showKey[c.id];
-              const draftHasKey = !!(draftKey[c.id] ?? "").trim();
+              const draftJsonRaw = (draftJson[c.id] ?? "").trim();
+              const draftHasJson = draftJsonRaw.length > 0;
               const status = validationStatus[c.id];
-              // valid = persisted key on file (and no in-flight edit) OR a fresh successful validation
-              const validity: "valid" | "invalid" | "none" = status
-                ? status.ok
-                  ? "valid"
-                  : "invalid"
-                : r?.has_key && !draftHasKey
-                  ? "valid"
-                  : "none";
-              const canEnable = validity === "valid";
               const isValidating = validatingId === c.id;
-              const inputBorder =
-                draftHasKey && validity === "invalid"
+              // Connection state: error > connecting > connected > not_connected
+              const connState: "not_connected" | "connecting" | "connected" | "error" =
+                isValidating
+                  ? "connecting"
+                  : status
+                    ? status.ok
+                      ? "connected"
+                      : "error"
+                    : r?.has_key && !draftHasJson
+                      ? "connected"
+                      : "not_connected";
+              const canEnable = connState === "connected";
+              const textareaBorder =
+                connState === "error"
                   ? "border-destructive/70 focus-visible:ring-destructive/40"
-                  : draftHasKey && validity === "valid"
+                  : connState === "connected" && draftHasJson
                     ? "border-emerald-500/60 focus-visible:ring-emerald-500/40"
                     : "";
-              const maskedPlaceholder = r?.has_key
-                ? `••••••••${r.key_tail}`
-                : `${c.name} API key / token`;
 
               return (
                 <li key={c.id} className="px-5 py-4">
@@ -286,22 +301,28 @@ export function ShippingCompaniesSection() {
                               Default
                             </Badge>
                           )}
-                          {validity === "valid" && (
+                          {connState === "connected" && (
                             <Badge className="gap-1 bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500/20">
-                              <ShieldCheck className="h-3 w-3" />
-                              Valid
+                              <PlugZap className="h-3 w-3" />
+                              Connected
                             </Badge>
                           )}
-                          {validity === "invalid" && (
+                          {connState === "connecting" && (
+                            <Badge className="gap-1 bg-sky-500/15 text-sky-600 hover:bg-sky-500/20">
+                              <Loader2 className="h-3 w-3 animate-spin" />
+                              Connecting…
+                            </Badge>
+                          )}
+                          {connState === "error" && (
                             <Badge className="gap-1 bg-destructive/15 text-destructive hover:bg-destructive/20">
                               <XCircle className="h-3 w-3" />
-                              Invalid
+                              Error
                             </Badge>
                           )}
-                          {validity === "none" && (
+                          {connState === "not_connected" && (
                             <Badge variant="outline" className="gap-1 text-muted-foreground">
                               <AlertCircle className="h-3 w-3" />
-                              Not validated
+                              Not connected
                             </Badge>
                           )}
                           {r?.has_key && (
@@ -315,8 +336,8 @@ export function ShippingCompaniesSection() {
                           {r?.enabled
                             ? "Active for your store"
                             : canEnable
-                              ? "Key validated — toggle to enable"
-                              : "Validate an API key to activate"}
+                              ? "Connected — toggle to enable"
+                              : "Paste your API credentials and click Connect"}
                         </p>
                       </div>
                     </div>
@@ -350,67 +371,46 @@ export function ShippingCompaniesSection() {
                     </div>
                   </div>
 
-                  <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
-                    <div className="relative">
-                      <Input
-                        type={visible ? "text" : "password"}
-                        placeholder={maskedPlaceholder}
-                        autoComplete="off"
-                        spellCheck={false}
-                        value={draftKey[c.id] ?? ""}
-                        onChange={(e) => {
-                          setDraftKey((p) => ({ ...p, [c.id]: e.target.value }));
-                          setValidationStatus((p) => ({ ...p, [c.id]: undefined }));
-                        }}
-                        className={`pr-10 font-mono text-sm transition-colors ${inputBorder}`}
-                      />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setShowKey((p) => ({ ...p, [c.id]: !p[c.id] }))
-                        }
-                        className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                        aria-label={visible ? "Hide key" : "Show key"}
-                      >
-                        {visible ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </button>
-                    </div>
-                    <Input
-                      type={visible ? "text" : "password"}
-                      placeholder={
-                        r?.has_secret ? "•••••••• (stored)" : "API secret / ID (if required)"
-                      }
+                  <div className="mt-3 space-y-2">
+                    <label
+                      htmlFor={`creds-${c.id}`}
+                      className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground"
+                    >
+                      <Lock className="h-3 w-3" />
+                      Paste your API credentials (JSON)
+                    </label>
+                    <Textarea
+                      id={`creds-${c.id}`}
+                      placeholder={`{\n  "apiKey": "your-api-key",\n  "apiSecret": "optional-secret"\n}`}
                       autoComplete="off"
                       spellCheck={false}
-                      value={draftSecret[c.id] ?? ""}
+                      rows={5}
+                      value={draftJson[c.id] ?? ""}
                       onChange={(e) => {
-                        setDraftSecret((p) => ({ ...p, [c.id]: e.target.value }));
+                        setDraftJson((p) => ({ ...p, [c.id]: e.target.value }));
                         setValidationStatus((p) => ({ ...p, [c.id]: undefined }));
                       }}
-                      className={`font-mono text-sm transition-colors ${inputBorder}`}
+                      className={`font-mono text-xs leading-relaxed transition-colors ${textareaBorder}`}
                     />
-                    <Button
-                      type="button"
-                      size="sm"
-                      onClick={() => validateAndActivate(c.id)}
-                      disabled={isValidating || !draftHasKey}
-                      className="gap-1.5"
-                    >
-                      {isValidating ? (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      ) : (
-                        <ShieldCheck className="h-3.5 w-3.5" />
-                      )}
-                      {isValidating
-                        ? "Validating…"
-                        : r?.has_key
-                          ? "Update & Validate"
-                          : "Validate API Key"}
-                    </Button>
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-[11px] text-muted-foreground">
+                        Stored encrypted on the server. Only the last 4 chars are shown.
+                      </p>
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={() => connect(c.id)}
+                        disabled={isValidating || !draftHasJson}
+                        className="gap-1.5"
+                      >
+                        {isValidating ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          <Plug className="h-3.5 w-3.5" />
+                        )}
+                        {isValidating ? "Connecting…" : r?.has_key ? "Reconnect" : "Connect"}
+                      </Button>
+                    </div>
                   </div>
 
                   {(isValidating || validationStatus[c.id]) && (
@@ -428,7 +428,7 @@ export function ShippingCompaniesSection() {
                       {isValidating ? (
                         <>
                           <Loader2 className="mt-0.5 h-4 w-4 shrink-0 animate-spin" />
-                          <span>Validating API key…</span>
+                          <span>Connecting…</span>
                         </>
                       ) : validationStatus[c.id]?.ok ? (
                         <>
