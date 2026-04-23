@@ -177,15 +177,24 @@ function CheckoutPage() {
     }
   };
 
+  // Prefetch BOTH delivery types so we can compare prices and suggest the cheaper one.
+  const refreshBothTariffs = (wilaya: string, city: string, compId: string) => {
+    if (!wilaya || !city || !compId) return;
+    void refreshTariff(wilaya, city, "domicile", compId);
+    void refreshTariff(wilaya, city, "stopdesk", compId);
+  };
+
   const onWilayaChange = (wilaya: string) => {
-    setForm((f) => ({ ...f, wilaya, city: "" }));
+    // Auto-select first city so price loads immediately for a snappier UX.
+    const cities = getCitiesForWilaya(wilaya);
+    const city = cities[0] ?? "";
+    setForm((f) => ({ ...f, wilaya, city }));
+    if (city && companyId) refreshBothTariffs(wilaya, city, companyId);
   };
 
   const onCityChange = (city: string) => {
     update("city", city);
-    if (form.wilaya && companyId) {
-      void refreshTariff(form.wilaya, city, form.deliveryType, companyId);
-    }
+    if (form.wilaya && companyId) refreshBothTariffs(form.wilaya, city, companyId);
   };
 
   const onDeliveryTypeChange = (type: DeliveryType) => {
@@ -197,9 +206,7 @@ function CheckoutPage() {
 
   const onCompanyChange = (id: string) => {
     setCompanyId(id);
-    if (form.wilaya && form.city) {
-      void refreshTariff(form.wilaya, form.city, form.deliveryType, id);
-    }
+    if (form.wilaya && form.city) refreshBothTariffs(form.wilaya, form.city, id);
   };
 
   const tariffEntryKey = useMemo(
@@ -208,6 +215,20 @@ function CheckoutPage() {
   );
   const tariffAvailable = tariffs[tariffEntryKey] != null;
   const deliveryPrice = tariffAvailable ? tariffs[tariffEntryKey] : 0;
+
+  // Compare the two delivery types for the current wilaya/city/company
+  const domicilePrice = form.wilaya && form.city
+    ? tariffs[tariffKey(companyId, form.wilaya, form.city, "domicile")]
+    : undefined;
+  const stopdeskPrice = form.wilaya && form.city
+    ? tariffs[tariffKey(companyId, form.wilaya, form.city, "stopdesk")]
+    : undefined;
+  const stopdeskCheaper =
+    form.deliveryType === "domicile" &&
+    typeof domicilePrice === "number" &&
+    typeof stopdeskPrice === "number" &&
+    stopdeskPrice < domicilePrice;
+  const stopdeskSavings = stopdeskCheaper ? (domicilePrice as number) - (stopdeskPrice as number) : 0;
 
   const total = cart.subtotal + deliveryPrice;
   const animatedTotal = useAnimatedNumber(total);
@@ -447,12 +468,13 @@ function CheckoutPage() {
                   <div className="grid grid-cols-2 gap-2">
                     {(["domicile", "stopdesk"] as const).map((type) => {
                       const active = form.deliveryType === type;
+                      const price = type === "domicile" ? domicilePrice : stopdeskPrice;
                       return (
                         <button
                           type="button"
                           key={type}
                           onClick={() => onDeliveryTypeChange(type)}
-                          className="px-3 py-2.5 text-sm font-medium transition-all"
+                          className="px-3 py-2.5 text-sm font-medium transition-all flex flex-col items-center gap-0.5"
                           style={{
                             border: `1px solid ${active ? t.primary : t.border}`,
                             backgroundColor: active ? t.primary : t.bg,
@@ -460,11 +482,31 @@ function CheckoutPage() {
                             borderRadius: radius / 2,
                           }}
                         >
-                          {type === "domicile" ? "Home delivery" : "Stop desk"}
+                          <span>{type === "domicile" ? "Home delivery" : "Stop desk"}</span>
+                          {typeof price === "number" && (
+                            <span className="text-[11px] opacity-80 tabular-nums">
+                              {formatDZD(price)}
+                            </span>
+                          )}
                         </button>
                       );
                     })}
                   </div>
+                  {stopdeskCheaper && (
+                    <button
+                      type="button"
+                      onClick={() => onDeliveryTypeChange("stopdesk")}
+                      className="mt-2 w-full text-left text-xs px-3 py-2 rounded-md animate-fade-in transition-opacity hover:opacity-80"
+                      style={{
+                        backgroundColor: `${t.primary}15`,
+                        color: t.primary,
+                        border: `1px dashed ${t.primary}`,
+                        borderRadius: radius / 2,
+                      }}
+                    >
+                      💡 Stop desk is cheaper — save {formatDZD(stopdeskSavings)}. Tap to switch.
+                    </button>
+                  )}
                 </Field>
                 {companies.length > 0 && (
                   <Field label="Delivery company" full>
