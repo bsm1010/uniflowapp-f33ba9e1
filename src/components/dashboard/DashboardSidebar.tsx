@@ -141,7 +141,7 @@ export function DashboardSidebar() {
               loading="eager"
               fetchPriority="high"
               decoding="async"
-              className="h-10 w-10 object-contain transition-transform group-hover:scale-105"
+              className="h-10 w-10 object-contain transition-transform group-hover:scale-105 dark:brightness-0 dark:invert"
             />
           </div>
           {!collapsed && (
