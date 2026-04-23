@@ -15,6 +15,8 @@ import { Button } from "@/components/ui/button";
 type StoreSettings = Tables<"store_settings">;
 type Order = Tables<"orders">;
 type OrderItem = Tables<"order_items">;
+type Shipment = Tables<"shipments">;
+type CarrierInfo = { name: string };
 
 const searchSchema = z.object({
   order: z.string().optional(),
@@ -40,7 +42,9 @@ function TrackPage() {
   const [settingsLoading, setSettingsLoading] = useState(true);
 
   const [phoneInput, setPhoneInput] = useState(phoneParam ?? "");
-  const [orders, setOrders] = useState<(Order & { items: OrderItem[] })[]>([]);
+  const [orders, setOrders] = useState<
+    (Order & { items: OrderItem[]; shipment?: (Shipment & { carrier?: CarrierInfo }) | null })[]
+  >([]);
   const [searching, setSearching] = useState(false);
   const [searched, setSearched] = useState(false);
 
@@ -80,14 +84,31 @@ function TrackPage() {
       return;
     }
     const ids = ords.map((o) => o.id);
-    const { data: items } = await supabase
-      .from("order_items")
-      .select("*")
-      .in("order_id", ids);
-    const grouped = ords.map((o) => ({
-      ...o,
-      items: (items ?? []).filter((it) => it.order_id === o.id),
-    }));
+    const [{ data: items }, { data: ships }] = await Promise.all([
+      supabase.from("order_items").select("*").in("order_id", ids),
+      supabase.from("shipments").select("*").in("order_id", ids),
+    ]);
+    const carrierIds = Array.from(
+      new Set((ships ?? []).map((s) => s.company_id).filter(Boolean) as string[]),
+    );
+    const carriers: Record<string, CarrierInfo> = {};
+    if (carrierIds.length) {
+      const { data: comps } = await supabase
+        .from("delivery_companies")
+        .select("id, name")
+        .in("id", carrierIds);
+      for (const c of comps ?? []) carriers[c.id] = { name: c.name };
+    }
+    const grouped = ords.map((o) => {
+      const shipment = (ships ?? []).find((s) => s.order_id === o.id) ?? null;
+      return {
+        ...o,
+        items: (items ?? []).filter((it) => it.order_id === o.id),
+        shipment: shipment
+          ? { ...shipment, carrier: shipment.company_id ? carriers[shipment.company_id] : undefined }
+          : null,
+      };
+    });
     setOrders(grouped);
     setSearching(false);
   };
@@ -282,6 +303,39 @@ function OrderTrackingCard({
               </li>
             ))}
           </ul>
+        </div>
+      )}
+
+      {order.shipment && (
+        <div
+          className="mb-5 p-3 rounded flex items-center justify-between gap-3 text-sm"
+          style={{
+            backgroundColor: t.primary + "0d",
+            border: `1px solid ${t.border}`,
+            borderRadius: radius / 2,
+          }}
+        >
+          <div className="flex items-center gap-2 min-w-0">
+            <Truck className="h-4 w-4 shrink-0" style={{ color: t.primary }} />
+            <div className="min-w-0">
+              <div className="text-xs" style={{ color: t.muted }}>
+                {order.shipment.carrier?.name ?? "Shipment"}
+              </div>
+              <div className="font-mono text-xs truncate">
+                {order.shipment.tracking_number || "—"}
+              </div>
+            </div>
+          </div>
+          <span
+            className="text-[11px] font-medium px-2 py-1 rounded uppercase tracking-wide"
+            style={{
+              backgroundColor: t.primary + "1f",
+              color: t.primary,
+              borderRadius: radius / 3,
+            }}
+          >
+            {(order.shipment.status || "pending").replace("_", " ")}
+          </span>
         </div>
       )}
 
