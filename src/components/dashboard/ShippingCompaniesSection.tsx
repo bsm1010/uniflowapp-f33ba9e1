@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Truck, Loader2, Star, Eye, EyeOff, ShieldCheck, AlertCircle, CheckCircle2, XCircle } from "lucide-react";
+import { Truck, Loader2, Star, Eye, EyeOff, ShieldCheck, AlertCircle, CheckCircle2, XCircle, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,21 +10,31 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { validateAndActivateDeliveryCompany } from "@/lib/delivery/validate.functions";
+import {
+  listStoreDeliveryCompanies,
+  setStoreDeliveryCompanyDefault,
+  setStoreDeliveryCompanyEnabled,
+  type StoreCompanyView,
+} from "@/lib/delivery/store-companies.functions";
 
 type Company = { id: string; name: string };
-type StoreRow = {
-  company_id: string;
-  enabled: boolean;
-  is_default: boolean;
-  api_key: string;
-  api_secret: string;
-};
 
+/**
+ * Secrets-safe shipping companies UI.
+ *
+ * Raw API keys/secrets are never sent to the browser. The list endpoint returns
+ * only metadata (`has_key`, `key_tail`); enabling/disabling and setting default
+ * are done via dedicated server functions so the client never holds credentials.
+ */
 export function ShippingCompaniesSection() {
   const { user } = useAuth();
   const validateFn = useServerFn(validateAndActivateDeliveryCompany);
+  const listFn = useServerFn(listStoreDeliveryCompanies);
+  const setEnabledFn = useServerFn(setStoreDeliveryCompanyEnabled);
+  const setDefaultFn = useServerFn(setStoreDeliveryCompanyDefault);
+
   const [companies, setCompanies] = useState<Company[]>([]);
-  const [rows, setRows] = useState<Record<string, StoreRow>>({});
+  const [rows, setRows] = useState<Record<string, StoreCompanyView>>({});
   const [showKey, setShowKey] = useState<Record<string, boolean>>({});
   const [draftKey, setDraftKey] = useState<Record<string, string>>({});
   const [draftSecret, setDraftSecret] = useState<Record<string, string>>({});
@@ -39,92 +49,69 @@ export function ShippingCompaniesSection() {
     if (!user) return;
     (async () => {
       setLoading(true);
-      const [{ data: comps }, { data: store }] = await Promise.all([
-        supabase
-          .from("delivery_companies")
-          .select("id, name")
-          .eq("is_active", true)
-          .order("name"),
-        supabase
-          .from("store_delivery_companies")
-          .select("company_id, enabled, is_default, api_key, api_secret")
-          .eq("store_id", user.id),
-      ]);
-      const list = (comps ?? []) as Company[];
-      setCompanies(list);
-      const map: Record<string, StoreRow> = {};
-      const dk: Record<string, string> = {};
-      const ds: Record<string, string> = {};
-      for (const c of list) {
-        map[c.id] = {
-          company_id: c.id,
-          enabled: false,
-          is_default: false,
-          api_key: "",
-          api_secret: "",
-        };
-        dk[c.id] = "";
-        ds[c.id] = "";
+      try {
+        const [{ data: comps }, listed] = await Promise.all([
+          supabase
+            .from("delivery_companies")
+            .select("id, name")
+            .eq("is_active", true)
+            .order("name"),
+          listFn(),
+        ]);
+        const list = (comps ?? []) as Company[];
+        setCompanies(list);
+        const map: Record<string, StoreCompanyView> = {};
+        for (const c of list) {
+          map[c.id] = {
+            company_id: c.id,
+            enabled: false,
+            is_default: false,
+            has_key: false,
+            has_secret: false,
+            key_tail: "",
+          };
+        }
+        for (const r of listed.rows) map[r.company_id] = r;
+        setRows(map);
+      } catch {
+        toast.error("Failed to load shipping companies.");
+      } finally {
+        setLoading(false);
       }
-      for (const r of (store ?? []) as StoreRow[]) {
-        map[r.company_id] = { ...map[r.company_id], ...r };
-        dk[r.company_id] = r.api_key ?? "";
-        ds[r.company_id] = r.api_secret ?? "";
-      }
-      setRows(map);
-      setDraftKey(dk);
-      setDraftSecret(ds);
-      setLoading(false);
     })();
-  }, [user]);
+  }, [user, listFn]);
 
-  /** Disable a company without re-validating credentials. */
   const setEnabled = async (companyId: string, enabled: boolean) => {
-    if (!user) return;
-    if (enabled) {
-      toast.info("Enter your API key and click Validate & Activate.");
-      return;
-    }
     setBusyId(companyId);
     try {
-      const { error } = await supabase.from("store_delivery_companies").upsert(
-        {
-          store_id: user.id,
-          company_id: companyId,
-          enabled: false,
-          is_default: false,
-          api_key: rows[companyId]?.api_key ?? "",
-          api_secret: rows[companyId]?.api_secret ?? "",
-        },
-        { onConflict: "store_id,company_id" },
-      );
-      if (error) throw error;
+      const res = await setEnabledFn({ data: { companyId, enabled } });
+      if (!res.ok) {
+        toast.error(res.message);
+        return;
+      }
       setRows((p) => ({
         ...p,
-        [companyId]: { ...p[companyId], enabled: false, is_default: false },
+        [companyId]: {
+          ...p[companyId],
+          enabled,
+          is_default: enabled ? p[companyId]?.is_default : false,
+        },
       }));
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed to update");
+    } catch {
+      toast.error("Failed to update");
     } finally {
       setBusyId(null);
     }
   };
 
   const setAsDefault = async (companyId: string) => {
-    if (!user) return;
     setBusyId(companyId);
     try {
-      await supabase
-        .from("store_delivery_companies")
-        .update({ is_default: false })
-        .eq("store_id", user.id)
-        .neq("company_id", companyId);
-      const { error } = await supabase
-        .from("store_delivery_companies")
-        .update({ is_default: true })
-        .eq("store_id", user.id)
-        .eq("company_id", companyId);
-      if (error) throw error;
+      const res = await setDefaultFn({ data: { companyId } });
+      if (!res.ok) {
+        toast.error(res.message);
+        return;
+      }
       setRows((p) => {
         const copy = { ...p };
         for (const id of Object.keys(copy)) {
@@ -132,8 +119,8 @@ export function ShippingCompaniesSection() {
         }
         return copy;
       });
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed to set default");
+    } catch {
+      toast.error("Failed to set default");
     } finally {
       setBusyId(null);
     }
@@ -163,19 +150,24 @@ export function ShippingCompaniesSection() {
       const msg = "API key is valid and connected successfully";
       setValidationStatus((p) => ({ ...p, [companyId]: { ok: true, message: msg } }));
       toast.success(msg);
+      // Update local state with masked metadata only — never store the raw key.
       setRows((p) => ({
         ...p,
         [companyId]: {
           ...p[companyId],
           enabled: true,
-          api_key: apiKey,
-          api_secret: apiSecret,
+          has_key: true,
+          has_secret: !!apiSecret,
+          key_tail: apiKey.slice(-4),
         },
       }));
-    } catch (e) {
+      // Clear input fields so the raw value doesn't linger in the DOM.
+      setDraftKey((p) => ({ ...p, [companyId]: "" }));
+      setDraftSecret((p) => ({ ...p, [companyId]: "" }));
+    } catch {
       const msg = "Invalid API key. Please check and try again";
       setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
-      toast.error(e instanceof Error ? e.message : msg);
+      toast.error(msg);
     } finally {
       setValidatingId(null);
     }
@@ -191,7 +183,7 @@ export function ShippingCompaniesSection() {
           <div>
             <h3 className="font-semibold leading-none">Shipping Companies</h3>
             <p className="mt-1 text-xs text-muted-foreground">
-              Add an API key and validate it to activate a carrier.
+              API keys are stored securely on the server. Only the last 4 characters are shown.
             </p>
           </div>
         </div>
@@ -212,26 +204,28 @@ export function ShippingCompaniesSection() {
             {companies.map((c) => {
               const r = rows[c.id];
               const visible = !!showKey[c.id];
-              const dirty =
-                (draftKey[c.id] ?? "") !== (r?.api_key ?? "") ||
-                (draftSecret[c.id] ?? "") !== (r?.api_secret ?? "");
-              const isValidating = validatingId === c.id;
+              const draftHasKey = !!(draftKey[c.id] ?? "").trim();
               const status = validationStatus[c.id];
-              // Status priority: live status > persisted enabled > nothing
+              // valid = persisted key on file (and no in-flight edit) OR a fresh successful validation
               const validity: "valid" | "invalid" | "none" = status
-                ? status.ok && !dirty
+                ? status.ok
                   ? "valid"
                   : "invalid"
-                : r?.enabled && !dirty
+                : r?.has_key && !draftHasKey
                   ? "valid"
                   : "none";
               const canEnable = validity === "valid";
+              const isValidating = validatingId === c.id;
               const inputBorder =
-                validity === "valid"
-                  ? "border-emerald-500/60 focus-visible:ring-emerald-500/40"
-                  : validity === "invalid"
-                    ? "border-destructive/70 focus-visible:ring-destructive/40"
+                draftHasKey && validity === "invalid"
+                  ? "border-destructive/70 focus-visible:ring-destructive/40"
+                  : draftHasKey && validity === "valid"
+                    ? "border-emerald-500/60 focus-visible:ring-emerald-500/40"
                     : "";
+              const maskedPlaceholder = r?.has_key
+                ? `••••••••${r.key_tail}`
+                : `${c.name} API key / token`;
+
               return (
                 <li key={c.id} className="px-5 py-4">
                   <div className="flex flex-wrap items-center justify-between gap-4">
@@ -265,6 +259,12 @@ export function ShippingCompaniesSection() {
                               <AlertCircle className="h-3 w-3" />
                               Not validated
                             </Badge>
+                          )}
+                          {r?.has_key && (
+                            <span className="inline-flex items-center gap-1 rounded-md border bg-muted/40 px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground">
+                              <Lock className="h-3 w-3" />
+                              ••••{r.key_tail}
+                            </span>
                           )}
                         </div>
                         <p className="mt-0.5 text-xs text-muted-foreground">
@@ -310,7 +310,9 @@ export function ShippingCompaniesSection() {
                     <div className="relative">
                       <Input
                         type={visible ? "text" : "password"}
-                        placeholder={`${c.name} API key / token`}
+                        placeholder={maskedPlaceholder}
+                        autoComplete="off"
+                        spellCheck={false}
                         value={draftKey[c.id] ?? ""}
                         onChange={(e) => {
                           setDraftKey((p) => ({ ...p, [c.id]: e.target.value }));
@@ -335,7 +337,11 @@ export function ShippingCompaniesSection() {
                     </div>
                     <Input
                       type={visible ? "text" : "password"}
-                      placeholder="API secret / ID (if required)"
+                      placeholder={
+                        r?.has_secret ? "•••••••• (stored)" : "API secret / ID (if required)"
+                      }
+                      autoComplete="off"
+                      spellCheck={false}
                       value={draftSecret[c.id] ?? ""}
                       onChange={(e) => {
                         setDraftSecret((p) => ({ ...p, [c.id]: e.target.value }));
@@ -347,7 +353,7 @@ export function ShippingCompaniesSection() {
                       type="button"
                       size="sm"
                       onClick={() => validateAndActivate(c.id)}
-                      disabled={isValidating || !(draftKey[c.id] ?? "").trim()}
+                      disabled={isValidating || !draftHasKey}
                       className="gap-1.5"
                     >
                       {isValidating ? (
@@ -355,7 +361,11 @@ export function ShippingCompaniesSection() {
                       ) : (
                         <ShieldCheck className="h-3.5 w-3.5" />
                       )}
-                      {isValidating ? "Validating…" : "Validate API Key"}
+                      {isValidating
+                        ? "Validating…"
+                        : r?.has_key
+                          ? "Update & Validate"
+                          : "Validate API Key"}
                     </Button>
                   </div>
 
