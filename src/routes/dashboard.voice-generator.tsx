@@ -105,6 +105,17 @@ type HistoryItem = {
 const HISTORY_KEY = "voice-generator-history";
 const MAX_HISTORY = 10;
 
+const ARABIC_REGEX = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+function detectLanguage(input: string): "arabic" | "mixed" | "latin" | "empty" {
+  const trimmed = input.trim();
+  if (!trimmed) return "empty";
+  const hasArabic = ARABIC_REGEX.test(trimmed);
+  const hasLatin = /[A-Za-z]/.test(trimmed);
+  if (hasArabic && hasLatin) return "mixed";
+  if (hasArabic) return "arabic";
+  return "latin";
+}
+
 function VoiceGeneratorPage() {
   const generate = useServerFn(generateVoice);
   const [text, setText] = useState("");
