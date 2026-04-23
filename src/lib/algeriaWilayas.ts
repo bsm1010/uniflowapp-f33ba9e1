@@ -126,6 +126,36 @@ export const ALGERIAN_WILAYAS: readonly string[] = [
   "El Meniaa",
 ] as const;
 
+// Array-shaped geographic dataset for Algeria — reusable across dashboard & checkout.
+// Ordered by official wilaya code (Algiers = 16, Oran = 31, etc.).
+export interface WilayaEntry {
+  code: number;
+  wilaya: string;
+  cities: string[];
+}
+
+export const ALGERIA_GEO: WilayaEntry[] = ALGERIAN_WILAYAS.map((wilaya, i) => ({
+  code: i + 1,
+  wilaya,
+  // Lookup tolerates the few naming variants between the two sources (Alger/Algiers, M'Sila/M’Sila).
+  cities:
+    ALGERIA_WILAYAS[wilaya] ??
+    ALGERIA_WILAYAS[wilaya.replace("Algiers", "Alger")] ??
+    ALGERIA_WILAYAS[wilaya.replace("’", "'")] ??
+    [wilaya],
+}));
+
+/** Get the list of cities for a given wilaya (case/diacritic-tolerant). */
+export function getCitiesForWilaya(wilaya: string): string[] {
+  if (!wilaya) return [];
+  const direct = ALGERIA_WILAYAS[wilaya];
+  if (direct) return direct;
+  const norm = (s: string) => s.toLowerCase().replace(/['’`]/g, "'").trim();
+  const target = norm(wilaya);
+  const match = ALGERIA_GEO.find((e) => norm(e.wilaya) === target);
+  return match?.cities ?? [];
+}
+
 // Validates Algerian phone numbers: +213XXXXXXXXX, 0XXXXXXXXX (mobile starts with 5,6,7; landline 2,3,4)
 export function isValidAlgerianPhone(phone: string): boolean {
   const cleaned = phone.replace(/[\s-]/g, "");
