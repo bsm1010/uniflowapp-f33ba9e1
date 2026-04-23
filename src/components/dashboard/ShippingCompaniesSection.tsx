@@ -16,8 +16,20 @@ import {
   setStoreDeliveryCompanyEnabled,
   type StoreCompanyView,
 } from "@/lib/delivery/store-companies.functions";
+import zrExpressLogo from "@/assets/zrexpress-logo.png";
 
 type Company = { id: string; name: string };
+
+/** Map a company name to a logo asset (normalized: lowercase, no spaces/dashes). */
+const COMPANY_LOGOS: Record<string, string> = {
+  zrexpress: zrExpressLogo,
+  zr_express: zrExpressLogo,
+};
+
+function getCompanyLogo(name: string): string | undefined {
+  const key = name.toLowerCase().trim().replace(/[\s-]+/g, "_").replace(/_/g, "");
+  return COMPANY_LOGOS[key] ?? COMPANY_LOGOS[name.toLowerCase().trim().replace(/[\s-]+/g, "_")];
+}
 
 /**
  * Secrets-safe shipping companies UI.
@@ -248,9 +260,20 @@ export function ShippingCompaniesSection() {
                 <li key={c.id} className="px-5 py-4">
                   <div className="flex flex-wrap items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-md border bg-background text-sm font-bold text-primary">
-                        {c.name.charAt(0)}
-                      </div>
+                      {(() => {
+                        const logo = getCompanyLogo(c.name);
+                        return logo ? (
+                          <img
+                            src={logo}
+                            alt={`${c.name} logo`}
+                            className="h-10 w-10 rounded-md border bg-background object-contain"
+                          />
+                        ) : (
+                          <div className="flex h-10 w-10 items-center justify-center rounded-md border bg-background text-sm font-bold text-primary">
+                            {c.name.charAt(0)}
+                          </div>
+                        );
+                      })()}
                       <div>
                         <div className="flex items-center gap-2">
                           <p className="font-medium">{c.name}</p>
