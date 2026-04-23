@@ -18,13 +18,13 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
 
   async validateCredentials(): Promise<ValidationResult> {
     if (!this.hasCredentials()) {
-      return { ok: false, message: "API token is required." };
+      return { ok: false, message: "Invalid API credentials" };
     }
     if (!this.credentials.apiSecret || !this.credentials.apiSecret.trim()) {
-      return { ok: false, message: "ZR Express requires both a token and a key." };
+      return { ok: false, message: "Invalid API credentials" };
     }
     try {
-      // `token` endpoint validates the token/key pair without side effects.
+      // `token` endpoint validates the secretKey/tenantId pair without side effects.
       await this.request<unknown>(`${ZR_BASE_URL}/token`, {
         method: "POST",
         headers: {
@@ -35,17 +35,16 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
         body: JSON.stringify({}),
         timeoutMs: 10_000,
       });
-      return { ok: true, message: "ZR Express credentials verified." };
+      return { ok: true, message: "ZR Express connected successfully" };
     } catch (e) {
       const raw = e instanceof Error ? e.message : String(e);
       const lower = raw.toLowerCase();
-      if (lower.includes("401") || lower.includes("403") || lower.includes("unauthor")) {
-        return { ok: false, message: "Invalid ZR Express token or key." };
-      }
       if (lower.includes("aborted") || lower.includes("timeout")) {
         return { ok: false, message: "ZR Express API timed out. Try again." };
       }
-      return { ok: false, message: "Could not reach ZR Express. Check your credentials." };
+      // Treat any other failure (401/403/network/parse) as an invalid-credential
+      // outcome from the user's perspective.
+      return { ok: false, message: "Invalid API credentials" };
     }
   }
 
