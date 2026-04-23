@@ -428,7 +428,7 @@ export function ShippingCompaniesSection() {
                       {isValidating ? (
                         <>
                           <Loader2 className="mt-0.5 h-4 w-4 shrink-0 animate-spin" />
-                          <span>Validating API key…</span>
+                          <span>Connecting…</span>
                         </>
                       ) : validationStatus[c.id]?.ok ? (
                         <>
