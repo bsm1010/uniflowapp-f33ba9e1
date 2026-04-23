@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { Search, Save, Loader2, Truck, Home, Store } from "lucide-react";
+import { Search, Save, Loader2, Truck, Home, Store, Zap, Info } from "lucide-react";
 import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import {
   Accordion,
   AccordionContent,
@@ -21,6 +22,32 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { ALGERIA_GEO, getCitiesForWilaya } from "@/lib/algeriaWilayas";
+
+const AUTO_TARIFFS_STORAGE_KEY = "fennecly:auto-tariffs";
+
+function loadAutoTariffsMap(): Record<string, boolean> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = window.localStorage.getItem(AUTO_TARIFFS_STORAGE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw) as unknown;
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+      return parsed as Record<string, boolean>;
+    }
+  } catch {
+    /* ignore */
+  }
+  return {};
+}
+
+function saveAutoTariffsMap(map: Record<string, boolean>) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(AUTO_TARIFFS_STORAGE_KEY, JSON.stringify(map));
+  } catch {
+    /* ignore */
+  }
+}
 
 type Company = { id: string; name: string };
 type DeliveryType = "domicile" | "stopdesk";
@@ -41,6 +68,22 @@ export function TariffsSection() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
+  const [autoMap, setAutoMap] = useState<Record<string, boolean>>(() =>
+    loadAutoTariffsMap(),
+  );
+  const autoEnabled = !!autoMap[companyId];
+
+  const setAutoEnabled = (enabled: boolean) => {
+    if (!companyId) return;
+    const next = { ...autoMap, [companyId]: enabled };
+    setAutoMap(next);
+    saveAutoTariffsMap(next);
+    toast.success(
+      enabled
+        ? "Automatic tariffs enabled — manual editing disabled."
+        : "Switched to manual tariffs.",
+    );
+  };
 
   // Load companies + pick default
   useEffect(() => {
@@ -276,7 +319,7 @@ export function TariffsSection() {
           </div>
           <Button
             onClick={saveAll}
-            disabled={saving || loading || dirtyKeys.length === 0}
+            disabled={saving || loading || dirtyKeys.length === 0 || autoEnabled}
             className="h-9 gap-2"
           >
             {saving ? (
@@ -287,6 +330,41 @@ export function TariffsSection() {
             Save
           </Button>
         </div>
+      </div>
+
+      <div className="flex flex-col gap-3 border-b bg-background px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-3">
+          <div
+            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md ${
+              autoEnabled
+                ? "bg-emerald-500/15 text-emerald-600"
+                : "bg-muted text-muted-foreground"
+            }`}
+          >
+            <Zap className="h-4 w-4" />
+          </div>
+          <div>
+            <label
+              htmlFor="auto-tariffs-toggle"
+              className="cursor-pointer text-sm font-medium"
+            >
+              Use automatic tariffs from delivery company
+            </label>
+            <p className="mt-0.5 flex items-start gap-1 text-xs text-muted-foreground">
+              <Info className="mt-0.5 h-3 w-3 shrink-0" />
+              {autoEnabled
+                ? "Manual editing is disabled. Tariffs will be fetched from the provider's API."
+                : "Turn on to fetch live tariffs from the carrier API instead of editing them manually."}
+            </p>
+          </div>
+        </div>
+        <Switch
+          id="auto-tariffs-toggle"
+          checked={autoEnabled}
+          onCheckedChange={setAutoEnabled}
+          disabled={!companyId}
+          aria-label="Use automatic tariffs from delivery company"
+        />
       </div>
 
       <CardContent className="p-0">
@@ -361,11 +439,13 @@ export function TariffsSection() {
                                 <PriceInput
                                   value={dVal}
                                   dirty={dDirty}
+                                  disabled={autoEnabled}
                                   onChange={(v) => setOne(wilaya, city, "domicile", v)}
                                 />
                                 <PriceInput
                                   value={sVal}
                                   dirty={sDirty}
+                                  disabled={autoEnabled}
                                   onChange={(v) => setOne(wilaya, city, "stopdesk", v)}
                                 />
                               </div>
@@ -393,10 +473,12 @@ export function TariffsSection() {
 function PriceInput({
   value,
   dirty,
+  disabled = false,
   onChange,
 }: {
   value: string;
   dirty: boolean;
+  disabled?: boolean;
   onChange: (v: string) => void;
 }) {
   return (
@@ -404,12 +486,13 @@ function PriceInput({
       <Input
         type="text"
         inputMode="decimal"
-        placeholder="—"
+        placeholder={disabled ? "Auto" : "—"}
         value={value}
+        disabled={disabled}
         onChange={(e) => onChange(e.target.value)}
         className={`h-9 pr-12 text-right tabular-nums ${
-          dirty ? "border-amber-400 ring-1 ring-amber-200" : ""
-        }`}
+          dirty && !disabled ? "border-amber-400 ring-1 ring-amber-200" : ""
+        } ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
       />
       <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-muted-foreground">
         DZD
