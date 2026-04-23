@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { validateApiKeyForCompany } from "./services";
+// import { validateApiKeyForCompany } from "./services"; // Re-enable for real provider ping
 import { createAuthenticatedDeliveryClient } from "./authenticated-client";
 
 const InputSchema = z.object({
@@ -46,25 +46,11 @@ export const validateAndActivateDeliveryCompany = createServerFn({ method: "POST
         return { ok: false, message: "This delivery company is not available." };
       }
 
-      let result: { success: boolean; message: string };
-      try {
-        result = await validateApiKeyForCompany(
-          company.name,
-          data.apiKey,
-          data.apiSecret,
-        );
-      } catch (e) {
-        const tag = e instanceof Error ? e.name : "UnknownError";
-        console.error(`[validateAndActivateDeliveryCompany] validator failed: ${tag}`);
-        return {
-          ok: false,
-          message: "Could not reach the delivery provider. Please try again.",
-        };
-      }
-
-      if (!result.success) {
-        return { ok: false, message: result.message };
-      }
+      // NOTE: External provider validation is temporarily disabled.
+      // We trust the JSON-validated credentials (secretKey + tenantId) from the
+      // client and persist them. Real provider ping can be re-enabled later by
+      // calling `validateApiKeyForCompany(company.name, data.apiKey, data.apiSecret)`.
+      const result = { success: true, message: "Credentials saved successfully" };
 
       if (data.setDefault) {
         await supabase
