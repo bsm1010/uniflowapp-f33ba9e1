@@ -58,6 +58,7 @@ import { Route as DashboardAdminPaymentsRouteImport } from './routes/dashboard.a
 import { Route as ApiDbTableIdRouteImport } from './routes/api.db.$tableId'
 import { Route as SSlugPProductIdRouteImport } from './routes/s.$slug.p.$productId'
 import { Route as SSlugCheckoutSuccessRouteImport } from './routes/s.$slug.checkout.success'
+import { Route as ApiPublicHooksSyncTariffsRouteImport } from './routes/api.public.hooks.sync-tariffs'
 import { Route as ApiDbTableIdRecordIdRouteImport } from './routes/api.db.$tableId.$recordId'
 
 const SignupRoute = SignupRouteImport.update({
@@ -314,6 +315,12 @@ const SSlugCheckoutSuccessRoute = SSlugCheckoutSuccessRouteImport.update({
   path: '/success',
   getParentRoute: () => SSlugCheckoutRoute,
 } as any)
+const ApiPublicHooksSyncTariffsRoute =
+  ApiPublicHooksSyncTariffsRouteImport.update({
+    id: '/api/public/hooks/sync-tariffs',
+    path: '/api/public/hooks/sync-tariffs',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiDbTableIdRecordIdRoute = ApiDbTableIdRecordIdRouteImport.update({
   id: '/$recordId',
   path: '/$recordId',
@@ -369,6 +376,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/apps/': typeof DashboardAppsIndexRoute
   '/s/$slug/': typeof SSlugIndexRoute
   '/api/db/$tableId/$recordId': typeof ApiDbTableIdRecordIdRoute
+  '/api/public/hooks/sync-tariffs': typeof ApiPublicHooksSyncTariffsRoute
   '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
   '/s/$slug/p/$productId': typeof SSlugPProductIdRoute
 }
@@ -419,6 +427,7 @@ export interface FileRoutesByTo {
   '/dashboard/apps': typeof DashboardAppsIndexRoute
   '/s/$slug': typeof SSlugIndexRoute
   '/api/db/$tableId/$recordId': typeof ApiDbTableIdRecordIdRoute
+  '/api/public/hooks/sync-tariffs': typeof ApiPublicHooksSyncTariffsRoute
   '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
   '/s/$slug/p/$productId': typeof SSlugPProductIdRoute
 }
@@ -472,6 +481,7 @@ export interface FileRoutesById {
   '/dashboard/apps/': typeof DashboardAppsIndexRoute
   '/s/$slug/': typeof SSlugIndexRoute
   '/api/db/$tableId/$recordId': typeof ApiDbTableIdRecordIdRoute
+  '/api/public/hooks/sync-tariffs': typeof ApiPublicHooksSyncTariffsRoute
   '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
   '/s/$slug/p/$productId': typeof SSlugPProductIdRoute
 }
@@ -526,6 +536,7 @@ export interface FileRouteTypes {
     | '/dashboard/apps/'
     | '/s/$slug/'
     | '/api/db/$tableId/$recordId'
+    | '/api/public/hooks/sync-tariffs'
     | '/s/$slug/checkout/success'
     | '/s/$slug/p/$productId'
   fileRoutesByTo: FileRoutesByTo
@@ -576,6 +587,7 @@ export interface FileRouteTypes {
     | '/dashboard/apps'
     | '/s/$slug'
     | '/api/db/$tableId/$recordId'
+    | '/api/public/hooks/sync-tariffs'
     | '/s/$slug/checkout/success'
     | '/s/$slug/p/$productId'
   id:
@@ -628,6 +640,7 @@ export interface FileRouteTypes {
     | '/dashboard/apps/'
     | '/s/$slug/'
     | '/api/db/$tableId/$recordId'
+    | '/api/public/hooks/sync-tariffs'
     | '/s/$slug/checkout/success'
     | '/s/$slug/p/$productId'
   fileRoutesById: FileRoutesById
@@ -645,6 +658,7 @@ export interface RootRouteChildren {
   SSlugContactRoute: typeof SSlugContactRoute
   SSlugTrackRoute: typeof SSlugTrackRoute
   SSlugIndexRoute: typeof SSlugIndexRoute
+  ApiPublicHooksSyncTariffsRoute: typeof ApiPublicHooksSyncTariffsRoute
   SSlugPProductIdRoute: typeof SSlugPProductIdRoute
 }
 
@@ -993,6 +1007,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SSlugCheckoutSuccessRouteImport
       parentRoute: typeof SSlugCheckoutRoute
     }
+    '/api/public/hooks/sync-tariffs': {
+      id: '/api/public/hooks/sync-tariffs'
+      path: '/api/public/hooks/sync-tariffs'
+      fullPath: '/api/public/hooks/sync-tariffs'
+      preLoaderRoute: typeof ApiPublicHooksSyncTariffsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/db/$tableId/$recordId': {
       id: '/api/db/$tableId/$recordId'
       path: '/$recordId'
@@ -1130,6 +1151,7 @@ const rootRouteChildren: RootRouteChildren = {
   SSlugContactRoute: SSlugContactRoute,
   SSlugTrackRoute: SSlugTrackRoute,
   SSlugIndexRoute: SSlugIndexRoute,
+  ApiPublicHooksSyncTariffsRoute: ApiPublicHooksSyncTariffsRoute,
   SSlugPProductIdRoute: SSlugPProductIdRoute,
 }
 export const routeTree = rootRouteImport
