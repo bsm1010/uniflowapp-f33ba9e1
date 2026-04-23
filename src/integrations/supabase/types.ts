@@ -1062,6 +1062,50 @@ export type Database = {
           },
         ]
       }
+      store_delivery_companies: {
+        Row: {
+          api_key: string
+          api_secret: string
+          company_id: string
+          created_at: string
+          enabled: boolean
+          id: string
+          is_default: boolean
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          api_key?: string
+          api_secret?: string
+          company_id: string
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          is_default?: boolean
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          api_key?: string
+          api_secret?: string
+          company_id?: string
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          is_default?: boolean
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_delivery_companies_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "delivery_companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       store_languages: {
         Row: {
           created_at: string
