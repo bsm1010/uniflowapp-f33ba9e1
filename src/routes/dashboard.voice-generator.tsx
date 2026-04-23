@@ -18,6 +18,8 @@ import {
   History,
   Sparkles,
   Volume2,
+  Languages,
+  Info,
 } from "lucide-react";
 import { toast } from "sonner";
 import { generateVoice } from "@/lib/ai/voice-generator";
