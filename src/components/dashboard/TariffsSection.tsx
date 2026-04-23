@@ -82,7 +82,14 @@ export function TariffsSection() {
   const [autoMap, setAutoMap] = useState<Record<string, boolean>>(() =>
     loadAutoTariffsMap(),
   );
+  const [syncing, setSyncing] = useState(false);
   const autoEnabled = !!autoMap[companyId];
+  const selectedCompany = companies.find((c) => c.id === companyId);
+  const isZRExpress = (selectedCompany?.name ?? "")
+    .toLowerCase()
+    .replace(/[\s-]+/g, "_")
+    .includes("zr_express")
+    || (selectedCompany?.name ?? "").toLowerCase().includes("zrexpress");
 
   const setAutoEnabled = (enabled: boolean) => {
     if (!companyId) return;
