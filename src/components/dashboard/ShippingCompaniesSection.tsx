@@ -336,9 +336,12 @@ export function ShippingCompaniesSection() {
                             </Badge>
                           )}
                           {r?.has_key && (
-                            <span className="inline-flex items-center gap-1 rounded-md border bg-muted/40 px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground">
+                            <span
+                              className="inline-flex items-center gap-1 rounded-md border bg-muted/40 px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground"
+                              title="Your secretKey is stored securely on the server"
+                            >
                               <Lock className="h-3 w-3" />
-                              ••••{r.key_tail}
+                              ****{r.key_tail}
                             </span>
                           )}
                         </div>
