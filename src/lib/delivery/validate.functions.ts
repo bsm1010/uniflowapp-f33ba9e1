@@ -29,56 +29,73 @@ export const validateAndActivateDeliveryCompany = createServerFn({ method: "POST
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => InputSchema.parse(input))
   .handler(async ({ data, context }): Promise<ValidateAndActivateResult> => {
-    const { supabase, userId } = context;
+    try {
+      const { supabase, userId } = context;
 
-    const { data: company, error: companyErr } = await supabase
-      .from("delivery_companies")
-      .select("id, name, is_active")
-      .eq("id", data.companyId)
-      .maybeSingle();
+      const { data: company, error: companyErr } = await supabase
+        .from("delivery_companies")
+        .select("id, name, is_active")
+        .eq("id", data.companyId)
+        .maybeSingle();
 
-    if (companyErr || !company) {
-      return { ok: false, message: "Delivery company not found." };
-    }
-    if (!company.is_active) {
-      return { ok: false, message: "This delivery company is not available." };
-    }
+      if (companyErr || !company) {
+        return { ok: false, message: "Delivery company not found." };
+      }
+      if (!company.is_active) {
+        return { ok: false, message: "This delivery company is not available." };
+      }
 
-    const result = await validateApiKeyForCompany(
-      company.name,
-      data.apiKey,
-      data.apiSecret,
-    );
-    if (!result.success) {
-      // Do NOT persist credentials or activate.
-      return { ok: false, message: result.message };
-    }
+      let result: { success: boolean; message: string };
+      try {
+        result = await validateApiKeyForCompany(
+          company.name,
+          data.apiKey,
+          data.apiSecret,
+        );
+      } catch (e) {
+        console.error("[validateAndActivateDeliveryCompany] validator threw:", e);
+        return {
+          ok: false,
+          message: e instanceof Error ? e.message : "Validation request failed.",
+        };
+      }
 
-    if (data.setDefault) {
-      await supabase
+      if (!result.success) {
+        return { ok: false, message: result.message };
+      }
+
+      if (data.setDefault) {
+        await supabase
+          .from("store_delivery_companies")
+          .update({ is_default: false })
+          .eq("store_id", userId)
+          .neq("company_id", data.companyId);
+      }
+
+      const { error: upsertErr } = await supabase
         .from("store_delivery_companies")
-        .update({ is_default: false })
-        .eq("store_id", userId)
-        .neq("company_id", data.companyId);
+        .upsert(
+          {
+            store_id: userId,
+            company_id: data.companyId,
+            api_key: data.apiKey.trim(),
+            api_secret: data.apiSecret.trim(),
+            enabled: true,
+            is_default: data.setDefault ?? false,
+          },
+          { onConflict: "store_id,company_id" },
+        );
+
+      if (upsertErr) {
+        return { ok: false, message: `Validated but failed to persist: ${upsertErr.message}` };
+      }
+
+      return { ok: true, message: result.message };
+    } catch (e) {
+      console.error("[validateAndActivateDeliveryCompany] unexpected:", e);
+      return {
+        ok: false,
+        message: e instanceof Error ? e.message : "Unexpected server error.",
+      };
     }
-
-    const { error: upsertErr } = await supabase
-      .from("store_delivery_companies")
-      .upsert(
-        {
-          store_id: userId,
-          company_id: data.companyId,
-          api_key: data.apiKey.trim(),
-          api_secret: data.apiSecret.trim(),
-          enabled: true,
-          is_default: data.setDefault ?? false,
-        },
-        { onConflict: "store_id,company_id" },
-      );
-
-    if (upsertErr) {
-      return { ok: false, message: `Saved validation but failed to persist: ${upsertErr.message}` };
-    }
-
-    return { ok: true, message: result.message };
   });
