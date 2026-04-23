@@ -21,6 +21,7 @@ import { Route as DashboardThemesRouteImport } from './routes/dashboard.themes'
 import { Route as DashboardThemePresetsRouteImport } from './routes/dashboard.theme-presets'
 import { Route as DashboardStoreRouteImport } from './routes/dashboard.store'
 import { Route as DashboardShippingRouteImport } from './routes/dashboard.shipping'
+import { Route as DashboardShipmentsRouteImport } from './routes/dashboard.shipments'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
 import { Route as DashboardReferralsRouteImport } from './routes/dashboard.referrals'
 import { Route as DashboardProductsRouteImport } from './routes/dashboard.products'
@@ -117,6 +118,11 @@ const DashboardStoreRoute = DashboardStoreRouteImport.update({
 const DashboardShippingRoute = DashboardShippingRouteImport.update({
   id: '/shipping',
   path: '/shipping',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardShipmentsRoute = DashboardShipmentsRouteImport.update({
+  id: '/shipments',
+  path: '/shipments',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
@@ -334,6 +340,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/referrals': typeof DashboardReferralsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
+  '/dashboard/shipments': typeof DashboardShipmentsRoute
   '/dashboard/shipping': typeof DashboardShippingRoute
   '/dashboard/store': typeof DashboardStoreRoute
   '/dashboard/theme-presets': typeof DashboardThemePresetsRoute
@@ -383,6 +390,7 @@ export interface FileRoutesByTo {
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/referrals': typeof DashboardReferralsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
+  '/dashboard/shipments': typeof DashboardShipmentsRoute
   '/dashboard/shipping': typeof DashboardShippingRoute
   '/dashboard/store': typeof DashboardStoreRoute
   '/dashboard/theme-presets': typeof DashboardThemePresetsRoute
@@ -435,6 +443,7 @@ export interface FileRoutesById {
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/referrals': typeof DashboardReferralsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
+  '/dashboard/shipments': typeof DashboardShipmentsRoute
   '/dashboard/shipping': typeof DashboardShippingRoute
   '/dashboard/store': typeof DashboardStoreRoute
   '/dashboard/theme-presets': typeof DashboardThemePresetsRoute
@@ -488,6 +497,7 @@ export interface FileRouteTypes {
     | '/dashboard/products'
     | '/dashboard/referrals'
     | '/dashboard/settings'
+    | '/dashboard/shipments'
     | '/dashboard/shipping'
     | '/dashboard/store'
     | '/dashboard/theme-presets'
@@ -537,6 +547,7 @@ export interface FileRouteTypes {
     | '/dashboard/products'
     | '/dashboard/referrals'
     | '/dashboard/settings'
+    | '/dashboard/shipments'
     | '/dashboard/shipping'
     | '/dashboard/store'
     | '/dashboard/theme-presets'
@@ -588,6 +599,7 @@ export interface FileRouteTypes {
     | '/dashboard/products'
     | '/dashboard/referrals'
     | '/dashboard/settings'
+    | '/dashboard/shipments'
     | '/dashboard/shipping'
     | '/dashboard/store'
     | '/dashboard/theme-presets'
@@ -720,6 +732,13 @@ declare module '@tanstack/react-router' {
       path: '/shipping'
       fullPath: '/dashboard/shipping'
       preLoaderRoute: typeof DashboardShippingRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/shipments': {
+      id: '/dashboard/shipments'
+      path: '/shipments'
+      fullPath: '/dashboard/shipments'
+      preLoaderRoute: typeof DashboardShipmentsRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/settings': {
@@ -1033,6 +1052,7 @@ interface DashboardRouteChildren {
   DashboardProductsRoute: typeof DashboardProductsRoute
   DashboardReferralsRoute: typeof DashboardReferralsRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
+  DashboardShipmentsRoute: typeof DashboardShipmentsRoute
   DashboardShippingRoute: typeof DashboardShippingRoute
   DashboardStoreRoute: typeof DashboardStoreRoute
   DashboardThemePresetsRoute: typeof DashboardThemePresetsRoute
@@ -1058,6 +1078,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardProductsRoute: DashboardProductsRoute,
   DashboardReferralsRoute: DashboardReferralsRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
+  DashboardShipmentsRoute: DashboardShipmentsRoute,
   DashboardShippingRoute: DashboardShippingRoute,
   DashboardStoreRoute: DashboardStoreRoute,
   DashboardThemePresetsRoute: DashboardThemePresetsRoute,

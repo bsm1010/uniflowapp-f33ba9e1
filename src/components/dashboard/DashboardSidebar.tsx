@@ -84,6 +84,7 @@ export function DashboardSidebar() {
     { title: t("dashboard.nav.categories"), url: "/dashboard/categories", icon: Tag, gradient: "from-amber-500 to-orange-500" },
     { title: t("dashboard.nav.orders"), url: "/dashboard/orders", icon: ShoppingBag, gradient: "from-pink-500 to-rose-500" },
     { title: "Shipping", url: "/dashboard/shipping", icon: Truck, gradient: "from-green-500 to-emerald-500" },
+    { title: "Shipments", url: "/dashboard/shipments", icon: Package, gradient: "from-sky-500 to-indigo-500" },
     { title: t("dashboard.nav.customers"), url: "/dashboard/customers", icon: Users, gradient: "from-sky-500 to-cyan-500" },
     { title: t("dashboard.nav.themePresets"), url: "/dashboard/theme-presets", icon: Sparkles, gradient: "from-fuchsia-500 to-purple-500" },
     { title: t("dashboard.nav.database"), url: "/dashboard/database", icon: Database, gradient: "from-slate-600 to-slate-800" },
