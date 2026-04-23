@@ -1,6 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
-import { Search, Save, Loader2, Truck, Home, Store, Zap, Info } from "lucide-react";
+import {
+  Search,
+  Save,
+  Loader2,
+  Truck,
+  Home,
+  Store,
+  Zap,
+  Info,
+  RefreshCw,
+} from "lucide-react";
 import { toast } from "sonner";
+import { syncDeliveryCompanyTariffs } from "@/lib/delivery/sync-tariffs.functions";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
