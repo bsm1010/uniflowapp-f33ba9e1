@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Truck, Loader2, Star, Eye, EyeOff, ShieldCheck, AlertCircle } from "lucide-react";
+import { Truck, Loader2, Star, Eye, EyeOff, ShieldCheck, AlertCircle, CheckCircle2, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { Card, CardContent } from "@/components/ui/card";
@@ -31,6 +31,9 @@ export function ShippingCompaniesSection() {
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [validatingId, setValidatingId] = useState<string | null>(null);
+  const [validationStatus, setValidationStatus] = useState<
+    Record<string, { ok: boolean; message: string } | undefined>
+  >({});
 
   useEffect(() => {
     if (!user) return;
@@ -140,19 +143,26 @@ export function ShippingCompaniesSection() {
     const apiKey = (draftKey[companyId] ?? "").trim();
     const apiSecret = (draftSecret[companyId] ?? "").trim();
     if (!apiKey) {
-      toast.error("API key is required.");
+      const msg = "API key is required.";
+      setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
+      toast.error(msg);
       return;
     }
     setValidatingId(companyId);
+    setValidationStatus((p) => ({ ...p, [companyId]: undefined }));
     try {
       const res = await validateFn({
         data: { companyId, apiKey, apiSecret, setDefault: false },
       });
       if (!res.ok) {
-        toast.error(res.message);
+        const msg = "Invalid API key. Please check and try again";
+        setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
+        toast.error(msg);
         return;
       }
-      toast.success(res.message);
+      const msg = "API key is valid and connected successfully";
+      setValidationStatus((p) => ({ ...p, [companyId]: { ok: true, message: msg } }));
+      toast.success(msg);
       setRows((p) => ({
         ...p,
         [companyId]: {
@@ -163,7 +173,9 @@ export function ShippingCompaniesSection() {
         },
       }));
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Validation failed");
+      const msg = "Invalid API key. Please check and try again";
+      setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
+      toast.error(e instanceof Error ? e.message : msg);
     } finally {
       setValidatingId(null);
     }
@@ -270,9 +282,10 @@ export function ShippingCompaniesSection() {
                         type={visible ? "text" : "password"}
                         placeholder={`${c.name} API key / token`}
                         value={draftKey[c.id] ?? ""}
-                        onChange={(e) =>
-                          setDraftKey((p) => ({ ...p, [c.id]: e.target.value }))
-                        }
+                        onChange={(e) => {
+                          setDraftKey((p) => ({ ...p, [c.id]: e.target.value }));
+                          setValidationStatus((p) => ({ ...p, [c.id]: undefined }));
+                        }}
                         className="pr-10 font-mono text-sm"
                       />
                       <button
@@ -294,9 +307,10 @@ export function ShippingCompaniesSection() {
                       type={visible ? "text" : "password"}
                       placeholder="API secret / ID (if required)"
                       value={draftSecret[c.id] ?? ""}
-                      onChange={(e) =>
-                        setDraftSecret((p) => ({ ...p, [c.id]: e.target.value }))
-                      }
+                      onChange={(e) => {
+                        setDraftSecret((p) => ({ ...p, [c.id]: e.target.value }));
+                        setValidationStatus((p) => ({ ...p, [c.id]: undefined }));
+                      }}
                       className="font-mono text-sm"
                     />
                     <Button
@@ -311,13 +325,40 @@ export function ShippingCompaniesSection() {
                       ) : (
                         <ShieldCheck className="h-3.5 w-3.5" />
                       )}
-                      {isValidating
-                        ? "Validating…"
-                        : r?.enabled && !dirty
-                          ? "Re-validate"
-                          : "Validate & Activate"}
+                      {isValidating ? "Validating…" : "Validate API Key"}
                     </Button>
                   </div>
+
+                  {(isValidating || validationStatus[c.id]) && (
+                    <div
+                      role="status"
+                      aria-live="polite"
+                      className={`mt-3 flex items-start gap-2 rounded-md border px-3 py-2 text-sm ${
+                        isValidating
+                          ? "border-border bg-muted/40 text-muted-foreground"
+                          : validationStatus[c.id]?.ok
+                            ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+                            : "border-destructive/30 bg-destructive/10 text-destructive"
+                      }`}
+                    >
+                      {isValidating ? (
+                        <>
+                          <Loader2 className="mt-0.5 h-4 w-4 shrink-0 animate-spin" />
+                          <span>Validating API key…</span>
+                        </>
+                      ) : validationStatus[c.id]?.ok ? (
+                        <>
+                          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+                          <span>{validationStatus[c.id]?.message}</span>
+                        </>
+                      ) : (
+                        <>
+                          <XCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                          <span>{validationStatus[c.id]?.message}</span>
+                        </>
+                      )}
+                    </div>
+                  )}
                 </li>
               );
             })}
