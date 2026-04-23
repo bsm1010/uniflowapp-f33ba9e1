@@ -285,15 +285,59 @@ export function AlgerianCheckoutForm({
         </Field>
       </div>
 
+      <Field label={tr("storefront.cod.deliveryType") || "Delivery type"} mutedColor={t.muted}>
+        <div className="grid grid-cols-2 gap-2">
+          {(["domicile", "stopdesk"] as const).map((opt) => {
+            const active = deliveryType === opt;
+            return (
+              <button
+                key={opt}
+                type="button"
+                onClick={() => setDeliveryType(opt)}
+                className="h-11 px-3 text-sm font-medium transition-all"
+                style={{
+                  backgroundColor: active ? t.primary : t.bg,
+                  color: active ? t.onPrimary : t.fg,
+                  border: `1px solid ${active ? t.primary : t.border}`,
+                  borderRadius: radius / 2,
+                }}
+              >
+                {opt === "domicile"
+                  ? tr("storefront.cod.deliveryHome") || "Home delivery"
+                  : tr("storefront.cod.deliveryStopdesk") || "Stopdesk"}
+              </button>
+            );
+          })}
+        </div>
+      </Field>
+
       <div
-        className="flex items-center justify-between pt-3 mt-2"
+        className="space-y-1.5 pt-3 mt-2"
         style={{ borderTop: `1px solid ${t.border}` }}
       >
-        <div className="text-sm" style={{ color: t.muted }}>
-          {tr("storefront.cod.totalLine", { count: quantity })}
+        <div className="flex items-center justify-between text-sm" style={{ color: t.muted }}>
+          <span>{tr("storefront.cod.subtotal") || "Subtotal"}</span>
+          <span style={{ color: t.fg }}>{subtotal.toFixed(2)} DA</span>
         </div>
-        <div className="text-xl font-bold" style={{ color: t.fg }}>
-          {subtotal.toFixed(2)} DA
+        <div className="flex items-center justify-between text-sm" style={{ color: t.muted }}>
+          <span>{tr("storefront.cod.shipping") || "Shipping"}</span>
+          <span style={{ color: t.fg }}>
+            {!wilaya
+              ? "—"
+              : shippingLoading
+                ? "…"
+                : shippingPrice === null
+                  ? tr("storefront.cod.shippingUnavailable") || "Not available"
+                  : `${shippingPrice.toFixed(2)} DA`}
+          </span>
+        </div>
+        <div className="flex items-center justify-between pt-2 mt-1" style={{ borderTop: `1px dashed ${t.border}` }}>
+          <div className="text-sm" style={{ color: t.muted }}>
+            {tr("storefront.cod.totalLine", { count: quantity })}
+          </div>
+          <div className="text-xl font-bold" style={{ color: t.fg }}>
+            {total.toFixed(2)} DA
+          </div>
         </div>
       </div>
 
