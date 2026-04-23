@@ -133,6 +133,11 @@ export function DashboardSidebar() {
             <img
               src={fennecyIcon}
               alt="Fennecly"
+              width={40}
+              height={40}
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
               className="h-10 w-10 object-contain transition-transform group-hover:scale-105"
             />
           </div>
