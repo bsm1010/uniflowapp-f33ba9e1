@@ -301,22 +301,28 @@ export function ShippingCompaniesSection() {
                               Default
                             </Badge>
                           )}
-                          {validity === "valid" && (
+                          {connState === "connected" && (
                             <Badge className="gap-1 bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500/20">
-                              <ShieldCheck className="h-3 w-3" />
-                              Valid
+                              <PlugZap className="h-3 w-3" />
+                              Connected
                             </Badge>
                           )}
-                          {validity === "invalid" && (
+                          {connState === "connecting" && (
+                            <Badge className="gap-1 bg-sky-500/15 text-sky-600 hover:bg-sky-500/20">
+                              <Loader2 className="h-3 w-3 animate-spin" />
+                              Connecting…
+                            </Badge>
+                          )}
+                          {connState === "error" && (
                             <Badge className="gap-1 bg-destructive/15 text-destructive hover:bg-destructive/20">
                               <XCircle className="h-3 w-3" />
-                              Invalid
+                              Error
                             </Badge>
                           )}
-                          {validity === "none" && (
+                          {connState === "not_connected" && (
                             <Badge variant="outline" className="gap-1 text-muted-foreground">
                               <AlertCircle className="h-3 w-3" />
-                              Not validated
+                              Not connected
                             </Badge>
                           )}
                           {r?.has_key && (
@@ -330,8 +336,8 @@ export function ShippingCompaniesSection() {
                           {r?.enabled
                             ? "Active for your store"
                             : canEnable
-                              ? "Key validated — toggle to enable"
-                              : "Validate an API key to activate"}
+                              ? "Connected — toggle to enable"
+                              : "Paste your API credentials and click Connect"}
                         </p>
                       </div>
                     </div>
