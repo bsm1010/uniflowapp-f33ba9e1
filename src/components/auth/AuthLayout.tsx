@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
+import fennecyLogo from "@/assets/fennecly-logo.png";
 
 export function AuthLayout({
   title,
@@ -25,9 +26,8 @@ export function AuthLayout({
         transition={{ duration: 0.4, ease: "easeOut" }}
         className="relative w-full max-w-md"
       >
-        <Link to="/" className="flex items-center gap-2 justify-center mb-8">
-          <div className="h-9 w-9 rounded-lg bg-gradient-brand shadow-glow" />
-          <span className="font-display font-semibold text-xl">Storely</span>
+        <Link to="/" className="flex items-center justify-center mb-8">
+          <img src={fennecyLogo} alt="Fennecly" className="h-12 w-auto object-contain" />
         </Link>
         <div className="rounded-2xl border border-border/60 bg-card/80 backdrop-blur-xl p-8 shadow-soft">
           <div className="text-center mb-7">

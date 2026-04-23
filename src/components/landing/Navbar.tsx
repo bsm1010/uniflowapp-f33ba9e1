@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import fennecyLogo from "@/assets/fennecly-logo.png";
 
 export function Navbar() {
   const { t } = useTranslation();
@@ -23,8 +24,7 @@ export function Navbar() {
       <div className="mx-auto max-w-6xl px-4 mt-4">
         <div className="flex items-center justify-between rounded-2xl border border-border/60 bg-background/70 backdrop-blur-xl px-4 py-3 shadow-soft">
           <a href="#" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-gradient-brand shadow-glow" />
-            <span className="font-display font-semibold text-lg">Storely</span>
+            <img src={fennecyLogo} alt="Fennecly" className="h-9 w-auto object-contain" />
           </a>
           <nav className="hidden md:flex items-center gap-7">
             {links.map((l) => (
