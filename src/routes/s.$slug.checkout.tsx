@@ -328,25 +328,33 @@ function CheckoutPage() {
                   />
                 </Field>
                 <Field label="Wilaya">
-                  <select
-                    required
-                    value={form.wilaya}
-                    onChange={(e) => update("wilaya", e.target.value)}
-                    className="w-full px-3 py-2.5 text-sm outline-none focus:ring-2"
-                    style={inputStyle}
-                  >
-                    <option value="">— Select wilaya —</option>
-                    {ALGERIAN_WILAYAS.map((w, i) => {
-                      const code = String(i + 1).padStart(2, "0");
-                      const price = tariffs[w];
-                      return (
-                        <option key={w} value={w}>
-                          {code} — {w}
-                          {price != null ? ` (${price} DZD)` : ""}
-                        </option>
-                      );
-                    })}
-                  </select>
+                  <div className="relative">
+                    <select
+                      required
+                      value={form.wilaya}
+                      onChange={(e) => onWilayaChange(e.target.value)}
+                      className="w-full px-3 py-2.5 pr-9 text-sm outline-none focus:ring-2 appearance-none transition-colors"
+                      style={inputStyle}
+                    >
+                      <option value="">— Select wilaya —</option>
+                      {ALGERIAN_WILAYAS.map((w, i) => {
+                        const code = String(i + 1).padStart(2, "0");
+                        const price = tariffs[w];
+                        return (
+                          <option key={w} value={w}>
+                            {code} — {w}
+                            {price != null ? ` (${formatDZD(price)})` : ""}
+                          </option>
+                        );
+                      })}
+                    </select>
+                    {fetchingPrice && (
+                      <Loader2
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin"
+                        style={{ color: t.muted }}
+                      />
+                    )}
+                  </div>
                 </Field>
                 <Field label={tr("storefront.checkout.notes")} full muted={t.muted}>
                   <textarea
