@@ -216,6 +216,20 @@ function CheckoutPage() {
   const tariffAvailable = tariffs[tariffEntryKey] != null;
   const deliveryPrice = tariffAvailable ? tariffs[tariffEntryKey] : 0;
 
+  // Compare the two delivery types for the current wilaya/city/company
+  const domicilePrice = form.wilaya && form.city
+    ? tariffs[tariffKey(companyId, form.wilaya, form.city, "domicile")]
+    : undefined;
+  const stopdeskPrice = form.wilaya && form.city
+    ? tariffs[tariffKey(companyId, form.wilaya, form.city, "stopdesk")]
+    : undefined;
+  const stopdeskCheaper =
+    form.deliveryType === "domicile" &&
+    typeof domicilePrice === "number" &&
+    typeof stopdeskPrice === "number" &&
+    stopdeskPrice < domicilePrice;
+  const stopdeskSavings = stopdeskCheaper ? (domicilePrice as number) - (stopdeskPrice as number) : 0;
+
   const total = cart.subtotal + deliveryPrice;
   const animatedTotal = useAnimatedNumber(total);
   const animatedDelivery = useAnimatedNumber(deliveryPrice);
