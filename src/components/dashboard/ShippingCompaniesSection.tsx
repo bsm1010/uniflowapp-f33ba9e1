@@ -371,67 +371,46 @@ export function ShippingCompaniesSection() {
                     </div>
                   </div>
 
-                  <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
-                    <div className="relative">
-                      <Input
-                        type={visible ? "text" : "password"}
-                        placeholder={maskedPlaceholder}
-                        autoComplete="off"
-                        spellCheck={false}
-                        value={draftKey[c.id] ?? ""}
-                        onChange={(e) => {
-                          setDraftKey((p) => ({ ...p, [c.id]: e.target.value }));
-                          setValidationStatus((p) => ({ ...p, [c.id]: undefined }));
-                        }}
-                        className={`pr-10 font-mono text-sm transition-colors ${inputBorder}`}
-                      />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setShowKey((p) => ({ ...p, [c.id]: !p[c.id] }))
-                        }
-                        className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                        aria-label={visible ? "Hide key" : "Show key"}
-                      >
-                        {visible ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </button>
-                    </div>
-                    <Input
-                      type={visible ? "text" : "password"}
-                      placeholder={
-                        r?.has_secret ? "•••••••• (stored)" : "API secret / ID (if required)"
-                      }
+                  <div className="mt-3 space-y-2">
+                    <label
+                      htmlFor={`creds-${c.id}`}
+                      className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground"
+                    >
+                      <Lock className="h-3 w-3" />
+                      Paste your API credentials (JSON)
+                    </label>
+                    <Textarea
+                      id={`creds-${c.id}`}
+                      placeholder={`{\n  "apiKey": "your-api-key",\n  "apiSecret": "optional-secret"\n}`}
                       autoComplete="off"
                       spellCheck={false}
-                      value={draftSecret[c.id] ?? ""}
+                      rows={5}
+                      value={draftJson[c.id] ?? ""}
                       onChange={(e) => {
-                        setDraftSecret((p) => ({ ...p, [c.id]: e.target.value }));
+                        setDraftJson((p) => ({ ...p, [c.id]: e.target.value }));
                         setValidationStatus((p) => ({ ...p, [c.id]: undefined }));
                       }}
-                      className={`font-mono text-sm transition-colors ${inputBorder}`}
+                      className={`font-mono text-xs leading-relaxed transition-colors ${textareaBorder}`}
                     />
-                    <Button
-                      type="button"
-                      size="sm"
-                      onClick={() => validateAndActivate(c.id)}
-                      disabled={isValidating || !draftHasKey}
-                      className="gap-1.5"
-                    >
-                      {isValidating ? (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      ) : (
-                        <ShieldCheck className="h-3.5 w-3.5" />
-                      )}
-                      {isValidating
-                        ? "Validating…"
-                        : r?.has_key
-                          ? "Update & Validate"
-                          : "Validate API Key"}
-                    </Button>
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-[11px] text-muted-foreground">
+                        Stored encrypted on the server. Only the last 4 chars are shown.
+                      </p>
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={() => connect(c.id)}
+                        disabled={isValidating || !draftHasJson}
+                        className="gap-1.5"
+                      >
+                        {isValidating ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          <Plug className="h-3.5 w-3.5" />
+                        )}
+                        {isValidating ? "Connecting…" : r?.has_key ? "Reconnect" : "Connect"}
+                      </Button>
+                    </div>
                   </div>
 
                   {(isValidating || validationStatus[c.id]) && (
