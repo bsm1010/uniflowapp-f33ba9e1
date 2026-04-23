@@ -18,7 +18,7 @@ const SHOTS = [
 export function Hero() {
   const { t } = useTranslation();
   return (
-    <section className="relative overflow-hidden pt-36 pb-24 md:pt-44 md:pb-32">
+    <section className="relative overflow-hidden pt-28 pb-14 md:pt-32 md:pb-20">
       {/* Dotted grid base */}
       <div
         aria-hidden

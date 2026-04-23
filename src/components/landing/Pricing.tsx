@@ -27,7 +27,7 @@ export function Pricing() {
   ];
 
   return (
-    <section id="pricing" className="py-24 md:py-32">
+    <section id="pricing" className="py-14 md:py-20">
       <div className="mx-auto max-w-6xl px-4">
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-sm font-medium text-primary uppercase tracking-wider">{t("pricing.kicker")}</p>

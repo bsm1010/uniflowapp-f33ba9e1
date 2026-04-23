@@ -13,7 +13,7 @@ const featureKeys = [
 export function Features() {
   const { t } = useTranslation();
   return (
-    <section id="features" className="py-24 md:py-32 relative">
+    <section id="features" className="py-14 md:py-20 relative">
       <div className="mx-auto max-w-6xl px-4">
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-sm font-medium text-primary uppercase tracking-wider">{t("features.kicker")}</p>

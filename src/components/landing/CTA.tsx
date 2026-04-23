@@ -5,7 +5,7 @@ import { ArrowRight } from "lucide-react";
 export function CTA() {
   const { t } = useTranslation();
   return (
-    <section className="py-24 md:py-32">
+    <section className="py-14 md:py-20">
       <div className="mx-auto max-w-5xl px-4">
         <div className="relative overflow-hidden rounded-3xl bg-gradient-brand p-10 md:p-16 text-center shadow-glow">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.25),transparent_60%)]" />

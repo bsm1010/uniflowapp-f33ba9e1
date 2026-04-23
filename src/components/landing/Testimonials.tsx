@@ -26,7 +26,7 @@ const testimonials = [
 export function Testimonials() {
   const { t } = useTranslation();
   return (
-    <section id="testimonials" className="py-24 md:py-32 bg-muted/30">
+    <section id="testimonials" className="py-14 md:py-20 bg-muted/30">
       <div className="mx-auto max-w-6xl px-4">
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-sm font-medium text-primary uppercase tracking-wider">{t("testimonials.kicker")}</p>
