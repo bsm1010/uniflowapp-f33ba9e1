@@ -468,8 +468,10 @@ export type Database = {
       }
       delivery_tariffs: {
         Row: {
+          city: string
           company_id: string | null
           created_at: string
+          delivery_type: string
           id: string
           price: number
           store_id: string
@@ -477,8 +479,10 @@ export type Database = {
           wilaya: string
         }
         Insert: {
+          city?: string
           company_id?: string | null
           created_at?: string
+          delivery_type?: string
           id?: string
           price?: number
           store_id: string
@@ -486,8 +490,10 @@ export type Database = {
           wilaya: string
         }
         Update: {
+          city?: string
           company_id?: string | null
           created_at?: string
+          delivery_type?: string
           id?: string
           price?: number
           store_id?: string
