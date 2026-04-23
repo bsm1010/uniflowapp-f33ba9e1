@@ -143,19 +143,26 @@ export function ShippingCompaniesSection() {
     const apiKey = (draftKey[companyId] ?? "").trim();
     const apiSecret = (draftSecret[companyId] ?? "").trim();
     if (!apiKey) {
-      toast.error("API key is required.");
+      const msg = "API key is required.";
+      setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
+      toast.error(msg);
       return;
     }
     setValidatingId(companyId);
+    setValidationStatus((p) => ({ ...p, [companyId]: undefined }));
     try {
       const res = await validateFn({
         data: { companyId, apiKey, apiSecret, setDefault: false },
       });
       if (!res.ok) {
-        toast.error(res.message);
+        const msg = "Invalid API key. Please check and try again";
+        setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
+        toast.error(msg);
         return;
       }
-      toast.success(res.message);
+      const msg = "API key is valid and connected successfully";
+      setValidationStatus((p) => ({ ...p, [companyId]: { ok: true, message: msg } }));
+      toast.success(msg);
       setRows((p) => ({
         ...p,
         [companyId]: {
@@ -166,7 +173,9 @@ export function ShippingCompaniesSection() {
         },
       }));
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Validation failed");
+      const msg = "Invalid API key. Please check and try again";
+      setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
+      toast.error(e instanceof Error ? e.message : msg);
     } finally {
       setValidatingId(null);
     }
