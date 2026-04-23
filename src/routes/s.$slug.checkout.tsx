@@ -13,6 +13,7 @@ import { useCart } from "@/hooks/use-cart";
 import { ALGERIAN_WILAYAS } from "@/lib/algeriaWilayas";
 
 type StoreSettings = Tables<"store_settings">;
+type Company = { id: string; name: string };
 
 export const Route = createFileRoute("/s/$slug/checkout")({
   component: CheckoutPage,
@@ -38,7 +39,6 @@ function useAnimatedNumber(value: number, duration = 400) {
     const start = performance.now();
     const step = (now: number) => {
       const t = Math.min(1, (now - start) / duration);
-      // easeOutCubic
       const eased = 1 - Math.pow(1 - t, 3);
       const current = from + (to - from) * eased;
       setDisplay(current);
@@ -66,6 +66,9 @@ function CheckoutPage() {
   const [settings, setSettings] = useState<StoreSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [companyId, setCompanyId] = useState<string>("");
+  // Tariffs keyed by `${companyId}:${wilaya}` -> price
   const [tariffs, setTariffs] = useState<Record<string, number>>({});
   const [fetchingPrice, setFetchingPrice] = useState(false);
   const cart = useCart(slug);
@@ -79,6 +82,7 @@ function CheckoutPage() {
     notes: "",
   });
 
+  // Load store + enabled companies + all tariffs
   useEffect(() => {
     let active = true;
     (async () => {
@@ -90,13 +94,38 @@ function CheckoutPage() {
       if (!active) return;
       setSettings(data);
       if (data?.user_id) {
-        const { data: rows } = await supabase
-          .from("delivery_tariffs")
-          .select("wilaya, price")
-          .eq("store_id", data.user_id);
+        // Get enabled companies for this store, plus tariffs
+        const [{ data: storeComps }, { data: rows }] = await Promise.all([
+          supabase
+            .from("store_delivery_companies")
+            .select("company_id, is_default, enabled, delivery_companies(id, name)")
+            .eq("store_id", data.user_id)
+            .eq("enabled", true),
+          supabase
+            .from("delivery_tariffs")
+            .select("wilaya, price, company_id")
+            .eq("store_id", data.user_id),
+        ]);
         if (!active) return;
+
+        const list: Company[] = (storeComps ?? [])
+          .map((s) => {
+            const c = s.delivery_companies as unknown as Company | null;
+            return c ? { id: c.id, name: c.name } : null;
+          })
+          .filter((c): c is Company => !!c);
+        setCompanies(list);
+        const def =
+          (storeComps ?? []).find((s) => s.is_default)?.company_id ||
+          list[0]?.id ||
+          "";
+        setCompanyId(def);
+
         const map: Record<string, number> = {};
-        for (const r of rows ?? []) map[r.wilaya] = Number(r.price);
+        for (const r of rows ?? []) {
+          const key = `${r.company_id ?? ""}:${r.wilaya}`;
+          map[key] = Number(r.price);
+        }
         setTariffs(map);
       }
       setLoading(false);
@@ -109,35 +138,47 @@ function CheckoutPage() {
   const update = (k: keyof typeof form, v: string) =>
     setForm((f) => ({ ...f, [k]: v }));
 
-  // When wilaya changes, refresh that single tariff in the background to ensure freshness.
-  const onWilayaChange = async (wilaya: string) => {
-    update("wilaya", wilaya);
+  // Refresh the specific tariff for selected wilaya + company
+  const refreshTariff = async (wilaya: string, compId: string) => {
     if (!wilaya || !settings?.user_id) return;
     setFetchingPrice(true);
     try {
-      const { data } = await supabase
+      let q = supabase
         .from("delivery_tariffs")
-        .select("price")
+        .select("price, company_id")
         .eq("store_id", settings.user_id)
-        .eq("wilaya", wilaya)
-        .maybeSingle();
+        .eq("wilaya", wilaya);
+      if (compId) q = q.eq("company_id", compId);
+      const { data } = await q.maybeSingle();
+      const key = `${compId}:${wilaya}`;
       setTariffs((prev) => ({
         ...prev,
-        [wilaya]: data ? Number(data.price) : 0,
+        [key]: data ? Number(data.price) : 0,
       }));
     } finally {
       setFetchingPrice(false);
     }
   };
 
-  const deliveryPrice = useMemo(
-    () => (form.wilaya && tariffs[form.wilaya] != null ? tariffs[form.wilaya] : 0),
-    [form.wilaya, tariffs],
-  );
+  const onWilayaChange = (wilaya: string) => {
+    update("wilaya", wilaya);
+    void refreshTariff(wilaya, companyId);
+  };
+
+  const onCompanyChange = (id: string) => {
+    setCompanyId(id);
+    if (form.wilaya) void refreshTariff(form.wilaya, id);
+  };
+
+  const deliveryPrice = useMemo(() => {
+    if (!form.wilaya) return 0;
+    const key = `${companyId}:${form.wilaya}`;
+    return tariffs[key] != null ? tariffs[key] : 0;
+  }, [form.wilaya, companyId, tariffs]);
+
   const total = cart.subtotal + deliveryPrice;
   const animatedTotal = useAnimatedNumber(total);
   const animatedDelivery = useAnimatedNumber(deliveryPrice);
-
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -201,6 +242,16 @@ function CheckoutPage() {
       return;
     }
 
+    // Create shipment record (best-effort, don't block order on failure)
+    if (companyId) {
+      await supabase.from("shipments").insert({
+        store_id: settings.user_id,
+        order_id: order.id,
+        company_id: companyId,
+        status: "pending",
+      });
+    }
+
     cart.clear();
     navigate({
       to: "/s/$slug/checkout/success",
@@ -234,6 +285,8 @@ function CheckoutPage() {
     border: `1px solid ${t.border}`,
     borderRadius: radius / 2,
   };
+
+  const selectedCompanyName = companies.find((c) => c.id === companyId)?.name;
 
   return (
     <StorefrontShell settings={settings}>
@@ -339,7 +392,7 @@ function CheckoutPage() {
                       <option value="">— Select wilaya —</option>
                       {ALGERIAN_WILAYAS.map((w, i) => {
                         const code = String(i + 1).padStart(2, "0");
-                        const price = tariffs[w];
+                        const price = tariffs[`${companyId}:${w}`];
                         return (
                           <option key={w} value={w}>
                             {code} — {w}
@@ -356,6 +409,22 @@ function CheckoutPage() {
                     )}
                   </div>
                 </Field>
+                {companies.length > 0 && (
+                  <Field label="Delivery company (optional)">
+                    <select
+                      value={companyId}
+                      onChange={(e) => onCompanyChange(e.target.value)}
+                      className="w-full px-3 py-2.5 pr-9 text-sm outline-none focus:ring-2 appearance-none transition-colors"
+                      style={inputStyle}
+                    >
+                      {companies.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  </Field>
+                )}
                 <Field label={tr("storefront.checkout.notes")} full muted={t.muted}>
                   <textarea
                     value={form.notes}
@@ -423,6 +492,7 @@ function CheckoutPage() {
                   <span style={{ color: t.muted }}>
                     {tr("storefront.checkout.shipping")}
                     {form.wilaya ? ` · ${form.wilaya}` : ""}
+                    {selectedCompanyName ? ` · ${selectedCompanyName}` : ""}
                   </span>
                   <span className="tabular-nums inline-flex items-center gap-1.5 transition-opacity" style={{ opacity: fetchingPrice ? 0.55 : 1 }}>
                     {fetchingPrice && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
