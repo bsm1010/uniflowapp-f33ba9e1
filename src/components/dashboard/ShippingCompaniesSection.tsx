@@ -50,9 +50,7 @@ export function ShippingCompaniesSection() {
 
   const [companies, setCompanies] = useState<Company[]>([]);
   const [rows, setRows] = useState<Record<string, StoreCompanyView>>({});
-  const [showKey, setShowKey] = useState<Record<string, boolean>>({});
-  const [draftKey, setDraftKey] = useState<Record<string, string>>({});
-  const [draftSecret, setDraftSecret] = useState<Record<string, string>>({});
+  const [draftJson, setDraftJson] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [validatingId, setValidatingId] = useState<string | null>(null);
