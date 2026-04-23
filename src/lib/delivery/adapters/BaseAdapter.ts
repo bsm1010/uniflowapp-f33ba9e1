@@ -4,6 +4,7 @@ import type {
   DeliveryAdapter,
   DeliveryCredentials,
   TrackingResult,
+  ValidationResult,
 } from "../types";
 
 /**
@@ -23,6 +24,7 @@ export abstract class BaseDeliveryAdapter implements DeliveryAdapter {
 
   abstract createShipment(input: CreateShipmentInput): Promise<CreateShipmentResult>;
   abstract trackShipment(trackingNumber: string): Promise<TrackingResult>;
+  abstract validateCredentials(): Promise<ValidationResult>;
 
   /** Generate a fallback tracking number when API is not configured. */
   protected generateTrackingNumber(prefix: string): string {

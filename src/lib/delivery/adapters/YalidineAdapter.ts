@@ -3,6 +3,7 @@ import type {
   CreateShipmentInput,
   CreateShipmentResult,
   TrackingResult,
+  ValidationResult,
 } from "../types";
 
 const YALIDINE_BASE_URL = "https://api.yalidine.app/v1";
@@ -15,6 +16,37 @@ const YALIDINE_BASE_URL = "https://api.yalidine.app/v1";
 export class YalidineAdapter extends BaseDeliveryAdapter {
   readonly key = "yalidine";
   readonly label = "Yalidine";
+
+  async validateCredentials(): Promise<ValidationResult> {
+    if (!this.hasCredentials()) {
+      return { ok: false, message: "API key is required." };
+    }
+    if (!this.credentials.apiSecret || !this.credentials.apiSecret.trim()) {
+      return { ok: false, message: "Yalidine requires both an API ID and API token." };
+    }
+    try {
+      // Lightweight authenticated GET — wilayas endpoint requires valid creds.
+      await this.request<unknown>(`${YALIDINE_BASE_URL}/wilayas/?page_size=1`, {
+        method: "GET",
+        headers: {
+          "X-API-ID": this.credentials.apiSecret,
+          "X-API-TOKEN": this.credentials.apiKey,
+        },
+        timeoutMs: 10_000,
+      });
+      return { ok: true, message: "Yalidine credentials verified." };
+    } catch (e) {
+      const raw = e instanceof Error ? e.message : String(e);
+      const lower = raw.toLowerCase();
+      if (lower.includes("401") || lower.includes("403") || lower.includes("unauthor")) {
+        return { ok: false, message: "Invalid Yalidine API ID or token." };
+      }
+      if (lower.includes("aborted") || lower.includes("timeout")) {
+        return { ok: false, message: "Yalidine API timed out. Try again." };
+      }
+      return { ok: false, message: "Could not reach Yalidine. Check your credentials." };
+    }
+  }
 
   async createShipment(input: CreateShipmentInput): Promise<CreateShipmentResult> {
     if (!this.hasCredentials()) {
