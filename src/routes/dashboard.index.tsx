@@ -50,6 +50,9 @@ function DashboardHome() {
       total: number;
       status: string;
       created_at: string;
+      product_name: string | null;
+      product_image: string | null;
+      item_count: number;
     }>
   >([]);
 
@@ -82,7 +85,7 @@ function DashboardHome() {
         .select("id,customer_name,customer_email,total,status,created_at")
         .eq("store_owner_id", user.id)
         .order("created_at", { ascending: false }),
-    ]).then(([prodRes, ordersRes]) => {
+    ]).then(async ([prodRes, ordersRes]) => {
       const orders = ordersRes.data ?? [];
       const revenue = orders.reduce((n, o) => n + Number(o.total ?? 0), 0);
       const customers = new Set(
@@ -94,7 +97,41 @@ function DashboardHome() {
         revenue,
         customers,
       });
-      setRecentOrders(orders.slice(0, 5));
+
+      const recent = orders.slice(0, 5);
+      const recentIds = recent.map((o) => o.id);
+      const itemsByOrder: Record<
+        string,
+        { product_name: string; image_url: string | null; count: number }
+      > = {};
+      if (recentIds.length) {
+        const { data: its } = await supabase
+          .from("order_items")
+          .select("order_id,product_name,image_url")
+          .in("order_id", recentIds);
+        for (const it of its ?? []) {
+          const cur = itemsByOrder[it.order_id];
+          if (cur) cur.count += 1;
+          else
+            itemsByOrder[it.order_id] = {
+              product_name: it.product_name,
+              image_url: it.image_url,
+              count: 1,
+            };
+        }
+      }
+      setRecentOrders(
+        recent.map((o) => ({
+          id: o.id,
+          customer_name: o.customer_name,
+          total: Number(o.total),
+          status: o.status,
+          created_at: o.created_at,
+          product_name: itemsByOrder[o.id]?.product_name ?? null,
+          product_image: itemsByOrder[o.id]?.image_url ?? null,
+          item_count: itemsByOrder[o.id]?.count ?? 0,
+        })),
+      );
     });
   }, [user]);
 
@@ -284,15 +321,27 @@ function DashboardHome() {
                     className="flex items-center justify-between gap-3 py-3"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="h-9 w-9 rounded-lg bg-accent flex items-center justify-center shrink-0">
-                        <ShoppingBag className="h-4 w-4 text-accent-foreground" />
-                      </div>
+                      {o.product_image ? (
+                        <img
+                          src={o.product_image}
+                          alt={o.product_name ?? ""}
+                          className="h-11 w-11 rounded-lg object-cover border border-border/60 shrink-0"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="h-11 w-11 rounded-lg bg-accent flex items-center justify-center shrink-0">
+                          <ShoppingBag className="h-4 w-4 text-accent-foreground" />
+                        </div>
+                      )}
                       <div className="min-w-0">
                         <p className="font-medium text-sm truncate">
-                          {o.customer_name}
+                          {o.product_name ?? o.customer_name}
                         </p>
-                        <p className="text-xs text-muted-foreground">
-                          {new Date(o.created_at).toLocaleString()}
+                        <p className="text-xs text-muted-foreground truncate">
+                          {o.customer_name}
+                          {o.item_count > 1 && ` • +${o.item_count - 1} more`}
+                          {" • "}
+                          {new Date(o.created_at).toLocaleDateString()}
                         </p>
                       </div>
                     </div>
