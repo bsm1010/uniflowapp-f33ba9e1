@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Loader2, ShoppingBag } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -47,9 +47,12 @@ const makeSchema = (tr: (k: string) => string) =>
       .refine(isValidAlgerianPhone, tr("storefront.cod.errPhoneInvalid")),
     wilaya: z.string().min(1, tr("storefront.cod.errWilaya")),
     city: z.string().min(1, tr("storefront.cod.errCity")),
+    deliveryType: z.enum(["domicile", "stopdesk"]),
   });
 
-type FormErrors = Partial<Record<"firstName" | "lastName" | "phone" | "wilaya" | "city", string>>;
+type FormErrors = Partial<
+  Record<"firstName" | "lastName" | "phone" | "wilaya" | "city" | "deliveryType", string>
+>;
 
 export function AlgerianCheckoutForm({
   storeOwnerId,
@@ -66,6 +69,9 @@ export function AlgerianCheckoutForm({
   const [phone, setPhone] = useState("");
   const [wilaya, setWilaya] = useState("");
   const [city, setCity] = useState("");
+  const [deliveryType, setDeliveryType] = useState<"domicile" | "stopdesk">("domicile");
+  const [shippingPrice, setShippingPrice] = useState<number | null>(null);
+  const [shippingLoading, setShippingLoading] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
 
@@ -75,6 +81,51 @@ export function AlgerianCheckoutForm({
   );
 
   const subtotal = product.price * quantity;
+  const total = subtotal + (shippingPrice ?? 0);
+
+  // Look up delivery price from synced tariffs whenever the selection changes.
+  // No external API call — purely from the local database for performance.
+  useEffect(() => {
+    if (!wilaya) {
+      setShippingPrice(null);
+      return;
+    }
+    let cancelled = false;
+    setShippingLoading(true);
+    (async () => {
+      const wilayaNorm = wilaya.trim();
+      const cityNorm = (city ?? "").trim();
+
+      const { data, error } = await supabase
+        .from("delivery_tariffs")
+        .select("price, city")
+        .eq("store_id", storeOwnerId)
+        .eq("wilaya", wilayaNorm)
+        .eq("delivery_type", deliveryType);
+
+      if (cancelled) return;
+      if (error || !data || data.length === 0) {
+        setShippingPrice(null);
+        setShippingLoading(false);
+        return;
+      }
+
+      // Prefer exact city match, then a wilaya-level row with empty city,
+      // then any row for this wilaya as a final fallback.
+      const exact = cityNorm
+        ? data.find(
+            (r) => (r.city ?? "").trim().toLowerCase() === cityNorm.toLowerCase(),
+          )
+        : null;
+      const wilayaDefault = data.find((r) => !r.city || r.city.trim() === "");
+      const chosen = exact ?? wilayaDefault ?? data[0];
+      setShippingPrice(chosen ? Number(chosen.price) : null);
+      setShippingLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [wilaya, city, deliveryType, storeOwnerId]);
 
   const inputStyle = {
     backgroundColor: t.bg,
@@ -86,7 +137,7 @@ export function AlgerianCheckoutForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const schema = makeSchema(tr);
-    const parsed = schema.safeParse({ firstName, lastName, phone, wilaya, city });
+    const parsed = schema.safeParse({ firstName, lastName, phone, wilaya, city, deliveryType });
     if (!parsed.success) {
       const errs: FormErrors = {};
       for (const issue of parsed.error.issues) {
@@ -111,7 +162,7 @@ export function AlgerianCheckoutForm({
           shipping_country: "Algeria",
           shipping_postal_code: parsed.data.wilaya,
           subtotal,
-          total: subtotal,
+          total,
           status: "pending",
         })
         .select("id")
@@ -137,6 +188,8 @@ export function AlgerianCheckoutForm({
       setPhone("");
       setWilaya("");
       setCity("");
+      setDeliveryType("domicile");
+      setShippingPrice(null);
       onSuccess?.(order.id);
     } catch (err) {
       console.error(err);
@@ -232,15 +285,59 @@ export function AlgerianCheckoutForm({
         </Field>
       </div>
 
+      <Field label={tr("storefront.cod.deliveryType") || "Delivery type"} mutedColor={t.muted}>
+        <div className="grid grid-cols-2 gap-2">
+          {(["domicile", "stopdesk"] as const).map((opt) => {
+            const active = deliveryType === opt;
+            return (
+              <button
+                key={opt}
+                type="button"
+                onClick={() => setDeliveryType(opt)}
+                className="h-11 px-3 text-sm font-medium transition-all"
+                style={{
+                  backgroundColor: active ? t.primary : t.bg,
+                  color: active ? t.onPrimary : t.fg,
+                  border: `1px solid ${active ? t.primary : t.border}`,
+                  borderRadius: radius / 2,
+                }}
+              >
+                {opt === "domicile"
+                  ? tr("storefront.cod.deliveryHome") || "Home delivery"
+                  : tr("storefront.cod.deliveryStopdesk") || "Stopdesk"}
+              </button>
+            );
+          })}
+        </div>
+      </Field>
+
       <div
-        className="flex items-center justify-between pt-3 mt-2"
+        className="space-y-1.5 pt-3 mt-2"
         style={{ borderTop: `1px solid ${t.border}` }}
       >
-        <div className="text-sm" style={{ color: t.muted }}>
-          {tr("storefront.cod.totalLine", { count: quantity })}
+        <div className="flex items-center justify-between text-sm" style={{ color: t.muted }}>
+          <span>{tr("storefront.cod.subtotal") || "Subtotal"}</span>
+          <span style={{ color: t.fg }}>{subtotal.toFixed(2)} DA</span>
         </div>
-        <div className="text-xl font-bold" style={{ color: t.fg }}>
-          {subtotal.toFixed(2)} DA
+        <div className="flex items-center justify-between text-sm" style={{ color: t.muted }}>
+          <span>{tr("storefront.cod.shipping") || "Shipping"}</span>
+          <span style={{ color: t.fg }}>
+            {!wilaya
+              ? "—"
+              : shippingLoading
+                ? "…"
+                : shippingPrice === null
+                  ? tr("storefront.cod.shippingUnavailable") || "Not available"
+                  : `${shippingPrice.toFixed(2)} DA`}
+          </span>
+        </div>
+        <div className="flex items-center justify-between pt-2 mt-1" style={{ borderTop: `1px dashed ${t.border}` }}>
+          <div className="text-sm" style={{ color: t.muted }}>
+            {tr("storefront.cod.totalLine", { count: quantity })}
+          </div>
+          <div className="text-xl font-bold" style={{ color: t.fg }}>
+            {total.toFixed(2)} DA
+          </div>
         </div>
       </div>
 
