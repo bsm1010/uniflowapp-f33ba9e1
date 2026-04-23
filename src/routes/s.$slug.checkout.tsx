@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -19,6 +19,46 @@ export const Route = createFileRoute("/s/$slug/checkout")({
   head: () => ({ meta: [{ title: "Checkout — Storely" }] }),
 });
 
+const dzdFormatter = new Intl.NumberFormat("en-US", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+const formatDZD = (n: number) => `${dzdFormatter.format(n)} DZD`;
+
+/** Smoothly animates a number from its previous value to the target. */
+function useAnimatedNumber(value: number, duration = 400) {
+  const [display, setDisplay] = useState(value);
+  const fromRef = useRef(value);
+  const rafRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const from = fromRef.current;
+    const to = value;
+    if (from === to) return;
+    const start = performance.now();
+    const step = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      // easeOutCubic
+      const eased = 1 - Math.pow(1 - t, 3);
+      const current = from + (to - from) * eased;
+      setDisplay(current);
+      if (t < 1) {
+        rafRef.current = requestAnimationFrame(step);
+      } else {
+        fromRef.current = to;
+      }
+    };
+    rafRef.current = requestAnimationFrame(step);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      fromRef.current = display;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value, duration]);
+
+  return display;
+}
+
 function CheckoutPage() {
   const { slug } = Route.useParams();
   const navigate = useNavigate();
@@ -27,6 +67,7 @@ function CheckoutPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [tariffs, setTariffs] = useState<Record<string, number>>({});
+  const [fetchingPrice, setFetchingPrice] = useState(false);
   const cart = useCart(slug);
 
   const [form, setForm] = useState({
@@ -68,11 +109,35 @@ function CheckoutPage() {
   const update = (k: keyof typeof form, v: string) =>
     setForm((f) => ({ ...f, [k]: v }));
 
+  // When wilaya changes, refresh that single tariff in the background to ensure freshness.
+  const onWilayaChange = async (wilaya: string) => {
+    update("wilaya", wilaya);
+    if (!wilaya || !settings?.user_id) return;
+    setFetchingPrice(true);
+    try {
+      const { data } = await supabase
+        .from("delivery_tariffs")
+        .select("price")
+        .eq("store_id", settings.user_id)
+        .eq("wilaya", wilaya)
+        .maybeSingle();
+      setTariffs((prev) => ({
+        ...prev,
+        [wilaya]: data ? Number(data.price) : 0,
+      }));
+    } finally {
+      setFetchingPrice(false);
+    }
+  };
+
   const deliveryPrice = useMemo(
     () => (form.wilaya && tariffs[form.wilaya] != null ? tariffs[form.wilaya] : 0),
     [form.wilaya, tariffs],
   );
   const total = cart.subtotal + deliveryPrice;
+  const animatedTotal = useAnimatedNumber(total);
+  const animatedDelivery = useAnimatedNumber(deliveryPrice);
+
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -263,25 +328,33 @@ function CheckoutPage() {
                   />
                 </Field>
                 <Field label="Wilaya">
-                  <select
-                    required
-                    value={form.wilaya}
-                    onChange={(e) => update("wilaya", e.target.value)}
-                    className="w-full px-3 py-2.5 text-sm outline-none focus:ring-2"
-                    style={inputStyle}
-                  >
-                    <option value="">— Select wilaya —</option>
-                    {ALGERIAN_WILAYAS.map((w, i) => {
-                      const code = String(i + 1).padStart(2, "0");
-                      const price = tariffs[w];
-                      return (
-                        <option key={w} value={w}>
-                          {code} — {w}
-                          {price != null ? ` (${price} DZD)` : ""}
-                        </option>
-                      );
-                    })}
-                  </select>
+                  <div className="relative">
+                    <select
+                      required
+                      value={form.wilaya}
+                      onChange={(e) => onWilayaChange(e.target.value)}
+                      className="w-full px-3 py-2.5 pr-9 text-sm outline-none focus:ring-2 appearance-none transition-colors"
+                      style={inputStyle}
+                    >
+                      <option value="">— Select wilaya —</option>
+                      {ALGERIAN_WILAYAS.map((w, i) => {
+                        const code = String(i + 1).padStart(2, "0");
+                        const price = tariffs[w];
+                        return (
+                          <option key={w} value={w}>
+                            {code} — {w}
+                            {price != null ? ` (${formatDZD(price)})` : ""}
+                          </option>
+                        );
+                      })}
+                    </select>
+                    {fetchingPrice && (
+                      <Loader2
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin"
+                        style={{ color: t.muted }}
+                      />
+                    )}
+                  </div>
                 </Field>
                 <Field label={tr("storefront.checkout.notes")} full muted={t.muted}>
                   <textarea
@@ -333,7 +406,7 @@ function CheckoutPage() {
                       </div>
                     </div>
                     <div className="font-medium">
-                      {(item.price * item.quantity).toFixed(2)} DZD
+                      {formatDZD(item.price * item.quantity)}
                     </div>
                   </div>
                 ))}
@@ -344,16 +417,17 @@ function CheckoutPage() {
               >
                 <div className="flex justify-between">
                   <span style={{ color: t.muted }}>{tr("storefront.checkout.subtotal")}</span>
-                  <span>{cart.subtotal.toFixed(2)} DZD</span>
+                  <span className="tabular-nums">{formatDZD(cart.subtotal)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span style={{ color: t.muted }}>
                     {tr("storefront.checkout.shipping")}
                     {form.wilaya ? ` · ${form.wilaya}` : ""}
                   </span>
-                  <span>
+                  <span className="tabular-nums inline-flex items-center gap-1.5 transition-opacity" style={{ opacity: fetchingPrice ? 0.55 : 1 }}>
+                    {fetchingPrice && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                     {form.wilaya
-                      ? `${deliveryPrice.toFixed(2)} DZD`
+                      ? formatDZD(animatedDelivery)
                       : "— Select wilaya"}
                   </span>
                 </div>
@@ -362,7 +436,9 @@ function CheckoutPage() {
                   style={{ borderTop: `1px solid ${t.border}` }}
                 >
                   <span>{tr("storefront.checkout.total")}</span>
-                  <span>{total.toFixed(2)} DZD</span>
+                  <span key={total} className="tabular-nums animate-[scale-in_0.2s_ease-out]">
+                    {formatDZD(animatedTotal)}
+                  </span>
                 </div>
               </div>
               <button
@@ -378,7 +454,7 @@ function CheckoutPage() {
                 {submitting ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  tr("storefront.checkout.place", { amount: `${total.toFixed(2)} DZD` })
+                  tr("storefront.checkout.place", { amount: formatDZD(animatedTotal) })
                 )}
               </button>
               <p className="mt-3 text-xs text-center" style={{ color: t.muted }}>
