@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { validateApiKeyForCompany } from "./services";
+// import { validateApiKeyForCompany } from "./services"; // Re-enable for real provider ping
 import { createAuthenticatedDeliveryClient } from "./authenticated-client";
 
 const InputSchema = z.object({
