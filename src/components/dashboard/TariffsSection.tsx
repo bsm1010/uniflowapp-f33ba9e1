@@ -365,6 +365,21 @@ export function TariffsSection() {
               className="h-9 w-56 pl-8"
             />
           </div>
+          {isZRExpress && (
+            <Button
+              variant="outline"
+              onClick={handleSyncFromZR}
+              disabled={syncing || loading || saving}
+              className="h-9 gap-2"
+            >
+              {syncing ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4" />
+              )}
+              {syncing ? "Syncing…" : "Sync Tariffs from ZR Express"}
+            </Button>
+          )}
           <Button
             onClick={saveAll}
             disabled={saving || loading || dirtyKeys.length === 0 || autoEnabled}
