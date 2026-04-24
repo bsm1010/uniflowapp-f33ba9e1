@@ -184,12 +184,13 @@ export function DashboardSidebar() {
                           target="_blank"
                           rel="noopener noreferrer"
                           className={linkClass}
+                          data-tour={item.tourId}
                         >
                           {renderIcon(item.icon, item.gradient, active)}
                           <span className="text-sm">{item.title}</span>
                         </a>
                       ) : (
-                        <Link to={item.url} className={linkClass}>
+                        <Link to={item.url} className={linkClass} data-tour={item.tourId}>
                           {active && (
                             <span
                               className={`absolute ${isRtl ? "right-0" : "left-0"} top-1.5 bottom-1.5 w-0.5 rounded-full bg-gradient-to-b ${item.gradient}`}
