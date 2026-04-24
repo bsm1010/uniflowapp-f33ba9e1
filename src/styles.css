@@ -276,6 +276,13 @@
   }
 }
 
+  /* Skip rendering of off-screen sections to speed up scroll/paint */
+  .cv-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 600px;
+  }
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

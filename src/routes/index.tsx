@@ -1,13 +1,28 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { lazy, Suspense } from "react";
 
 import { Navbar } from "@/components/landing/Navbar";
 import { Hero } from "@/components/landing/Hero";
-import { Features } from "@/components/landing/Features";
-import { HowItWorks } from "@/components/landing/HowItWorks";
-import { Pricing } from "@/components/landing/Pricing";
-import { Testimonials } from "@/components/landing/Testimonials";
-import { CTA } from "@/components/landing/CTA";
-import { Footer } from "@/components/landing/Footer";
+
+// Defer below-the-fold sections so the hero paints faster.
+const Features = lazy(() =>
+  import("@/components/landing/Features").then((m) => ({ default: m.Features })),
+);
+const HowItWorks = lazy(() =>
+  import("@/components/landing/HowItWorks").then((m) => ({ default: m.HowItWorks })),
+);
+const Pricing = lazy(() =>
+  import("@/components/landing/Pricing").then((m) => ({ default: m.Pricing })),
+);
+const Testimonials = lazy(() =>
+  import("@/components/landing/Testimonials").then((m) => ({ default: m.Testimonials })),
+);
+const CTA = lazy(() =>
+  import("@/components/landing/CTA").then((m) => ({ default: m.CTA })),
+);
+const Footer = lazy(() =>
+  import("@/components/landing/Footer").then((m) => ({ default: m.Footer })),
+);
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -28,17 +43,33 @@ export const Route = createFileRoute("/")({
   }),
 });
 
+function SectionFallback() {
+  return <div className="h-[400px]" aria-hidden />;
+}
+
 function Index() {
   return (
     <main className="min-h-screen bg-background">
       <Navbar />
       <Hero />
-      <Features />
-      <HowItWorks />
-      <Pricing />
-      <Testimonials />
-      <CTA />
-      <Footer />
+      <Suspense fallback={<SectionFallback />}>
+        <div className="cv-auto">
+          <Features />
+        </div>
+        <div className="cv-auto">
+          <HowItWorks />
+        </div>
+        <div className="cv-auto">
+          <Pricing />
+        </div>
+        <div className="cv-auto">
+          <Testimonials />
+        </div>
+        <div className="cv-auto">
+          <CTA />
+        </div>
+        <Footer />
+      </Suspense>
     </main>
   );
 }
