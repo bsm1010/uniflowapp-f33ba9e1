@@ -101,6 +101,7 @@ function DashboardLayout() {
         </div>
         <PaywallDialog />
         <WelcomeDialog userId={user.id} />
+        <OnboardingTour userId={user.id} />
         <Suspense fallback={null}>
           <HelpChatbot />
         </Suspense>
