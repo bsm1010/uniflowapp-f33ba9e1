@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -8,7 +8,11 @@ import { DashboardTopbar } from "@/components/dashboard/DashboardTopbar";
 import { OnboardingWizard } from "@/components/dashboard/OnboardingWizard";
 import { CreditsProvider } from "@/hooks/use-credits";
 import { PaywallDialog } from "@/components/dashboard/PaywallDialog";
-import { HelpChatbot } from "@/components/dashboard/HelpChatbot";
+
+// Defer the help chatbot — it's not needed for first paint.
+const HelpChatbot = lazy(() =>
+  import("@/components/dashboard/HelpChatbot").then((m) => ({ default: m.HelpChatbot })),
+);
 
 export const Route = createFileRoute("/dashboard")({
   component: DashboardLayout,
@@ -100,7 +104,9 @@ function DashboardLayout() {
           </SidebarInset>
         </div>
         <PaywallDialog />
-        <HelpChatbot />
+        <Suspense fallback={null}>
+          <HelpChatbot />
+        </Suspense>
       </SidebarProvider>
     </CreditsProvider>
   );
