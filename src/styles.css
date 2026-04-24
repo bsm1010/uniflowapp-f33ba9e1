@@ -288,6 +288,49 @@
     content-visibility: auto;
     contain-intrinsic-size: 1px 600px;
   }
+
+  /* Animated LED border for the credits badge */
+  @property --led-angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+  }
+  @keyframes led-spin {
+    to { --led-angle: 360deg; }
+  }
+  .led-border {
+    position: relative;
+    background-clip: padding-box;
+    border: 1.5px solid transparent;
+    isolation: isolate;
+  }
+  .led-border::before {
+    content: "";
+    position: absolute;
+    inset: -1.5px;
+    z-index: -1;
+    border-radius: inherit;
+    padding: 1.5px;
+    background: conic-gradient(
+      from var(--led-angle),
+      #ff0080,
+      #ff8c00,
+      #ffd500,
+      #00ff88,
+      #00d4ff,
+      #8a2be2,
+      #ff0080
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    animation: led-spin 3s linear infinite;
+  }
+  @supports not (background: conic-gradient(from 0deg, red, blue)) {
+    .led-border::before { display: none; }
+  }
 }
 
 /* Custom scrollbar */
