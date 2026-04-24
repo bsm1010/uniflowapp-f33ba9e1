@@ -55,6 +55,10 @@ function SettingsPage() {
   const [currency, setCurrency] = useState("USD");
   const [payoutEmail, setPayoutEmail] = useState("");
 
+  // Account deletion
+  const [deleteConfirm, setDeleteConfirm] = useState("");
+  const [deleting, setDeleting] = useState(false);
+
   useEffect(() => {
     if (!user) return;
 
@@ -214,6 +218,28 @@ function SettingsPage() {
   const handleSignOut = async () => {
     await signOut();
     navigate({ to: "/" });
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!user) return;
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData.session?.access_token;
+    if (!token) {
+      toast.error("Session expired. Please sign in again.");
+      return;
+    }
+    setDeleting(true);
+    try {
+      await deleteAccount({ data: { accessToken: token } });
+      toast.success("Your account has been deleted.");
+      await supabase.auth.signOut();
+      navigate({ to: "/" });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Failed to delete account";
+      toast.error(msg);
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const storeUrl =
