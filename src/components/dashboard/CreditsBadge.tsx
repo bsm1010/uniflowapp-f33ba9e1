@@ -14,10 +14,10 @@ export function CreditsBadge() {
   return (
     <Link
       to="/dashboard/credits"
-      className={`hidden sm:flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
+      className={`hidden sm:flex items-center gap-2 rounded-full led-border px-3 py-1.5 text-sm font-medium transition-colors ${
         low
-          ? "border-destructive/50 bg-destructive/10 text-destructive hover:bg-destructive/20"
-          : "border-border/60 bg-muted/40 hover:bg-muted/70"
+          ? "bg-destructive/10 text-destructive hover:bg-destructive/20"
+          : "bg-muted/40 hover:bg-muted/70"
       }`}
       title={`Plan: ${PLAN_LABELS[plan]}`}
     >
