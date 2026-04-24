@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Public can view analytics integrations" ON public.analytics_integrations;
