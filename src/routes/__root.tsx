@@ -6,6 +6,7 @@ import "@/lib/i18n";
 import { applyDirection } from "@/lib/i18n";
 
 import appCss from "../styles.css?url";
+import fennecyLogo from "@/assets/fennecly-logo.webp";
 
 function NotFoundComponent() {
   return (
@@ -90,7 +91,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
               : ""
           }
         >
-          <img src="/assets/fennecly-logo.webp" alt="Fennecly" />
+          <img src={fennecyLogo} alt="Fennecly" />
         </div>
         {children}
         <Scripts />
