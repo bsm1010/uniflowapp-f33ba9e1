@@ -9,6 +9,7 @@ import { OnboardingWizard } from "@/components/dashboard/OnboardingWizard";
 import { CreditsProvider } from "@/hooks/use-credits";
 import { PaywallDialog } from "@/components/dashboard/PaywallDialog";
 import { WelcomeDialog } from "@/components/dashboard/WelcomeDialog";
+import { OnboardingTour } from "@/components/dashboard/OnboardingTour";
 
 import { LogoLoader } from "@/components/ui/logo-loader";
 
@@ -100,6 +101,7 @@ function DashboardLayout() {
         </div>
         <PaywallDialog />
         <WelcomeDialog userId={user.id} />
+        <OnboardingTour userId={user.id} />
         <Suspense fallback={null}>
           <HelpChatbot />
         </Suspense>

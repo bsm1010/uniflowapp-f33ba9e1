@@ -77,13 +77,13 @@ export function DashboardSidebar() {
     if (anyAppActive) setAppsOpen(true);
   }, [anyAppActive]);
 
-  const items: NavItem[] = [
-    { title: t("dashboard.nav.dashboard"), url: "/dashboard", icon: LayoutDashboard, end: true, gradient: "from-violet-500 to-fuchsia-500" },
+  const items: (NavItem & { tourId?: string })[] = [
+    { title: t("dashboard.nav.dashboard"), url: "/dashboard", icon: LayoutDashboard, end: true, gradient: "from-violet-500 to-fuchsia-500", tourId: "dashboard" },
     { title: t("dashboard.nav.store"), url: "/dashboard/store", icon: Store, gradient: "from-indigo-500 to-blue-500" },
-    { title: t("dashboard.nav.products"), url: "/dashboard/products", icon: Package, gradient: "from-emerald-500 to-teal-500" },
+    { title: t("dashboard.nav.products"), url: "/dashboard/products", icon: Package, gradient: "from-emerald-500 to-teal-500", tourId: "products" },
     { title: t("dashboard.nav.categories"), url: "/dashboard/categories", icon: Tag, gradient: "from-amber-500 to-orange-500" },
-    { title: t("dashboard.nav.orders"), url: "/dashboard/orders", icon: ShoppingBag, gradient: "from-pink-500 to-rose-500" },
-    { title: "Shipping", url: "/dashboard/shipping", icon: Truck, gradient: "from-green-500 to-emerald-500" },
+    { title: t("dashboard.nav.orders"), url: "/dashboard/orders", icon: ShoppingBag, gradient: "from-pink-500 to-rose-500", tourId: "orders" },
+    { title: "Shipping", url: "/dashboard/shipping", icon: Truck, gradient: "from-green-500 to-emerald-500", tourId: "shipping" },
     { title: "Shipments", url: "/dashboard/shipments", icon: Package, gradient: "from-sky-500 to-indigo-500" },
     { title: t("dashboard.nav.customers"), url: "/dashboard/customers", icon: Users, gradient: "from-sky-500 to-cyan-500" },
     { title: t("dashboard.nav.themePresets"), url: "/dashboard/theme-presets", icon: Sparkles, gradient: "from-fuchsia-500 to-purple-500" },
@@ -92,7 +92,7 @@ export function DashboardSidebar() {
     { title: "AI Voice Generator", url: "/dashboard/voice-generator", icon: Mic, gradient: "from-pink-500 to-purple-500" },
     { title: t("dashboard.nav.credits"), url: "/dashboard/credits", icon: Coins, gradient: "from-yellow-500 to-amber-500" },
     { title: t("dashboard.nav.referrals"), url: "/dashboard/referrals", icon: Gift, gradient: "from-rose-500 to-pink-500" },
-    { title: t("dashboard.nav.customize"), url: "/customize", icon: Palette, external: true, gradient: "from-teal-500 to-emerald-500" },
+    { title: t("dashboard.nav.customize"), url: "/customize", icon: Palette, external: true, gradient: "from-teal-500 to-emerald-500", tourId: "customize" },
     { title: t("dashboard.nav.aboutPage"), url: "/dashboard/about", icon: FileText, gradient: "from-blue-500 to-sky-500" },
     { title: t("dashboard.nav.contactPage"), url: "/dashboard/contact", icon: Mail, gradient: "from-cyan-500 to-blue-500" },
     { title: t("dashboard.nav.analytics"), url: "/dashboard/analytics", icon: BarChart3, gradient: "from-orange-500 to-red-500" },
@@ -184,12 +184,13 @@ export function DashboardSidebar() {
                           target="_blank"
                           rel="noopener noreferrer"
                           className={linkClass}
+                          data-tour={item.tourId}
                         >
                           {renderIcon(item.icon, item.gradient, active)}
                           <span className="text-sm">{item.title}</span>
                         </a>
                       ) : (
-                        <Link to={item.url} className={linkClass}>
+                        <Link to={item.url} className={linkClass} data-tour={item.tourId}>
                           {active && (
                             <span
                               className={`absolute ${isRtl ? "right-0" : "left-0"} top-1.5 bottom-1.5 w-0.5 rounded-full bg-gradient-to-b ${item.gradient}`}
