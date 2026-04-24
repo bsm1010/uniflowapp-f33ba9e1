@@ -8,6 +8,7 @@ import { DashboardTopbar } from "@/components/dashboard/DashboardTopbar";
 import { OnboardingWizard } from "@/components/dashboard/OnboardingWizard";
 import { CreditsProvider } from "@/hooks/use-credits";
 import { PaywallDialog } from "@/components/dashboard/PaywallDialog";
+import { WelcomeDialog } from "@/components/dashboard/WelcomeDialog";
 
 import { LogoLoader } from "@/components/ui/logo-loader";
 
