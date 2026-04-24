@@ -99,6 +99,7 @@ function DashboardLayout() {
           </SidebarInset>
         </div>
         <PaywallDialog />
+        <WelcomeDialog userId={user.id} />
         <Suspense fallback={null}>
           <HelpChatbot />
         </Suspense>
