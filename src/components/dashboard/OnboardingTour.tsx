@@ -27,7 +27,9 @@ export function OnboardingTour({ userId }: Props) {
   const [stepIndex, setStepIndex] = useState(0);
   const [rect, setRect] = useState<DOMRect | null>(null);
 
-  // Trigger after welcome dialog
+  // Start the tour only after the welcome dialog's "Get Started" is clicked.
+  // If the welcome was already seen previously (returning user who hasn't done
+  // the tour yet), start shortly after mount.
   useEffect(() => {
     if (!userId) return;
     try {
@@ -35,8 +37,25 @@ export function OnboardingTour({ userId }: Props) {
     } catch {
       return;
     }
-    const t = setTimeout(() => setActive(true), 1500);
-    return () => clearTimeout(t);
+
+    const start = () => setActive(true);
+    window.addEventListener("fennecly:welcome-finished", start);
+
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    try {
+      const welcomeSeen = localStorage.getItem(`fennecly:welcome-seen:${userId}`);
+      if (welcomeSeen) {
+        // Welcome already dismissed in a past session — start the tour soon.
+        timer = setTimeout(start, 600);
+      }
+    } catch {
+      /* ignore */
+    }
+
+    return () => {
+      window.removeEventListener("fennecly:welcome-finished", start);
+      if (timer) clearTimeout(timer);
+    };
   }, [userId, storageKey]);
 
   const finish = () => {

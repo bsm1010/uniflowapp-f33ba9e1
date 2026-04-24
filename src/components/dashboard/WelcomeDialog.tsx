@@ -35,7 +35,15 @@ export function WelcomeDialog({ userId }: Props) {
     setOpen(next);
   };
 
-  const handleStart = () => handleClose(false);
+  const handleStart = () => {
+    handleClose(false);
+    // Signal that the welcome flow is finished so the guided tour can start.
+    try {
+      window.dispatchEvent(new CustomEvent("fennecly:welcome-finished"));
+    } catch {
+      /* ignore */
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
