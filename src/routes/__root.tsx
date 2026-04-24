@@ -6,6 +6,7 @@ import "@/lib/i18n";
 import { applyDirection } from "@/lib/i18n";
 
 import appCss from "../styles.css?url";
+import fennecyLogo from "@/assets/fennecly-logo.webp";
 
 function NotFoundComponent() {
   return (
@@ -67,8 +68,31 @@ function RootShell({ children }: { children: React.ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+              #app-boot-loader{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#fff;z-index:9999;transition:opacity .25s ease}
+              #app-boot-loader.dark{background:#0b0a14}
+              #app-boot-loader img{height:56px;width:auto;animation:fennecly-pulse 1.4s ease-in-out infinite}
+              #app-boot-loader.dark img{filter:brightness(0) invert(1)}
+              @keyframes fennecly-pulse{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:1;transform:scale(1.04)}}
+              .app-booted #app-boot-loader{opacity:0;pointer-events:none}
+            `,
+          }}
+        />
       </head>
       <body>
+        <div
+          id="app-boot-loader"
+          className={
+            typeof document !== "undefined" &&
+            document.documentElement.classList.contains("dark")
+              ? "dark"
+              : ""
+          }
+        >
+          <img src={fennecyLogo} alt="Fennecly" />
+        </div>
         {children}
         <Scripts />
       </body>
@@ -81,6 +105,13 @@ function RootComponent() {
   useEffect(() => {
     applyDirection(i18n.language);
   }, [i18n.language]);
+  useEffect(() => {
+    // Hide the pre-React boot loader once the app has mounted.
+    const t = window.setTimeout(() => {
+      document.documentElement.classList.add("app-booted");
+    }, 50);
+    return () => window.clearTimeout(t);
+  }, []);
   return (
     <AuthProvider>
       <Outlet />

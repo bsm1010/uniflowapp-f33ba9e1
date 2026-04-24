@@ -9,6 +9,8 @@ import { OnboardingWizard } from "@/components/dashboard/OnboardingWizard";
 import { CreditsProvider } from "@/hooks/use-credits";
 import { PaywallDialog } from "@/components/dashboard/PaywallDialog";
 
+import { LogoLoader } from "@/components/ui/logo-loader";
+
 // Defer the help chatbot — it's not needed for first paint.
 const HelpChatbot = lazy(() =>
   import("@/components/dashboard/HelpChatbot").then((m) => ({ default: m.HelpChatbot })),
@@ -59,11 +61,7 @@ function DashboardLayout() {
   }, [user]);
 
   if (loading && !user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-      </div>
-    );
+    return <LogoLoader />;
   }
 
   if (!user) return null;
@@ -72,11 +70,7 @@ function DashboardLayout() {
   const isLoadingOnboarding = onboardingCompleted === null;
 
   if (isLoadingOnboarding) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-      </div>
-    );
+    return <LogoLoader />;
   }
 
   if (showWizard) {
