@@ -38,7 +38,14 @@ export function OnboardingTour({ userId }: Props) {
       return;
     }
 
-    const start = () => setActive(true);
+    const start = () => {
+      setActive(true);
+      try {
+        localStorage.setItem(storageKey, "1");
+      } catch {
+        /* ignore */
+      }
+    };
     window.addEventListener("fennecly:welcome-finished", start);
     return () => {
       window.removeEventListener("fennecly:welcome-finished", start);
