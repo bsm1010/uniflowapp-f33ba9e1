@@ -164,38 +164,37 @@ function ShipmentsPage() {
       />
 
       {/* Hero showcase */}
-      <section className="relative my-6 overflow-hidden rounded-2xl border bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 text-white shadow-lg">
+      <section className="relative my-6 rounded-2xl border bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 text-white shadow-lg">
         <div
-          className="absolute inset-0 opacity-20"
+          className="absolute inset-0 overflow-hidden rounded-2xl opacity-20"
           style={{
             backgroundImage:
               "radial-gradient(circle at 20% 20%, white 1px, transparent 1px), radial-gradient(circle at 80% 60%, white 1px, transparent 1px)",
             backgroundSize: "40px 40px",
           }}
         />
-        <div className="relative grid items-center gap-6 p-6 sm:p-8 md:grid-cols-2 md:gap-4">
-          <div className="space-y-4">
+        <div className="relative grid items-center gap-4 px-6 py-5 sm:grid-cols-[1fr_auto] sm:px-8">
+          <div className="space-y-2.5">
             <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-medium backdrop-blur">
               📦 Real-time Shipment Tracking
             </span>
-            <h2 className="text-2xl font-bold leading-tight sm:text-3xl md:text-4xl">
+            <h2 className="text-xl font-bold leading-tight sm:text-2xl">
               تابع طلباتك من الانطلاق حتى وصولها للزبون 🚀
             </h2>
-            <p className="text-sm leading-relaxed text-white/80 sm:text-base">
-              Track every package in real-time, update statuses on the fly, and keep your customers informed at every step of the delivery journey.
+            <p className="text-xs leading-relaxed text-white/80 sm:text-sm">
+              Track every package in real-time, update statuses on the fly, and keep your customers informed.
             </p>
-            <div className="flex flex-wrap gap-2 pt-2">
-              <span className="rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium backdrop-blur">Live Updates</span>
-              <span className="rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium backdrop-blur">Tracking Numbers</span>
-              <span className="rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium backdrop-blur">Status Workflow</span>
+            <div className="flex flex-wrap gap-2 pt-1">
+              <span className="rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-medium backdrop-blur">Live Updates</span>
+              <span className="rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-medium backdrop-blur">Tracking Numbers</span>
+              <span className="rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-medium backdrop-blur">Status Workflow</span>
             </div>
           </div>
-          <div className="relative flex items-center justify-center">
-            <div className="absolute inset-0 bg-white/10 blur-3xl rounded-full" />
+          <div className="relative hidden h-full sm:block sm:w-48 md:w-64">
             <img
               src={deliveryMan}
               alt="Delivery man carrying Fennecly packages"
-              className="relative w-full max-w-sm drop-shadow-2xl animate-[float_6s_ease-in-out_infinite]"
+              className="absolute -top-10 right-0 h-[calc(100%+5rem)] w-auto max-w-none object-contain drop-shadow-2xl animate-[float_6s_ease-in-out_infinite]"
             />
           </div>
         </div>
