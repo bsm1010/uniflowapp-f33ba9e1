@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/dashboard/PageHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ShippingCompaniesSection } from "@/components/dashboard/ShippingCompaniesSection";
 import { TariffsSection } from "@/components/dashboard/TariffsSection";
-import deliveryTruck from "@/assets/delivery-truck.png";
+import deliveryTruck from "@/assets/delivery-truck.webp";
 
 export const Route = createFileRoute("/dashboard/shipping")({
   component: ShippingSettingsPage,
@@ -61,6 +61,9 @@ function ShippingSettingsPage() {
             <img
               src={deliveryTruck}
               alt="Fennecly delivery truck with packages"
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
               className="absolute -top-10 right-0 h-[calc(100%+5rem)] w-auto max-w-none object-contain drop-shadow-2xl animate-[float_6s_ease-in-out_infinite]"
             />
           </div>

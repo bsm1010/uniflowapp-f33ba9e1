@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Loader2, Truck, Search, Copy, CheckCircle2 } from "lucide-react";
-import deliveryMan from "@/assets/delivery-man.png";
+import deliveryMan from "@/assets/delivery-man.webp";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -194,6 +194,9 @@ function ShipmentsPage() {
             <img
               src={deliveryMan}
               alt="Delivery man carrying Fennecly packages"
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
               className="absolute -top-10 right-0 h-[calc(100%+5rem)] w-auto max-w-none object-contain drop-shadow-2xl animate-[float_6s_ease-in-out_infinite]"
             />
           </div>
