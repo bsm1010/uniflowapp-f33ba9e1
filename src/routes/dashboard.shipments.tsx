@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Loader2, Truck, Search, Copy, CheckCircle2 } from "lucide-react";
+import deliveryMan from "@/assets/delivery-man.png";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -161,6 +162,50 @@ function ShipmentsPage() {
         icon={Truck}
         gradient="from-sky-500 via-indigo-500 to-violet-500"
       />
+
+      {/* Hero showcase */}
+      <section className="relative my-6 overflow-hidden rounded-2xl border bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 text-white shadow-lg">
+        <div
+          className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 20% 20%, white 1px, transparent 1px), radial-gradient(circle at 80% 60%, white 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
+          }}
+        />
+        <div className="relative grid items-center gap-6 p-6 sm:p-8 md:grid-cols-2 md:gap-4">
+          <div className="space-y-4">
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-medium backdrop-blur">
+              📦 Real-time Shipment Tracking
+            </span>
+            <h2 className="text-2xl font-bold leading-tight sm:text-3xl md:text-4xl">
+              تابع طلباتك من الانطلاق حتى وصولها للزبون 🚀
+            </h2>
+            <p className="text-sm leading-relaxed text-white/80 sm:text-base">
+              Track every package in real-time, update statuses on the fly, and keep your customers informed at every step of the delivery journey.
+            </p>
+            <div className="flex flex-wrap gap-2 pt-2">
+              <span className="rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium backdrop-blur">Live Updates</span>
+              <span className="rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium backdrop-blur">Tracking Numbers</span>
+              <span className="rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium backdrop-blur">Status Workflow</span>
+            </div>
+          </div>
+          <div className="relative flex items-center justify-center">
+            <div className="absolute inset-0 bg-white/10 blur-3xl rounded-full" />
+            <img
+              src={deliveryMan}
+              alt="Delivery man carrying Fennecly packages"
+              className="relative w-full max-w-sm drop-shadow-2xl animate-[float_6s_ease-in-out_infinite]"
+            />
+          </div>
+        </div>
+        <style>{`
+          @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+          }
+        `}</style>
+      </section>
 
       {shipments === null ? (
         <div className="flex items-center justify-center py-20">
