@@ -11,7 +11,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { ALGERIAN_WILAYAS } from "@/lib/algeriaWilayas";
 import { ShippingCompaniesSection } from "@/components/dashboard/ShippingCompaniesSection";
-import deliveryTruck from "@/assets/delivery-truck.png";
+import deliveryTruck from "@/assets/delivery-truck.webp";
 
 export const Route = createFileRoute("/dashboard/delivery")({
   component: DeliverySettingsPage,
