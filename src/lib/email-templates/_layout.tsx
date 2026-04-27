@@ -13,7 +13,7 @@ import {
 } from '@react-email/components'
 
 const LOGO_URL =
-  'https://gyfcaoscsjazazhfozig.supabase.co/storage/v1/object/public/store-assets/email/fennecly-logo.webp'
+  'https://gyfcaoscsjazazhfozig.supabase.co/storage/v1/object/public/store-assets/email/fennecly-logo-white.png'
 const SUPPORT_URL = 'https://fennecly.online/contact'
 const SITE_URL = 'https://fennecly.online'
 
@@ -163,9 +163,7 @@ const logoMark = {
   display: 'inline-block',
   width: '48px',
   height: '48px',
-  borderRadius: '12px',
   margin: '0 auto 16px',
-  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
 }
 
 const heroBrand = {
