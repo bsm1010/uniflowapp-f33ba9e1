@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Button, Link, Text } from '@react-email/components'
+import { Button, Hr, Link, Section, Text } from '@react-email/components'
 import { BrandedLayout, styles } from './_layout'
 
 interface EmailChangeEmailProps {
@@ -15,8 +15,11 @@ export const EmailChangeEmail = ({
   newEmail,
   confirmationUrl,
 }: EmailChangeEmailProps) => (
-  <BrandedLayout preview={`Confirm your email change for ${siteName}`}>
-    <Text style={styles.h1}>Confirm your new email</Text>
+  <BrandedLayout
+    preview={`Confirm your new email for ${siteName}`}
+    eyebrow="Email change"
+  >
+    <Text style={styles.h1}>Confirm your new email 📬</Text>
     <Text style={styles.text}>
       You requested to change the email on your {siteName} account from{' '}
       <Link href={`mailto:${email}`} style={styles.link}>
@@ -26,15 +29,26 @@ export const EmailChangeEmail = ({
       <Link href={`mailto:${newEmail}`} style={styles.link}>
         {newEmail}
       </Link>
-      .
+      . Click below to confirm this change.
     </Text>
-    <Button style={styles.button} href={confirmationUrl}>
-      Confirm email change
-    </Button>
-    <Text style={styles.muted}>
-      If you didn't request this change, please secure your account
-      immediately and contact our support team.
+
+    <Section style={styles.buttonWrap}>
+      <Button style={styles.button} href={confirmationUrl}>
+        Confirm email change →
+      </Button>
+    </Section>
+
+    <Section style={styles.callout}>
+      ⚠️ <strong>Didn't request this?</strong> Your account may be at risk —
+      please reset your password and contact our support team immediately.
+    </Section>
+
+    <Hr style={styles.divider} />
+
+    <Text style={styles.fallbackLabel}>
+      Button not working? Paste this link into your browser:
     </Text>
+    <Text style={styles.fallbackUrl}>{confirmationUrl}</Text>
   </BrandedLayout>
 )
 

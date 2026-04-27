@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Text } from '@react-email/components'
+import { Section, Text } from '@react-email/components'
 import { BrandedLayout, styles } from './_layout'
 
 interface ReauthenticationEmailProps {
@@ -7,15 +7,27 @@ interface ReauthenticationEmailProps {
 }
 
 export const ReauthenticationEmail = ({ token }: ReauthenticationEmailProps) => (
-  <BrandedLayout preview="Your Fennecly verification code">
-    <Text style={styles.h1}>Confirm it's you</Text>
+  <BrandedLayout
+    preview="Your Fennecly verification code"
+    eyebrow="Verification code"
+  >
+    <Text style={styles.h1}>Confirm it's really you 🔒</Text>
     <Text style={styles.text}>
-      Use the code below to confirm your identity and continue:
+      Enter the verification code below to securely confirm your identity
+      and continue:
     </Text>
-    <Text style={styles.code}>{token}</Text>
+
+    <Section style={styles.codeWrap}>
+      <Text style={styles.code}>{token}</Text>
+    </Section>
+
+    <Section style={styles.callout}>
+      ⏱️ This code will expire shortly. Never share it with anyone — Fennecly
+      will never ask you for it.
+    </Section>
+
     <Text style={styles.muted}>
-      This code will expire shortly. If you didn't request this, you can
-      safely ignore this email.
+      If you didn't request this code, you can safely ignore this email.
     </Text>
   </BrandedLayout>
 )
