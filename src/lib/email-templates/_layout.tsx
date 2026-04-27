@@ -163,9 +163,7 @@ const logoMark = {
   display: 'inline-block',
   width: '48px',
   height: '48px',
-  borderRadius: '12px',
   margin: '0 auto 16px',
-  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
 }
 
 const heroBrand = {
