@@ -22,7 +22,7 @@ if (!i18n.isInitialized) {
         fr: { translation: fr },
         ar: { translation: ar },
       },
-      fallbackLng: "en",
+      fallbackLng: "ar",
       supportedLngs: ["en", "fr", "ar"],
       interpolation: { escapeValue: false },
       detection: {
@@ -31,6 +31,18 @@ if (!i18n.isInitialized) {
         lookupLocalStorage: "lang",
       },
     });
+
+  // Force Arabic on the very first visit (before any language has been stored).
+  if (typeof window !== "undefined") {
+    try {
+      if (!localStorage.getItem("lang")) {
+        localStorage.setItem("lang", "ar");
+        i18n.changeLanguage("ar");
+      }
+    } catch {
+      /* ignore */
+    }
+  }
 }
 
 export function applyDirection(lng: string) {
