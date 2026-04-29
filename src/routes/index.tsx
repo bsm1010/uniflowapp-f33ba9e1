@@ -3,9 +3,11 @@ import { lazy, Suspense } from "react";
 
 import { Navbar } from "@/components/landing/Navbar";
 import { Hero } from "@/components/landing/Hero";
-import { EcommerceBanner } from "@/components/landing/EcommerceBanner";
 
 // Defer below-the-fold sections so the hero paints faster.
+const EcommerceBanner = lazy(() =>
+  import("@/components/landing/EcommerceBanner").then((m) => ({ default: m.EcommerceBanner })),
+);
 const Features = lazy(() =>
   import("@/components/landing/Features").then((m) => ({ default: m.Features })),
 );
@@ -52,9 +54,11 @@ function Index() {
   return (
     <main className="min-h-screen bg-background">
       <Navbar />
-      <EcommerceBanner />
       <Hero />
       <Suspense fallback={<SectionFallback />}>
+        <div className="cv-auto">
+          <EcommerceBanner />
+        </div>
         <div className="cv-auto">
           <Features />
         </div>
