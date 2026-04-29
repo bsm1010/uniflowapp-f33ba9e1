@@ -5,6 +5,9 @@ import { Navbar } from "@/components/landing/Navbar";
 import { Hero } from "@/components/landing/Hero";
 
 // Defer below-the-fold sections so the hero paints faster.
+const EcommerceBanner = lazy(() =>
+  import("@/components/landing/EcommerceBanner").then((m) => ({ default: m.EcommerceBanner })),
+);
 const Features = lazy(() =>
   import("@/components/landing/Features").then((m) => ({ default: m.Features })),
 );
@@ -53,6 +56,9 @@ function Index() {
       <Navbar />
       <Hero />
       <Suspense fallback={<SectionFallback />}>
+        <div className="cv-auto">
+          <EcommerceBanner />
+        </div>
         <div className="cv-auto">
           <Features />
         </div>

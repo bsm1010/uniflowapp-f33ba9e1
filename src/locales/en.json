@@ -15,6 +15,13 @@
     "getStarted": "Get Started",
     "viewDemo": "View Demo"
   },
+  "banner": {
+    "kicker": "All-in-one commerce",
+    "titleA": "Sell anything,",
+    "titleB": "anywhere — effortlessly",
+    "subtitle": "From product pages to secure checkout, orders, and shipping — Fennecly bundles every tool your store needs into one seamless experience.",
+    "cta": "Launch your store"
+  },
   "features": {
     "kicker": "Features",
     "titleA": "Everything you need to",

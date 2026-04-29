@@ -15,6 +15,13 @@
     "getStarted": "Démarrer gratuitement",
     "viewDemo": "Voir la démo"
   },
+  "banner": {
+    "kicker": "Commerce tout-en-un",
+    "titleA": "Vendez tout,",
+    "titleB": "partout — sans effort",
+    "subtitle": "Des fiches produits au paiement sécurisé, en passant par les commandes et la livraison — Fennecly réunit tous les outils de votre boutique dans une expérience fluide.",
+    "cta": "Lancer ma boutique"
+  },
   "features": {
     "kicker": "Fonctionnalités",
     "titleA": "Tout ce qu'il faut pour",
