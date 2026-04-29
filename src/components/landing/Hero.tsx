@@ -1,28 +1,31 @@
 import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Play, Sparkles } from "lucide-react";
+import { ArrowLeft, Play, Sparkles, Truck, Banknote, Code2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import shot1 from "@/assets/dashboard-shot-1.jpg";
 import shot2 from "@/assets/dashboard-shot-2.jpg";
 import shot3 from "@/assets/dashboard-shot-3.jpg";
 
 const SHOTS = [
-  { src: shot1, alt: "Storely analytics dashboard" },
-  { src: shot2, alt: "Storely products management" },
-  { src: shot3, alt: "Storely orders management" },
+  { src: shot1, alt: "لوحة تحكم المتجر" },
+  { src: shot2, alt: "إدارة المنتجات" },
+  { src: shot3, alt: "إدارة الطلبات" },
 ];
 
 
 export function Hero() {
-  const { t } = useTranslation();
   return (
-    <section className="relative overflow-hidden pt-28 pb-14 md:pt-32 md:pb-20">
+    <section dir="rtl" className="relative overflow-hidden pt-28 pb-14 md:pt-32 md:pb-20">
       {/* Dotted grid base */}
       <div
         aria-hidden
         className="absolute inset-0 bg-grid-dots [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_75%)] pointer-events-none"
+      />
+      {/* Ambient brand glow */}
+      <div
+        aria-hidden
+        className="absolute top-20 left-1/2 -translate-x-1/2 h-[500px] w-[800px] rounded-full bg-gradient-brand opacity-20 blur-3xl pointer-events-none"
       />
       {/* Bottom fade into next section */}
       <div
