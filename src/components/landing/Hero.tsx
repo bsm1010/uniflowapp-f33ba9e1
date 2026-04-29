@@ -41,17 +41,17 @@ export function Hero() {
           className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/60 backdrop-blur px-3 py-1.5 text-xs text-muted-foreground shadow-soft"
         >
           <Sparkles className="h-3.5 w-3.5 text-primary" />
-          {t("hero.badge")}
+          منصة جزائرية 100% • انضم إلى آلاف البائعين
         </motion.div>
 
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="mt-6 text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight"
+          className="mt-6 text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight leading-[1.15]"
         >
-          {t("hero.titleA")}{" "}
-          <span className="text-gradient-brand">{t("hero.titleB")}</span>
+          أنشئ متجرك الإلكتروني{" "}
+          <span className="text-gradient-brand">وابدأ البيع في الجزائر</span>
         </motion.h1>
 
         <motion.p
@@ -60,8 +60,21 @@ export function Hero() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="mx-auto mt-6 max-w-2xl text-base sm:text-lg text-muted-foreground"
         >
-          {t("hero.subtitle")}
+          أطلق مشروعك في دقائق وابدأ تحقيق دخلك من الإنترنت — بدون تعقيدات وبدون خبرة تقنية.
         </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.25 }}
+          className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm text-muted-foreground"
+        >
+          <span className="inline-flex items-center gap-2"><Code2 className="h-4 w-4 text-primary" /> بدون برمجة</span>
+          <span className="h-1 w-1 rounded-full bg-muted-foreground/40" />
+          <span className="inline-flex items-center gap-2"><Banknote className="h-4 w-4 text-primary" /> دفع عند الاستلام</span>
+          <span className="h-1 w-1 rounded-full bg-muted-foreground/40" />
+          <span className="inline-flex items-center gap-2"><Truck className="h-4 w-4 text-primary" /> توصيل إلى 58 ولاية</span>
+        </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -72,16 +85,16 @@ export function Hero() {
           <Button
             size="lg"
             asChild
-            className="bg-gradient-brand text-brand-foreground hover:opacity-90 shadow-glow group"
+            className="bg-gradient-brand text-brand-foreground hover:opacity-90 shadow-glow group text-base px-8"
           >
             <Link to="/signup">
-              {t("hero.getStarted")}
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              ابدأ الآن
+              <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
             </Link>
           </Button>
-          <Button size="lg" variant="outline" className="backdrop-blur">
+          <Button size="lg" variant="outline" className="backdrop-blur text-base px-8">
             <Play className="h-4 w-4" />
-            {t("hero.viewDemo")}
+            شاهد كيف يعمل
           </Button>
         </motion.div>
 
