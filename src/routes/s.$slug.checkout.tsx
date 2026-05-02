@@ -4,6 +4,7 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
+import { createOrder } from "@/server/orders.functions";
 import type { Tables } from "@/integrations/supabase/types";
 import {
   StorefrontShell,
@@ -257,65 +258,40 @@ function CheckoutPage() {
     }
 
     setSubmitting(true);
-    const { data: order, error } = await supabase
-      .from("orders")
-      .insert({
-        store_owner_id: settings.user_id,
-        store_slug: settings.slug,
-        customer_name: form.name.trim(),
-        customer_email: form.email.trim(),
-        shipping_address: form.address.trim(),
-        shipping_city: form.city.trim(),
-        shipping_postal_code: form.wilaya.trim(),
-        shipping_country: "Algeria",
-        notes: form.notes.trim() || null,
-        subtotal: cart.subtotal,
-        total,
-      })
-      .select("id")
-      .single();
-
-    if (error || !order) {
-      setSubmitting(false);
-      toast.error(error?.message ?? tr("storefront.checkout.errOrder"));
-      return;
-    }
-
-    const itemsPayload = cart.items.map((i) => ({
-      order_id: order.id,
-      product_id: i.productId,
-      product_name: i.name,
-      unit_price: i.price,
-      quantity: i.quantity,
-      image_url: i.image,
-    }));
-
-    const { error: itemsError } = await supabase
-      .from("order_items")
-      .insert(itemsPayload);
-
-    if (itemsError) {
-      setSubmitting(false);
-      toast.error(itemsError.message);
-      return;
-    }
-
-    // Create shipment record (best-effort, don't block order on failure)
-    if (companyId) {
-      await supabase.from("shipments").insert({
-        store_id: settings.user_id,
-        order_id: order.id,
-        company_id: companyId,
-        status: "pending",
+    try {
+      const result = await createOrder({
+        data: {
+          storeSlug: slug,
+          customerName: form.name.trim(),
+          customerEmail: form.email.trim(),
+          shippingAddress: form.address.trim(),
+          shippingCity: form.city.trim(),
+          shippingWilaya: form.wilaya.trim(),
+          shippingCountry: "Algeria",
+          deliveryType: form.deliveryType,
+          companyId: companyId || undefined,
+          notes: form.notes.trim() || null,
+          items: cart.items.map((i) => ({
+            productId: i.productId,
+            quantity: i.quantity,
+            name: i.name,
+            image: i.image,
+          })),
+        },
       });
-    }
 
-    cart.clear();
-    navigate({
-      to: "/s/$slug/checkout/success",
-      params: { slug },
-      search: { order: order.id },
-    });
+      cart.clear();
+      navigate({
+        to: "/s/$slug/checkout/success",
+        params: { slug },
+        search: { order: result.orderId },
+      });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : tr("storefront.checkout.errOrder");
+      toast.error(message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (loading) {
