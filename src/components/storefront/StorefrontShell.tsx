@@ -19,6 +19,7 @@ interface Props {
 }
 
 export function StorefrontShell({ settings, children }: Props) {
+  useEffect(() => { loadStorefrontFonts(); }, []);
   const { t: tr } = useTranslation();
   const t = getStoreTokens(settings);
   const { count } = useCart(settings.slug);
