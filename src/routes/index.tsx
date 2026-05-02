@@ -8,6 +8,9 @@ import { Hero } from "@/components/landing/Hero";
 const EcommerceBanner = lazy(() =>
   import("@/components/landing/EcommerceBanner").then((m) => ({ default: m.EcommerceBanner })),
 );
+const DashboardTools = lazy(() =>
+  import("@/components/landing/DashboardTools").then((m) => ({ default: m.DashboardTools })),
+);
 const Features = lazy(() =>
   import("@/components/landing/Features").then((m) => ({ default: m.Features })),
 );
