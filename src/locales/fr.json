@@ -22,6 +22,27 @@
     "subtitle": "Des fiches produits au paiement sécurisé, en passant par les commandes et la livraison — Fennecly réunit tous les outils de votre boutique dans une expérience fluide.",
     "cta": "Lancer ma boutique"
   },
+  "dashTools": {
+    "kicker": "Tableau de bord puissant",
+    "titleA": "Tous les outils dont vous avez besoin,",
+    "titleB": "au même endroit",
+    "subtitle": "Gérez toute votre activité e-commerce depuis un tableau de bord unique et intuitif — produits, commandes, livraison, marketing et plus encore.",
+    "imageAlt": "Livreur portant des colis",
+    "items": {
+      "products": "Gestion des produits",
+      "orders": "Suivi des commandes",
+      "delivery": "Livraison & Expédition",
+      "themes": "Personnalisation du thème",
+      "analytics": "Analyses & Statistiques",
+      "chatbot": "Chatbot IA",
+      "email": "E-mail marketing",
+      "discounts": "Codes promo",
+      "seo": "Optimisation SEO",
+      "ai": "Descriptions IA",
+      "multilang": "Multi-langue",
+      "database": "Base de données"
+    }
+  },
   "features": {
     "kicker": "Fonctionnalités",
     "titleA": "Tout ce qu'il faut pour",
