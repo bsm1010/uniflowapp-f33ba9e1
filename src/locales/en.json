@@ -22,6 +22,27 @@
     "subtitle": "From product pages to secure checkout, orders, and shipping — Fennecly bundles every tool your store needs into one seamless experience.",
     "cta": "Launch your store"
   },
+  "dashTools": {
+    "kicker": "Powerful Dashboard",
+    "titleA": "All the tools you need,",
+    "titleB": "in one place",
+    "subtitle": "Manage your entire e-commerce business from a single, intuitive dashboard — products, orders, shipping, marketing, and more.",
+    "imageAlt": "Delivery man carrying packages",
+    "items": {
+      "products": "Product Manager",
+      "orders": "Order Tracking",
+      "delivery": "Delivery & Shipping",
+      "themes": "Theme Customizer",
+      "analytics": "Analytics & Insights",
+      "chatbot": "AI Chatbot",
+      "email": "Email Marketing",
+      "discounts": "Discount Codes",
+      "seo": "SEO Optimizer",
+      "ai": "AI Descriptions",
+      "multilang": "Multi-language",
+      "database": "Custom Database"
+    }
+  },
   "features": {
     "kicker": "Features",
     "titleA": "Everything you need to",
