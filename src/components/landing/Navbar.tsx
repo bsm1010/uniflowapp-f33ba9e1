@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -15,11 +14,8 @@ export function Navbar() {
   ];
 
   return (
-    <motion.header
-      initial={{ y: -20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="fixed top-0 inset-x-0 z-50"
+    <header
+      className="fixed top-0 inset-x-0 z-50 animate-in fade-in slide-in-from-top-3 duration-500"
     >
       <div className="mx-auto max-w-6xl px-4 mt-4">
         <div className="flex items-center justify-between rounded-2xl border border-border/60 bg-background/70 backdrop-blur-xl px-4 py-3 shadow-soft">
@@ -52,6 +48,6 @@ export function Navbar() {
           </div>
         </div>
       </div>
-    </motion.header>
+    </header>
   );
 }
