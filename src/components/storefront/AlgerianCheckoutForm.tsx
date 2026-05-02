@@ -151,34 +151,19 @@ export function AlgerianCheckoutForm({
     setErrors({});
     setSubmitting(true);
     try {
-      const { data: order, error: orderErr } = await supabase
-        .from("orders")
-        .insert({
-          store_owner_id: storeOwnerId,
-          store_slug: storeSlug,
-          customer_name: `${parsed.data.firstName} ${parsed.data.lastName}`,
-          customer_email: `${parsed.data.phone}@phone.local`,
-          shipping_address: parsed.data.phone,
-          shipping_city: parsed.data.city,
-          shipping_country: "Algeria",
-          shipping_postal_code: parsed.data.wilaya,
-          subtotal,
-          total,
-          status: "pending",
-        })
-        .select("id")
-        .single();
-      if (orderErr || !order) throw orderErr ?? new Error("Order failed");
-
-      const { error: itemErr } = await supabase.from("order_items").insert({
-        order_id: order.id,
-        product_id: product.id,
-        product_name: product.name,
-        unit_price: product.price,
-        quantity,
-        image_url: product.image,
+      const result = await createOrder({
+        data: {
+          storeSlug,
+          customerName: `${parsed.data.firstName} ${parsed.data.lastName}`,
+          customerEmail: `${parsed.data.phone}@phone.local`,
+          shippingAddress: parsed.data.phone,
+          shippingCity: parsed.data.city,
+          shippingWilaya: parsed.data.wilaya,
+          shippingCountry: "Algeria",
+          deliveryType: parsed.data.deliveryType,
+          items: [{ productId: product.id, quantity }],
+        },
       });
-      if (itemErr) throw itemErr;
 
       toast.success(tr("storefront.cod.successToast"), {
         description: tr("storefront.cod.successDesc"),
