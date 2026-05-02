@@ -4,9 +4,9 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
-import shot1 from "@/assets/dashboard-shot-1.jpg";
-import shot2 from "@/assets/dashboard-shot-2.jpg";
-import shot3 from "@/assets/dashboard-shot-3.jpg";
+import shot1 from "@/assets/dashboard-shot-1.webp";
+import shot2 from "@/assets/dashboard-shot-2.webp";
+import shot3 from "@/assets/dashboard-shot-3.webp";
 
 const SHOTS = [
   { src: shot1, alt: "Storely analytics dashboard" },

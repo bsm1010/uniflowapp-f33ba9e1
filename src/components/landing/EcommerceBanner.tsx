@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ShoppingBag } from "lucide-react";
-import banner from "@/assets/ecommerce-banner.png";
+import banner from "@/assets/ecommerce-banner.webp";
 
 export function EcommerceBanner() {
   const { t } = useTranslation();
