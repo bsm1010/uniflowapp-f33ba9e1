@@ -1,7 +1,8 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { ShoppingBag, Instagram, Facebook, Twitter, Music2, Menu, X } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { loadStorefrontFonts } from "@/lib/load-storefront-fonts";
 import { useCart } from "@/hooks/use-cart";
 import {
   getStoreTokens,
