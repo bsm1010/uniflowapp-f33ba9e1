@@ -63,6 +63,9 @@ function Index() {
           <EcommerceBanner />
         </div>
         <div className="cv-auto">
+          <DashboardTools />
+        </div>
+        <div className="cv-auto">
           <Features />
         </div>
         <div className="cv-auto">
