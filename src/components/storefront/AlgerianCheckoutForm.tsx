@@ -176,7 +176,7 @@ export function AlgerianCheckoutForm({
       setCity("");
       setDeliveryType("domicile");
       setShippingPrice(null);
-      onSuccess?.(order.id);
+      onSuccess?.(result.orderId);
     } catch (err) {
       console.error(err);
       toast.error(tr("storefront.cod.errOrder"));
