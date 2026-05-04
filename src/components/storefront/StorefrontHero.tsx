@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { ArrowRight, Sparkles } from "lucide-react";
 import type { StoreSettings, StoreTokens } from "@/lib/storeTheme";
 
 interface Props {
@@ -11,29 +12,42 @@ export function StorefrontHero({ settings, tokens: t }: Props) {
   const layout = settings.hero_layout || "centered";
   const img = settings.hero_image_url;
 
-  const cta = (
+  const ctaBtn = (
     <a
       href="#shop"
-      className="inline-flex items-center justify-center px-7 py-3.5 text-sm font-semibold transition-all hover:opacity-90 hover:scale-[1.02]"
+      className="group inline-flex items-center justify-center gap-2.5 px-8 py-4 text-base font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-xl active:scale-[0.98]"
       style={{
         backgroundColor: t.primary,
         color: t.onPrimary,
         borderRadius: t.buttonRadius,
-        boxShadow: `0 10px 30px -10px ${t.primary}55`,
+        boxShadow: `0 12px 40px -12px ${t.primary}66`,
       }}
     >
-      {settings.hero_cta_label}
+      {settings.hero_cta_label || tr("storefront.hero.shopNow", { defaultValue: "Shop Now" })}
+      <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+    </a>
+  );
+
+  const secondaryCta = (
+    <a
+      href="#featured"
+      className="inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-semibold transition-all duration-300 hover:scale-[1.02]"
+      style={{
+        backgroundColor: "transparent",
+        color: t.fg,
+        borderRadius: t.buttonRadius,
+        border: `2px solid ${t.border}`,
+      }}
+    >
+      {tr("storefront.hero.explore", { defaultValue: "Explore Collection" })}
     </a>
   );
 
   if (layout === "fullbleed" && img) {
     return (
-      <section
-        className="relative overflow-hidden"
-        style={{ borderBottom: `1px solid ${t.border}` }}
-      >
+      <section className="relative overflow-hidden">
         <div
-          className="relative min-h-[480px] md:min-h-[600px] flex items-center"
+          className="relative min-h-[560px] md:min-h-[700px] lg:min-h-[80vh] flex items-center"
           style={{
             backgroundImage: `url(${img})`,
             backgroundSize: "cover",
@@ -43,23 +57,38 @@ export function StorefrontHero({ settings, tokens: t }: Props) {
           <div
             className="absolute inset-0"
             style={{
-              background: `linear-gradient(180deg, ${t.bg}10 0%, ${t.bg}cc 100%)`,
+              background: `linear-gradient(135deg, ${t.bg}dd 0%, ${t.bg}88 50%, ${t.bg}44 100%)`,
             }}
           />
-          <div className="relative max-w-3xl mx-auto px-6 py-20 text-center">
-            <h1
-              className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight"
-              style={{ color: t.fg }}
-            >
-              {settings.hero_heading}
-            </h1>
-            <p
-              className="mt-5 text-base md:text-lg max-w-xl mx-auto"
-              style={{ color: t.fg, opacity: 0.85 }}
-            >
-              {settings.hero_subheading}
-            </p>
-            <div className="mt-8">{cta}</div>
+          <div className="relative max-w-7xl mx-auto px-5 sm:px-8 py-24 w-full">
+            <div className="max-w-2xl">
+              <div
+                className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] mb-6 px-4 py-2 rounded-full"
+                style={{
+                  backgroundColor: t.primary + "18",
+                  color: t.primary,
+                }}
+              >
+                <Sparkles className="h-3.5 w-3.5" />
+                {tr("storefront.hero.newSeason")}
+              </div>
+              <h1
+                className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold tracking-tight leading-[1.05]"
+                style={{ color: t.fg }}
+              >
+                {settings.hero_heading}
+              </h1>
+              <p
+                className="mt-6 text-lg md:text-xl max-w-lg leading-relaxed"
+                style={{ color: t.muted }}
+              >
+                {settings.hero_subheading}
+              </p>
+              <div className="mt-10 flex flex-wrap gap-4">
+                {ctaBtn}
+                {secondaryCta}
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -68,41 +97,40 @@ export function StorefrontHero({ settings, tokens: t }: Props) {
 
   if (layout === "split" && img) {
     return (
-      <section
-        className="px-4 sm:px-6 py-12 md:py-20"
-        style={{ borderBottom: `1px solid ${t.border}` }}
-      >
-        <div className="max-w-6xl mx-auto grid gap-10 md:grid-cols-2 items-center">
+      <section className="px-5 sm:px-8 py-16 md:py-24">
+        <div className="max-w-7xl mx-auto grid gap-12 md:grid-cols-2 items-center">
           <div>
             <div
-              className="inline-block text-xs font-semibold uppercase tracking-[0.2em] mb-4 px-3 py-1"
+              className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] mb-6 px-4 py-2 rounded-full"
               style={{
-                backgroundColor: t.accent + "22",
+                backgroundColor: t.accent + "18",
                 color: t.accent,
-                borderRadius: t.radius.sm,
               }}
             >
+              <Sparkles className="h-3.5 w-3.5" />
               {tr("storefront.hero.newSeason")}
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05]">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.05]">
               {settings.hero_heading}
             </h1>
-            <p className="mt-5 text-base md:text-lg" style={{ color: t.muted }}>
+            <p className="mt-6 text-lg md:text-xl leading-relaxed" style={{ color: t.muted }}>
               {settings.hero_subheading}
             </p>
-            <div className="mt-8">{cta}</div>
+            <div className="mt-10 flex flex-wrap gap-4">
+              {ctaBtn}
+              {secondaryCta}
+            </div>
           </div>
           <div
-            className="aspect-[4/5] overflow-hidden order-first md:order-last"
+            className="aspect-[4/5] overflow-hidden order-first md:order-last group"
             style={{
-              borderRadius: t.radius.lg,
-              border: `1px solid ${t.border}`,
+              borderRadius: t.radius.lg + 8,
             }}
           >
             <img
               src={img}
               alt=""
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
           </div>
         </div>
@@ -110,36 +138,48 @@ export function StorefrontHero({ settings, tokens: t }: Props) {
     );
   }
 
-  // Centered (default) — gradient bg if no image
+  // Centered (default)
   return (
     <section
-      className="relative px-4 sm:px-6 py-20 md:py-28 text-center overflow-hidden"
+      className="relative px-5 sm:px-8 py-24 md:py-32 lg:py-40 text-center overflow-hidden"
       style={{
-        borderBottom: `1px solid ${t.border}`,
         background: img
           ? `url(${img}) center/cover`
-          : `radial-gradient(ellipse at top, ${t.primary}15, transparent 60%), ${t.bg}`,
+          : `radial-gradient(ellipse at top, ${t.primary}12, transparent 60%), radial-gradient(ellipse at bottom right, ${t.accent}08, transparent 40%), ${t.bg}`,
       }}
     >
       {img && (
         <div
           className="absolute inset-0"
           style={{
-            background: `linear-gradient(180deg, ${t.bg}aa 0%, ${t.bg}ee 100%)`,
+            background: `linear-gradient(180deg, ${t.bg}cc 0%, ${t.bg}ee 100%)`,
           }}
         />
       )}
-      <div className="relative max-w-3xl mx-auto">
-        <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
+      <div className="relative max-w-4xl mx-auto">
+        <div
+          className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] mb-8 px-4 py-2 rounded-full"
+          style={{
+            backgroundColor: t.primary + "15",
+            color: t.primary,
+          }}
+        >
+          <Sparkles className="h-3.5 w-3.5" />
+          {tr("storefront.hero.newSeason")}
+        </div>
+        <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight leading-[1.05]">
           {settings.hero_heading}
         </h1>
         <p
-          className="mt-5 text-base md:text-lg max-w-xl mx-auto"
+          className="mt-6 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed"
           style={{ color: t.muted }}
         >
           {settings.hero_subheading}
         </p>
-        <div className="mt-8">{cta}</div>
+        <div className="mt-10 flex flex-wrap justify-center gap-4">
+          {ctaBtn}
+          {secondaryCta}
+        </div>
       </div>
     </section>
   );
