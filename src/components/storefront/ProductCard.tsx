@@ -10,7 +10,7 @@ export interface ProductCardData {
   price: number;
   images: string[];
   category?: string | null;
-  stock?: number | null | undefined;
+  stock?: number | null;
 }
 
 interface Props {
