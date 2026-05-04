@@ -141,11 +141,11 @@ export function StorefrontShell({ settings, children }: Props) {
               <ShoppingBag className="h-[18px] w-[18px]" />
               {count > 0 && (
                 <span
-                  className="absolute -top-1 -right-1 min-w-[20px] h-[20px] text-[10px] font-bold rounded-full px-1 flex items-center justify-center ring-2"
+                  className="absolute -top-1 -right-1 min-w-[20px] h-[20px] text-[10px] font-bold rounded-full px-1 flex items-center justify-center"
                   style={{
                     backgroundColor: t.primary,
                     color: t.onPrimary,
-                    ringColor: t.bg,
+                    boxShadow: `0 0 0 2px ${t.bg}`,
                   }}
                 >
                   {count}
