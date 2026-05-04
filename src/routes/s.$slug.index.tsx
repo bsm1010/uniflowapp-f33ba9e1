@@ -161,18 +161,9 @@ function StorefrontHome() {
   const template = settings.theme;
   const currency = settings.currency || "USD";
 
-  const featured = products.slice(0, template === "grid" ? 8 : 6);
+  const featured = products.slice(0, 8);
 
-  const gridClass =
-    template === "grid"
-      ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
-      : template === "minimal"
-        ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-10"
-        : template === "editorial"
-          ? "grid-cols-2 md:grid-cols-3 gap-6 md:gap-8"
-          : template === "bold"
-            ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5"
-            : "grid-cols-2 md:grid-cols-3 gap-6";
+  const gridClass = "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-7";
 
   const handleQuickAdd = (p: Product) => {
     cart.add({
@@ -195,19 +186,26 @@ function StorefrontHome() {
         <section
           key="categories"
           id="categories"
-          className="px-4 sm:px-6 py-12 md:py-16 max-w-6xl mx-auto w-full"
+          className="px-5 sm:px-8 py-16 md:py-24 max-w-7xl mx-auto w-full"
         >
-          <div className="flex items-end justify-between mb-6">
+          <div className="flex items-end justify-between mb-10">
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
+              <div
+                className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] mb-3 px-3 py-1.5 rounded-full"
+                style={{ backgroundColor: t.primary + "12", color: t.primary }}
+              >
+                <Grid3X3 className="h-3 w-3" />
+                {tr("storefront.home.browse", { defaultValue: "Browse" })}
+              </div>
+              <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">
                 {titles.categories}
               </h2>
-              <p className="mt-1 text-sm" style={{ color: t.muted }}>
+              <p className="mt-2 text-base" style={{ color: t.muted }}>
                 {titles.categories_sub}
               </p>
             </div>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {categories.slice(1).map((c) => {
               const productInCat = products.find((p) => p.category === c);
               return (
@@ -217,24 +215,29 @@ function StorefrontHome() {
                     setActiveCategory(c);
                     document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" });
                   }}
-                  className="group relative overflow-hidden flex items-center gap-3 px-4 py-3 transition-all hover:scale-[1.02]"
+                  className="group relative overflow-hidden flex flex-col items-center justify-center text-center p-6 md:p-8 transition-all duration-300 hover:scale-[1.03] hover:shadow-lg"
                   style={{
                     backgroundColor: t.surface,
                     border: `1px solid ${t.border}`,
-                    borderRadius: t.radius.md,
+                    borderRadius: t.radius.lg + 4,
+                    minHeight: 140,
                   }}
                 >
                   {productInCat?.images[0] && (
-                    <img
-                      src={productInCat.images[0]}
-                      alt=""
-                      className="h-10 w-10 object-cover"
-                      style={{ borderRadius: t.radius.sm }}
-                    />
+                    <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-500">
+                      <img
+                        src={productInCat.images[0]}
+                        alt=""
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
                   )}
-                  <span className="text-sm font-medium pr-2">{c}</span>
+                  <span className="relative text-base font-bold">{c}</span>
+                  <span className="relative text-xs mt-1.5" style={{ color: t.muted }}>
+                    {products.filter((p) => p.category === c).length} {tr("storefront.home.itemsLabel", { defaultValue: "items" })}
+                  </span>
                   <ArrowRight
-                    className="h-3.5 w-3.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="relative h-4 w-4 mt-3 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-1 group-hover:translate-y-0"
                     style={{ color: t.primary }}
                   />
                 </button>
@@ -249,22 +252,28 @@ function StorefrontHome() {
         <section
           key="featured"
           id="featured"
-          className="px-4 sm:px-6 py-12 md:py-16 max-w-6xl mx-auto w-full"
-          style={{ borderTop: `1px solid ${t.border}` }}
+          className="px-5 sm:px-8 py-16 md:py-24 max-w-7xl mx-auto w-full"
         >
-          <div className="flex items-end justify-between mb-8">
+          <div className="flex items-end justify-between mb-10">
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
+              <div
+                className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] mb-3 px-3 py-1.5 rounded-full"
+                style={{ backgroundColor: t.primary + "12", color: t.primary }}
+              >
+                <Sparkles className="h-3 w-3" />
+                {tr("storefront.home.curated", { defaultValue: "Curated" })}
+              </div>
+              <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">
                 {titles.featured}
               </h2>
-              <p className="mt-1 text-sm" style={{ color: t.muted }}>
+              <p className="mt-2 text-base" style={{ color: t.muted }}>
                 {titles.featured_sub}
               </p>
             </div>
             <a
               href="#shop"
-              className="hidden sm:inline-flex items-center gap-1 text-sm font-medium hover:gap-2 transition-all"
-              style={{ color: t.primary }}
+              className="hidden sm:inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-full transition-all duration-300 hover:scale-105"
+              style={{ backgroundColor: t.surface, color: t.fg, border: `1px solid ${t.border}` }}
             >
               {labels.view_all} <ArrowRight className="h-3.5 w-3.5" />
             </a>
@@ -291,26 +300,29 @@ function StorefrontHome() {
         <section
           key="newsletter"
           id="contact"
-          className="px-4 sm:px-6 py-16 md:py-24 text-center"
+          className="relative overflow-hidden px-5 sm:px-8 py-20 md:py-28"
           style={{
-            backgroundColor: t.surface,
-            borderTop: `1px solid ${t.border}`,
+            backgroundColor: t.isDark ? "rgba(255,255,255,0.02)" : "rgba(15,23,42,0.02)",
           }}
         >
-          <div className="max-w-xl mx-auto">
+          {/* Decorative */}
+          <div
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] opacity-[0.06] pointer-events-none rounded-full"
+            style={{ background: `radial-gradient(circle, ${t.primary}, transparent 70%)` }}
+          />
+          <div className="relative max-w-2xl mx-auto text-center">
             <div
-              className="inline-flex items-center justify-center h-12 w-12 mb-5"
+              className="inline-flex items-center justify-center h-16 w-16 mb-6 rounded-2xl"
               style={{
-                backgroundColor: t.primary + "22",
-                borderRadius: t.radius.md,
+                backgroundColor: t.primary + "18",
               }}
             >
-              <Mail className="h-5 w-5" style={{ color: t.primary }} />
+              <Mail className="h-7 w-7" style={{ color: t.primary }} />
             </div>
-            <h3 className="text-2xl md:text-3xl font-bold tracking-tight">
+            <h3 className="text-3xl md:text-4xl font-extrabold tracking-tight">
               {titles.newsletter}
             </h3>
-            <p className="mt-2 text-sm md:text-base" style={{ color: t.muted }}>
+            <p className="mt-3 text-base md:text-lg leading-relaxed" style={{ color: t.muted }}>
               {titles.newsletter_sub}
             </p>
             <form
@@ -318,27 +330,28 @@ function StorefrontHome() {
                 e.preventDefault();
                 toast.success(tr("storefront.home.subscribed"));
               }}
-              className="mt-6 flex max-w-md mx-auto gap-2"
+              className="mt-8 flex flex-col sm:flex-row max-w-lg mx-auto gap-3"
             >
               <input
                 type="email"
                 required
                 placeholder={tr("storefront.home.emailPh")}
-                className="flex-1 px-4 py-3 text-sm outline-none focus:ring-2"
+                className="flex-1 px-5 py-4 text-base outline-none transition-all duration-200 focus:shadow-lg"
                 style={{
                   backgroundColor: t.bg,
                   color: t.fg,
-                  border: `1px solid ${t.border}`,
+                  border: `2px solid ${t.border}`,
                   borderRadius: t.buttonRadius,
                 }}
               />
               <button
                 type="submit"
-                className="px-5 py-3 text-sm font-semibold transition-opacity hover:opacity-90"
+                className="px-8 py-4 text-base font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-lg active:scale-[0.98]"
                 style={{
                   backgroundColor: t.primary,
                   color: t.onPrimary,
                   borderRadius: t.buttonRadius,
+                  boxShadow: `0 8px 30px -8px ${t.primary}44`,
                 }}
               >
                 {labels.subscribe}
@@ -355,18 +368,24 @@ function StorefrontHome() {
     <StorefrontShell settings={settings}>
       {sectionOrder.map((key) => sectionRenderers[key]())}
 
-      {/* All products + search/filter — always at the end */}
+      {/* All products */}
       <section
         id="shop"
-        className="px-4 sm:px-6 py-12 md:py-16 max-w-6xl mx-auto w-full"
-        style={{ borderTop: `1px solid ${t.border}` }}
+        className="px-5 sm:px-8 py-16 md:py-24 max-w-7xl mx-auto w-full"
       >
-        <div className="flex flex-col gap-6 mb-8">
+        <div className="flex flex-col gap-8 mb-10">
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
+            <div
+              className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] mb-3 px-3 py-1.5 rounded-full"
+              style={{ backgroundColor: t.primary + "12", color: t.primary }}
+            >
+              <ShoppingBag className="h-3 w-3" />
+              {tr("storefront.home.collection", { defaultValue: "Collection" })}
+            </div>
+            <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">
               {tr("storefront.home.allProducts")}
             </h2>
-            <p className="mt-1 text-sm" style={{ color: t.muted }}>
+            <p className="mt-2 text-base" style={{ color: t.muted }}>
               {tr("storefront.home.items", { count: filtered.length })}
               {activeCategory !== "All" && tr("storefront.home.inCategory", { category: activeCategory })}
             </p>
@@ -375,35 +394,35 @@ function StorefrontHome() {
           <div className="flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
             {settings.show_search && (
               <div
-                className="relative flex-1 max-w-md"
+                className="relative flex-1 max-w-md group"
                 style={{
-                  border: `1px solid ${t.border}`,
-                  borderRadius: t.radius.md,
+                  border: `2px solid ${t.border}`,
+                  borderRadius: t.radius.md + 4,
                   backgroundColor: t.surface,
                 }}
               >
                 <Search
-                  className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 h-[18px] w-[18px]"
                   style={{ color: t.muted }}
                 />
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder={labels.search_placeholder}
-                  className="w-full bg-transparent pl-10 pr-3 py-2.5 text-sm outline-none"
+                  className="w-full bg-transparent pl-12 pr-4 py-3.5 text-sm outline-none"
                   style={{ color: t.fg }}
                 />
               </div>
             )}
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-3 flex-wrap">
               {categories.length > 1 && (
                 <select
                   value={activeCategory}
                   onChange={(e) => setActiveCategory(e.target.value)}
-                  className="text-sm px-3 py-2.5 outline-none cursor-pointer"
+                  className="text-sm px-4 py-3 outline-none cursor-pointer font-medium"
                   style={{
-                    border: `1px solid ${t.border}`,
-                    borderRadius: t.radius.md,
+                    border: `2px solid ${t.border}`,
+                    borderRadius: t.radius.md + 4,
                     backgroundColor: t.surface,
                     color: t.fg,
                   }}
@@ -418,10 +437,10 @@ function StorefrontHome() {
               <select
                 value={sort}
                 onChange={(e) => setSort(e.target.value as SortKey)}
-                className="text-sm px-3 py-2.5 outline-none cursor-pointer"
+                className="text-sm px-4 py-3 outline-none cursor-pointer font-medium"
                 style={{
-                  border: `1px solid ${t.border}`,
-                  borderRadius: t.radius.md,
+                  border: `2px solid ${t.border}`,
+                  borderRadius: t.radius.md + 4,
                   backgroundColor: t.surface,
                   color: t.fg,
                 }}
@@ -437,18 +456,18 @@ function StorefrontHome() {
 
         {filtered.length === 0 ? (
           <div
-            className="p-16 text-center"
+            className="p-20 text-center"
             style={{
-              borderRadius: t.radius.lg,
-              border: `1px solid ${t.border}`,
+              borderRadius: t.radius.lg + 4,
+              border: `2px solid ${t.border}`,
               backgroundColor: t.surface,
             }}
           >
-            <ShoppingBag className="h-8 w-8 mx-auto" style={{ color: t.muted }} />
-            <p className="mt-4 font-medium">
+            <ShoppingBag className="h-12 w-12 mx-auto opacity-30" style={{ color: t.muted }} />
+            <p className="mt-5 text-lg font-semibold">
               {products.length === 0 ? tr("storefront.home.noProducts") : tr("storefront.home.noMatches")}
             </p>
-            <p className="mt-1 text-sm" style={{ color: t.muted }}>
+            <p className="mt-2 text-sm" style={{ color: t.muted }}>
               {products.length === 0
                 ? tr("storefront.home.noProductsDesc")
                 : tr("storefront.home.noMatchesDesc")}
@@ -475,5 +494,6 @@ function StorefrontHome() {
   );
 }
 
-// Suppress unused Link import warning (kept for potential future use)
 void Link;
+void Star;
+void SlidersHorizontal;
