@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { ShoppingBag, Instagram, Facebook, Twitter, Music2, Menu, X } from "lucide-react";
+import { ShoppingBag, User, Instagram, Facebook, Twitter, Music2, Menu, X, ChevronRight } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { loadStorefrontFonts } from "@/lib/load-storefront-fonts";
@@ -10,7 +10,6 @@ import {
   type StoreSettings,
 } from "@/lib/storeTheme";
 
-// Re-export for backwards compatibility
 export { getStoreTokens } from "@/lib/storeTheme";
 
 interface Props {
@@ -26,6 +25,13 @@ export function StorefrontShell({ settings, children }: Props) {
   const location = useLocation();
   const socials = getFooterSocials(settings);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const navItems = [
     { label: tr("storefront.nav.home"), to: "/s/$slug" as const, exact: true },
@@ -54,39 +60,55 @@ export function StorefrontShell({ settings, children }: Props) {
       className="min-h-screen flex flex-col"
       style={{ backgroundColor: t.bg, color: t.fg, fontFamily: t.fontFamily }}
     >
-      <header
-        className="sticky top-0 z-30 backdrop-blur-md"
+      {/* Announcement bar */}
+      <div
+        className="text-center text-xs font-medium tracking-wide py-2.5 px-4"
         style={{
-          backgroundColor: t.bg + "e6",
-          borderBottom: `1px solid ${t.border}`,
+          backgroundColor: t.primary,
+          color: t.onPrimary,
         }}
       >
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+        ✨ {tr("storefront.nav.announcement", { defaultValue: "Free shipping on orders over $50" })}
+      </div>
+
+      {/* Sticky navbar */}
+      <header
+        className="sticky top-0 z-30 transition-all duration-300"
+        style={{
+          backgroundColor: scrolled ? t.bg + "f5" : t.bg,
+          backdropFilter: scrolled ? "blur(20px) saturate(180%)" : "none",
+          borderBottom: `1px solid ${scrolled ? t.border : "transparent"}`,
+          boxShadow: scrolled ? `0 1px 20px ${t.isDark ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.06)"}` : "none",
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-5 sm:px-8 h-[72px] flex items-center justify-between gap-6">
+          {/* Logo */}
           <Link
             to="/s/$slug"
             params={{ slug: settings.slug }}
-            className="flex items-center gap-2 min-w-0"
+            className="flex items-center gap-3 min-w-0 group"
           >
             {settings.logo_url ? (
               <img
                 src={settings.logo_url}
                 alt={settings.store_name}
-                className="h-8 w-8 rounded object-cover shrink-0"
+                className="h-10 w-10 rounded-xl object-cover shrink-0 transition-transform duration-300 group-hover:scale-105"
               />
             ) : (
               <div
-                className="h-8 w-8 rounded shrink-0"
-                style={{ backgroundColor: t.primary }}
-              />
+                className="h-10 w-10 rounded-xl shrink-0 flex items-center justify-center text-sm font-bold transition-transform duration-300 group-hover:scale-105"
+                style={{ backgroundColor: t.primary, color: t.onPrimary }}
+              >
+                {settings.store_name?.charAt(0)?.toUpperCase() ?? "S"}
+              </div>
             )}
-            <span className="font-semibold tracking-tight truncate">
+            <span className="text-lg font-bold tracking-tight truncate">
               {settings.store_name}
             </span>
           </Link>
-          <nav
-            className="hidden md:flex items-center gap-7 text-sm"
-            style={{ color: t.muted }}
-          >
+
+          {/* Desktop nav */}
+          <nav className="hidden md:flex items-center gap-1">
             {navItems.map((item) => {
               const active = isActive(item.to, item.exact, item.hash);
               return (
@@ -95,10 +117,10 @@ export function StorefrontShell({ settings, children }: Props) {
                   to={item.to}
                   params={{ slug: settings.slug }}
                   hash={item.hash}
-                  className="hover:opacity-100 transition-opacity"
+                  className="relative px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg"
                   style={{
                     color: active ? t.fg : t.muted,
-                    fontWeight: active ? 600 : 400,
+                    backgroundColor: active ? t.surfaceStrong : "transparent",
                   }}
                 >
                   {item.label}
@@ -106,42 +128,51 @@ export function StorefrontShell({ settings, children }: Props) {
               );
             })}
           </nav>
-          <div className="flex items-center gap-2">
+
+          {/* Action icons */}
+          <div className="flex items-center gap-1.5">
             <Link
               to="/s/$slug/cart"
               params={{ slug: settings.slug }}
-              className="relative inline-flex items-center justify-center h-10 w-10 rounded-full transition-opacity hover:opacity-80"
+              className="relative inline-flex items-center justify-center h-11 w-11 rounded-xl transition-all duration-200 hover:scale-105"
               style={{ backgroundColor: t.surface }}
               aria-label={tr("storefront.nav.cart")}
             >
-              <ShoppingBag className="h-4 w-4" />
+              <ShoppingBag className="h-[18px] w-[18px]" />
               {count > 0 && (
                 <span
-                  className="absolute -top-1 -right-1 min-w-[18px] h-[18px] text-[10px] font-semibold rounded-full px-1 flex items-center justify-center"
-                  style={{ backgroundColor: t.primary, color: t.onPrimary }}
+                  className="absolute -top-1 -right-1 min-w-[20px] h-[20px] text-[10px] font-bold rounded-full px-1 flex items-center justify-center ring-2"
+                  style={{
+                    backgroundColor: t.primary,
+                    color: t.onPrimary,
+                    ringColor: t.bg,
+                  }}
                 >
                   {count}
                 </span>
               )}
             </Link>
+
             <button
               type="button"
               onClick={() => setMobileOpen((v) => !v)}
-              className="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-full transition-opacity hover:opacity-80"
+              className="md:hidden inline-flex items-center justify-center h-11 w-11 rounded-xl transition-all duration-200 hover:scale-105"
               style={{ backgroundColor: t.surface }}
               aria-label={tr("storefront.nav.menu")}
               aria-expanded={mobileOpen}
             >
-              {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+              {mobileOpen ? <X className="h-[18px] w-[18px]" /> : <Menu className="h-[18px] w-[18px]" />}
             </button>
           </div>
         </div>
+
+        {/* Mobile nav */}
         {mobileOpen && (
           <div
-            className="md:hidden border-t"
-            style={{ borderColor: t.border, backgroundColor: t.bg }}
+            className="md:hidden animate-fade-in"
+            style={{ borderTop: `1px solid ${t.border}`, backgroundColor: t.bg }}
           >
-            <nav className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex flex-col">
+            <nav className="max-w-7xl mx-auto px-5 sm:px-8 py-4 flex flex-col gap-1">
               {navItems.map((item) => {
                 const active = isActive(item.to, item.exact, item.hash);
                 return (
@@ -151,14 +182,14 @@ export function StorefrontShell({ settings, children }: Props) {
                     params={{ slug: settings.slug }}
                     hash={item.hash}
                     onClick={() => setMobileOpen(false)}
-                    className="py-3 text-sm border-b last:border-0 transition-opacity hover:opacity-70"
+                    className="flex items-center justify-between py-3.5 px-4 text-sm font-medium rounded-xl transition-all duration-200"
                     style={{
-                      borderColor: t.border,
                       color: active ? t.fg : t.muted,
-                      fontWeight: active ? 600 : 400,
+                      backgroundColor: active ? t.surfaceStrong : "transparent",
                     }}
                   >
                     {item.label}
+                    <ChevronRight className="h-4 w-4 opacity-40" />
                   </Link>
                 );
               })}
@@ -169,118 +200,136 @@ export function StorefrontShell({ settings, children }: Props) {
 
       <main className="flex-1">{children}</main>
 
+      {/* Premium footer */}
       <footer
-        className="px-4 sm:px-6 pt-12 pb-8"
-        style={{ borderTop: `1px solid ${t.border}`, color: t.muted }}
+        className="relative overflow-hidden"
+        style={{
+          backgroundColor: t.isDark ? "rgba(255,255,255,0.02)" : "rgba(15,23,42,0.02)",
+          borderTop: `1px solid ${t.border}`,
+          color: t.muted,
+        }}
       >
-        <div className="max-w-6xl mx-auto grid gap-8 md:grid-cols-4">
-          <div className="md:col-span-2">
-            <div className="flex items-center gap-2">
-              {settings.logo_url ? (
-                <img
-                  src={settings.logo_url}
-                  alt={settings.store_name}
-                  className="h-7 w-7 rounded object-cover"
-                />
-              ) : (
-                <div
-                  className="h-7 w-7 rounded"
-                  style={{ backgroundColor: t.primary }}
-                />
-              )}
-              <span className="font-semibold" style={{ color: t.fg }}>
-                {settings.store_name}
-              </span>
-            </div>
-            <p className="mt-3 text-sm max-w-sm leading-relaxed">
-              {settings.footer_about}
-            </p>
-            {socialEntries.length > 0 && (
-              <div className="mt-5 flex items-center gap-2">
-                {socialEntries.map(({ key, url, Icon }) => (
-                  <a
-                    key={key}
-                    href={url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="h-9 w-9 inline-flex items-center justify-center rounded-full transition-opacity hover:opacity-80"
-                    style={{ backgroundColor: t.surface, color: t.fg }}
-                    aria-label={key}
-                  >
-                    <Icon className="h-4 w-4" />
-                  </a>
-                ))}
-              </div>
-            )}
-          </div>
-          <div>
-            <div
-              className="text-xs font-semibold uppercase tracking-wider mb-3"
-              style={{ color: t.fg }}
-            >
-              {tr("storefront.footer.shop")}
-            </div>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link to="/s/$slug" params={{ slug: settings.slug }} className="hover:opacity-70">
-                  {tr("storefront.nav.home")}
-                </Link>
-              </li>
-              <li>
-                <Link to="/s/$slug" params={{ slug: settings.slug }} hash="shop" className="hover:opacity-70">
-                  {tr("storefront.nav.shop")}
-                </Link>
-              </li>
-              <li>
-                <Link to="/s/$slug/about" params={{ slug: settings.slug }} className="hover:opacity-70">
-                  {tr("storefront.nav.about")}
-                </Link>
-              </li>
-              <li>
-                <Link to="/s/$slug/contact" params={{ slug: settings.slug }} className="hover:opacity-70">
-                  {tr("storefront.nav.contact")}
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <div
-              className="text-xs font-semibold uppercase tracking-wider mb-3"
-              style={{ color: t.fg }}
-            >
-              {tr("storefront.footer.help")}
-            </div>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link to="/s/$slug/about" params={{ slug: settings.slug }} className="hover:opacity-70">
-                  {tr("storefront.nav.about")}
-                </Link>
-              </li>
-              <li>
-                <Link to="/s/$slug/contact" params={{ slug: settings.slug }} className="hover:opacity-70">
-                  {tr("storefront.nav.contact")}
-                </Link>
-              </li>
-              <li>
-                <Link to="/s/$slug/cart" params={{ slug: settings.slug }} className="hover:opacity-70">
-                  {tr("storefront.nav.cart")}
-                </Link>
-              </li>
-              <li>
-                <Link to="/s/$slug/checkout" params={{ slug: settings.slug }} className="hover:opacity-70">
-                  {tr("storefront.footer.checkout")}
-                </Link>
-              </li>
-            </ul>
-          </div>
-        </div>
+        {/* Decorative gradient */}
         <div
-          className="max-w-6xl mx-auto mt-10 pt-6 text-center text-xs"
-          style={{ borderTop: `1px solid ${t.border}` }}
-        >
-          {settings.footer_copyright?.trim()
-            ? settings.footer_copyright
-            : `© ${new Date().getFullYear()} ${settings.store_name}. ${tr("storefront.footer.rights")}`}
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] opacity-[0.04] pointer-events-none"
+          style={{
+            background: `radial-gradient(ellipse, ${t.primary}, transparent 70%)`,
+          }}
+        />
+
+        <div className="relative max-w-7xl mx-auto px-5 sm:px-8 pt-16 pb-10">
+          <div className="grid gap-10 md:grid-cols-12">
+            {/* Brand column */}
+            <div className="md:col-span-5">
+              <div className="flex items-center gap-3">
+                {settings.logo_url ? (
+                  <img
+                    src={settings.logo_url}
+                    alt={settings.store_name}
+                    className="h-10 w-10 rounded-xl object-cover"
+                  />
+                ) : (
+                  <div
+                    className="h-10 w-10 rounded-xl flex items-center justify-center text-sm font-bold"
+                    style={{ backgroundColor: t.primary, color: t.onPrimary }}
+                  >
+                    {settings.store_name?.charAt(0)?.toUpperCase() ?? "S"}
+                  </div>
+                )}
+                <span className="text-lg font-bold" style={{ color: t.fg }}>
+                  {settings.store_name}
+                </span>
+              </div>
+              <p className="mt-4 text-sm leading-relaxed max-w-sm">
+                {settings.footer_about}
+              </p>
+              {socialEntries.length > 0 && (
+                <div className="mt-6 flex items-center gap-2">
+                  {socialEntries.map(({ key, url, Icon }) => (
+                    <a
+                      key={key}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="h-10 w-10 inline-flex items-center justify-center rounded-xl transition-all duration-200 hover:scale-110"
+                      style={{ backgroundColor: t.surface, color: t.fg }}
+                      aria-label={key}
+                    >
+                      <Icon className="h-[18px] w-[18px]" />
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Links */}
+            <div className="md:col-span-3">
+              <div
+                className="text-xs font-bold uppercase tracking-[0.15em] mb-4"
+                style={{ color: t.fg }}
+              >
+                {tr("storefront.footer.shop")}
+              </div>
+              <ul className="space-y-3 text-sm">
+                <li>
+                  <Link to="/s/$slug" params={{ slug: settings.slug }} className="hover:opacity-70 transition-opacity">
+                    {tr("storefront.nav.home")}
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/s/$slug" params={{ slug: settings.slug }} hash="shop" className="hover:opacity-70 transition-opacity">
+                    {tr("storefront.nav.shop")}
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/s/$slug/about" params={{ slug: settings.slug }} className="hover:opacity-70 transition-opacity">
+                    {tr("storefront.nav.about")}
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div className="md:col-span-3">
+              <div
+                className="text-xs font-bold uppercase tracking-[0.15em] mb-4"
+                style={{ color: t.fg }}
+              >
+                {tr("storefront.footer.help")}
+              </div>
+              <ul className="space-y-3 text-sm">
+                <li>
+                  <Link to="/s/$slug/contact" params={{ slug: settings.slug }} className="hover:opacity-70 transition-opacity">
+                    {tr("storefront.nav.contact")}
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/s/$slug/cart" params={{ slug: settings.slug }} className="hover:opacity-70 transition-opacity">
+                    {tr("storefront.nav.cart")}
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/s/$slug/track" params={{ slug: settings.slug }} className="hover:opacity-70 transition-opacity">
+                    {tr("storefront.footer.trackOrder", { defaultValue: "Track Order" })}
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Bottom bar */}
+          <div
+            className="mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs"
+            style={{ borderTop: `1px solid ${t.border}` }}
+          >
+            <span>
+              {settings.footer_copyright?.trim()
+                ? settings.footer_copyright
+                : `© ${new Date().getFullYear()} ${settings.store_name}. ${tr("storefront.footer.rights")}`}
+            </span>
+            <div className="flex items-center gap-4">
+              <span className="opacity-60">{tr("storefront.footer.poweredBy", { defaultValue: "Powered by Fennecly" })}</span>
+            </div>
+          </div>
         </div>
       </footer>
     </div>
