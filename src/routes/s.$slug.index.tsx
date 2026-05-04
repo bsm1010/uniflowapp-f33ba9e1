@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, Search, ShoppingBag, Mail, ArrowRight } from "lucide-react";
+import { Loader2, Search, ShoppingBag, Mail, ArrowRight, Sparkles, Star, Grid3X3, SlidersHorizontal } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
