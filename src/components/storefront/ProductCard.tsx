@@ -20,7 +20,7 @@ interface Props {
   template: string;
   currency: string;
   addLabel: string;
-  onAdd?: (p: ProductCardData) => void;
+  onAdd?: (p: any) => void;
 }
 
 export function ProductCard({
