@@ -11,6 +11,7 @@ export function Navbar() {
     { label: t("nav.how"), href: "#how" },
     { label: t("nav.pricing"), href: "#pricing" },
     { label: t("nav.testimonials"), href: "#testimonials" },
+    { label: "Themes", href: "/themes", isRoute: true },
   ];
 
   return (
@@ -23,15 +24,25 @@ export function Navbar() {
             <img src={fennecyLogo} alt="Fennecly" width={180} height={56} loading="eager" fetchPriority="high" decoding="async" className="h-14 w-auto object-contain dark:brightness-0 dark:invert" />
           </a>
           <nav className="hidden md:flex items-center gap-7">
-            {links.map((l) => (
-              <a
-                key={l.href}
-                href={l.href}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {l.label}
-              </a>
-            ))}
+            {links.map((l) =>
+              (l as { isRoute?: boolean }).isRoute ? (
+                <Link
+                  key={l.href}
+                  to={l.href}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {l.label}
+                </Link>
+              ) : (
+                <a
+                  key={l.href}
+                  href={l.href}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {l.label}
+                </a>
+              ),
+            )}
           </nav>
           <div className="flex items-center gap-2">
             <LanguageSwitcher />
