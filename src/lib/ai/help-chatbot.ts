@@ -1,8 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { createClient } from "@supabase/supabase-js";
 
 const Schema = z.object({
   language: z.enum(["en", "fr", "ar"]).default("en"),
+  accessToken: z.string().min(1),
   messages: z
     .array(
       z.object({
@@ -80,6 +82,23 @@ export const helpChatbotReply = createServerFn({ method: "POST" })
     const LOVABLE_API_KEY = process.env.LOVABLE_API_KEY;
     if (!LOVABLE_API_KEY) {
       return { reply: "", error: "AI is not configured. Please contact support." };
+    }
+
+    // Validate user authentication
+    const SUPABASE_URL = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL;
+    const PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY ?? process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+    if (!SUPABASE_URL || !PUBLISHABLE_KEY) {
+      return { reply: "", error: "Backend not configured." };
+    }
+
+    const client = createClient(SUPABASE_URL, PUBLISHABLE_KEY, {
+      global: { headers: { Authorization: `Bearer ${data.accessToken}` } },
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+
+    const { data: userData, error: userErr } = await client.auth.getUser(data.accessToken);
+    if (userErr || !userData.user) {
+      return { reply: "", error: "Unauthorized. Please sign in." };
     }
 
     const system = SYSTEM_BY_LANG[data.language] ?? SYSTEM_BY_LANG.en;

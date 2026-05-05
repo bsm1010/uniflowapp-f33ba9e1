@@ -1,19 +1,47 @@
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+import { consumeCreditsServer, INSUFFICIENT_CREDITS_ERROR } from "@/lib/credits/consume-server";
+
+const ALLOWED_VOICE_IDS = new Set([
+  "JBFqnCBsd6RMkjVDRZzb",
+  "21m00Tcm4TlvDq8ikWAM",
+  "AZnzlk1XvdvUeBnXmlld",
+  "EXAVITQu4vr4xnSDxMaL",
+  "ErXwobaYiN019PkySvjV",
+  "MF3mGyEYCl7XYWbV9V6O",
+  "TxGEqnHWrfWFTfGW9XjX",
+  "VR6AewLTigWG4xSOukaG",
+  "pNInz6obpgDQGcFmaJgB",
+  "yoZ06aMxZJJ28mfd3POQ",
+]);
+
+const Schema = z.object({
+  text: z.string().min(1).max(5000),
+  voiceId: z.string().regex(/^[a-zA-Z0-9]+$/).optional().default("JBFqnCBsd6RMkjVDRZzb"),
+  accessToken: z.string().min(1),
+});
 
 export const generateVoice = createServerFn({ method: "POST" })
-  .inputValidator((input: { text: string; voiceId?: string }) => {
-    if (!input || typeof input.text !== "string" || !input.text.trim()) {
-      throw new Error("Text is required");
-    }
-    if (input.text.length > 5000) {
-      throw new Error("Text must be 5000 characters or less");
-    }
-    return {
-      text: input.text.trim(),
-      voiceId: input.voiceId || "JBFqnCBsd6RMkjVDRZzb",
-    };
-  })
+  .inputValidator((input: unknown) => Schema.parse(input))
   .handler(async ({ data }) => {
+    // Authenticate and consume credits
+    const credit = await consumeCreditsServer({
+      accessToken: data.accessToken,
+      amount: 3,
+      reason: "voice_generation",
+    });
+    if (!credit.ok) {
+      return {
+        audio: null,
+        error: credit.reason === "insufficient" ? INSUFFICIENT_CREDITS_ERROR : "Unauthorized",
+      };
+    }
+
+    // Validate voiceId against allowlist
+    if (!ALLOWED_VOICE_IDS.has(data.voiceId)) {
+      return { audio: null, error: "Invalid voice ID" };
+    }
+
     const apiKey = process.env.ELEVENLABS_API_KEY;
     if (!apiKey) {
       return { audio: null, error: "ELEVENLABS_API_KEY is not configured" };
