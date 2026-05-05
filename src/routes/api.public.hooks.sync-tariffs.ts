@@ -11,7 +11,16 @@ import { normalizeProviderKey } from "@/lib/delivery/registry";
 export const Route = createFileRoute("/api/public/hooks/sync-tariffs")({
   server: {
     handlers: {
-      POST: async () => {
+      POST: async ({ request }) => {
+        // Verify cron secret
+        const cronSecret = process.env.CRON_SECRET;
+        if (cronSecret) {
+          const provided = request.headers.get("x-cron-secret");
+          if (provided !== cronSecret) {
+            return Response.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+          }
+        }
+
         const startedAt = new Date().toISOString();
 
         // 1. Find all ZR Express companies.
