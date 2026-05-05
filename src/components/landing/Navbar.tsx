@@ -11,6 +11,7 @@ export function Navbar() {
     { label: t("nav.how"), href: "#how" },
     { label: t("nav.pricing"), href: "#pricing" },
     { label: t("nav.testimonials"), href: "#testimonials" },
+    { label: "Themes", href: "/themes", isRoute: true },
   ];
 
   return (
