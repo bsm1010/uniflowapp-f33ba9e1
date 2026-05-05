@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ThemesRouteImport } from './routes/themes'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
@@ -64,6 +65,11 @@ import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/em
 import { Route as ApiPublicHooksSyncTariffsRouteImport } from './routes/api.public.hooks.sync-tariffs'
 import { Route as ApiDbTableIdRecordIdRouteImport } from './routes/api.db.$tableId.$recordId'
 
+const ThemesRoute = ThemesRouteImport.update({
+  id: '/themes',
+  path: '/themes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
@@ -352,6 +358,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/themes': typeof ThemesRoute
   '/dashboard/about': typeof DashboardAboutRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/apps': typeof DashboardAppsRouteWithChildren
@@ -407,6 +414,7 @@ export interface FileRoutesByTo {
   '/customize': typeof CustomizeRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/themes': typeof ThemesRoute
   '/dashboard/about': typeof DashboardAboutRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/categories': typeof DashboardCategoriesRoute
@@ -463,6 +471,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/themes': typeof ThemesRoute
   '/dashboard/about': typeof DashboardAboutRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/apps': typeof DashboardAppsRouteWithChildren
@@ -521,6 +530,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/signup'
+    | '/themes'
     | '/dashboard/about'
     | '/dashboard/analytics'
     | '/dashboard/apps'
@@ -576,6 +586,7 @@ export interface FileRouteTypes {
     | '/customize'
     | '/login'
     | '/signup'
+    | '/themes'
     | '/dashboard/about'
     | '/dashboard/analytics'
     | '/dashboard/categories'
@@ -631,6 +642,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/signup'
+    | '/themes'
     | '/dashboard/about'
     | '/dashboard/analytics'
     | '/dashboard/apps'
@@ -688,6 +700,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRouteWithChildren
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
+  ThemesRoute: typeof ThemesRoute
   ApiDbTableIdRoute: typeof ApiDbTableIdRouteWithChildren
   SSlugAboutRoute: typeof SSlugAboutRoute
   SSlugCartRoute: typeof SSlugCartRoute
@@ -704,6 +717,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/themes': {
+      id: '/themes'
+      path: '/themes'
+      fullPath: '/themes'
+      preLoaderRoute: typeof ThemesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signup': {
       id: '/signup'
       path: '/signup'
@@ -1205,6 +1225,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRouteWithChildren,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
+  ThemesRoute: ThemesRoute,
   ApiDbTableIdRoute: ApiDbTableIdRouteWithChildren,
   SSlugAboutRoute: SSlugAboutRoute,
   SSlugCartRoute: SSlugCartRoute,

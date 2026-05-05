@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useMemo, Suspense, useCallback } from "react";
 import { Loader2, Eye, Palette, ArrowLeft, ShoppingBag } from "lucide-react";
 import { THEME_PRESETS, type ThemePreset } from "@/lib/themePresets";
-import { getDemoProducts, type DemoProduct } from "@/lib/themeDemoData";
+import { getDemoProducts } from "@/lib/themeDemoData";
 import { getStoreTokens, type StoreTokens } from "@/lib/storeTheme";
 import { LAYOUT_COMPONENTS, type LayoutProps } from "@/components/storefront/layouts";
 import type { Tables } from "@/integrations/supabase/types";
@@ -175,7 +175,7 @@ function ThemePreview({ preset, onBack }: { preset: ThemePreset; onBack: () => v
     } as Tables<"store_settings">);
   }, [preset]);
 
-  const handleAdd = useCallback((p: DemoProduct) => {
+  const handleAdd = useCallback((_p: import("@/components/storefront/layouts").ProductForLayout) => {
     // Visual feedback only in preview
   }, []);
 
