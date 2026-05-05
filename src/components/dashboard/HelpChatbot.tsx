@@ -82,8 +82,10 @@ export function HelpChatbot() {
     setLoading(true);
 
     try {
+      const { data: sessionData } = await (await import("@/integrations/supabase/client")).supabase.auth.getSession();
+      const accessToken = sessionData.session?.access_token ?? "";
       const history = next.slice(-12); // cap context
-      const result = await callHelp({ data: { language: lang, messages: history } });
+      const result = await callHelp({ data: { language: lang, messages: history, accessToken } });
       if (result.error) {
         setMessages((p) => [...p, { role: "assistant", content: `⚠️ ${result.error}` }]);
       } else {

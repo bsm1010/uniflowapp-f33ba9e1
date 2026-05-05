@@ -101,7 +101,10 @@ export function ProductFormDialog({ open, onOpenChange, product, onSaved }: Prop
     setGeneratingVoice(true);
     setVoiceUrl(null);
     try {
-      const res = await generateVoiceFn({ data: { text: script } });
+      const { data: sessionData } = await (await import("@/integrations/supabase/client")).supabase.auth.getSession();
+      const accessToken = sessionData.session?.access_token;
+      if (!accessToken) { toast.error("Please sign in first"); return; }
+      const res = await generateVoiceFn({ data: { text: script, accessToken } });
       if (res.error || !res.audio) {
         toast.error(res.error || "Failed to generate voice");
         return;
