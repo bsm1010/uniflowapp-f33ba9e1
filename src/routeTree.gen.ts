@@ -36,6 +36,7 @@ import { Route as DashboardContactRouteImport } from './routes/dashboard.contact
 import { Route as DashboardCategoriesRouteImport } from './routes/dashboard.categories'
 import { Route as DashboardAppsRouteImport } from './routes/dashboard.apps'
 import { Route as DashboardAnalyticsRouteImport } from './routes/dashboard.analytics'
+import { Route as DashboardAiAgentRouteImport } from './routes/dashboard.ai-agent'
 import { Route as DashboardAboutRouteImport } from './routes/dashboard.about'
 import { Route as SSlugIndexRouteImport } from './routes/s.$slug.index'
 import { Route as DashboardAppsIndexRouteImport } from './routes/dashboard.apps.index'
@@ -201,6 +202,11 @@ const DashboardAnalyticsRoute = DashboardAnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardAiAgentRoute = DashboardAiAgentRouteImport.update({
+  id: '/ai-agent',
+  path: '/ai-agent',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardAboutRoute = DashboardAboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -360,6 +366,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/themes': typeof ThemesRoute
   '/dashboard/about': typeof DashboardAboutRoute
+  '/dashboard/ai-agent': typeof DashboardAiAgentRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/apps': typeof DashboardAppsRouteWithChildren
   '/dashboard/categories': typeof DashboardCategoriesRoute
@@ -416,6 +423,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/themes': typeof ThemesRoute
   '/dashboard/about': typeof DashboardAboutRoute
+  '/dashboard/ai-agent': typeof DashboardAiAgentRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/categories': typeof DashboardCategoriesRoute
   '/dashboard/contact': typeof DashboardContactRoute
@@ -473,6 +481,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/themes': typeof ThemesRoute
   '/dashboard/about': typeof DashboardAboutRoute
+  '/dashboard/ai-agent': typeof DashboardAiAgentRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/apps': typeof DashboardAppsRouteWithChildren
   '/dashboard/categories': typeof DashboardCategoriesRoute
@@ -532,6 +541,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/themes'
     | '/dashboard/about'
+    | '/dashboard/ai-agent'
     | '/dashboard/analytics'
     | '/dashboard/apps'
     | '/dashboard/categories'
@@ -588,6 +598,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/themes'
     | '/dashboard/about'
+    | '/dashboard/ai-agent'
     | '/dashboard/analytics'
     | '/dashboard/categories'
     | '/dashboard/contact'
@@ -644,6 +655,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/themes'
     | '/dashboard/about'
+    | '/dashboard/ai-agent'
     | '/dashboard/analytics'
     | '/dashboard/apps'
     | '/dashboard/categories'
@@ -906,6 +918,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAnalyticsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/ai-agent': {
+      id: '/dashboard/ai-agent'
+      path: '/ai-agent'
+      fullPath: '/dashboard/ai-agent'
+      preLoaderRoute: typeof DashboardAiAgentRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/about': {
       id: '/dashboard/about'
       path: '/about'
@@ -1141,6 +1160,7 @@ const DashboardAppsRouteWithChildren = DashboardAppsRoute._addFileChildren(
 
 interface DashboardRouteChildren {
   DashboardAboutRoute: typeof DashboardAboutRoute
+  DashboardAiAgentRoute: typeof DashboardAiAgentRoute
   DashboardAnalyticsRoute: typeof DashboardAnalyticsRoute
   DashboardAppsRoute: typeof DashboardAppsRouteWithChildren
   DashboardCategoriesRoute: typeof DashboardCategoriesRoute
@@ -1167,6 +1187,7 @@ interface DashboardRouteChildren {
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAboutRoute: DashboardAboutRoute,
+  DashboardAiAgentRoute: DashboardAiAgentRoute,
   DashboardAnalyticsRoute: DashboardAnalyticsRoute,
   DashboardAppsRoute: DashboardAppsRouteWithChildren,
   DashboardCategoriesRoute: DashboardCategoriesRoute,
