@@ -64,6 +64,7 @@ import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/e
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as ApiPublicHooksSyncTariffsRouteImport } from './routes/api.public.hooks.sync-tariffs'
+import { Route as ApiPublicHooksInstagramRouteImport } from './routes/api.public.hooks.instagram'
 import { Route as ApiDbTableIdRecordIdRouteImport } from './routes/api.db.$tableId.$recordId'
 
 const ThemesRoute = ThemesRouteImport.update({
@@ -352,6 +353,11 @@ const ApiPublicHooksSyncTariffsRoute =
     path: '/api/public/hooks/sync-tariffs',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksInstagramRoute = ApiPublicHooksInstagramRouteImport.update({
+  id: '/api/public/hooks/instagram',
+  path: '/api/public/hooks/instagram',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiDbTableIdRecordIdRoute = ApiDbTableIdRecordIdRouteImport.update({
   id: '/$recordId',
   path: '/$recordId',
@@ -409,6 +415,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/apps/': typeof DashboardAppsIndexRoute
   '/s/$slug/': typeof SSlugIndexRoute
   '/api/db/$tableId/$recordId': typeof ApiDbTableIdRecordIdRoute
+  '/api/public/hooks/instagram': typeof ApiPublicHooksInstagramRoute
   '/api/public/hooks/sync-tariffs': typeof ApiPublicHooksSyncTariffsRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -465,6 +472,7 @@ export interface FileRoutesByTo {
   '/dashboard/apps': typeof DashboardAppsIndexRoute
   '/s/$slug': typeof SSlugIndexRoute
   '/api/db/$tableId/$recordId': typeof ApiDbTableIdRecordIdRoute
+  '/api/public/hooks/instagram': typeof ApiPublicHooksInstagramRoute
   '/api/public/hooks/sync-tariffs': typeof ApiPublicHooksSyncTariffsRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -524,6 +532,7 @@ export interface FileRoutesById {
   '/dashboard/apps/': typeof DashboardAppsIndexRoute
   '/s/$slug/': typeof SSlugIndexRoute
   '/api/db/$tableId/$recordId': typeof ApiDbTableIdRecordIdRoute
+  '/api/public/hooks/instagram': typeof ApiPublicHooksInstagramRoute
   '/api/public/hooks/sync-tariffs': typeof ApiPublicHooksSyncTariffsRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -584,6 +593,7 @@ export interface FileRouteTypes {
     | '/dashboard/apps/'
     | '/s/$slug/'
     | '/api/db/$tableId/$recordId'
+    | '/api/public/hooks/instagram'
     | '/api/public/hooks/sync-tariffs'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -640,6 +650,7 @@ export interface FileRouteTypes {
     | '/dashboard/apps'
     | '/s/$slug'
     | '/api/db/$tableId/$recordId'
+    | '/api/public/hooks/instagram'
     | '/api/public/hooks/sync-tariffs'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -698,6 +709,7 @@ export interface FileRouteTypes {
     | '/dashboard/apps/'
     | '/s/$slug/'
     | '/api/db/$tableId/$recordId'
+    | '/api/public/hooks/instagram'
     | '/api/public/hooks/sync-tariffs'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -720,6 +732,7 @@ export interface RootRouteChildren {
   SSlugContactRoute: typeof SSlugContactRoute
   SSlugTrackRoute: typeof SSlugTrackRoute
   SSlugIndexRoute: typeof SSlugIndexRoute
+  ApiPublicHooksInstagramRoute: typeof ApiPublicHooksInstagramRoute
   ApiPublicHooksSyncTariffsRoute: typeof ApiPublicHooksSyncTariffsRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
@@ -1114,6 +1127,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksSyncTariffsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/instagram': {
+      id: '/api/public/hooks/instagram'
+      path: '/api/public/hooks/instagram'
+      fullPath: '/api/public/hooks/instagram'
+      preLoaderRoute: typeof ApiPublicHooksInstagramRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/db/$tableId/$recordId': {
       id: '/api/db/$tableId/$recordId'
       path: '/$recordId'
@@ -1254,6 +1274,7 @@ const rootRouteChildren: RootRouteChildren = {
   SSlugContactRoute: SSlugContactRoute,
   SSlugTrackRoute: SSlugTrackRoute,
   SSlugIndexRoute: SSlugIndexRoute,
+  ApiPublicHooksInstagramRoute: ApiPublicHooksInstagramRoute,
   ApiPublicHooksSyncTariffsRoute: ApiPublicHooksSyncTariffsRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
