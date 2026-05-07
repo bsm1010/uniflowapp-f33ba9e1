@@ -14,6 +14,7 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CustomizeRouteImport } from './routes/customize'
+import { Route as AiAgentRouteImport } from './routes/ai-agent'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as DashboardVoiceGeneratorRouteImport } from './routes/dashboard.voice-generator'
@@ -90,6 +91,11 @@ const DashboardRoute = DashboardRouteImport.update({
 const CustomizeRoute = CustomizeRouteImport.update({
   id: '/customize',
   path: '/customize',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiAgentRoute = AiAgentRouteImport.update({
+  id: '/ai-agent',
+  path: '/ai-agent',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -366,6 +372,7 @@ const ApiDbTableIdRecordIdRoute = ApiDbTableIdRecordIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ai-agent': typeof AiAgentRoute
   '/customize': typeof CustomizeRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
@@ -425,6 +432,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ai-agent': typeof AiAgentRoute
   '/customize': typeof CustomizeRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
@@ -483,6 +491,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/ai-agent': typeof AiAgentRoute
   '/customize': typeof CustomizeRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
@@ -544,6 +553,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/ai-agent'
     | '/customize'
     | '/dashboard'
     | '/login'
@@ -603,6 +613,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/ai-agent'
     | '/customize'
     | '/login'
     | '/signup'
@@ -660,6 +671,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/ai-agent'
     | '/customize'
     | '/dashboard'
     | '/login'
@@ -720,6 +732,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AiAgentRoute: typeof AiAgentRoute
   CustomizeRoute: typeof CustomizeRoute
   DashboardRoute: typeof DashboardRouteWithChildren
   LoginRoute: typeof LoginRoute
@@ -775,6 +788,13 @@ declare module '@tanstack/react-router' {
       path: '/customize'
       fullPath: '/customize'
       preLoaderRoute: typeof CustomizeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai-agent': {
+      id: '/ai-agent'
+      path: '/ai-agent'
+      fullPath: '/ai-agent'
+      preLoaderRoute: typeof AiAgentRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -1262,6 +1282,7 @@ const SSlugCheckoutRouteWithChildren = SSlugCheckoutRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AiAgentRoute: AiAgentRoute,
   CustomizeRoute: CustomizeRoute,
   DashboardRoute: DashboardRouteWithChildren,
   LoginRoute: LoginRoute,
@@ -1284,3 +1305,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
