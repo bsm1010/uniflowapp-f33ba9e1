@@ -59,6 +59,111 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_agent_analytics: {
+        Row: {
+          ai_replies: number
+          ai_success_rate: number
+          avg_response_time_ms: number
+          created_at: string
+          date: string
+          human_replies: number
+          id: string
+          sales_generated: number
+          top_questions: Json | null
+          total_conversations: number
+          user_id: string
+          voice_messages_processed: number
+        }
+        Insert: {
+          ai_replies?: number
+          ai_success_rate?: number
+          avg_response_time_ms?: number
+          created_at?: string
+          date?: string
+          human_replies?: number
+          id?: string
+          sales_generated?: number
+          top_questions?: Json | null
+          total_conversations?: number
+          user_id: string
+          voice_messages_processed?: number
+        }
+        Update: {
+          ai_replies?: number
+          ai_success_rate?: number
+          avg_response_time_ms?: number
+          created_at?: string
+          date?: string
+          human_replies?: number
+          id?: string
+          sales_generated?: number
+          top_questions?: Json | null
+          total_conversations?: number
+          user_id?: string
+          voice_messages_processed?: number
+        }
+        Relationships: []
+      }
+      ai_agent_settings: {
+        Row: {
+          auto_reply: boolean
+          created_at: string
+          custom_instructions: string
+          darija_level: string
+          enabled: boolean
+          faq_entries: Json
+          forbidden_words: string[] | null
+          greeting_message: string
+          id: string
+          language_mode: string
+          max_ai_turns: number
+          personality: string
+          reply_delay_seconds: number
+          suggest_human_takeover: boolean
+          tone: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auto_reply?: boolean
+          created_at?: string
+          custom_instructions?: string
+          darija_level?: string
+          enabled?: boolean
+          faq_entries?: Json
+          forbidden_words?: string[] | null
+          greeting_message?: string
+          id?: string
+          language_mode?: string
+          max_ai_turns?: number
+          personality?: string
+          reply_delay_seconds?: number
+          suggest_human_takeover?: boolean
+          tone?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auto_reply?: boolean
+          created_at?: string
+          custom_instructions?: string
+          darija_level?: string
+          enabled?: boolean
+          faq_entries?: Json
+          forbidden_words?: string[] | null
+          greeting_message?: string
+          id?: string
+          language_mode?: string
+          max_ai_turns?: number
+          personality?: string
+          reply_delay_seconds?: number
+          suggest_human_takeover?: boolean
+          tone?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       analytics_integrations: {
         Row: {
           created_at: string
@@ -684,6 +789,173 @@ export type Database = {
           id?: string
           token?: string
           used_at?: string | null
+        }
+        Relationships: []
+      }
+      ig_conversations: {
+        Row: {
+          ai_confidence: number | null
+          created_at: string
+          customer_instagram_id: string
+          customer_name: string
+          customer_profile_pic: string | null
+          customer_username: string
+          id: string
+          instagram_conversation_id: string | null
+          last_message_at: string | null
+          last_message_text: string | null
+          mode: string
+          sentiment: string | null
+          status: string
+          tags: string[] | null
+          unread_count: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_confidence?: number | null
+          created_at?: string
+          customer_instagram_id: string
+          customer_name?: string
+          customer_profile_pic?: string | null
+          customer_username?: string
+          id?: string
+          instagram_conversation_id?: string | null
+          last_message_at?: string | null
+          last_message_text?: string | null
+          mode?: string
+          sentiment?: string | null
+          status?: string
+          tags?: string[] | null
+          unread_count?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_confidence?: number | null
+          created_at?: string
+          customer_instagram_id?: string
+          customer_name?: string
+          customer_profile_pic?: string | null
+          customer_username?: string
+          id?: string
+          instagram_conversation_id?: string | null
+          last_message_at?: string | null
+          last_message_text?: string | null
+          mode?: string
+          sentiment?: string | null
+          status?: string
+          tags?: string[] | null
+          unread_count?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ig_messages: {
+        Row: {
+          attachments: Json | null
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          instagram_message_id: string | null
+          is_ai_generated: boolean
+          message_type: string
+          metadata: Json | null
+          read: boolean
+          sender_type: string
+          user_id: string
+          voice_audio_url: string | null
+          voice_transcript: string | null
+        }
+        Insert: {
+          attachments?: Json | null
+          content?: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          instagram_message_id?: string | null
+          is_ai_generated?: boolean
+          message_type?: string
+          metadata?: Json | null
+          read?: boolean
+          sender_type?: string
+          user_id: string
+          voice_audio_url?: string | null
+          voice_transcript?: string | null
+        }
+        Update: {
+          attachments?: Json | null
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          instagram_message_id?: string | null
+          is_ai_generated?: boolean
+          message_type?: string
+          metadata?: Json | null
+          read?: boolean
+          sender_type?: string
+          user_id?: string
+          voice_audio_url?: string | null
+          voice_transcript?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ig_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "ig_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      instagram_connections: {
+        Row: {
+          access_token: string | null
+          created_at: string
+          id: string
+          instagram_user_id: string | null
+          instagram_username: string | null
+          last_synced_at: string | null
+          page_id: string | null
+          page_name: string | null
+          profile_picture_url: string | null
+          status: string
+          token_expires_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token?: string | null
+          created_at?: string
+          id?: string
+          instagram_user_id?: string | null
+          instagram_username?: string | null
+          last_synced_at?: string | null
+          page_id?: string | null
+          page_name?: string | null
+          profile_picture_url?: string | null
+          status?: string
+          token_expires_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string | null
+          created_at?: string
+          id?: string
+          instagram_user_id?: string | null
+          instagram_username?: string | null
+          last_synced_at?: string | null
+          page_id?: string | null
+          page_name?: string | null
+          profile_picture_url?: string | null
+          status?: string
+          token_expires_at?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
