@@ -14,6 +14,7 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CustomizeRouteImport } from './routes/customize'
+import { Route as AiAgentRouteImport } from './routes/ai-agent'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as DashboardVoiceGeneratorRouteImport } from './routes/dashboard.voice-generator'
@@ -36,6 +37,7 @@ import { Route as DashboardContactRouteImport } from './routes/dashboard.contact
 import { Route as DashboardCategoriesRouteImport } from './routes/dashboard.categories'
 import { Route as DashboardAppsRouteImport } from './routes/dashboard.apps'
 import { Route as DashboardAnalyticsRouteImport } from './routes/dashboard.analytics'
+import { Route as DashboardAiAgentRouteImport } from './routes/dashboard.ai-agent'
 import { Route as DashboardAboutRouteImport } from './routes/dashboard.about'
 import { Route as SSlugIndexRouteImport } from './routes/s.$slug.index'
 import { Route as DashboardAppsIndexRouteImport } from './routes/dashboard.apps.index'
@@ -63,6 +65,7 @@ import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/e
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as ApiPublicHooksSyncTariffsRouteImport } from './routes/api.public.hooks.sync-tariffs'
+import { Route as ApiPublicHooksInstagramRouteImport } from './routes/api.public.hooks.instagram'
 import { Route as ApiDbTableIdRecordIdRouteImport } from './routes/api.db.$tableId.$recordId'
 
 const ThemesRoute = ThemesRouteImport.update({
@@ -88,6 +91,11 @@ const DashboardRoute = DashboardRouteImport.update({
 const CustomizeRoute = CustomizeRouteImport.update({
   id: '/customize',
   path: '/customize',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiAgentRoute = AiAgentRouteImport.update({
+  id: '/ai-agent',
+  path: '/ai-agent',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -199,6 +207,11 @@ const DashboardAppsRoute = DashboardAppsRouteImport.update({
 const DashboardAnalyticsRoute = DashboardAnalyticsRouteImport.update({
   id: '/analytics',
   path: '/analytics',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardAiAgentRoute = DashboardAiAgentRouteImport.update({
+  id: '/ai-agent',
+  path: '/ai-agent',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardAboutRoute = DashboardAboutRouteImport.update({
@@ -346,6 +359,11 @@ const ApiPublicHooksSyncTariffsRoute =
     path: '/api/public/hooks/sync-tariffs',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksInstagramRoute = ApiPublicHooksInstagramRouteImport.update({
+  id: '/api/public/hooks/instagram',
+  path: '/api/public/hooks/instagram',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiDbTableIdRecordIdRoute = ApiDbTableIdRecordIdRouteImport.update({
   id: '/$recordId',
   path: '/$recordId',
@@ -354,12 +372,14 @@ const ApiDbTableIdRecordIdRoute = ApiDbTableIdRecordIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ai-agent': typeof AiAgentRoute
   '/customize': typeof CustomizeRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/themes': typeof ThemesRoute
   '/dashboard/about': typeof DashboardAboutRoute
+  '/dashboard/ai-agent': typeof DashboardAiAgentRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/apps': typeof DashboardAppsRouteWithChildren
   '/dashboard/categories': typeof DashboardCategoriesRoute
@@ -402,6 +422,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/apps/': typeof DashboardAppsIndexRoute
   '/s/$slug/': typeof SSlugIndexRoute
   '/api/db/$tableId/$recordId': typeof ApiDbTableIdRecordIdRoute
+  '/api/public/hooks/instagram': typeof ApiPublicHooksInstagramRoute
   '/api/public/hooks/sync-tariffs': typeof ApiPublicHooksSyncTariffsRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -411,11 +432,13 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ai-agent': typeof AiAgentRoute
   '/customize': typeof CustomizeRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/themes': typeof ThemesRoute
   '/dashboard/about': typeof DashboardAboutRoute
+  '/dashboard/ai-agent': typeof DashboardAiAgentRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/categories': typeof DashboardCategoriesRoute
   '/dashboard/contact': typeof DashboardContactRoute
@@ -457,6 +480,7 @@ export interface FileRoutesByTo {
   '/dashboard/apps': typeof DashboardAppsIndexRoute
   '/s/$slug': typeof SSlugIndexRoute
   '/api/db/$tableId/$recordId': typeof ApiDbTableIdRecordIdRoute
+  '/api/public/hooks/instagram': typeof ApiPublicHooksInstagramRoute
   '/api/public/hooks/sync-tariffs': typeof ApiPublicHooksSyncTariffsRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -467,12 +491,14 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/ai-agent': typeof AiAgentRoute
   '/customize': typeof CustomizeRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/themes': typeof ThemesRoute
   '/dashboard/about': typeof DashboardAboutRoute
+  '/dashboard/ai-agent': typeof DashboardAiAgentRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/apps': typeof DashboardAppsRouteWithChildren
   '/dashboard/categories': typeof DashboardCategoriesRoute
@@ -515,6 +541,7 @@ export interface FileRoutesById {
   '/dashboard/apps/': typeof DashboardAppsIndexRoute
   '/s/$slug/': typeof SSlugIndexRoute
   '/api/db/$tableId/$recordId': typeof ApiDbTableIdRecordIdRoute
+  '/api/public/hooks/instagram': typeof ApiPublicHooksInstagramRoute
   '/api/public/hooks/sync-tariffs': typeof ApiPublicHooksSyncTariffsRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -526,12 +553,14 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/ai-agent'
     | '/customize'
     | '/dashboard'
     | '/login'
     | '/signup'
     | '/themes'
     | '/dashboard/about'
+    | '/dashboard/ai-agent'
     | '/dashboard/analytics'
     | '/dashboard/apps'
     | '/dashboard/categories'
@@ -574,6 +603,7 @@ export interface FileRouteTypes {
     | '/dashboard/apps/'
     | '/s/$slug/'
     | '/api/db/$tableId/$recordId'
+    | '/api/public/hooks/instagram'
     | '/api/public/hooks/sync-tariffs'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -583,11 +613,13 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/ai-agent'
     | '/customize'
     | '/login'
     | '/signup'
     | '/themes'
     | '/dashboard/about'
+    | '/dashboard/ai-agent'
     | '/dashboard/analytics'
     | '/dashboard/categories'
     | '/dashboard/contact'
@@ -629,6 +661,7 @@ export interface FileRouteTypes {
     | '/dashboard/apps'
     | '/s/$slug'
     | '/api/db/$tableId/$recordId'
+    | '/api/public/hooks/instagram'
     | '/api/public/hooks/sync-tariffs'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -638,12 +671,14 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/ai-agent'
     | '/customize'
     | '/dashboard'
     | '/login'
     | '/signup'
     | '/themes'
     | '/dashboard/about'
+    | '/dashboard/ai-agent'
     | '/dashboard/analytics'
     | '/dashboard/apps'
     | '/dashboard/categories'
@@ -686,6 +721,7 @@ export interface FileRouteTypes {
     | '/dashboard/apps/'
     | '/s/$slug/'
     | '/api/db/$tableId/$recordId'
+    | '/api/public/hooks/instagram'
     | '/api/public/hooks/sync-tariffs'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -696,6 +732,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AiAgentRoute: typeof AiAgentRoute
   CustomizeRoute: typeof CustomizeRoute
   DashboardRoute: typeof DashboardRouteWithChildren
   LoginRoute: typeof LoginRoute
@@ -708,6 +745,7 @@ export interface RootRouteChildren {
   SSlugContactRoute: typeof SSlugContactRoute
   SSlugTrackRoute: typeof SSlugTrackRoute
   SSlugIndexRoute: typeof SSlugIndexRoute
+  ApiPublicHooksInstagramRoute: typeof ApiPublicHooksInstagramRoute
   ApiPublicHooksSyncTariffsRoute: typeof ApiPublicHooksSyncTariffsRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
@@ -750,6 +788,13 @@ declare module '@tanstack/react-router' {
       path: '/customize'
       fullPath: '/customize'
       preLoaderRoute: typeof CustomizeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai-agent': {
+      id: '/ai-agent'
+      path: '/ai-agent'
+      fullPath: '/ai-agent'
+      preLoaderRoute: typeof AiAgentRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -904,6 +949,13 @@ declare module '@tanstack/react-router' {
       path: '/analytics'
       fullPath: '/dashboard/analytics'
       preLoaderRoute: typeof DashboardAnalyticsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/ai-agent': {
+      id: '/dashboard/ai-agent'
+      path: '/ai-agent'
+      fullPath: '/dashboard/ai-agent'
+      preLoaderRoute: typeof DashboardAiAgentRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/about': {
@@ -1095,6 +1147,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksSyncTariffsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/instagram': {
+      id: '/api/public/hooks/instagram'
+      path: '/api/public/hooks/instagram'
+      fullPath: '/api/public/hooks/instagram'
+      preLoaderRoute: typeof ApiPublicHooksInstagramRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/db/$tableId/$recordId': {
       id: '/api/db/$tableId/$recordId'
       path: '/$recordId'
@@ -1141,6 +1200,7 @@ const DashboardAppsRouteWithChildren = DashboardAppsRoute._addFileChildren(
 
 interface DashboardRouteChildren {
   DashboardAboutRoute: typeof DashboardAboutRoute
+  DashboardAiAgentRoute: typeof DashboardAiAgentRoute
   DashboardAnalyticsRoute: typeof DashboardAnalyticsRoute
   DashboardAppsRoute: typeof DashboardAppsRouteWithChildren
   DashboardCategoriesRoute: typeof DashboardCategoriesRoute
@@ -1167,6 +1227,7 @@ interface DashboardRouteChildren {
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAboutRoute: DashboardAboutRoute,
+  DashboardAiAgentRoute: DashboardAiAgentRoute,
   DashboardAnalyticsRoute: DashboardAnalyticsRoute,
   DashboardAppsRoute: DashboardAppsRouteWithChildren,
   DashboardCategoriesRoute: DashboardCategoriesRoute,
@@ -1221,6 +1282,7 @@ const SSlugCheckoutRouteWithChildren = SSlugCheckoutRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AiAgentRoute: AiAgentRoute,
   CustomizeRoute: CustomizeRoute,
   DashboardRoute: DashboardRouteWithChildren,
   LoginRoute: LoginRoute,
@@ -1233,6 +1295,7 @@ const rootRouteChildren: RootRouteChildren = {
   SSlugContactRoute: SSlugContactRoute,
   SSlugTrackRoute: SSlugTrackRoute,
   SSlugIndexRoute: SSlugIndexRoute,
+  ApiPublicHooksInstagramRoute: ApiPublicHooksInstagramRoute,
   ApiPublicHooksSyncTariffsRoute: ApiPublicHooksSyncTariffsRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
@@ -1242,12 +1305,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
