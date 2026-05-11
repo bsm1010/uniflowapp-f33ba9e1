@@ -17,6 +17,7 @@ import {
   type SectionKey,
 } from "@/lib/storeTheme";
 import { useCart } from "@/hooks/use-cart";
+import { fetchSettings, getCachedSettings, setCachedSettings } from "@/lib/storefrontCache";
 
 type Product = Pick<
   Tables<"products">,
