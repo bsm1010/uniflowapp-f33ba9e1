@@ -54,24 +54,21 @@ function StorefrontHome() {
     let active = true;
     let channel: ReturnType<typeof supabase.channel> | null = null;
     (async () => {
-      const { data: s } = await supabase
-        .from("store_settings")
-        .select("*")
-        .eq("slug", slug)
-        .maybeSingle();
+      const s = await fetchSettings(slug);
       if (!active) return;
       if (!s) {
         setNotFound(true);
         setLoading(false);
         return;
       }
+      setSettings(s);
+      setCachedSettings(slug, s);
       const { data: p } = await supabase
         .from("products")
         .select("id,name,price,images,category,stock")
         .eq("user_id", s.user_id)
         .order("created_at", { ascending: false });
       if (!active) return;
-      setSettings(s);
       setProducts(p ?? []);
       setLoading(false);
 
