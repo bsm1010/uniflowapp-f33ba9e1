@@ -38,9 +38,10 @@ function StorefrontHome() {
   const { slug } = Route.useParams();
   const router = useRouter();
   const { t: tr } = useTranslation();
-  const [settings, setSettings] = useState<StoreSettings | null>(null);
+  const initialSettings = getCachedSettings(slug);
+  const [settings, setSettings] = useState<StoreSettings | null>(initialSettings);
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initialSettings);
   const [notFound, setNotFound] = useState(false);
   const cart = useCart(slug);
 
