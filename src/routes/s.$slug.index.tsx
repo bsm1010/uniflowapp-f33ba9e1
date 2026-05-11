@@ -17,6 +17,7 @@ import {
   type SectionKey,
 } from "@/lib/storeTheme";
 import { useCart } from "@/hooks/use-cart";
+import { fetchSettings, getCachedSettings, setCachedSettings } from "@/lib/storefrontCache";
 
 type Product = Pick<
   Tables<"products">,
@@ -25,6 +26,7 @@ type Product = Pick<
 
 export const Route = createFileRoute("/s/$slug/")({
   component: StorefrontHome,
+  loader: ({ params }) => fetchSettings(params.slug),
   head: ({ params }) => ({
     meta: [{ title: `${params.slug} — Storely` }],
   }),
@@ -36,9 +38,10 @@ function StorefrontHome() {
   const { slug } = Route.useParams();
   const router = useRouter();
   const { t: tr } = useTranslation();
-  const [settings, setSettings] = useState<StoreSettings | null>(null);
+  const initialSettings = getCachedSettings(slug);
+  const [settings, setSettings] = useState<StoreSettings | null>(initialSettings);
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initialSettings);
   const [notFound, setNotFound] = useState(false);
   const cart = useCart(slug);
 
@@ -51,24 +54,21 @@ function StorefrontHome() {
     let active = true;
     let channel: ReturnType<typeof supabase.channel> | null = null;
     (async () => {
-      const { data: s } = await supabase
-        .from("store_settings")
-        .select("*")
-        .eq("slug", slug)
-        .maybeSingle();
+      const s = await fetchSettings(slug);
       if (!active) return;
       if (!s) {
         setNotFound(true);
         setLoading(false);
         return;
       }
+      setSettings(s);
+      setCachedSettings(slug, s);
       const { data: p } = await supabase
         .from("products")
         .select("id,name,price,images,category,stock")
         .eq("user_id", s.user_id)
         .order("created_at", { ascending: false });
       if (!active) return;
-      setSettings(s);
       setProducts(p ?? []);
       setLoading(false);
 
@@ -130,7 +130,7 @@ function StorefrontHome() {
     return sorted;
   }, [products, activeCategory, query, sort]);
 
-  if (loading) {
+  if (loading && !settings) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />

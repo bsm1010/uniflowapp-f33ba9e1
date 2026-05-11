@@ -11,12 +11,14 @@ import {
 } from "@/components/storefront/StorefrontShell";
 import { AlgerianCheckoutForm } from "@/components/storefront/AlgerianCheckoutForm";
 import { useCart } from "@/hooks/use-cart";
+import { fetchSettings, getCachedSettings, setCachedSettings } from "@/lib/storefrontCache";
 
 type StoreSettings = Tables<"store_settings">;
 type Product = Tables<"products">;
 
 export const Route = createFileRoute("/s/$slug/p/$productId")({
   component: ProductPage,
+  loader: ({ params }) => fetchSettings(params.slug),
   head: () => ({ meta: [{ title: "Product — Storely" }] }),
 });
 
@@ -24,7 +26,8 @@ function ProductPage() {
   const { slug, productId } = Route.useParams();
   const { t: tr } = useTranslation();
 
-  const [settings, setSettings] = useState<StoreSettings | null>(null);
+  const initialSettings = getCachedSettings(slug);
+  const [settings, setSettings] = useState<StoreSettings | null>(initialSettings);
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -35,17 +38,15 @@ function ProductPage() {
   useEffect(() => {
     let active = true;
     (async () => {
-      const { data: s } = await supabase
-        .from("store_settings")
-        .select("*")
-        .eq("slug", slug)
-        .maybeSingle();
+      const s = await fetchSettings(slug);
       if (!active) return;
       if (!s) {
         setNotFound(true);
         setLoading(false);
         return;
       }
+      setSettings(s);
+      setCachedSettings(slug, s);
       const { data: p } = await supabase
         .from("products")
         .select("*")
@@ -58,7 +59,6 @@ function ProductPage() {
         setLoading(false);
         return;
       }
-      setSettings(s);
       setProduct(p);
       setLoading(false);
     })();
@@ -67,7 +67,7 @@ function ProductPage() {
     };
   }, [slug, productId]);
 
-  if (loading) {
+  if (loading && !settings) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />

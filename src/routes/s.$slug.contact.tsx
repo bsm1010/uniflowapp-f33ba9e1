@@ -6,15 +6,12 @@ import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { StorefrontShell } from "@/components/storefront/StorefrontShell";
 import { getStoreTokens, type StoreSettings } from "@/lib/storeTheme";
+import { fetchSettings } from "@/lib/storefrontCache";
 
 export const Route = createFileRoute("/s/$slug/contact")({
   loader: async ({ params }) => {
-    const { data, error } = await supabase
-      .from("store_settings")
-      .select("*")
-      .eq("slug", params.slug)
-      .maybeSingle();
-    if (error || !data) throw notFound();
+    const data = await fetchSettings(params.slug);
+    if (!data) throw notFound();
     return { settings: data as unknown as StoreSettings };
   },
   head: ({ loaderData }) => ({

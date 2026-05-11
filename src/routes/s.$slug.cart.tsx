@@ -2,46 +2,46 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowLeft, Loader2, Minus, Plus, ShoppingBag, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import {
   StorefrontShell,
   getStoreTokens,
 } from "@/components/storefront/StorefrontShell";
 import { useCart } from "@/hooks/use-cart";
+import { fetchSettings, getCachedSettings, setCachedSettings } from "@/lib/storefrontCache";
 
 type StoreSettings = Tables<"store_settings">;
 
 export const Route = createFileRoute("/s/$slug/cart")({
   component: CartPage,
+  loader: ({ params }) => fetchSettings(params.slug),
   head: () => ({ meta: [{ title: "Cart — Storely" }] }),
 });
 
 function CartPage() {
   const { slug } = Route.useParams();
   const { t: tr } = useTranslation();
-  const [settings, setSettings] = useState<StoreSettings | null>(null);
-  const [loading, setLoading] = useState(true);
+  const initial = getCachedSettings(slug);
+  const [settings, setSettings] = useState<StoreSettings | null>(initial);
+  const [loading, setLoading] = useState(!initial);
   const cart = useCart(slug);
 
   useEffect(() => {
     let active = true;
-    (async () => {
-      const { data } = await supabase
-        .from("store_settings")
-        .select("*")
-        .eq("slug", slug)
-        .maybeSingle();
+    fetchSettings(slug).then((data) => {
       if (!active) return;
-      setSettings(data);
+      if (data) {
+        setCachedSettings(slug, data);
+        setSettings(data);
+      }
       setLoading(false);
-    })();
+    });
     return () => {
       active = false;
     };
   }, [slug]);
 
-  if (loading) {
+  if (loading && !settings) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
