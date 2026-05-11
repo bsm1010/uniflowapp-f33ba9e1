@@ -67,11 +67,13 @@ function ProductPage() {
     };
   }, [slug, productId]);
 
-  if (loading && !settings) {
+  if (!notFound && (loading || !product)) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
+      <StorefrontShell settings={settings ?? undefined}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 flex items-center justify-center">
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        </div>
+      </StorefrontShell>
     );
   }
 
