@@ -17,12 +17,9 @@ export function fetchSettings(slug: string): Promise<StoreSettings | null> {
   if (cached) return Promise.resolve(cached);
   const existing = settingsInflight.get(slug);
   if (existing) return existing;
-  const p = supabase
-    .from("store_settings")
-    .select("*")
-    .eq("slug", slug)
-    .maybeSingle()
-    .then(({ data }) => {
+  const p = Promise.resolve(
+    supabase.from("store_settings").select("*").eq("slug", slug).maybeSingle(),
+  ).then(({ data }) => {
       settingsInflight.delete(slug);
       if (data) {
         settingsCache.set(slug, data as StoreSettings);
