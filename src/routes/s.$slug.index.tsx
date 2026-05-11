@@ -26,6 +26,7 @@ type Product = Pick<
 
 export const Route = createFileRoute("/s/$slug/")({
   component: StorefrontHome,
+  loader: ({ params }) => fetchSettings(params.slug),
   head: ({ params }) => ({
     meta: [{ title: `${params.slug} — Storely` }],
   }),
