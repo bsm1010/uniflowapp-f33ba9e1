@@ -11,6 +11,7 @@ import {
 } from "@/components/storefront/StorefrontShell";
 import { AlgerianCheckoutForm } from "@/components/storefront/AlgerianCheckoutForm";
 import { useCart } from "@/hooks/use-cart";
+import { fetchSettings, getCachedSettings, setCachedSettings } from "@/lib/storefrontCache";
 
 type StoreSettings = Tables<"store_settings">;
 type Product = Tables<"products">;
