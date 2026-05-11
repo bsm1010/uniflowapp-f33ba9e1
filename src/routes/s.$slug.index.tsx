@@ -130,7 +130,7 @@ function StorefrontHome() {
     return sorted;
   }, [products, activeCategory, query, sort]);
 
-  if (loading) {
+  if (loading && !settings) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
