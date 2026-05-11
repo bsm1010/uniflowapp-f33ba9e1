@@ -1,18 +1,14 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { supabase } from "@/integrations/supabase/client";
 import { StorefrontShell } from "@/components/storefront/StorefrontShell";
 import { getStoreTokens, type StoreSettings } from "@/lib/storeTheme";
+import { fetchSettings } from "@/lib/storefrontCache";
 
 export const Route = createFileRoute("/s/$slug/about")({
   loader: async ({ params }) => {
-    const { data, error } = await supabase
-      .from("store_settings")
-      .select("*")
-      .eq("slug", params.slug)
-      .maybeSingle();
-    if (error || !data) throw notFound();
+    const data = await fetchSettings(params.slug);
+    if (!data) throw notFound();
     return { settings: data as StoreSettings };
   },
   head: ({ loaderData }) => ({
