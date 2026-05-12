@@ -29,6 +29,7 @@ import { Route as DashboardReferralsRouteImport } from './routes/dashboard.refer
 import { Route as DashboardProductsRouteImport } from './routes/dashboard.products'
 import { Route as DashboardOrdersRouteImport } from './routes/dashboard.orders'
 import { Route as DashboardLandingGeneratorRouteImport } from './routes/dashboard.landing-generator'
+import { Route as DashboardDomainsRouteImport } from './routes/dashboard.domains'
 import { Route as DashboardDeliveryRouteImport } from './routes/dashboard.delivery'
 import { Route as DashboardDatabaseRouteImport } from './routes/dashboard.database'
 import { Route as DashboardCustomersRouteImport } from './routes/dashboard.customers'
@@ -169,6 +170,11 @@ const DashboardLandingGeneratorRoute =
     path: '/landing-generator',
     getParentRoute: () => DashboardRoute,
   } as any)
+const DashboardDomainsRoute = DashboardDomainsRouteImport.update({
+  id: '/domains',
+  path: '/domains',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardDeliveryRoute = DashboardDeliveryRouteImport.update({
   id: '/delivery',
   path: '/delivery',
@@ -388,6 +394,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/customers': typeof DashboardCustomersRoute
   '/dashboard/database': typeof DashboardDatabaseRoute
   '/dashboard/delivery': typeof DashboardDeliveryRoute
+  '/dashboard/domains': typeof DashboardDomainsRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
@@ -446,6 +453,7 @@ export interface FileRoutesByTo {
   '/dashboard/customers': typeof DashboardCustomersRoute
   '/dashboard/database': typeof DashboardDatabaseRoute
   '/dashboard/delivery': typeof DashboardDeliveryRoute
+  '/dashboard/domains': typeof DashboardDomainsRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
@@ -507,6 +515,7 @@ export interface FileRoutesById {
   '/dashboard/customers': typeof DashboardCustomersRoute
   '/dashboard/database': typeof DashboardDatabaseRoute
   '/dashboard/delivery': typeof DashboardDeliveryRoute
+  '/dashboard/domains': typeof DashboardDomainsRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
@@ -569,6 +578,7 @@ export interface FileRouteTypes {
     | '/dashboard/customers'
     | '/dashboard/database'
     | '/dashboard/delivery'
+    | '/dashboard/domains'
     | '/dashboard/landing-generator'
     | '/dashboard/orders'
     | '/dashboard/products'
@@ -627,6 +637,7 @@ export interface FileRouteTypes {
     | '/dashboard/customers'
     | '/dashboard/database'
     | '/dashboard/delivery'
+    | '/dashboard/domains'
     | '/dashboard/landing-generator'
     | '/dashboard/orders'
     | '/dashboard/products'
@@ -687,6 +698,7 @@ export interface FileRouteTypes {
     | '/dashboard/customers'
     | '/dashboard/database'
     | '/dashboard/delivery'
+    | '/dashboard/domains'
     | '/dashboard/landing-generator'
     | '/dashboard/orders'
     | '/dashboard/products'
@@ -893,6 +905,13 @@ declare module '@tanstack/react-router' {
       path: '/landing-generator'
       fullPath: '/dashboard/landing-generator'
       preLoaderRoute: typeof DashboardLandingGeneratorRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/domains': {
+      id: '/dashboard/domains'
+      path: '/domains'
+      fullPath: '/dashboard/domains'
+      preLoaderRoute: typeof DashboardDomainsRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/delivery': {
@@ -1209,6 +1228,7 @@ interface DashboardRouteChildren {
   DashboardCustomersRoute: typeof DashboardCustomersRoute
   DashboardDatabaseRoute: typeof DashboardDatabaseRoute
   DashboardDeliveryRoute: typeof DashboardDeliveryRoute
+  DashboardDomainsRoute: typeof DashboardDomainsRoute
   DashboardLandingGeneratorRoute: typeof DashboardLandingGeneratorRoute
   DashboardOrdersRoute: typeof DashboardOrdersRoute
   DashboardProductsRoute: typeof DashboardProductsRoute
@@ -1236,6 +1256,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardCustomersRoute: DashboardCustomersRoute,
   DashboardDatabaseRoute: DashboardDatabaseRoute,
   DashboardDeliveryRoute: DashboardDeliveryRoute,
+  DashboardDomainsRoute: DashboardDomainsRoute,
   DashboardLandingGeneratorRoute: DashboardLandingGeneratorRoute,
   DashboardOrdersRoute: DashboardOrdersRoute,
   DashboardProductsRoute: DashboardProductsRoute,
