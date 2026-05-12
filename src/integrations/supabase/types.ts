@@ -388,6 +388,63 @@ export type Database = {
         }
         Relationships: []
       }
+      custom_domains: {
+        Row: {
+          created_at: string
+          detected_provider: string | null
+          dns_records: Json
+          domain: string
+          domain_type: string
+          error_message: string | null
+          id: string
+          is_primary: boolean
+          last_checked_at: string | null
+          ssl_active: boolean
+          status: string
+          store_slug: string
+          updated_at: string
+          user_id: string
+          verification_token: string
+          verified_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          detected_provider?: string | null
+          dns_records?: Json
+          domain: string
+          domain_type?: string
+          error_message?: string | null
+          id?: string
+          is_primary?: boolean
+          last_checked_at?: string | null
+          ssl_active?: boolean
+          status?: string
+          store_slug: string
+          updated_at?: string
+          user_id: string
+          verification_token: string
+          verified_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          detected_provider?: string | null
+          dns_records?: Json
+          domain?: string
+          domain_type?: string
+          error_message?: string | null
+          id?: string
+          is_primary?: boolean
+          last_checked_at?: string | null
+          ssl_active?: boolean
+          status?: string
+          store_slug?: string
+          updated_at?: string
+          user_id?: string
+          verification_token?: string
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
       db_automations: {
         Row: {
           actions: Json
