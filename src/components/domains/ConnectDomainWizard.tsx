@@ -83,7 +83,7 @@ export function ConnectDomainWizard({ open, onOpenChange, onConnected }: Props) 
     setAdding(true);
     try {
       const row = await addFn({ data: { domain: classified.domain } });
-      setDomainRow(row as typeof domainRow);
+      setDomainRow(row as unknown as typeof domainRow);
       setStep(2);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Could not add domain");
