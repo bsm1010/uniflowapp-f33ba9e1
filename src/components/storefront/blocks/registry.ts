@@ -654,7 +654,7 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
     category: "cta",
     icon: "MousePointerClick",
     component: lazy(() => import("./blocks/cta").then((m) => ({ default: m.FloatingButton }))),
-    defaultProps: { label: "Chat with us", href: "#", position: "bottom-right" },
+    defaultProps: { label: "Chat with us", href: "#", position: "bottom-right" as const },
     schema: {
       fields: [
         { type: "text", key: "label", label: "Label" },
