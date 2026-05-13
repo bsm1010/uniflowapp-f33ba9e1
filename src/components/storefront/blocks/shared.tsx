@@ -1,4 +1,5 @@
-import { motion, type HTMLMotionProps } from "framer-motion";
+import type { ReactNode } from "react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 /** Standard section wrapper with semantic spacing & entrance animation. */
@@ -6,8 +7,11 @@ export function Section({
   children,
   className,
   fullBleed,
-  ...rest
-}: HTMLMotionProps<"section"> & { fullBleed?: boolean }) {
+}: {
+  children: ReactNode;
+  className?: string;
+  fullBleed?: boolean;
+}) {
   return (
     <motion.section
       initial={{ opacity: 0, y: 16 }}
@@ -15,7 +19,6 @@ export function Section({
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       className={cn("w-full py-12 md:py-16", className)}
-      {...rest}
     >
       <div className={cn(fullBleed ? "" : "mx-auto w-full max-w-7xl px-4 md:px-6")}>
         {children}
