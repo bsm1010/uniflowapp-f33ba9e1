@@ -543,10 +543,10 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
     component: lazy(() => import("./blocks/trust").then((m) => ({ default: m.TrustBadges }))),
     defaultProps: {
       items: [
-        { icon: "truck", label: "Free shipping", description: "On orders over $50" },
-        { icon: "rotate", label: "30-day returns", description: "No questions asked" },
-        { icon: "lock", label: "Secure checkout", description: "256-bit SSL" },
-        { icon: "support", label: "24/7 support", description: "Always here for you" },
+        { icon: "truck" as const, label: "Free shipping", description: "On orders over $50" },
+        { icon: "rotate" as const, label: "30-day returns", description: "No questions asked" },
+        { icon: "lock" as const, label: "Secure checkout", description: "256-bit SSL" },
+        { icon: "support" as const, label: "24/7 support", description: "Always here for you" },
       ],
     },
     schema: { fields: [] },
