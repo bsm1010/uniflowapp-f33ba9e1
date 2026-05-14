@@ -25,6 +25,7 @@ import {
   Truck,
   Bot,
   Globe,
+  Layers,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import fennecyIcon from "@/assets/fennecly-icon.webp";
