@@ -62,5 +62,5 @@ Reply with the filled JSON only.`;
     for (const k of Object.keys(data.defaultProps)) {
       if (k in parsed) safe[k] = parsed[k];
     }
-    return { props: safe as Record<string, string | number | boolean | null> };
+    return { propsJson: JSON.stringify(safe) };
   });
