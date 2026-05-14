@@ -12,13 +12,10 @@ export const Route = createFileRoute("/api/public/hooks/sync-tariffs")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        // Verify cron secret
+        // Verify cron secret — block when secret is unset OR header mismatches.
         const cronSecret = process.env.CRON_SECRET;
-        if (cronSecret) {
-          const provided = request.headers.get("x-cron-secret");
-          if (provided !== cronSecret) {
-            return Response.json({ ok: false, error: "Unauthorized" }, { status: 401 });
-          }
+        if (!cronSecret || request.headers.get("x-cron-secret") !== cronSecret) {
+          return Response.json({ ok: false, error: "Unauthorized" }, { status: 401 });
         }
 
         const startedAt = new Date().toISOString();
