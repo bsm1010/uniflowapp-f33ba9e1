@@ -7,17 +7,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { BLOCK_LIST, BLOCK_CATEGORIES } from "@/components/storefront/blocks/registry";
 import type { BlockCategory, BlockDefinition } from "@/components/storefront/blocks/types";
 
-const CATEGORY_LABELS: Record<BlockCategory, string> = {
-  hero: "Hero",
-  products: "Products",
-  "social-proof": "Social proof",
-  media: "Media",
-  banners: "Banners",
-  content: "Content",
-  trust: "Trust",
-  cta: "Call to action",
-};
-
 export function BuilderLibrary({ onAdd }: { onAdd: (def: BlockDefinition) => void }) {
   const [query, setQuery] = useState("");
   const [active, setActive] = useState<BlockCategory | "all">("all");
