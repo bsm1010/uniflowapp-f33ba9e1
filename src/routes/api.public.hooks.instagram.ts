@@ -36,15 +36,20 @@ export const Route = createFileRoute("/api/public/hooks/instagram")({
 
         const body = await request.text();
 
-        // Verify signature if META_APP_SECRET is configured
-        if (META_APP_SECRET) {
-          const signature = request.headers.get("x-hub-signature-256");
-          if (signature) {
-            const expected = "sha256=" + createHmac("sha256", META_APP_SECRET).update(body).digest("hex");
-            if (!timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) {
-              return new Response("Invalid signature", { status: 401 });
-            }
-          }
+        // Require META_APP_SECRET and a valid signature on every request.
+        if (!META_APP_SECRET) {
+          return new Response("Webhook secret not configured", { status: 500 });
+        }
+        const signature = request.headers.get("x-hub-signature-256");
+        if (!signature) {
+          return new Response("Missing signature", { status: 401 });
+        }
+        const expected =
+          "sha256=" + createHmac("sha256", META_APP_SECRET).update(body).digest("hex");
+        const sigBuf = Buffer.from(signature);
+        const expBuf = Buffer.from(expected);
+        if (sigBuf.length !== expBuf.length || !timingSafeEqual(sigBuf, expBuf)) {
+          return new Response("Invalid signature", { status: 401 });
         }
 
         const payload = JSON.parse(body);
