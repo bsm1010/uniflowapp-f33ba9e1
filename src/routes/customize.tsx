@@ -118,6 +118,7 @@ const CURRENCIES = ["USD", "EUR", "GBP", "DZD", "MAD", "TND", "CAD", "AUD", "JPY
 function defaults(userId: string): StoreSettings {
   return {
     user_id: userId,
+    sections: [],
     slug: `store-${userId.slice(0, 8)}`,
     store_name: "My Store",
     tagline: "Beautiful things, thoughtfully made.",

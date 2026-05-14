@@ -36,6 +36,7 @@ import { Route as DashboardCustomersRouteImport } from './routes/dashboard.custo
 import { Route as DashboardCreditsRouteImport } from './routes/dashboard.credits'
 import { Route as DashboardContactRouteImport } from './routes/dashboard.contact'
 import { Route as DashboardCategoriesRouteImport } from './routes/dashboard.categories'
+import { Route as DashboardBuilderRouteImport } from './routes/dashboard.builder'
 import { Route as DashboardAppsRouteImport } from './routes/dashboard.apps'
 import { Route as DashboardAnalyticsRouteImport } from './routes/dashboard.analytics'
 import { Route as DashboardAiAgentRouteImport } from './routes/dashboard.ai-agent'
@@ -203,6 +204,11 @@ const DashboardContactRoute = DashboardContactRouteImport.update({
 const DashboardCategoriesRoute = DashboardCategoriesRouteImport.update({
   id: '/categories',
   path: '/categories',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardBuilderRoute = DashboardBuilderRouteImport.update({
+  id: '/builder',
+  path: '/builder',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardAppsRoute = DashboardAppsRouteImport.update({
@@ -388,6 +394,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/ai-agent': typeof DashboardAiAgentRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/apps': typeof DashboardAppsRouteWithChildren
+  '/dashboard/builder': typeof DashboardBuilderRoute
   '/dashboard/categories': typeof DashboardCategoriesRoute
   '/dashboard/contact': typeof DashboardContactRoute
   '/dashboard/credits': typeof DashboardCreditsRoute
@@ -447,6 +454,7 @@ export interface FileRoutesByTo {
   '/dashboard/about': typeof DashboardAboutRoute
   '/dashboard/ai-agent': typeof DashboardAiAgentRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
+  '/dashboard/builder': typeof DashboardBuilderRoute
   '/dashboard/categories': typeof DashboardCategoriesRoute
   '/dashboard/contact': typeof DashboardContactRoute
   '/dashboard/credits': typeof DashboardCreditsRoute
@@ -509,6 +517,7 @@ export interface FileRoutesById {
   '/dashboard/ai-agent': typeof DashboardAiAgentRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/apps': typeof DashboardAppsRouteWithChildren
+  '/dashboard/builder': typeof DashboardBuilderRoute
   '/dashboard/categories': typeof DashboardCategoriesRoute
   '/dashboard/contact': typeof DashboardContactRoute
   '/dashboard/credits': typeof DashboardCreditsRoute
@@ -572,6 +581,7 @@ export interface FileRouteTypes {
     | '/dashboard/ai-agent'
     | '/dashboard/analytics'
     | '/dashboard/apps'
+    | '/dashboard/builder'
     | '/dashboard/categories'
     | '/dashboard/contact'
     | '/dashboard/credits'
@@ -631,6 +641,7 @@ export interface FileRouteTypes {
     | '/dashboard/about'
     | '/dashboard/ai-agent'
     | '/dashboard/analytics'
+    | '/dashboard/builder'
     | '/dashboard/categories'
     | '/dashboard/contact'
     | '/dashboard/credits'
@@ -692,6 +703,7 @@ export interface FileRouteTypes {
     | '/dashboard/ai-agent'
     | '/dashboard/analytics'
     | '/dashboard/apps'
+    | '/dashboard/builder'
     | '/dashboard/categories'
     | '/dashboard/contact'
     | '/dashboard/credits'
@@ -954,6 +966,13 @@ declare module '@tanstack/react-router' {
       path: '/categories'
       fullPath: '/dashboard/categories'
       preLoaderRoute: typeof DashboardCategoriesRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/builder': {
+      id: '/dashboard/builder'
+      path: '/builder'
+      fullPath: '/dashboard/builder'
+      preLoaderRoute: typeof DashboardBuilderRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/apps': {
@@ -1222,6 +1241,7 @@ interface DashboardRouteChildren {
   DashboardAiAgentRoute: typeof DashboardAiAgentRoute
   DashboardAnalyticsRoute: typeof DashboardAnalyticsRoute
   DashboardAppsRoute: typeof DashboardAppsRouteWithChildren
+  DashboardBuilderRoute: typeof DashboardBuilderRoute
   DashboardCategoriesRoute: typeof DashboardCategoriesRoute
   DashboardContactRoute: typeof DashboardContactRoute
   DashboardCreditsRoute: typeof DashboardCreditsRoute
@@ -1250,6 +1270,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAiAgentRoute: DashboardAiAgentRoute,
   DashboardAnalyticsRoute: DashboardAnalyticsRoute,
   DashboardAppsRoute: DashboardAppsRouteWithChildren,
+  DashboardBuilderRoute: DashboardBuilderRoute,
   DashboardCategoriesRoute: DashboardCategoriesRoute,
   DashboardContactRoute: DashboardContactRoute,
   DashboardCreditsRoute: DashboardCreditsRoute,
