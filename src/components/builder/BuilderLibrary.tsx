@@ -51,10 +51,10 @@ export function BuilderLibrary({ onAdd }: { onAdd: (def: BlockDefinition) => voi
           <CategoryPill label="All" active={active === "all"} onClick={() => setActive("all")} />
           {BLOCK_CATEGORIES.map((c) => (
             <CategoryPill
-              key={c}
-              label={CATEGORY_LABELS[c]}
-              active={active === c}
-              onClick={() => setActive(c)}
+              key={c.key}
+              label={c.label}
+              active={active === c.key}
+              onClick={() => setActive(c.key as BlockCategory)}
             />
           ))}
         </div>
