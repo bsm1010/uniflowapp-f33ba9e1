@@ -1407,6 +1407,45 @@ export type Database = {
           },
         ]
       }
+      section_templates: {
+        Row: {
+          block_key: string
+          category: string
+          created_at: string
+          id: string
+          name: string
+          props: Json
+          style_overrides: Json
+          thumbnail_url: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          block_key: string
+          category?: string
+          created_at?: string
+          id?: string
+          name: string
+          props?: Json
+          style_overrides?: Json
+          thumbnail_url?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          block_key?: string
+          category?: string
+          created_at?: string
+          id?: string
+          name?: string
+          props?: Json
+          style_overrides?: Json
+          thumbnail_url?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       seo_settings: {
         Row: {
           created_at: string
@@ -1588,6 +1627,7 @@ export type Database = {
           secondary_color: string
           section_order: string[]
           section_titles: Json
+          sections: Json
           show_categories: boolean
           show_featured: boolean
           show_hero: boolean
@@ -1632,6 +1672,7 @@ export type Database = {
           secondary_color?: string
           section_order?: string[]
           section_titles?: Json
+          sections?: Json
           show_categories?: boolean
           show_featured?: boolean
           show_hero?: boolean
@@ -1676,6 +1717,7 @@ export type Database = {
           secondary_color?: string
           section_order?: string[]
           section_titles?: Json
+          sections?: Json
           show_categories?: boolean
           show_featured?: boolean
           show_hero?: boolean
