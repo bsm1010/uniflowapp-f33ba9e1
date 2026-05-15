@@ -1,5 +1,6 @@
 import { Download, Zap, Shield, Monitor } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import fenneclyBox from "@/assets/fennecly-windows-box.png";
 
 const DOWNLOAD_URL =
   "https://github.com/bsm1010/FenneclySetup/releases/download/untagged-72b1a4a0dfc00bb66b82/FenneclySetup.exe";
