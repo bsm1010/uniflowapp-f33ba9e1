@@ -4,7 +4,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
-import { createOrder } from "@/server/orders.functions";
+import { createOrder } from "@/lib/orders/create-order.functions";
 import { SearchableSelect } from "@/components/ui/searchable-select";
 import {
   ALGERIA_WILAYAS,
