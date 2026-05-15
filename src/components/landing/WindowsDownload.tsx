@@ -53,15 +53,14 @@ export function WindowsDownload() {
 
             {/* Right: visual */}
             <div className="relative flex items-center justify-center">
-              <div className="relative h-64 w-64 md:h-80 md:w-80">
-                <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-[#0078D4] via-[#2B88D8] to-[#50E6FF] shadow-2xl shadow-blue-500/40" />
-                <div className="absolute inset-0 rounded-[2.5rem] bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.4),transparent_55%)]" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <WindowsLogo className="h-32 w-32 md:h-40 md:w-40 text-white drop-shadow-xl" />
-                </div>
-                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 rounded-full border border-border/60 bg-background/90 px-4 py-1.5 text-xs font-semibold backdrop-blur shadow-soft">
-                  FenneclySetup.exe
-                </div>
+              <div className="relative">
+                <div className="pointer-events-none absolute inset-0 -z-10 rounded-[2.5rem] bg-gradient-to-br from-primary/30 via-purple-500/20 to-blue-500/30 blur-3xl" />
+                <img
+                  src={fenneclyBox}
+                  alt="Fennecly for Windows desktop app box"
+                  loading="lazy"
+                  className="h-auto w-full max-w-md drop-shadow-2xl"
+                />
               </div>
             </div>
           </div>
