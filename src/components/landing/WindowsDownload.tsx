@@ -1,6 +1,6 @@
-import { Download, Zap, Shield, Monitor, MousePointerClick, PlayCircle, LogIn, CheckCircle2 } from "lucide-react";
+import { Download, Zap, Shield, Monitor } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
+import fenneclyBox from "@/assets/fennecly-windows-box.png";
 
 const DOWNLOAD_URL =
   "https://github.com/bsm1010/FenneclySetup/releases/download/untagged-72b1a4a0dfc00bb66b82/FenneclySetup.exe";
@@ -63,44 +63,18 @@ export function WindowsDownload() {
               </div>
             </div>
 
-            {/* Right: installation steps */}
-            <div className="relative">
-              <div className="pointer-events-none absolute inset-0 -z-10 rounded-[2.5rem] bg-gradient-to-br from-fuchsia-500/20 via-purple-500/15 to-indigo-500/25 blur-3xl" />
-              <div className="rounded-2xl border border-white/15 bg-white/5 p-6 md:p-8 backdrop-blur-md shadow-2xl">
-                <div className="mb-5 flex items-center gap-2">
-                  <WindowsLogo className="h-5 w-5 text-fuchsia-300" />
-                  <h3 className="text-lg font-semibold text-white">Setup & Installation</h3>
-                </div>
-                <ol className="space-y-4">
-                  <Step
-                    n={1}
-                    icon={Download}
-                    title="Download the installer"
-                    desc="Click the download button to get FenneclySetup.exe (~80 MB)."
-                  />
-                  <Step
-                    n={2}
-                    icon={MousePointerClick}
-                    title="Open the .exe file"
-                    desc="Double-click the downloaded file in your Downloads folder."
-                  />
-                  <Step
-                    n={3}
-                    icon={PlayCircle}
-                    title="Run the installer"
-                    desc="Follow the on-screen wizard — takes less than a minute."
-                  />
-                  <Step
-                    n={4}
-                    icon={LogIn}
-                    title="Sign in & launch"
-                    desc="Log in with your Fennecly account and you're ready to go."
-                  />
-                </ol>
-                <div className="mt-6 flex items-center gap-2 rounded-xl border border-emerald-300/20 bg-emerald-400/10 px-4 py-2.5 text-sm text-emerald-100">
-                  <CheckCircle2 className="h-4 w-4" />
-                  Compatible with Windows 10 & 11 (64-bit)
-                </div>
+            {/* Right: visual */}
+            <div className="relative flex items-center justify-center">
+              <div className="relative">
+                <div className="pointer-events-none absolute inset-0 -z-10 rounded-[2.5rem] bg-gradient-to-br from-primary/30 via-purple-500/20 to-blue-500/30 blur-3xl" />
+                <img
+                  src={fenneclyBox}
+                  alt="Fennecly for Windows desktop app box"
+                  loading="eager"
+                  decoding="sync"
+                  fetchPriority="high"
+                  className="h-auto w-full max-w-md drop-shadow-2xl"
+                />
               </div>
             </div>
           </div>
@@ -122,33 +96,6 @@ function Feature({
       <Icon className="h-5 w-5 text-fuchsia-300" />
       <span className="text-xs font-medium text-white">{label}</span>
     </div>
-  );
-}
-
-function Step({
-  n,
-  icon: Icon,
-  title,
-  desc,
-}: {
-  n: number;
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  desc: string;
-}) {
-  return (
-    <li className="flex gap-4">
-      <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-fuchsia-500 to-indigo-600 text-white shadow-lg shadow-purple-900/40">
-        <Icon className="h-5 w-5" />
-        <span className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-white text-[10px] font-bold text-[#2e1065]">
-          {n}
-        </span>
-      </div>
-      <div className="pt-0.5">
-        <p className="font-semibold text-white">{title}</p>
-        <p className="text-sm text-purple-100/70">{desc}</p>
-      </div>
-    </li>
   );
 }
 
