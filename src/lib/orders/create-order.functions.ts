@@ -31,6 +31,11 @@ export const createOrder = createServerFn({ method: "POST" })
     if (!SUPABASE_URL || !SERVICE_KEY) throw new Error("Backend not configured");
 
     const admin = createClient(SUPABASE_URL, SERVICE_KEY);
+    console.log("createOrder: started", {
+      storeSlug: data.storeSlug,
+      itemCount: data.items.length,
+      deliveryType: data.deliveryType,
+    });
 
     // 1. Look up store
     const { data: store } = await admin
@@ -136,10 +141,11 @@ export const createOrder = createServerFn({ method: "POST" })
         total,
         status: "pending",
       })
-      .select("id")
+      .select("id, created_at")
       .single();
 
     if (orderErr || !order) throw new Error(orderErr?.message ?? "Failed to create order");
+    console.log("createOrder: order inserted", { orderId: order.id, storeOwnerId });
 
     // 5. Insert order items
     const { error: itemsErr } = await admin.from("order_items").insert(
@@ -150,7 +156,39 @@ export const createOrder = createServerFn({ method: "POST" })
     );
     if (itemsErr) throw new Error(itemsErr.message);
 
-    // 6. Create shipment (best-effort)
+    // 6. Ensure the seller receives a dashboard notification even if DB triggers are delayed.
+    try {
+      const message = `Customer: ${data.customerName} • Product: ${orderItems[0]?.product_name ?? "Order"} • Wilaya: ${data.shippingWilaya} • Order: #${order.id.slice(0, 8).toUpperCase()}`;
+      const since = new Date(new Date(order.created_at).getTime() - 1000).toISOString();
+      const { data: existingNotification } = await admin
+        .from("notifications")
+        .select("id")
+        .eq("user_id", storeOwnerId)
+        .eq("title", "New order received")
+        .gte("created_at", since)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (existingNotification?.id) {
+        await admin
+          .from("notifications")
+          .update({ message, type: "success", read: false })
+          .eq("id", existingNotification.id);
+      } else {
+        await admin.from("notifications").insert({
+          user_id: storeOwnerId,
+          title: "New order received",
+          message,
+          type: "success",
+        });
+      }
+      console.log("createOrder: seller notification ensured", { orderId: order.id });
+    } catch (notificationErr) {
+      console.error("createOrder: failed to create seller notification", notificationErr);
+    }
+
+    // 7. Create shipment (best-effort)
     if (data.companyId) {
       await admin.from("shipments").insert({
         store_id: storeOwnerId,
