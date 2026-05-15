@@ -35,54 +35,61 @@ export const sendOrderStatusSms = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => Schema.parse(input))
   .handler(async ({ data, context }) => {
-    const { supabase, userId } = context;
+    try {
+      const { supabase, userId } = context;
 
-    const { data: order, error } = await supabase
-      .from("orders")
-      .select("id, shipping_address, store_owner_id")
-      .eq("id", data.orderId)
-      .maybeSingle();
+      const { data: order, error } = await supabase
+        .from("orders")
+        .select("id, shipping_address, store_owner_id")
+        .eq("id", data.orderId)
+        .maybeSingle();
 
-    if (error || !order) throw new Error("Order not found");
-    if (order.store_owner_id !== userId) throw new Error("Not authorized");
+      if (error || !order) {
+        console.error("SMS: order lookup failed", error?.message);
+        return { sent: false, reason: "order_not_found" };
+      }
+      if (order.store_owner_id !== userId) {
+        return { sent: false, reason: "not_authorized" };
+      }
 
-    const phone = normalizePhone(order.shipping_address);
-    if (!phone) return { sent: false, reason: "no_phone" };
+      const phone = normalizePhone(order.shipping_address);
+      if (!phone) return { sent: false, reason: "no_phone" };
 
-    const baseUrl = process.env.INFOBIP_BASE_URL!;
-    const apiKey = process.env.INFOBIP_API_KEY!;
-    const sender = process.env.INFOBIP_SENDER!;
-    if (!baseUrl || !apiKey || !sender) {
-      throw new Error("Infobip not configured");
+      const baseUrl = process.env.INFOBIP_BASE_URL;
+      const apiKey = process.env.INFOBIP_API_KEY;
+      const sender = process.env.INFOBIP_SENDER;
+      if (!baseUrl || !apiKey || !sender) {
+        console.error("SMS: Infobip env vars missing");
+        return { sent: false, reason: "not_configured" };
+      }
+
+      const shortId = order.id.slice(0, 8).toUpperCase();
+      const text = buildMessage(data.status, shortId);
+
+      const url = `https://${baseUrl.replace(/^https?:\/\//, "")}/sms/2/text/advanced`;
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          Authorization: `App ${apiKey}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          messages: [
+            { from: sender, destinations: [{ to: phone }], text },
+          ],
+        }),
+      });
+
+      if (!res.ok) {
+        const body = await res.text().catch(() => "");
+        console.error("Infobip SMS failed", res.status, body);
+        return { sent: false, reason: `http_${res.status}` };
+      }
+
+      return { sent: true };
+    } catch (err) {
+      console.error("SMS handler error:", err instanceof Error ? err.message : err);
+      return { sent: false, reason: "exception" };
     }
-
-    const shortId = order.id.slice(0, 8).toUpperCase();
-    const text = buildMessage(data.status, shortId);
-
-    const url = `https://${baseUrl.replace(/^https?:\/\//, "")}/sms/2/text/advanced`;
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        Authorization: `App ${apiKey}`,
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        messages: [
-          {
-            from: sender,
-            destinations: [{ to: phone }],
-            text,
-          },
-        ],
-      }),
-    });
-
-    if (!res.ok) {
-      const body = await res.text();
-      console.error("Infobip SMS failed", res.status, body);
-      return { sent: false, reason: `http_${res.status}` };
-    }
-
-    return { sent: true };
   });
