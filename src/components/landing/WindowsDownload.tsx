@@ -9,37 +9,49 @@ export function WindowsDownload() {
   return (
     <section className="py-16 md:py-24">
       <div className="mx-auto max-w-6xl px-4">
-        <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-gradient-to-br from-background via-background to-primary/5 shadow-soft">
+        <div
+          className="relative overflow-hidden rounded-3xl border border-white/10 shadow-2xl"
+          style={{
+            background:
+              "radial-gradient(circle at 20% 10%, #4c1d95 0%, #2e1065 40%, #1a0a3e 75%, #120633 100%)",
+          }}
+        >
           {/* decorative glows */}
-          <div className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-primary/20 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-blue-500/20 blur-3xl" />
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.06),transparent_60%)]" />
+          <div className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-purple-500/30 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-indigo-600/30 blur-3xl" />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.08),transparent_60%)]" />
 
-          <div className="relative grid gap-10 p-8 md:p-14 lg:grid-cols-2 lg:items-center">
+          <div className="relative grid gap-10 p-8 md:p-14 lg:grid-cols-2 lg:items-center text-white">
             {/* Left: copy */}
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/60 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary backdrop-blur">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white backdrop-blur">
                 <Sparkle /> New · Desktop App
               </div>
-              <h2 className="mt-5 text-4xl md:text-5xl font-bold font-display tracking-tight">
+              <h2 className="mt-5 text-4xl md:text-5xl font-bold font-display tracking-tight text-white">
                 Fennecly for{" "}
-                <span className="text-gradient-brand">Windows</span>
+                <span className="bg-gradient-to-r from-fuchsia-300 via-purple-200 to-indigo-200 bg-clip-text text-transparent">
+                  Windows
+                </span>
               </h2>
-              <p className="mt-4 max-w-xl text-base md:text-lg text-muted-foreground leading-relaxed">
+              <p className="mt-4 max-w-xl text-base md:text-lg text-purple-100/80 leading-relaxed">
                 Get the full desktop experience — faster, smoother, and always
                 available. Manage your store natively on Windows with offline
                 access and instant launch.
               </p>
 
               <div className="mt-7 flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                <Button asChild size="lg" className="group shadow-glow">
+                <Button
+                  asChild
+                  size="lg"
+                  className="group bg-white text-[#2e1065] hover:bg-purple-50 shadow-xl shadow-purple-900/40"
+                >
                   <a href={DOWNLOAD_URL} download>
                     <WindowsLogo className="h-5 w-5" />
                     <Download className="h-5 w-5 transition-transform group-hover:translate-y-0.5" />
                     Download for Windows
                   </a>
                 </Button>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-purple-200/70">
                   Free · Windows 10/11 · ~80 MB
                 </span>
               </div>
