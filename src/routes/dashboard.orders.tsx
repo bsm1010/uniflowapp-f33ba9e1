@@ -150,12 +150,8 @@ function OrdersPage() {
     }
     toast.success(`Order marked as ${STATUS_VARIANT[status].label}`);
 
-    if (
-      status === "confirmed" ||
-      status === "shipped" ||
-      status === "delivered" ||
-      status === "cancelled"
-    ) {
+    const smsStatuses = ["confirmed", "shipped", "delivered", "cancelled"] as const;
+    if ((smsStatuses as readonly string[]).includes(status)) {
       try {
         const result = await sendOrderStatusSms({ data: { orderId, status } });
         if (result?.sent) toast.success("SMS sent to customer");
