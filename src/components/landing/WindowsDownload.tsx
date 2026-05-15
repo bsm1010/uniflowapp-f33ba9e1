@@ -34,6 +34,7 @@ export function WindowsDownload() {
               <div className="mt-7 flex flex-col sm:flex-row items-start sm:items-center gap-3">
                 <Button asChild size="lg" className="group shadow-glow">
                   <a href={DOWNLOAD_URL} download>
+                    <WindowsLogo className="h-5 w-5" />
                     <Download className="h-5 w-5 transition-transform group-hover:translate-y-0.5" />
                     Download for Windows
                   </a>
