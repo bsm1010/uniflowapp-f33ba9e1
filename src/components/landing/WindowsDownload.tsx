@@ -90,15 +90,15 @@ function Feature({
   label: string;
 }) {
   return (
-    <div className="flex flex-col items-center gap-2 rounded-xl border border-border/60 bg-background/60 px-3 py-3 backdrop-blur">
-      <Icon className="h-5 w-5 text-primary" />
-      <span className="text-xs font-medium">{label}</span>
+    <div className="flex flex-col items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-3 py-3 backdrop-blur">
+      <Icon className="h-5 w-5 text-fuchsia-300" />
+      <span className="text-xs font-medium text-white">{label}</span>
     </div>
   );
 }
 
 function Sparkle() {
-  return <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />;
+  return <span className="h-1.5 w-1.5 rounded-full bg-fuchsia-300 animate-pulse" />;
 }
 
 export function WindowsLogo({ className }: { className?: string }) {
