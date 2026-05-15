@@ -1,12 +1,14 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { createClient } from "@supabase/supabase-js";
+import type { Database } from "@/integrations/supabase/types";
 
 const StatusEnum = z.enum(["confirmed", "shipped", "delivered", "cancelled"]);
 
 const Schema = z.object({
   orderId: z.string().uuid(),
   status: StatusEnum,
+  accessToken: z.string().min(1),
 });
 
 function buildMessage(status: z.infer<typeof StatusEnum>, shortId: string) {
@@ -32,11 +34,31 @@ function normalizePhone(raw: string): string | null {
 }
 
 export const sendOrderStatusSms = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => Schema.parse(input))
-  .handler(async ({ data, context }) => {
+  .handler(async ({ data }) => {
     try {
-      const { supabase, userId } = context;
+      const supabaseUrl = process.env.SUPABASE_URL;
+      const supabaseKey = process.env.SUPABASE_PUBLISHABLE_KEY;
+      if (!supabaseUrl || !supabaseKey) {
+        console.error("SMS: backend auth env vars missing");
+        return { sent: false, reason: "backend_not_configured" };
+      }
+
+      const supabase = createClient<Database>(supabaseUrl, supabaseKey, {
+        global: { headers: { Authorization: `Bearer ${data.accessToken}` } },
+        auth: {
+          storage: undefined,
+          persistSession: false,
+          autoRefreshToken: false,
+        },
+      });
+
+      const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(data.accessToken);
+      const userId = claimsData?.claims?.sub;
+      if (claimsError || !userId) {
+        console.error("SMS: invalid auth token", claimsError?.message);
+        return { sent: false, reason: "unauthorized" };
+      }
 
       const { data: order, error } = await supabase
         .from("orders")
