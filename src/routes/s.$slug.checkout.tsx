@@ -1,11 +1,17 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { createOrder } from "@/lib/orders/create-order.functions";
 import type { Tables } from "@/integrations/supabase/types";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   StorefrontShell,
   getStoreTokens,
@@ -70,11 +76,11 @@ function useAnimatedNumber(value: number, duration = 400) {
 
 function CheckoutPage() {
   const { slug } = Route.useParams();
-  const navigate = useNavigate();
   const { t: tr } = useTranslation();
   const [settings, setSettings] = useState<StoreSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [successOrderId, setSuccessOrderId] = useState<string | null>(null);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [companyId, setCompanyId] = useState<string>("");
   // Tariffs keyed by `${companyId}:${wilaya}:${city}:${type}` -> price
@@ -281,11 +287,7 @@ function CheckoutPage() {
       });
 
       cart.clear();
-      navigate({
-        to: "/s/$slug/checkout/success",
-        params: { slug },
-        search: { order: result.orderId },
-      });
+      setSuccessOrderId(result.orderId);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : tr("storefront.checkout.errOrder");
       toast.error(message);
@@ -324,6 +326,48 @@ function CheckoutPage() {
 
   return (
     <StorefrontShell settings={settings}>
+      <Dialog open={!!successOrderId} onOpenChange={(open) => !open && setSuccessOrderId(null)}>
+        <DialogContent>
+          <div className="flex items-start gap-3">
+            <div
+              className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
+              style={{ backgroundColor: t.primary + "1f", color: t.primary }}
+            >
+              <CheckCircle2 className="h-5 w-5" />
+            </div>
+            <div className="space-y-2">
+              <DialogTitle>{tr("storefront.success.title")}</DialogTitle>
+              <DialogDescription>{tr("storefront.success.subtitle")}</DialogDescription>
+              {successOrderId && (
+                <div className="inline-block rounded-md border bg-muted/40 px-3 py-2 text-xs font-mono">
+                  {tr("storefront.success.orderNo", { id: successOrderId.slice(0, 8).toUpperCase() })}
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <Link
+              to="/s/$slug"
+              params={{ slug }}
+              className="inline-flex h-10 items-center justify-center px-4 text-sm font-medium transition-opacity hover:opacity-90"
+              style={{ backgroundColor: t.surface, color: t.fg, border: `1px solid ${t.border}`, borderRadius: radius / 2 }}
+            >
+              {tr("storefront.success.continue")}
+            </Link>
+            {successOrderId && (
+              <Link
+                to="/s/$slug/track"
+                params={{ slug }}
+                search={{ order: successOrderId }}
+                className="inline-flex h-10 items-center justify-center px-4 text-sm font-medium transition-opacity hover:opacity-90"
+                style={{ backgroundColor: t.primary, color: t.onPrimary, borderRadius: radius / 2 }}
+              >
+                {tr("storefront.success.track")}
+              </Link>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
         <Link
           to="/s/$slug/cart"
