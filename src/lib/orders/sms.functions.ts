@@ -8,7 +8,7 @@ const StatusEnum = z.enum(["confirmed", "shipped", "delivered", "cancelled"]);
 const Schema = z.object({
   orderId: z.string().uuid(),
   status: StatusEnum,
-  accessToken: z.string().min(1),
+  accessToken: z.string().optional().default(""),
 });
 
 function buildMessage(status: z.infer<typeof StatusEnum>, shortId: string) {
