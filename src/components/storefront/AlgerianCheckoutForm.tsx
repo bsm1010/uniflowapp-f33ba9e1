@@ -7,6 +7,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { createOrder } from "@/lib/orders/create-order.functions";
 import { SearchableSelect } from "@/components/ui/searchable-select";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   ALGERIA_WILAYAS,
   WILAYA_LIST,
   isValidAlgerianPhone,
@@ -75,6 +81,7 @@ export function AlgerianCheckoutForm({
   const [shippingLoading, setShippingLoading] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
+  const [successOrderId, setSuccessOrderId] = useState<string | null>(null);
 
   const cities = useMemo(
     () => (wilaya ? ALGERIA_WILAYAS[wilaya] ?? [] : []),
@@ -176,6 +183,7 @@ export function AlgerianCheckoutForm({
       setCity("");
       setDeliveryType("domicile");
       setShippingPrice(null);
+      setSuccessOrderId(result.orderId);
       onSuccess?.(result.orderId);
     } catch (err) {
       console.error(err);
@@ -186,15 +194,30 @@ export function AlgerianCheckoutForm({
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="p-5 sm:p-6 space-y-4"
-      style={{
-        backgroundColor: t.surface,
-        border: `1px solid ${t.border}`,
-        borderRadius: radius,
-      }}
-    >
+    <>
+      <Dialog open={!!successOrderId} onOpenChange={(open) => !open && setSuccessOrderId(null)}>
+        <DialogContent>
+          <DialogTitle>{tr("storefront.success.title") || "Thank you for your order!"}</DialogTitle>
+          <DialogDescription>
+            {tr("storefront.success.subtitle") || "Your order has been received."}
+          </DialogDescription>
+          {successOrderId && (
+            <div className="rounded-md border bg-muted/40 px-4 py-3 text-sm font-mono">
+              #{successOrderId.slice(0, 8).toUpperCase()}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <form
+        onSubmit={handleSubmit}
+        className="p-5 sm:p-6 space-y-4"
+        style={{
+          backgroundColor: t.surface,
+          border: `1px solid ${t.border}`,
+          borderRadius: radius,
+        }}
+      >
       <div>
         <h2 className="text-lg font-semibold" style={{ color: t.fg }}>
           {tr("storefront.cod.title")}
@@ -345,7 +368,8 @@ export function AlgerianCheckoutForm({
         )}
         {submitting ? tr("storefront.cod.placing") : tr("storefront.cod.orderNow")}
       </button>
-    </form>
+      </form>
+    </>
   );
 }
 
