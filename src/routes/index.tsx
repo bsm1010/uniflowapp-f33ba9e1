@@ -2,8 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
 
 import { Navbar } from "@/components/landing/Navbar";
-import { WindowsDownload } from "@/components/landing/WindowsDownload";
+import { Hero } from "@/components/landing/Hero";
 
+// Defer below-the-fold sections so the hero paints faster.
+const EcommerceBanner = lazy(() =>
+  import("@/components/landing/EcommerceBanner").then((m) => ({ default: m.EcommerceBanner })),
+);
 const DashboardTools = lazy(() =>
   import("@/components/landing/DashboardTools").then((m) => ({ default: m.DashboardTools })),
 );
@@ -22,6 +26,11 @@ const Testimonials = lazy(() =>
 const CTA = lazy(() =>
   import("@/components/landing/CTA").then((m) => ({ default: m.CTA })),
 );
+const WindowsDownload = lazy(() =>
+  import("@/components/landing/WindowsDownload").then((m) => ({
+    default: m.WindowsDownload,
+  })),
+);
 const Footer = lazy(() =>
   import("@/components/landing/Footer").then((m) => ({ default: m.Footer })),
 );
@@ -30,13 +39,13 @@ export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
     meta: [
-      { title: "Fennecly — Build Your Online Store in Minutes" },
+      { title: "Storely — Build Your Online Store in Minutes" },
       {
         name: "description",
         content:
           "Create, customize, and launch your e-commerce business without code. Drag-and-drop builder, beautiful themes, secure payments, and analytics.",
       },
-      { property: "og:title", content: "Fennecly — Build Your Online Store in Minutes" },
+      { property: "og:title", content: "Storely — Build Your Online Store in Minutes" },
       {
         property: "og:description",
         content: "Launch your e-commerce store in minutes — no code required.",
@@ -53,8 +62,11 @@ function Index() {
   return (
     <main className="min-h-screen bg-background">
       <Navbar />
-      <WindowsDownload />
+      <Hero />
       <Suspense fallback={<SectionFallback />}>
+        <div className="cv-auto">
+          <EcommerceBanner />
+        </div>
         <div className="cv-auto">
           <DashboardTools />
         </div>
@@ -69,6 +81,9 @@ function Index() {
         </div>
         <div className="cv-auto">
           <Testimonials />
+        </div>
+        <div className="cv-auto">
+          <WindowsDownload />
         </div>
         <div className="cv-auto">
           <CTA />
