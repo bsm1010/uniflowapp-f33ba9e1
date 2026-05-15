@@ -136,7 +136,7 @@ export function DashboardSidebar() {
       side={isRtl ? "right" : "left"}
       className={`bg-gradient-to-b from-sidebar to-sidebar/95 ${isRtl ? "border-l border-sidebar-border" : "border-r border-sidebar-border"}`}
     >
-      <SidebarHeader className="border-b border-sidebar-border/60 bg-sidebar/40 backdrop-blur-sm">
+      <SidebarHeader className="bg-transparent">
         <Link to="/dashboard" className="flex items-center gap-2.5 px-2 py-2.5 group">
           <div className="relative h-10 w-10 shrink-0 flex items-center justify-center">
             <img
