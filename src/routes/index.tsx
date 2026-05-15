@@ -26,6 +26,11 @@ const Testimonials = lazy(() =>
 const CTA = lazy(() =>
   import("@/components/landing/CTA").then((m) => ({ default: m.CTA })),
 );
+const WindowsDownload = lazy(() =>
+  import("@/components/landing/WindowsDownload").then((m) => ({
+    default: m.WindowsDownload,
+  })),
+);
 const Footer = lazy(() =>
   import("@/components/landing/Footer").then((m) => ({ default: m.Footer })),
 );
@@ -76,6 +81,9 @@ function Index() {
         </div>
         <div className="cv-auto">
           <Testimonials />
+        </div>
+        <div className="cv-auto">
+          <WindowsDownload />
         </div>
         <div className="cv-auto">
           <CTA />
