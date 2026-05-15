@@ -125,6 +125,33 @@ function Feature({
   );
 }
 
+function Step({
+  n,
+  icon: Icon,
+  title,
+  desc,
+}: {
+  n: number;
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  desc: string;
+}) {
+  return (
+    <li className="flex gap-4">
+      <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-fuchsia-500 to-indigo-600 text-white shadow-lg shadow-purple-900/40">
+        <Icon className="h-5 w-5" />
+        <span className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-white text-[10px] font-bold text-[#2e1065]">
+          {n}
+        </span>
+      </div>
+      <div className="pt-0.5">
+        <p className="font-semibold text-white">{title}</p>
+        <p className="text-sm text-purple-100/70">{desc}</p>
+      </div>
+    </li>
+  );
+}
+
 function Sparkle() {
   return <span className="h-1.5 w-1.5 rounded-full bg-fuchsia-300 animate-pulse" />;
 }
