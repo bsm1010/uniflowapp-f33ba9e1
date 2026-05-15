@@ -46,11 +46,22 @@ export const createOrder = createServerFn({ method: "POST" })
     const productIds = data.items.map((i) => i.productId);
     const { data: products, error: prodErr } = await admin
       .from("products")
-      .select("id, name, price, image_url")
-      .in("id", productIds)
-      .eq("user_id", storeOwnerId);
+      .select("id, name, price, images, user_id")
+      .in("id", productIds);
 
-    if (prodErr || !products) throw new Error("Failed to look up products");
+    if (prodErr) {
+      console.error("Product lookup error:", prodErr);
+      throw new Error(`Failed to look up products: ${prodErr.message}`);
+    }
+    if (!products || products.length === 0) {
+      console.error("No products found for IDs:", productIds, "store:", storeOwnerId);
+      throw new Error("No products found for this order");
+    }
+    const wrongStore = products.filter((p) => p.user_id !== storeOwnerId);
+    if (wrongStore.length > 0) {
+      console.error("Products belong to wrong store:", wrongStore.map((p) => p.id));
+      throw new Error("One or more products do not belong to this store");
+    }
 
     const productMap = new Map(products.map((p) => [p.id, p]));
 
