@@ -6,6 +6,7 @@ import { CreateShipmentDialog } from "@/components/dashboard/CreateShipmentDialo
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
+import { sendOrderStatusSms } from "@/lib/orders/sms.functions";
 import type { Tables } from "@/integrations/supabase/types";
 import { PageHeader, EmptyState } from "@/components/dashboard/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
@@ -145,8 +146,26 @@ function OrdersPage() {
     if (error) {
       setOrders(prev);
       toast.error("Failed to update status");
-    } else {
-      toast.success(`Order marked as ${STATUS_VARIANT[status].label}`);
+      return;
+    }
+    toast.success(`Order marked as ${STATUS_VARIANT[status].label}`);
+
+    if (
+      status === "confirmed" ||
+      status === "shipped" ||
+      status === "delivered" ||
+      status === "cancelled"
+    ) {
+      try {
+        const result = await sendOrderStatusSms({ data: { orderId, status } });
+        if (result?.sent) toast.success("SMS sent to customer");
+        else if (result?.reason === "no_phone")
+          toast.message("No phone number — SMS skipped");
+        else toast.error("Failed to send SMS");
+      } catch (e) {
+        console.error(e);
+        toast.error("Failed to send SMS");
+      }
     }
   };
 
