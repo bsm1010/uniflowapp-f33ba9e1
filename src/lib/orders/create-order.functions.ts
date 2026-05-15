@@ -86,7 +86,7 @@ export const createOrder = createServerFn({ method: "POST" })
         product_name: product.name,
         unit_price: unitPrice,
         quantity: item.quantity,
-        image_url: product.image_url,
+        image_url: Array.isArray(product.images) ? product.images[0] ?? null : null,
       });
     }
 
