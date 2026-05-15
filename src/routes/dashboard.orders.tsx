@@ -153,7 +153,14 @@ function OrdersPage() {
     const smsStatuses = ["confirmed", "shipped", "delivered", "cancelled"] as const;
     if ((smsStatuses as readonly string[]).includes(status)) {
       try {
-        const result = await sendOrderStatusSms({ data: { orderId, status } });
+        const { data: sessionData } = await supabase.auth.getSession();
+        const accessToken = sessionData.session?.access_token;
+        if (!accessToken) {
+          toast.error("Sign in again to send SMS notifications");
+          return;
+        }
+
+        const result = await sendOrderStatusSms({ data: { orderId, status, accessToken } });
         if (result?.sent) toast.success("SMS sent to customer");
         else if (result?.reason === "no_phone")
           toast.message("No phone number — SMS skipped");
