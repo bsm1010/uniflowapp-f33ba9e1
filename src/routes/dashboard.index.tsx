@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { InstalledAppsSection } from "@/components/dashboard/InstalledAppsSection";
+import { WindowsAppBanner } from "@/components/dashboard/WindowsAppBanner";
 
 export const Route = createFileRoute("/dashboard/")({
   component: DashboardHome,
@@ -221,6 +222,8 @@ function DashboardHome() {
           </Badge>
         </div>
       </motion.div>
+
+      <WindowsAppBanner />
 
       <SubscriptionStatusCard
         status={status}
