@@ -70,7 +70,9 @@ export function WindowsDownload() {
                 <img
                   src={fenneclyBox}
                   alt="Fennecly for Windows desktop app box"
-                  loading="lazy"
+                  loading="eager"
+                  decoding="sync"
+                  fetchPriority="high"
                   className="h-auto w-full max-w-md drop-shadow-2xl"
                 />
               </div>
