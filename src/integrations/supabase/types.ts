@@ -603,7 +603,6 @@ export type Database = {
       }
       delivery_companies: {
         Row: {
-          api_key: string
           created_at: string
           id: string
           is_active: boolean
@@ -611,7 +610,6 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          api_key?: string
           created_at?: string
           id?: string
           is_active?: boolean
@@ -619,7 +617,6 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          api_key?: string
           created_at?: string
           id?: string
           is_active?: boolean
