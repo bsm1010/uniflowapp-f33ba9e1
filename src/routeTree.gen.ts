@@ -22,12 +22,15 @@ import { Route as DashboardUpgradeRouteImport } from './routes/dashboard.upgrade
 import { Route as DashboardThemesRouteImport } from './routes/dashboard.themes'
 import { Route as DashboardThemePresetsRouteImport } from './routes/dashboard.theme-presets'
 import { Route as DashboardStoreRouteImport } from './routes/dashboard.store'
+import { Route as DashboardStockAlertsRouteImport } from './routes/dashboard.stock-alerts'
 import { Route as DashboardShippingRouteImport } from './routes/dashboard.shipping'
 import { Route as DashboardShipmentsRouteImport } from './routes/dashboard.shipments'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
+import { Route as DashboardReturnsRouteImport } from './routes/dashboard.returns'
 import { Route as DashboardReferralsRouteImport } from './routes/dashboard.referrals'
 import { Route as DashboardProductsRouteImport } from './routes/dashboard.products'
 import { Route as DashboardOrdersRouteImport } from './routes/dashboard.orders'
+import { Route as DashboardNotificationsRouteImport } from './routes/dashboard.notifications'
 import { Route as DashboardLandingGeneratorRouteImport } from './routes/dashboard.landing-generator'
 import { Route as DashboardDomainsRouteImport } from './routes/dashboard.domains'
 import { Route as DashboardDeliveryRouteImport } from './routes/dashboard.delivery'
@@ -135,6 +138,11 @@ const DashboardStoreRoute = DashboardStoreRouteImport.update({
   path: '/store',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardStockAlertsRoute = DashboardStockAlertsRouteImport.update({
+  id: '/stock-alerts',
+  path: '/stock-alerts',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardShippingRoute = DashboardShippingRouteImport.update({
   id: '/shipping',
   path: '/shipping',
@@ -150,6 +158,11 @@ const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardReturnsRoute = DashboardReturnsRouteImport.update({
+  id: '/returns',
+  path: '/returns',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardReferralsRoute = DashboardReferralsRouteImport.update({
   id: '/referrals',
   path: '/referrals',
@@ -163,6 +176,11 @@ const DashboardProductsRoute = DashboardProductsRouteImport.update({
 const DashboardOrdersRoute = DashboardOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardNotificationsRoute = DashboardNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardLandingGeneratorRoute =
@@ -403,12 +421,15 @@ export interface FileRoutesByFullPath {
   '/dashboard/delivery': typeof DashboardDeliveryRoute
   '/dashboard/domains': typeof DashboardDomainsRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
+  '/dashboard/notifications': typeof DashboardNotificationsRoute
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/referrals': typeof DashboardReferralsRoute
+  '/dashboard/returns': typeof DashboardReturnsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/shipments': typeof DashboardShipmentsRoute
   '/dashboard/shipping': typeof DashboardShippingRoute
+  '/dashboard/stock-alerts': typeof DashboardStockAlertsRoute
   '/dashboard/store': typeof DashboardStoreRoute
   '/dashboard/theme-presets': typeof DashboardThemePresetsRoute
   '/dashboard/themes': typeof DashboardThemesRoute
@@ -463,12 +484,15 @@ export interface FileRoutesByTo {
   '/dashboard/delivery': typeof DashboardDeliveryRoute
   '/dashboard/domains': typeof DashboardDomainsRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
+  '/dashboard/notifications': typeof DashboardNotificationsRoute
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/referrals': typeof DashboardReferralsRoute
+  '/dashboard/returns': typeof DashboardReturnsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/shipments': typeof DashboardShipmentsRoute
   '/dashboard/shipping': typeof DashboardShippingRoute
+  '/dashboard/stock-alerts': typeof DashboardStockAlertsRoute
   '/dashboard/store': typeof DashboardStoreRoute
   '/dashboard/theme-presets': typeof DashboardThemePresetsRoute
   '/dashboard/themes': typeof DashboardThemesRoute
@@ -526,12 +550,15 @@ export interface FileRoutesById {
   '/dashboard/delivery': typeof DashboardDeliveryRoute
   '/dashboard/domains': typeof DashboardDomainsRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
+  '/dashboard/notifications': typeof DashboardNotificationsRoute
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/referrals': typeof DashboardReferralsRoute
+  '/dashboard/returns': typeof DashboardReturnsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/shipments': typeof DashboardShipmentsRoute
   '/dashboard/shipping': typeof DashboardShippingRoute
+  '/dashboard/stock-alerts': typeof DashboardStockAlertsRoute
   '/dashboard/store': typeof DashboardStoreRoute
   '/dashboard/theme-presets': typeof DashboardThemePresetsRoute
   '/dashboard/themes': typeof DashboardThemesRoute
@@ -590,12 +617,15 @@ export interface FileRouteTypes {
     | '/dashboard/delivery'
     | '/dashboard/domains'
     | '/dashboard/landing-generator'
+    | '/dashboard/notifications'
     | '/dashboard/orders'
     | '/dashboard/products'
     | '/dashboard/referrals'
+    | '/dashboard/returns'
     | '/dashboard/settings'
     | '/dashboard/shipments'
     | '/dashboard/shipping'
+    | '/dashboard/stock-alerts'
     | '/dashboard/store'
     | '/dashboard/theme-presets'
     | '/dashboard/themes'
@@ -650,12 +680,15 @@ export interface FileRouteTypes {
     | '/dashboard/delivery'
     | '/dashboard/domains'
     | '/dashboard/landing-generator'
+    | '/dashboard/notifications'
     | '/dashboard/orders'
     | '/dashboard/products'
     | '/dashboard/referrals'
+    | '/dashboard/returns'
     | '/dashboard/settings'
     | '/dashboard/shipments'
     | '/dashboard/shipping'
+    | '/dashboard/stock-alerts'
     | '/dashboard/store'
     | '/dashboard/theme-presets'
     | '/dashboard/themes'
@@ -712,12 +745,15 @@ export interface FileRouteTypes {
     | '/dashboard/delivery'
     | '/dashboard/domains'
     | '/dashboard/landing-generator'
+    | '/dashboard/notifications'
     | '/dashboard/orders'
     | '/dashboard/products'
     | '/dashboard/referrals'
+    | '/dashboard/returns'
     | '/dashboard/settings'
     | '/dashboard/shipments'
     | '/dashboard/shipping'
+    | '/dashboard/stock-alerts'
     | '/dashboard/store'
     | '/dashboard/theme-presets'
     | '/dashboard/themes'
@@ -870,6 +906,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardStoreRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/stock-alerts': {
+      id: '/dashboard/stock-alerts'
+      path: '/stock-alerts'
+      fullPath: '/dashboard/stock-alerts'
+      preLoaderRoute: typeof DashboardStockAlertsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/shipping': {
       id: '/dashboard/shipping'
       path: '/shipping'
@@ -891,6 +934,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardSettingsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/returns': {
+      id: '/dashboard/returns'
+      path: '/returns'
+      fullPath: '/dashboard/returns'
+      preLoaderRoute: typeof DashboardReturnsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/referrals': {
       id: '/dashboard/referrals'
       path: '/referrals'
@@ -910,6 +960,13 @@ declare module '@tanstack/react-router' {
       path: '/orders'
       fullPath: '/dashboard/orders'
       preLoaderRoute: typeof DashboardOrdersRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/notifications': {
+      id: '/dashboard/notifications'
+      path: '/notifications'
+      fullPath: '/dashboard/notifications'
+      preLoaderRoute: typeof DashboardNotificationsRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/landing-generator': {
@@ -1250,12 +1307,15 @@ interface DashboardRouteChildren {
   DashboardDeliveryRoute: typeof DashboardDeliveryRoute
   DashboardDomainsRoute: typeof DashboardDomainsRoute
   DashboardLandingGeneratorRoute: typeof DashboardLandingGeneratorRoute
+  DashboardNotificationsRoute: typeof DashboardNotificationsRoute
   DashboardOrdersRoute: typeof DashboardOrdersRoute
   DashboardProductsRoute: typeof DashboardProductsRoute
   DashboardReferralsRoute: typeof DashboardReferralsRoute
+  DashboardReturnsRoute: typeof DashboardReturnsRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardShipmentsRoute: typeof DashboardShipmentsRoute
   DashboardShippingRoute: typeof DashboardShippingRoute
+  DashboardStockAlertsRoute: typeof DashboardStockAlertsRoute
   DashboardStoreRoute: typeof DashboardStoreRoute
   DashboardThemePresetsRoute: typeof DashboardThemePresetsRoute
   DashboardThemesRoute: typeof DashboardThemesRoute
@@ -1279,12 +1339,15 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardDeliveryRoute: DashboardDeliveryRoute,
   DashboardDomainsRoute: DashboardDomainsRoute,
   DashboardLandingGeneratorRoute: DashboardLandingGeneratorRoute,
+  DashboardNotificationsRoute: DashboardNotificationsRoute,
   DashboardOrdersRoute: DashboardOrdersRoute,
   DashboardProductsRoute: DashboardProductsRoute,
   DashboardReferralsRoute: DashboardReferralsRoute,
+  DashboardReturnsRoute: DashboardReturnsRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardShipmentsRoute: DashboardShipmentsRoute,
   DashboardShippingRoute: DashboardShippingRoute,
+  DashboardStockAlertsRoute: DashboardStockAlertsRoute,
   DashboardStoreRoute: DashboardStoreRoute,
   DashboardThemePresetsRoute: DashboardThemePresetsRoute,
   DashboardThemesRoute: DashboardThemesRoute,
@@ -1347,13 +1410,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

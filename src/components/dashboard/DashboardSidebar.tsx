@@ -26,6 +26,9 @@ import {
   Bot,
   Globe,
   Layers,
+  RotateCcw,
+  AlertTriangle,
+  Bell,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import fennecyIcon from "@/assets/fennecly-icon.webp";
@@ -55,12 +58,12 @@ type NavItem = {
   url: string;
   icon: typeof LayoutDashboard;
   end?: boolean;
-  /** Tailwind gradient classes for the icon tile */
   gradient: string;
-  /** When true, render as <a target="_blank"> instead of in-app <Link> */
   external?: boolean;
+  tourId?: string;
 };
 
+type NavGroup = { label: string; items: NavItem[] };
 
 export function DashboardSidebar() {
   const { state } = useSidebar();
@@ -80,30 +83,63 @@ export function DashboardSidebar() {
     if (anyAppActive) setAppsOpen(true);
   }, [anyAppActive]);
 
-  const items: (NavItem & { tourId?: string })[] = [
-    { title: t("dashboard.nav.dashboard"), url: "/dashboard", icon: LayoutDashboard, end: true, gradient: "from-violet-500 to-fuchsia-500", tourId: "dashboard" },
-    { title: t("dashboard.nav.store"), url: "/dashboard/store", icon: Store, gradient: "from-indigo-500 to-blue-500" },
-    { title: "AI Sales Agent", url: "/dashboard/ai-agent", icon: Bot, gradient: "from-violet-500 to-indigo-600" },
-    { title: t("dashboard.nav.products"), url: "/dashboard/products", icon: Package, gradient: "from-emerald-500 to-teal-500", tourId: "products" },
-    { title: t("dashboard.nav.categories"), url: "/dashboard/categories", icon: Tag, gradient: "from-amber-500 to-orange-500" },
-    { title: t("dashboard.nav.orders"), url: "/dashboard/orders", icon: ShoppingBag, gradient: "from-pink-500 to-rose-500", tourId: "orders" },
-    { title: "Shipping", url: "/dashboard/shipping", icon: Truck, gradient: "from-green-500 to-emerald-500", tourId: "shipping" },
-    { title: "Shipments", url: "/dashboard/shipments", icon: Package, gradient: "from-sky-500 to-indigo-500" },
-    { title: t("dashboard.nav.customers"), url: "/dashboard/customers", icon: Users, gradient: "from-sky-500 to-cyan-500" },
-    { title: t("dashboard.nav.themePresets"), url: "/dashboard/theme-presets", icon: Sparkles, gradient: "from-fuchsia-500 to-purple-500" },
-    { title: t("dashboard.nav.database"), url: "/dashboard/database", icon: Database, gradient: "from-slate-600 to-slate-800" },
-    { title: t("dashboard.nav.landingGenerator"), url: "/dashboard/landing-generator", icon: Wand2, gradient: "from-purple-500 to-indigo-500" },
-    { title: "AI Voice Generator", url: "/dashboard/voice-generator", icon: Mic, gradient: "from-pink-500 to-purple-500" },
-    { title: t("dashboard.nav.credits"), url: "/dashboard/credits", icon: Coins, gradient: "from-yellow-500 to-amber-500" },
-    { title: t("dashboard.nav.referrals"), url: "/dashboard/referrals", icon: Gift, gradient: "from-rose-500 to-pink-500" },
-    { title: t("dashboard.nav.customize"), url: "/customize", icon: Palette, external: true, gradient: "from-teal-500 to-emerald-500", tourId: "customize" },
-    { title: "Section Builder", url: "/dashboard/builder", icon: Layers, gradient: "from-violet-500 to-fuchsia-500" },
-    { title: "Custom Domains", url: "/dashboard/domains", icon: Globe, gradient: "from-sky-500 to-blue-600" },
-    { title: t("dashboard.nav.aboutPage"), url: "/dashboard/about", icon: FileText, gradient: "from-blue-500 to-sky-500" },
-    { title: t("dashboard.nav.contactPage"), url: "/dashboard/contact", icon: Mail, gradient: "from-cyan-500 to-blue-500" },
-    { title: t("dashboard.nav.analytics"), url: "/dashboard/analytics", icon: BarChart3, gradient: "from-orange-500 to-red-500" },
-    { title: t("dashboard.nav.appStore"), url: "/dashboard/apps", icon: Blocks, gradient: "from-violet-500 to-purple-500" },
-    { title: t("dashboard.nav.settings"), url: "/dashboard/settings", icon: Settings, gradient: "from-zinc-500 to-slate-600" },
+  const groups: NavGroup[] = [
+    {
+      label: "Workspace",
+      items: [
+        { title: t("dashboard.nav.dashboard"), url: "/dashboard", icon: LayoutDashboard, end: true, gradient: "from-violet-500 to-fuchsia-500", tourId: "dashboard" },
+        { title: t("dashboard.nav.store"), url: "/dashboard/store", icon: Store, gradient: "from-indigo-500 to-blue-500" },
+        { title: "Notifications", url: "/dashboard/notifications", icon: Bell, gradient: "from-violet-500 to-indigo-500" },
+        { title: t("dashboard.nav.customize"), url: "/customize", icon: Palette, external: true, gradient: "from-teal-500 to-emerald-500", tourId: "customize" },
+      ],
+    },
+    {
+      label: "Catalog",
+      items: [
+        { title: t("dashboard.nav.products"), url: "/dashboard/products", icon: Package, gradient: "from-emerald-500 to-teal-500", tourId: "products" },
+        { title: t("dashboard.nav.categories"), url: "/dashboard/categories", icon: Tag, gradient: "from-amber-500 to-orange-500" },
+        { title: t("dashboard.nav.themePresets"), url: "/dashboard/theme-presets", icon: Sparkles, gradient: "from-fuchsia-500 to-purple-500" },
+        { title: "Section Builder", url: "/dashboard/builder", icon: Layers, gradient: "from-violet-500 to-fuchsia-500" },
+      ],
+    },
+    {
+      label: "Operations",
+      items: [
+        { title: t("dashboard.nav.orders"), url: "/dashboard/orders", icon: ShoppingBag, gradient: "from-pink-500 to-rose-500", tourId: "orders" },
+        { title: "Returns & Refunds", url: "/dashboard/returns", icon: RotateCcw, gradient: "from-rose-500 to-pink-500" },
+        { title: "Stock Alerts", url: "/dashboard/stock-alerts", icon: AlertTriangle, gradient: "from-amber-500 to-red-500" },
+        { title: "Shipping", url: "/dashboard/shipping", icon: Truck, gradient: "from-green-500 to-emerald-500", tourId: "shipping" },
+        { title: "Shipments", url: "/dashboard/shipments", icon: Package, gradient: "from-sky-500 to-indigo-500" },
+        { title: t("dashboard.nav.customers"), url: "/dashboard/customers", icon: Users, gradient: "from-sky-500 to-cyan-500" },
+      ],
+    },
+    {
+      label: "AI Tools",
+      items: [
+        { title: "AI Sales Agent", url: "/dashboard/ai-agent", icon: Bot, gradient: "from-violet-500 to-indigo-600" },
+        { title: t("dashboard.nav.landingGenerator"), url: "/dashboard/landing-generator", icon: Wand2, gradient: "from-purple-500 to-indigo-500" },
+        { title: "AI Voice Generator", url: "/dashboard/voice-generator", icon: Mic, gradient: "from-pink-500 to-purple-500" },
+      ],
+    },
+    {
+      label: "Marketing",
+      items: [
+        { title: t("dashboard.nav.analytics"), url: "/dashboard/analytics", icon: BarChart3, gradient: "from-orange-500 to-red-500" },
+        { title: t("dashboard.nav.aboutPage"), url: "/dashboard/about", icon: FileText, gradient: "from-blue-500 to-sky-500" },
+        { title: t("dashboard.nav.contactPage"), url: "/dashboard/contact", icon: Mail, gradient: "from-cyan-500 to-blue-500" },
+      ],
+    },
+    {
+      label: "Settings",
+      items: [
+        { title: "Custom Domains", url: "/dashboard/domains", icon: Globe, gradient: "from-sky-500 to-blue-600" },
+        { title: t("dashboard.nav.database"), url: "/dashboard/database", icon: Database, gradient: "from-slate-600 to-slate-800" },
+        { title: t("dashboard.nav.appStore"), url: "/dashboard/apps", icon: Blocks, gradient: "from-violet-500 to-purple-500" },
+        { title: t("dashboard.nav.credits"), url: "/dashboard/credits", icon: Coins, gradient: "from-yellow-500 to-amber-500" },
+        { title: t("dashboard.nav.referrals"), url: "/dashboard/referrals", icon: Gift, gradient: "from-rose-500 to-pink-500" },
+        { title: t("dashboard.nav.settings"), url: "/dashboard/settings", icon: Settings, gradient: "from-zinc-500 to-slate-600" },
+      ],
+    },
   ];
 
   useEffect(() => {
@@ -129,6 +165,37 @@ export function DashboardSidebar() {
       <Icon className="h-3.5 w-3.5" />
     </span>
   );
+
+  const renderMenuItem = (item: NavItem) => {
+    const active = !item.external && isActive(item.url, item.end);
+    const linkClass = `group/menu-item relative rounded-lg transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
+      active
+        ? "bg-gradient-to-r from-sidebar-accent to-sidebar-accent/40 text-sidebar-accent-foreground font-medium shadow-sm"
+        : "hover:bg-sidebar-accent/50"
+    }`;
+    return (
+      <SidebarMenuItem key={item.title}>
+        <SidebarMenuButton asChild isActive={active} tooltip={item.title} className="h-9">
+          {item.external ? (
+            <a href={item.url} target="_blank" rel="noopener noreferrer" className={linkClass} data-tour={item.tourId}>
+              {renderIcon(item.icon, item.gradient, active)}
+              <span className="text-sm">{item.title}</span>
+            </a>
+          ) : (
+            <Link to={item.url} className={linkClass} data-tour={item.tourId}>
+              {active && (
+                <span
+                  className={`absolute ${isRtl ? "right-0" : "left-0"} top-1.5 bottom-1.5 w-0.5 rounded-full bg-gradient-to-b ${item.gradient}`}
+                />
+              )}
+              {renderIcon(item.icon, item.gradient, active)}
+              <span className="text-sm">{item.title}</span>
+            </Link>
+          )}
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    );
+  };
 
   return (
     <Sidebar
@@ -163,56 +230,17 @@ export function DashboardSidebar() {
         </Link>
       </SidebarHeader>
       <SidebarContent className="px-1.5 py-2">
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70 px-2">
-            {t("dashboard.groupWorkspace")}
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu className="gap-0.5">
-              {items.map((item) => {
-                const active = !item.external && isActive(item.url, item.end);
-                const linkClass = `group/menu-item relative rounded-lg transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
-                  active
-                    ? "bg-gradient-to-r from-sidebar-accent to-sidebar-accent/40 text-sidebar-accent-foreground font-medium shadow-sm"
-                    : "hover:bg-sidebar-accent/50"
-                }`;
-                return (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={active}
-                      tooltip={item.title}
-                      className="h-9"
-                    >
-                      {item.external ? (
-                        <a
-                          href={item.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={linkClass}
-                          data-tour={item.tourId}
-                        >
-                          {renderIcon(item.icon, item.gradient, active)}
-                          <span className="text-sm">{item.title}</span>
-                        </a>
-                      ) : (
-                        <Link to={item.url} className={linkClass} data-tour={item.tourId}>
-                          {active && (
-                            <span
-                              className={`absolute ${isRtl ? "right-0" : "left-0"} top-1.5 bottom-1.5 w-0.5 rounded-full bg-gradient-to-b ${item.gradient}`}
-                            />
-                          )}
-                          {renderIcon(item.icon, item.gradient, active)}
-                          <span className="text-sm">{item.title}</span>
-                        </Link>
-                      )}
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {groups.map((group) => (
+          <SidebarGroup key={group.label}>
+            <SidebarGroupLabel className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70 px-2">
+              {group.label}
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu className="gap-0.5">{group.items.map(renderMenuItem)}</SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
+
         {installedApps.length > 0 && (
           <Collapsible open={appsOpen} onOpenChange={setAppsOpen}>
             <SidebarGroup>
@@ -239,12 +267,7 @@ export function DashboardSidebar() {
                       const gradient = "from-violet-500 to-fuchsia-500";
                       return (
                         <SidebarMenuItem key={app.key}>
-                          <SidebarMenuButton
-                            asChild
-                            isActive={active}
-                            tooltip={app.name}
-                            className="h-9"
-                          >
+                          <SidebarMenuButton asChild isActive={active} tooltip={app.name} className="h-9">
                             <Link
                               to={url}
                               className={`group/menu-item relative rounded-lg transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
@@ -266,6 +289,7 @@ export function DashboardSidebar() {
             </SidebarGroup>
           </Collapsible>
         )}
+
         {isAdmin && (
           <SidebarGroup>
             <SidebarGroupLabel className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70 px-2">
