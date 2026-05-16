@@ -59,6 +59,39 @@ export type Database = {
         }
         Relationships: []
       }
+      activity_log: {
+        Row: {
+          action_type: string
+          actor_id: string | null
+          actor_name: string | null
+          created_at: string
+          description: string
+          id: string
+          metadata: Json
+          user_id: string
+        }
+        Insert: {
+          action_type: string
+          actor_id?: string | null
+          actor_name?: string | null
+          created_at?: string
+          description: string
+          id?: string
+          metadata?: Json
+          user_id: string
+        }
+        Update: {
+          action_type?: string
+          actor_id?: string | null
+          actor_name?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          metadata?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
       ai_agent_analytics: {
         Row: {
           ai_replies: number
@@ -160,6 +193,36 @@ export type Database = {
           suggest_human_takeover?: boolean
           tone?: string
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ai_generations: {
+        Row: {
+          created_at: string
+          credits_spent: number
+          id: string
+          input: Json
+          output: Json
+          tool: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          credits_spent?: number
+          id?: string
+          input?: Json
+          output?: Json
+          tool: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          credits_spent?: number
+          id?: string
+          input?: Json
+          output?: Json
+          tool?: string
           user_id?: string
         }
         Relationships: []
@@ -672,11 +735,15 @@ export type Database = {
       discount_codes: {
         Row: {
           active: boolean
+          applies_to: string
+          applies_to_ids: string[]
           code: string
           created_at: string
           discount_type: string
           expires_at: string | null
           id: string
+          min_order_value: number
+          per_customer_limit: number | null
           updated_at: string
           usage_limit: number | null
           used_count: number
@@ -685,11 +752,15 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          applies_to?: string
+          applies_to_ids?: string[]
           code: string
           created_at?: string
           discount_type?: string
           expires_at?: string | null
           id?: string
+          min_order_value?: number
+          per_customer_limit?: number | null
           updated_at?: string
           usage_limit?: number | null
           used_count?: number
@@ -698,11 +769,15 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          applies_to?: string
+          applies_to_ids?: string[]
           code?: string
           created_at?: string
           discount_type?: string
           expires_at?: string | null
           id?: string
+          min_order_value?: number
+          per_customer_limit?: number | null
           updated_at?: string
           usage_limit?: number | null
           used_count?: number
@@ -1249,6 +1324,48 @@ export type Database = {
         }
         Relationships: []
       }
+      product_reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          customer_email: string | null
+          customer_name: string
+          id: string
+          product_id: string
+          rating: number
+          reply: string | null
+          status: string
+          store_owner_id: string
+          updated_at: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          customer_email?: string | null
+          customer_name: string
+          id?: string
+          product_id: string
+          rating: number
+          reply?: string | null
+          status?: string
+          store_owner_id: string
+          updated_at?: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          customer_email?: string | null
+          customer_name?: string
+          id?: string
+          product_id?: string
+          rating?: number
+          reply?: string | null
+          status?: string
+          store_owner_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           category: string | null
@@ -1256,9 +1373,11 @@ export type Database = {
           description: string | null
           id: string
           images: string[]
+          low_stock_threshold: number
           name: string
           price: number
           stock: number
+          stock_alert_sent_at: string | null
           updated_at: string
           user_id: string
         }
@@ -1268,9 +1387,11 @@ export type Database = {
           description?: string | null
           id?: string
           images?: string[]
+          low_stock_threshold?: number
           name: string
           price?: number
           stock?: number
+          stock_alert_sent_at?: string | null
           updated_at?: string
           user_id: string
         }
@@ -1280,9 +1401,11 @@ export type Database = {
           description?: string | null
           id?: string
           images?: string[]
+          low_stock_threshold?: number
           name?: string
           price?: number
           stock?: number
+          stock_alert_sent_at?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -1403,6 +1526,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      returns: {
+        Row: {
+          created_at: string
+          customer_email: string
+          customer_name: string
+          details: string | null
+          id: string
+          order_id: string
+          reason: string
+          refund_amount: number
+          status: string
+          store_owner_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_email: string
+          customer_name: string
+          details?: string | null
+          id?: string
+          order_id: string
+          reason: string
+          refund_amount?: number
+          status?: string
+          store_owner_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_email?: string
+          customer_name?: string
+          details?: string | null
+          id?: string
+          order_id?: string
+          reason?: string
+          refund_amount?: number
+          status?: string
+          store_owner_id?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       section_templates: {
         Row: {
@@ -1750,6 +1915,45 @@ export type Database = {
           id?: string
           metadata?: Json | null
           reason?: string
+        }
+        Relationships: []
+      }
+      team_members: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          email: string
+          id: string
+          invite_token: string
+          invited_at: string
+          owner_id: string
+          role: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          invite_token?: string
+          invited_at?: string
+          owner_id: string
+          role?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          invite_token?: string
+          invited_at?: string
+          owner_id?: string
+          role?: string
+          status?: string
+          updated_at?: string
         }
         Relationships: []
       }
