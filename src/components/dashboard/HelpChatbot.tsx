@@ -33,9 +33,9 @@ const SUGGESTIONS_BY_LANG: Record<string, string[]> = {
 };
 
 const WELCOME_BY_LANG: Record<string, string> = {
-  en: "Hi! 👋 I'm your Storely assistant. Ask me anything about how to use the platform.",
-  fr: "Salut ! 👋 Je suis votre assistant Storely. Posez-moi vos questions sur la plateforme.",
-  ar: "مرحباً! 👋 أنا مساعد Storely. اسألني عن أي شيء يخص استخدام المنصة.",
+  en: "Hi! 👋 I'm your Fennecly assistant. Ask me anything about how to use the platform.",
+  fr: "Salut ! 👋 Je suis votre assistant Fennecly. Posez-moi vos questions sur la plateforme.",
+  ar: "مرحباً! 👋 أنا مساعد Fennecly. اسألني عن أي شيء يخص استخدام المنصة.",
 };
 
 export function HelpChatbot() {
@@ -64,7 +64,6 @@ export function HelpChatbot() {
     }
   }, [messages, open]);
 
-  // Reset welcome when language changes
   useEffect(() => {
     setMessages((prev) => {
       if (prev.length <= 1) return [{ role: "assistant", content: WELCOME_BY_LANG[lang] }];
@@ -84,7 +83,7 @@ export function HelpChatbot() {
     try {
       const { data: sessionData } = await (await import("@/integrations/supabase/client")).supabase.auth.getSession();
       const accessToken = sessionData.session?.access_token ?? "";
-      const history = next.slice(-12); // cap context
+      const history = next.slice(-12);
       const result = await callHelp({ data: { language: lang, messages: history, accessToken } });
       if (result.error) {
         setMessages((p) => [...p, { role: "assistant", content: `⚠️ ${result.error}` }]);
@@ -118,12 +117,12 @@ export function HelpChatbot() {
           className={cn(
             "fixed bottom-6 end-6 z-50 group",
             "h-14 w-14 rounded-full",
-            "bg-gradient-to-br from-violet-500 via-fuchsia-500 to-rose-500",
-            "shadow-lg shadow-fuchsia-500/30",
+            "shadow-lg shadow-[#7C3AED]/30",
             "flex items-center justify-center text-white",
             "hover:scale-110 active:scale-95 transition-all duration-300",
             "ring-4 ring-background",
           )}
+          style={{ background: "linear-gradient(135deg, #7C3AED, #6D28D9)" }}
         >
           <MessageCircle className="h-6 w-6" />
           <span className="absolute -top-1 -end-1 h-4 w-4 rounded-full bg-emerald-500 ring-2 ring-background animate-pulse" />
@@ -142,14 +141,17 @@ export function HelpChatbot() {
           )}
         >
           {/* Header */}
-          <div className="relative px-4 py-3 bg-gradient-to-br from-violet-500 via-fuchsia-500 to-rose-500 text-white">
+          <div
+            className="relative px-4 py-3 text-white"
+            style={{ background: "linear-gradient(135deg, #7C3AED, #6D28D9)" }}
+          >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <div className="h-9 w-9 rounded-full bg-white/20 backdrop-blur flex items-center justify-center">
                   <Sparkles className="h-4.5 w-4.5" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold leading-tight">Storely Assistant</p>
+                  <p className="text-sm font-semibold leading-tight">Fennecly Assistant</p>
                   <p className="text-[11px] text-white/80 flex items-center gap-1">
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                     {t("help.online", { defaultValue: "Online — ask anything" })}
@@ -181,9 +183,14 @@ export function HelpChatbot() {
                     className={cn(
                       "max-w-[85%] rounded-2xl px-3.5 py-2 text-sm shadow-sm",
                       m.role === "user"
-                        ? "bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white rounded-br-sm"
+                        ? "text-white rounded-br-sm"
                         : "bg-card border border-border/60 rounded-bl-sm",
                     )}
+                    style={
+                      m.role === "user"
+                        ? { background: "linear-gradient(135deg, #7C3AED, #6D28D9)" }
+                        : {}
+                    }
                   >
                     {m.role === "assistant" ? (
                       <div className="text-sm whitespace-pre-wrap leading-relaxed">{m.content}</div>
@@ -203,7 +210,6 @@ export function HelpChatbot() {
                 </div>
               )}
 
-              {/* Suggestions (only when only welcome msg shown) */}
               {messages.length === 1 && !loading && (
                 <div className="pt-2 space-y-2">
                   <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium px-1">
@@ -246,7 +252,8 @@ export function HelpChatbot() {
               type="submit"
               size="icon"
               disabled={loading || !input.trim()}
-              className="h-10 w-10 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 hover:opacity-90 shrink-0"
+              className="h-10 w-10 rounded-xl hover:opacity-90 shrink-0 text-white"
+              style={{ background: "linear-gradient(135deg, #7C3AED, #6D28D9)" }}
             >
               {loading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
