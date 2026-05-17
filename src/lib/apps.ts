@@ -65,6 +65,22 @@ export const APPS: AppDef[] = [
     gradient: "from-fuchsia-500/20 to-pink-500/20",
   },
   {
+    key: "ad-generator",
+    name: "AI Ad Generator",
+    description: "Generate ready-to-publish Facebook, Instagram, TikTok and Google ads.",
+    icon: Megaphone,
+    category: "AI",
+    gradient: "from-orange-500/20 to-rose-500/20",
+  },
+  {
+    key: "image-enhancer",
+    name: "AI Image Enhancer",
+    description: "Turn ordinary product photos into studio-quality shots.",
+    icon: Wand2,
+    category: "AI",
+    gradient: "from-cyan-500/20 to-blue-500/20",
+  },
+  {
     key: "chatbot",
     name: "Chatbot",
     description: "Answer customer questions 24/7 with an AI-powered assistant.",
