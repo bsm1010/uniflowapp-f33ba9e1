@@ -8,6 +8,10 @@ import {
   ChevronLeft,
   ChevronRight,
   ExternalLink,
+  X,
+  Shield,
+  Zap,
+  Clock,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -35,7 +39,6 @@ export const Route = createFileRoute("/dashboard/apps/$appKey")({
   ),
 });
 
-// Mock reviews for the Reviews tab
 const mockReviews = [
   {
     name: "Sarah K.",
@@ -57,17 +60,149 @@ const mockReviews = [
   },
 ];
 
+// ── Installation Modal ──────────────────────────────────────────────
+function InstallModal({
+  app,
+  onClose,
+  onConfirm,
+  installing,
+}: {
+  app: AppDef;
+  onClose: () => void;
+  onConfirm: () => void;
+  installing: boolean;
+}) {
+  const Icon = app.icon;
+
+  return (
+    // Backdrop
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div
+        className="relative bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+      >
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 z-10 h-8 w-8 rounded-full bg-black/10 hover:bg-black/20 flex items-center justify-center transition"
+        >
+          <X className="h-4 w-4" />
+        </button>
+
+        {/* Hero gradient header */}
+        <div
+          className={cn(
+            "bg-gradient-to-br p-8 flex flex-col items-center text-center",
+            app.gradient.replace("/20", ""),
+          )}
+        >
+          <div className="h-20 w-20 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center mb-4 shadow-lg ring-1 ring-white/30">
+            <Icon className="h-10 w-10 text-white" />
+          </div>
+          <h2 className="text-2xl font-bold text-white">{app.name}</h2>
+          <p className="text-white/80 text-sm mt-1">by {app.developer}</p>
+          <div className="flex items-center gap-1.5 mt-2">
+            <Star className="h-4 w-4 fill-yellow-300 text-yellow-300" />
+            <span className="text-white font-medium text-sm">{app.rating.toFixed(1)}</span>
+            <span className="text-white/70 text-sm">({app.reviewCount.toLocaleString()} reviews)</span>
+          </div>
+        </div>
+
+        {/* Body */}
+        <div className="p-6 space-y-5">
+          {/* Description */}
+          <p className="text-sm text-muted-foreground leading-relaxed text-center">
+            {app.longDescription ?? app.description}
+          </p>
+
+          {/* Trust badges */}
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { icon: Zap, label: "Instant setup" },
+              { icon: Shield, label: "Secure & safe" },
+              { icon: Clock, label: "Free to start" },
+            ].map(({ icon: TrustIcon, label }) => (
+              <div
+                key={label}
+                className="flex flex-col items-center gap-1.5 bg-muted/50 rounded-xl p-3"
+              >
+                <TrustIcon className="h-5 w-5 text-[#7C3AED]" />
+                <span className="text-xs font-medium text-center leading-tight">{label}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Top features */}
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              What you get
+            </p>
+            <ul className="space-y-2">
+              {app.features.slice(0, 4).map((feature) => (
+                <li key={feature} className="flex items-center gap-2.5 text-sm">
+                  <div className="h-5 w-5 rounded-full bg-[#7C3AED]/15 flex items-center justify-center shrink-0">
+                    <Check className="h-3 w-3 text-[#7C3AED]" strokeWidth={3} />
+                  </div>
+                  {feature}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Buttons */}
+          <div className="flex flex-col gap-2 pt-1">
+            <Button
+              onClick={onConfirm}
+              disabled={installing}
+              className="w-full bg-[#7C3AED] hover:bg-[#6D28D9] text-white h-12 text-base font-semibold rounded-xl"
+            >
+              {installing ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  Installing...
+                </>
+              ) : (
+                <>
+                  <Zap className="h-4 w-4 mr-2" />
+                  Install Now — It's Free
+                </>
+              )}
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={onClose}
+              className="w-full text-muted-foreground"
+            >
+              Maybe later
+            </Button>
+          </div>
+
+          <p className="text-center text-xs text-muted-foreground">
+            By installing you agree to Fennecly's{" "}
+            <span className="underline cursor-pointer">Terms of Service</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Main Page ───────────────────────────────────────────────────────
 function AppLandingPage() {
   const { app } = Route.useLoaderData() as { app: AppDef };
   const { isInstalled, install: installApp } = useInstalledApps();
   const navigate = useNavigate();
   const [installing, setInstalling] = useState(false);
   const [screenshotIdx, setScreenshotIdx] = useState(0);
+  const [showInstallModal, setShowInstallModal] = useState(false);
 
   const Icon = app.icon;
   const installed = isInstalled(app.key);
 
-  const handleInstall = async () => {
+  const handleInstallConfirm = async () => {
     setInstalling(true);
     const { error } = await installApp(app.key);
     setInstalling(false);
@@ -75,287 +210,285 @@ function AppLandingPage() {
       toast.error("Failed to install app");
       return;
     }
-    toast.success(`${app.name} installed`);
+    setShowInstallModal(false);
+    toast.success(`${app.name} installed successfully! 🎉`);
   };
 
   const handleOpen = () => {
-    if (app.route) {
-      navigate({ to: app.route });
-    }
+    if (app.route) navigate({ to: app.route });
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-      {/* Back */}
-      <Button variant="ghost" size="sm" asChild className="-ml-2">
-        <Link to="/dashboard/apps">
-          <ArrowLeft className="h-4 w-4" />
-          Back to App Store
-        </Link>
-      </Button>
+    <>
+      {/* Installation Modal */}
+      {showInstallModal && (
+        <InstallModal
+          app={app}
+          onClose={() => setShowInstallModal(false)}
+          onConfirm={handleInstallConfirm}
+          installing={installing}
+        />
+      )}
 
-      {/* Header */}
-      <Card className="p-6 sm:p-8">
-        <div className="flex flex-col sm:flex-row gap-6 sm:items-center">
-          <div
-            className={cn(
-              "h-24 w-24 rounded-3xl bg-gradient-to-br flex items-center justify-center ring-1 ring-border shadow-lg shrink-0",
-              app.gradient,
-            )}
-          >
-            <Icon className="h-12 w-12 text-foreground" />
-          </div>
-          <div className="flex-1 space-y-2">
-            <div className="flex items-center gap-2 flex-wrap">
-              <Badge variant="secondary">{app.category}</Badge>
-              {installed && (
-                <Badge className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/15">
-                  <Check className="h-3 w-3" />
-                  Installed
-                </Badge>
-              )}
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{app.name}</h1>
-            <p className="text-sm text-muted-foreground">by {app.developer}</p>
-            <div className="flex items-center gap-1.5 text-sm">
-              <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
-              <span className="font-medium">{app.rating.toFixed(1)}</span>
-              <span className="text-muted-foreground">
-                ({app.reviewCount.toLocaleString()} reviews)
-              </span>
-            </div>
-          </div>
-          <div className="flex flex-col gap-2 sm:items-end">
-            {installed ? (
-              <Button
-                onClick={handleOpen}
-                className="bg-[#7C3AED] hover:bg-[#6D28D9] text-white min-w-[140px]"
-              >
-                <ExternalLink className="h-4 w-4" />
-                Open App
-              </Button>
-            ) : (
-              <Button
-                onClick={handleInstall}
-                disabled={installing}
-                className="bg-[#7C3AED] hover:bg-[#6D28D9] text-white min-w-[140px]"
-              >
-                {installing ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Installing...
-                  </>
-                ) : (
-                  "Install"
-                )}
-              </Button>
-            )}
-          </div>
-        </div>
-      </Card>
+      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+        {/* Back */}
+        <Button variant="ghost" size="sm" asChild className="-ml-2">
+          <Link to="/dashboard/apps">
+            <ArrowLeft className="h-4 w-4" />
+            Back to App Store
+          </Link>
+        </Button>
 
-      {/* Screenshot carousel */}
-      <Card className="p-4 sm:p-6">
-        <div className="relative">
-          <div
-            className={cn(
-              "aspect-[16/9] rounded-2xl bg-gradient-to-br flex items-center justify-center overflow-hidden transition-all duration-500",
-              app.screenshots[screenshotIdx],
-            )}
-          >
-            <div className="text-white/90 text-center">
-              <Icon className="h-20 w-20 mx-auto mb-3 drop-shadow-lg" />
-              <p className="text-sm font-medium uppercase tracking-wider">
-                Screenshot {screenshotIdx + 1}
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={() =>
-              setScreenshotIdx(
-                (screenshotIdx - 1 + app.screenshots.length) % app.screenshots.length,
-              )
-            }
-            className="absolute left-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-md flex items-center justify-center transition"
-            aria-label="Previous screenshot"
-          >
-            <ChevronLeft className="h-5 w-5 text-gray-900" />
-          </button>
-          <button
-            onClick={() => setScreenshotIdx((screenshotIdx + 1) % app.screenshots.length)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-md flex items-center justify-center transition"
-            aria-label="Next screenshot"
-          >
-            <ChevronRight className="h-5 w-5 text-gray-900" />
-          </button>
-        </div>
-        <div className="flex justify-center gap-2 mt-4">
-          {app.screenshots.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setScreenshotIdx(i)}
+        {/* Header */}
+        <Card className="p-6 sm:p-8">
+          <div className="flex flex-col sm:flex-row gap-6 sm:items-center">
+            <div
               className={cn(
-                "h-2 rounded-full transition-all",
-                i === screenshotIdx ? "w-8 bg-[#7C3AED]" : "w-2 bg-muted-foreground/30",
+                "h-24 w-24 rounded-3xl bg-gradient-to-br flex items-center justify-center ring-1 ring-border shadow-lg shrink-0",
+                app.gradient,
               )}
-              aria-label={`Go to screenshot ${i + 1}`}
-            />
-          ))}
-        </div>
-      </Card>
-
-      {/* Tabs */}
-      <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-3">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="reviews">Reviews</TabsTrigger>
-          <TabsTrigger value="changelog">Changelog</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview" className="space-y-6 mt-6">
-          <Card className="p-6 space-y-4">
-            <h2 className="text-lg font-semibold">About this app</h2>
-            <p className="text-muted-foreground leading-relaxed">
-              {app.longDescription ?? app.description}
-            </p>
-          </Card>
-
-          <Card className="p-6 space-y-4">
-            <h2 className="text-lg font-semibold">Key features</h2>
-            <ul className="space-y-3">
-              {app.features.map((feature) => (
-                <li key={feature} className="flex items-start gap-3">
-                  <div className="mt-0.5 h-5 w-5 rounded-full bg-[#7C3AED]/15 flex items-center justify-center shrink-0">
-                    <Check className="h-3 w-3 text-[#7C3AED]" strokeWidth={3} />
-                  </div>
-                  <span className="text-sm">{feature}</span>
-                </li>
-              ))}
-            </ul>
-          </Card>
-
-          {/* Pricing */}
-          <div>
-            <h2 className="text-lg font-semibold mb-4">Pricing</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {app.plans.map((plan) => (
-                <Card
-                  key={plan.name}
-                  className={cn(
-                    "p-6 relative",
-                    plan.highlighted &&
-                      "border-[#7C3AED] ring-2 ring-[#7C3AED]/20 shadow-lg",
-                  )}
-                >
-                  {plan.highlighted && (
-                    <Badge className="absolute -top-2 right-4 bg-[#7C3AED] text-white hover:bg-[#7C3AED]">
-                      Most popular
-                    </Badge>
-                  )}
-                  <h3 className="font-semibold text-lg">{plan.name}</h3>
-                  <div className="mt-2 flex items-baseline gap-1">
-                    <span className="text-3xl font-bold">{plan.price}</span>
-                    {plan.period && (
-                      <span className="text-sm text-muted-foreground">{plan.period}</span>
-                    )}
-                  </div>
-                  <ul className="mt-4 space-y-2">
-                    {plan.features.map((f) => (
-                      <li key={f} className="flex items-start gap-2 text-sm">
-                        <Check className="h-4 w-4 text-[#7C3AED] mt-0.5 shrink-0" />
-                        <span>{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <Button
-                    className={cn(
-                      "w-full mt-6",
-                      plan.highlighted
-                        ? "bg-[#7C3AED] hover:bg-[#6D28D9] text-white"
-                        : "",
-                    )}
-                    variant={plan.highlighted ? "default" : "outline"}
-                  >
-                    Choose {plan.name}
-                  </Button>
-                </Card>
-              ))}
+            >
+              <Icon className="h-12 w-12 text-foreground" />
             </div>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="reviews" className="space-y-4 mt-6">
-          <Card className="p-6">
-            <div className="flex items-center gap-4 pb-4 border-b">
-              <div className="text-center">
-                <div className="text-4xl font-bold">{app.rating.toFixed(1)}</div>
-                <div className="flex items-center gap-0.5 mt-1">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star
-                      key={i}
-                      className={cn(
-                        "h-4 w-4",
-                        i < Math.round(app.rating)
-                          ? "fill-amber-400 text-amber-400"
-                          : "text-muted-foreground/30",
-                      )}
-                    />
-                  ))}
-                </div>
-                <div className="text-xs text-muted-foreground mt-1">
-                  {app.reviewCount.toLocaleString()} reviews
-                </div>
+            <div className="flex-1 space-y-2">
+              <div className="flex items-center gap-2 flex-wrap">
+                <Badge variant="secondary">{app.category}</Badge>
+                {installed && (
+                  <Badge className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/15">
+                    <Check className="h-3 w-3" />
+                    Installed
+                  </Badge>
+                )}
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{app.name}</h1>
+              <p className="text-sm text-muted-foreground">by {app.developer}</p>
+              <div className="flex items-center gap-1.5 text-sm">
+                <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
+                <span className="font-medium">{app.rating.toFixed(1)}</span>
+                <span className="text-muted-foreground">
+                  ({app.reviewCount.toLocaleString()} reviews)
+                </span>
               </div>
             </div>
-            <div className="space-y-5 pt-5">
-              {mockReviews.map((r) => (
-                <div key={r.name} className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium text-sm">{r.name}</span>
-                    <span className="text-xs text-muted-foreground">{r.date}</span>
-                  </div>
-                  <div className="flex items-center gap-0.5">
+            <div className="flex flex-col gap-2 sm:items-end">
+              {installed ? (
+                <Button
+                  onClick={handleOpen}
+                  className="bg-[#7C3AED] hover:bg-[#6D28D9] text-white min-w-[140px]"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  Open App
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => setShowInstallModal(true)}
+                  className="bg-[#7C3AED] hover:bg-[#6D28D9] text-white min-w-[140px]"
+                >
+                  <Zap className="h-4 w-4" />
+                  Install
+                </Button>
+              )}
+            </div>
+          </div>
+        </Card>
+
+        {/* Screenshot carousel */}
+        <Card className="p-4 sm:p-6">
+          <div className="relative">
+            <div
+              className={cn(
+                "aspect-[16/9] rounded-2xl bg-gradient-to-br flex items-center justify-center overflow-hidden transition-all duration-500",
+                app.screenshots[screenshotIdx],
+              )}
+            >
+              <div className="text-white/90 text-center">
+                <Icon className="h-20 w-20 mx-auto mb-3 drop-shadow-lg" />
+                <p className="text-sm font-medium uppercase tracking-wider">
+                  Screenshot {screenshotIdx + 1}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() =>
+                setScreenshotIdx(
+                  (screenshotIdx - 1 + app.screenshots.length) % app.screenshots.length,
+                )
+              }
+              className="absolute left-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-md flex items-center justify-center transition"
+            >
+              <ChevronLeft className="h-5 w-5 text-gray-900" />
+            </button>
+            <button
+              onClick={() => setScreenshotIdx((screenshotIdx + 1) % app.screenshots.length)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-md flex items-center justify-center transition"
+            >
+              <ChevronRight className="h-5 w-5 text-gray-900" />
+            </button>
+          </div>
+          <div className="flex justify-center gap-2 mt-4">
+            {app.screenshots.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setScreenshotIdx(i)}
+                className={cn(
+                  "h-2 rounded-full transition-all",
+                  i === screenshotIdx ? "w-8 bg-[#7C3AED]" : "w-2 bg-muted-foreground/30",
+                )}
+              />
+            ))}
+          </div>
+        </Card>
+
+        {/* Tabs */}
+        <Tabs defaultValue="overview" className="w-full">
+          <TabsList className="grid w-full max-w-md grid-cols-3">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="reviews">Reviews</TabsTrigger>
+            <TabsTrigger value="changelog">Changelog</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview" className="space-y-6 mt-6">
+            <Card className="p-6 space-y-4">
+              <h2 className="text-lg font-semibold">About this app</h2>
+              <p className="text-muted-foreground leading-relaxed">
+                {app.longDescription ?? app.description}
+              </p>
+            </Card>
+
+            <Card className="p-6 space-y-4">
+              <h2 className="text-lg font-semibold">Key features</h2>
+              <ul className="space-y-3">
+                {app.features.map((feature) => (
+                  <li key={feature} className="flex items-start gap-3">
+                    <div className="mt-0.5 h-5 w-5 rounded-full bg-[#7C3AED]/15 flex items-center justify-center shrink-0">
+                      <Check className="h-3 w-3 text-[#7C3AED]" strokeWidth={3} />
+                    </div>
+                    <span className="text-sm">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+
+            <div>
+              <h2 className="text-lg font-semibold mb-4">Pricing</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {app.plans.map((plan) => (
+                  <Card
+                    key={plan.name}
+                    className={cn(
+                      "p-6 relative",
+                      plan.highlighted && "border-[#7C3AED] ring-2 ring-[#7C3AED]/20 shadow-lg",
+                    )}
+                  >
+                    {plan.highlighted && (
+                      <Badge className="absolute -top-2 right-4 bg-[#7C3AED] text-white hover:bg-[#7C3AED]">
+                        Most popular
+                      </Badge>
+                    )}
+                    <h3 className="font-semibold text-lg">{plan.name}</h3>
+                    <div className="mt-2 flex items-baseline gap-1">
+                      <span className="text-3xl font-bold">{plan.price}</span>
+                      {plan.period && (
+                        <span className="text-sm text-muted-foreground">{plan.period}</span>
+                      )}
+                    </div>
+                    <ul className="mt-4 space-y-2">
+                      {plan.features.map((f) => (
+                        <li key={f} className="flex items-start gap-2 text-sm">
+                          <Check className="h-4 w-4 text-[#7C3AED] mt-0.5 shrink-0" />
+                          <span>{f}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <Button
+                      className={cn(
+                        "w-full mt-6",
+                        plan.highlighted ? "bg-[#7C3AED] hover:bg-[#6D28D9] text-white" : "",
+                      )}
+                      variant={plan.highlighted ? "default" : "outline"}
+                      onClick={() => !installed && setShowInstallModal(true)}
+                    >
+                      {installed ? "Installed ✓" : `Choose ${plan.name}`}
+                    </Button>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="reviews" className="space-y-4 mt-6">
+            <Card className="p-6">
+              <div className="flex items-center gap-4 pb-4 border-b">
+                <div className="text-center">
+                  <div className="text-4xl font-bold">{app.rating.toFixed(1)}</div>
+                  <div className="flex items-center gap-0.5 mt-1">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <Star
                         key={i}
                         className={cn(
-                          "h-3.5 w-3.5",
-                          i < r.rating
+                          "h-4 w-4",
+                          i < Math.round(app.rating)
                             ? "fill-amber-400 text-amber-400"
                             : "text-muted-foreground/30",
                         )}
                       />
                     ))}
                   </div>
-                  <p className="text-sm text-muted-foreground">{r.text}</p>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    {app.reviewCount.toLocaleString()} reviews
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-5 pt-5">
+                {mockReviews.map((r) => (
+                  <div key={r.name} className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-sm">{r.name}</span>
+                      <span className="text-xs text-muted-foreground">{r.date}</span>
+                    </div>
+                    <div className="flex items-center gap-0.5">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star
+                          key={i}
+                          className={cn(
+                            "h-3.5 w-3.5",
+                            i < r.rating
+                              ? "fill-amber-400 text-amber-400"
+                              : "text-muted-foreground/30",
+                          )}
+                        />
+                      ))}
+                    </div>
+                    <p className="text-sm text-muted-foreground">{r.text}</p>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="changelog" className="space-y-4 mt-6">
+            <Card className="p-6 space-y-6">
+              {app.changelog.map((entry) => (
+                <div key={entry.version} className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="font-mono">
+                      v{entry.version}
+                    </Badge>
+                    <span className="text-sm text-muted-foreground">{entry.date}</span>
+                  </div>
+                  <ul className="space-y-1 ml-4">
+                    {entry.notes.map((note) => (
+                      <li key={note} className="text-sm text-muted-foreground list-disc">
+                        {note}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               ))}
-            </div>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="changelog" className="space-y-4 mt-6">
-          <Card className="p-6 space-y-6">
-            {app.changelog.map((entry) => (
-              <div key={entry.version} className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="font-mono">
-                    v{entry.version}
-                  </Badge>
-                  <span className="text-sm text-muted-foreground">{entry.date}</span>
-                </div>
-                <ul className="space-y-1 ml-4">
-                  {entry.notes.map((note) => (
-                    <li key={note} className="text-sm text-muted-foreground list-disc">
-                      {note}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </>
   );
 }
