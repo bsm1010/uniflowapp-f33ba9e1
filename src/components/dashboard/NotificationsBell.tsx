@@ -24,7 +24,9 @@ interface Notification {
 // ── Play ring sound ──────────────────────────────────────────────
 function playRing() {
   try {
-    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const AudioCtx = (window as any).AudioContext ?? (window as any).webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx() as AudioContext;
     const times = [0, 0.18, 0.36];
     times.forEach((t) => {
       const osc = ctx.createOscillator();
@@ -39,7 +41,9 @@ function playRing() {
       osc.start(ctx.currentTime + t);
       osc.stop(ctx.currentTime + t + 0.15);
     });
-  } catch (_) {}
+  } catch (_e) {
+    // silently fail
+  }
 }
 
 // ── Request & send browser notification ─────────────────────────
