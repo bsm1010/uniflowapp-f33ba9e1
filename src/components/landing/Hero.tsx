@@ -2,18 +2,17 @@ import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Play, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import shot1 from "@/assets/dashboard-shot-1.webp";
 import shot2 from "@/assets/dashboard-shot-2.webp";
 import shot3 from "@/assets/dashboard-shot-3.webp";
 
 const SHOTS = [
-  { src: shot1, alt: "Storely analytics dashboard" },
-  { src: shot2, alt: "Storely products management" },
-  { src: shot3, alt: "Storely orders management" },
+  { src: shot1, alt: "Fennecly analytics dashboard" },
+  { src: shot2, alt: "Fennecly products management" },
+  { src: shot3, alt: "Fennecly orders management" },
 ];
-
 
 export function Hero() {
   const { t } = useTranslation();
@@ -76,10 +75,6 @@ export function Hero() {
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </Button>
-          <Button size="lg" variant="outline" className="backdrop-blur">
-            <Play className="h-4 w-4" />
-            {t("hero.viewDemo")}
-          </Button>
         </motion.div>
 
         <Dashboard3DCarousel />
@@ -122,7 +117,6 @@ function Dashboard3DCarousel() {
       >
         {SHOTS.map((shot, i) => {
           const offset = ((i - active + SHOTS.length) % SHOTS.length);
-          // normalize offset to -1, 0, 1 for 3 items
           const rel = offset > SHOTS.length / 2 ? offset - SHOTS.length : offset;
           const isActive = rel === 0;
           const translateX = rel * 55;
