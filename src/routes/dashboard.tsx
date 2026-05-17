@@ -105,9 +105,9 @@ function DashboardLayout() {
           </SidebarInset>
         </div>
         <PaywallDialog />
-        <WelcomeDialog userId={user.id} />
-        <OnboardingTour userId={user.id} />
         <Suspense fallback={null}>
+          <WelcomeDialog userId={user.id} />
+          <OnboardingTour userId={user.id} />
           <HelpChatbot />
         </Suspense>
       </SidebarProvider>
