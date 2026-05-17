@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { APPS_BY_KEY } from "@/lib/apps";
+import { APPS_BY_KEY, type AppDef } from "@/lib/apps";
 import { useInstalledApps } from "@/hooks/use-installed-apps";
 import { cn } from "@/lib/utils";
 
