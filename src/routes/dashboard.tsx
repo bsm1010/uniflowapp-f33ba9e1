@@ -8,8 +8,13 @@ import { DashboardTopbar } from "@/components/dashboard/DashboardTopbar";
 import { OnboardingWizard } from "@/components/dashboard/OnboardingWizard";
 import { CreditsProvider } from "@/hooks/use-credits";
 import { PaywallDialog } from "@/components/dashboard/PaywallDialog";
-import { WelcomeDialog } from "@/components/dashboard/WelcomeDialog";
-import { OnboardingTour } from "@/components/dashboard/OnboardingTour";
+
+const WelcomeDialog = lazy(() =>
+  import("@/components/dashboard/WelcomeDialog").then((m) => ({ default: m.WelcomeDialog })),
+);
+const OnboardingTour = lazy(() =>
+  import("@/components/dashboard/OnboardingTour").then((m) => ({ default: m.OnboardingTour })),
+);
 
 import { LogoLoader } from "@/components/ui/logo-loader";
 
@@ -100,9 +105,9 @@ function DashboardLayout() {
           </SidebarInset>
         </div>
         <PaywallDialog />
-        <WelcomeDialog userId={user.id} />
-        <OnboardingTour userId={user.id} />
         <Suspense fallback={null}>
+          <WelcomeDialog userId={user.id} />
+          <OnboardingTour userId={user.id} />
           <HelpChatbot />
         </Suspense>
       </SidebarProvider>
