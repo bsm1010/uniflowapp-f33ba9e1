@@ -25,13 +25,14 @@ type Product = Pick
   "id" | "name" | "price" | "images" | "category" | "stock"
 >;
 
-export const Route = createFileRoute("/s/$slug/")({
+export const Route = createFileRoute("/s/$slug")({
   component: StorefrontHome,
   loader: ({ params }) => fetchSettings(params.slug),
   head: ({ params }) => ({
-    meta: [{ title: `${params.slug} — Storely` }],
+    meta: [{ title: `${params.slug} - Storely` }],
   }),
 });
+
 
 type SortKey = "newest" | "price-asc" | "price-desc" | "name";
 
