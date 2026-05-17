@@ -58,7 +58,7 @@ const mockReviews = [
 ];
 
 function AppLandingPage() {
-  const { app } = Route.useLoaderData();
+  const { app } = Route.useLoaderData() as { app: AppDef };
   const { isInstalled, install: installApp } = useInstalledApps();
   const navigate = useNavigate();
   const [installing, setInstalling] = useState(false);
