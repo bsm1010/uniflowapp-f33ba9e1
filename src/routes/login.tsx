@@ -90,19 +90,34 @@ function LoginPage() {
           />
           {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
         </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="password">{t("auth.login.password")}</Label>
-          <Input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder={t("auth.login.passwordPh")}
-            autoComplete="current-password"
-            disabled={loading}
-          />
-          {errors.password && <p className="text-xs text-destructive">{errors.password}</p>}
-        </div>
+   <div className="space-y-1.5">
+  <Label htmlFor="password">{t("auth.login.password")}</Label>
+
+  <Input
+    id="password"
+    type="password"
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    placeholder={t("auth.login.passwordPh")}
+    autoComplete="current-password"
+    disabled={loading}
+  />
+
+  <div className="flex justify-end">
+    <button
+      type="button"
+      className="text-sm text-purple-500 transition-colors hover:text-purple-400"
+    >
+      Forgot password?
+    </button>
+  </div>
+
+  {errors.password && (
+    <p className="text-xs text-destructive">
+      {errors.password}
+    </p>
+  )}
+</div>
 
         {formError && (
           <motion.div
