@@ -9,6 +9,8 @@ import {
   BarChart3,
   Languages,
   DollarSign,
+  Megaphone,
+  Wand2,
   type LucideIcon,
 } from "lucide-react";
 

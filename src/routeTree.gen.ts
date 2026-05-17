@@ -54,12 +54,14 @@ import { Route as SSlugAboutRouteImport } from './routes/s.$slug.about'
 import { Route as DashboardAppsSeoOptimizerRouteImport } from './routes/dashboard.apps.seo-optimizer'
 import { Route as DashboardAppsPopupBuilderRouteImport } from './routes/dashboard.apps.popup-builder'
 import { Route as DashboardAppsMultiLanguageRouteImport } from './routes/dashboard.apps.multi-language'
+import { Route as DashboardAppsImageEnhancerRouteImport } from './routes/dashboard.apps.image-enhancer'
 import { Route as DashboardAppsEmailMarketingRouteImport } from './routes/dashboard.apps.email-marketing'
 import { Route as DashboardAppsDiscountGeneratorRouteImport } from './routes/dashboard.apps.discount-generator'
 import { Route as DashboardAppsCurrencyConverterRouteImport } from './routes/dashboard.apps.currency-converter'
 import { Route as DashboardAppsChatbotRouteImport } from './routes/dashboard.apps.chatbot'
 import { Route as DashboardAppsAnalyticsRouteImport } from './routes/dashboard.apps.analytics'
 import { Route as DashboardAppsAiDescriptionsRouteImport } from './routes/dashboard.apps.ai-descriptions'
+import { Route as DashboardAppsAdGeneratorRouteImport } from './routes/dashboard.apps.ad-generator'
 import { Route as DashboardAppsAbandonedCartRouteImport } from './routes/dashboard.apps.abandoned-cart'
 import { Route as DashboardAppsAppKeyRouteImport } from './routes/dashboard.apps.$appKey'
 import { Route as DashboardAdminPaymentsRouteImport } from './routes/dashboard.admin.payments'
@@ -302,6 +304,12 @@ const DashboardAppsMultiLanguageRoute =
     path: '/multi-language',
     getParentRoute: () => DashboardAppsRoute,
   } as any)
+const DashboardAppsImageEnhancerRoute =
+  DashboardAppsImageEnhancerRouteImport.update({
+    id: '/image-enhancer',
+    path: '/image-enhancer',
+    getParentRoute: () => DashboardAppsRoute,
+  } as any)
 const DashboardAppsEmailMarketingRoute =
   DashboardAppsEmailMarketingRouteImport.update({
     id: '/email-marketing',
@@ -334,6 +342,12 @@ const DashboardAppsAiDescriptionsRoute =
   DashboardAppsAiDescriptionsRouteImport.update({
     id: '/ai-descriptions',
     path: '/ai-descriptions',
+    getParentRoute: () => DashboardAppsRoute,
+  } as any)
+const DashboardAppsAdGeneratorRoute =
+  DashboardAppsAdGeneratorRouteImport.update({
+    id: '/ad-generator',
+    path: '/ad-generator',
     getParentRoute: () => DashboardAppsRoute,
   } as any)
 const DashboardAppsAbandonedCartRoute =
@@ -440,12 +454,14 @@ export interface FileRoutesByFullPath {
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
   '/dashboard/apps/$appKey': typeof DashboardAppsAppKeyRoute
   '/dashboard/apps/abandoned-cart': typeof DashboardAppsAbandonedCartRoute
+  '/dashboard/apps/ad-generator': typeof DashboardAppsAdGeneratorRoute
   '/dashboard/apps/ai-descriptions': typeof DashboardAppsAiDescriptionsRoute
   '/dashboard/apps/analytics': typeof DashboardAppsAnalyticsRoute
   '/dashboard/apps/chatbot': typeof DashboardAppsChatbotRoute
   '/dashboard/apps/currency-converter': typeof DashboardAppsCurrencyConverterRoute
   '/dashboard/apps/discount-generator': typeof DashboardAppsDiscountGeneratorRoute
   '/dashboard/apps/email-marketing': typeof DashboardAppsEmailMarketingRoute
+  '/dashboard/apps/image-enhancer': typeof DashboardAppsImageEnhancerRoute
   '/dashboard/apps/multi-language': typeof DashboardAppsMultiLanguageRoute
   '/dashboard/apps/popup-builder': typeof DashboardAppsPopupBuilderRoute
   '/dashboard/apps/seo-optimizer': typeof DashboardAppsSeoOptimizerRoute
@@ -503,12 +519,14 @@ export interface FileRoutesByTo {
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
   '/dashboard/apps/$appKey': typeof DashboardAppsAppKeyRoute
   '/dashboard/apps/abandoned-cart': typeof DashboardAppsAbandonedCartRoute
+  '/dashboard/apps/ad-generator': typeof DashboardAppsAdGeneratorRoute
   '/dashboard/apps/ai-descriptions': typeof DashboardAppsAiDescriptionsRoute
   '/dashboard/apps/analytics': typeof DashboardAppsAnalyticsRoute
   '/dashboard/apps/chatbot': typeof DashboardAppsChatbotRoute
   '/dashboard/apps/currency-converter': typeof DashboardAppsCurrencyConverterRoute
   '/dashboard/apps/discount-generator': typeof DashboardAppsDiscountGeneratorRoute
   '/dashboard/apps/email-marketing': typeof DashboardAppsEmailMarketingRoute
+  '/dashboard/apps/image-enhancer': typeof DashboardAppsImageEnhancerRoute
   '/dashboard/apps/multi-language': typeof DashboardAppsMultiLanguageRoute
   '/dashboard/apps/popup-builder': typeof DashboardAppsPopupBuilderRoute
   '/dashboard/apps/seo-optimizer': typeof DashboardAppsSeoOptimizerRoute
@@ -569,12 +587,14 @@ export interface FileRoutesById {
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
   '/dashboard/apps/$appKey': typeof DashboardAppsAppKeyRoute
   '/dashboard/apps/abandoned-cart': typeof DashboardAppsAbandonedCartRoute
+  '/dashboard/apps/ad-generator': typeof DashboardAppsAdGeneratorRoute
   '/dashboard/apps/ai-descriptions': typeof DashboardAppsAiDescriptionsRoute
   '/dashboard/apps/analytics': typeof DashboardAppsAnalyticsRoute
   '/dashboard/apps/chatbot': typeof DashboardAppsChatbotRoute
   '/dashboard/apps/currency-converter': typeof DashboardAppsCurrencyConverterRoute
   '/dashboard/apps/discount-generator': typeof DashboardAppsDiscountGeneratorRoute
   '/dashboard/apps/email-marketing': typeof DashboardAppsEmailMarketingRoute
+  '/dashboard/apps/image-enhancer': typeof DashboardAppsImageEnhancerRoute
   '/dashboard/apps/multi-language': typeof DashboardAppsMultiLanguageRoute
   '/dashboard/apps/popup-builder': typeof DashboardAppsPopupBuilderRoute
   '/dashboard/apps/seo-optimizer': typeof DashboardAppsSeoOptimizerRoute
@@ -636,12 +656,14 @@ export interface FileRouteTypes {
     | '/dashboard/admin/payments'
     | '/dashboard/apps/$appKey'
     | '/dashboard/apps/abandoned-cart'
+    | '/dashboard/apps/ad-generator'
     | '/dashboard/apps/ai-descriptions'
     | '/dashboard/apps/analytics'
     | '/dashboard/apps/chatbot'
     | '/dashboard/apps/currency-converter'
     | '/dashboard/apps/discount-generator'
     | '/dashboard/apps/email-marketing'
+    | '/dashboard/apps/image-enhancer'
     | '/dashboard/apps/multi-language'
     | '/dashboard/apps/popup-builder'
     | '/dashboard/apps/seo-optimizer'
@@ -699,12 +721,14 @@ export interface FileRouteTypes {
     | '/dashboard/admin/payments'
     | '/dashboard/apps/$appKey'
     | '/dashboard/apps/abandoned-cart'
+    | '/dashboard/apps/ad-generator'
     | '/dashboard/apps/ai-descriptions'
     | '/dashboard/apps/analytics'
     | '/dashboard/apps/chatbot'
     | '/dashboard/apps/currency-converter'
     | '/dashboard/apps/discount-generator'
     | '/dashboard/apps/email-marketing'
+    | '/dashboard/apps/image-enhancer'
     | '/dashboard/apps/multi-language'
     | '/dashboard/apps/popup-builder'
     | '/dashboard/apps/seo-optimizer'
@@ -764,12 +788,14 @@ export interface FileRouteTypes {
     | '/dashboard/admin/payments'
     | '/dashboard/apps/$appKey'
     | '/dashboard/apps/abandoned-cart'
+    | '/dashboard/apps/ad-generator'
     | '/dashboard/apps/ai-descriptions'
     | '/dashboard/apps/analytics'
     | '/dashboard/apps/chatbot'
     | '/dashboard/apps/currency-converter'
     | '/dashboard/apps/discount-generator'
     | '/dashboard/apps/email-marketing'
+    | '/dashboard/apps/image-enhancer'
     | '/dashboard/apps/multi-language'
     | '/dashboard/apps/popup-builder'
     | '/dashboard/apps/seo-optimizer'
@@ -1130,6 +1156,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAppsMultiLanguageRouteImport
       parentRoute: typeof DashboardAppsRoute
     }
+    '/dashboard/apps/image-enhancer': {
+      id: '/dashboard/apps/image-enhancer'
+      path: '/image-enhancer'
+      fullPath: '/dashboard/apps/image-enhancer'
+      preLoaderRoute: typeof DashboardAppsImageEnhancerRouteImport
+      parentRoute: typeof DashboardAppsRoute
+    }
     '/dashboard/apps/email-marketing': {
       id: '/dashboard/apps/email-marketing'
       path: '/email-marketing'
@@ -1170,6 +1203,13 @@ declare module '@tanstack/react-router' {
       path: '/ai-descriptions'
       fullPath: '/dashboard/apps/ai-descriptions'
       preLoaderRoute: typeof DashboardAppsAiDescriptionsRouteImport
+      parentRoute: typeof DashboardAppsRoute
+    }
+    '/dashboard/apps/ad-generator': {
+      id: '/dashboard/apps/ad-generator'
+      path: '/ad-generator'
+      fullPath: '/dashboard/apps/ad-generator'
+      preLoaderRoute: typeof DashboardAppsAdGeneratorRouteImport
       parentRoute: typeof DashboardAppsRoute
     }
     '/dashboard/apps/abandoned-cart': {
@@ -1262,12 +1302,14 @@ declare module '@tanstack/react-router' {
 interface DashboardAppsRouteChildren {
   DashboardAppsAppKeyRoute: typeof DashboardAppsAppKeyRoute
   DashboardAppsAbandonedCartRoute: typeof DashboardAppsAbandonedCartRoute
+  DashboardAppsAdGeneratorRoute: typeof DashboardAppsAdGeneratorRoute
   DashboardAppsAiDescriptionsRoute: typeof DashboardAppsAiDescriptionsRoute
   DashboardAppsAnalyticsRoute: typeof DashboardAppsAnalyticsRoute
   DashboardAppsChatbotRoute: typeof DashboardAppsChatbotRoute
   DashboardAppsCurrencyConverterRoute: typeof DashboardAppsCurrencyConverterRoute
   DashboardAppsDiscountGeneratorRoute: typeof DashboardAppsDiscountGeneratorRoute
   DashboardAppsEmailMarketingRoute: typeof DashboardAppsEmailMarketingRoute
+  DashboardAppsImageEnhancerRoute: typeof DashboardAppsImageEnhancerRoute
   DashboardAppsMultiLanguageRoute: typeof DashboardAppsMultiLanguageRoute
   DashboardAppsPopupBuilderRoute: typeof DashboardAppsPopupBuilderRoute
   DashboardAppsSeoOptimizerRoute: typeof DashboardAppsSeoOptimizerRoute
@@ -1277,12 +1319,14 @@ interface DashboardAppsRouteChildren {
 const DashboardAppsRouteChildren: DashboardAppsRouteChildren = {
   DashboardAppsAppKeyRoute: DashboardAppsAppKeyRoute,
   DashboardAppsAbandonedCartRoute: DashboardAppsAbandonedCartRoute,
+  DashboardAppsAdGeneratorRoute: DashboardAppsAdGeneratorRoute,
   DashboardAppsAiDescriptionsRoute: DashboardAppsAiDescriptionsRoute,
   DashboardAppsAnalyticsRoute: DashboardAppsAnalyticsRoute,
   DashboardAppsChatbotRoute: DashboardAppsChatbotRoute,
   DashboardAppsCurrencyConverterRoute: DashboardAppsCurrencyConverterRoute,
   DashboardAppsDiscountGeneratorRoute: DashboardAppsDiscountGeneratorRoute,
   DashboardAppsEmailMarketingRoute: DashboardAppsEmailMarketingRoute,
+  DashboardAppsImageEnhancerRoute: DashboardAppsImageEnhancerRoute,
   DashboardAppsMultiLanguageRoute: DashboardAppsMultiLanguageRoute,
   DashboardAppsPopupBuilderRoute: DashboardAppsPopupBuilderRoute,
   DashboardAppsSeoOptimizerRoute: DashboardAppsSeoOptimizerRoute,
