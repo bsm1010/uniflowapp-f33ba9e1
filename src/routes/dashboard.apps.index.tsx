@@ -1,23 +1,21 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
-import { Check, Loader2, ExternalLink, LayoutGrid } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Check, Loader2, Search, Star, LayoutGrid } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { PageHeader } from "@/components/dashboard/PageHeader";
-import { APPS } from "@/lib/apps";
+import { Input } from "@/components/ui/input";
+import { APPS, APP_CATEGORIES } from "@/lib/apps";
 import { useInstalledApps } from "@/hooks/use-installed-apps";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/dashboard/apps/")({
   component: AppsPage,
   head: () => ({
     meta: [
-      { title: "App Store — Storely" },
-      {
-        name: "description",
-        content: "Browse and install apps to power up your store.",
-      },
+      { title: "App Marketplace — Fennecly" },
+      { name: "description", content: "Extend your store with powerful apps." },
     ],
   }),
 });
@@ -25,8 +23,25 @@ export const Route = createFileRoute("/dashboard/apps/")({
 function AppsPage() {
   const { isInstalled, install: installApp, loading } = useInstalledApps();
   const [pending, setPending] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState<string>("All");
 
-  const install = async (appKey: string, appName: string) => {
+  const filtered = useMemo(() => {
+    return APPS.filter((a) => {
+      const matchesCat = activeCategory === "All" || a.category === activeCategory;
+      const q = query.trim().toLowerCase();
+      const matchesQ =
+        !q ||
+        a.name.toLowerCase().includes(q) ||
+        a.description.toLowerCase().includes(q) ||
+        a.category.toLowerCase().includes(q);
+      return matchesCat && matchesQ;
+    });
+  }, [query, activeCategory]);
+
+  const install = async (e: React.MouseEvent, appKey: string, appName: string) => {
+    e.preventDefault();
+    e.stopPropagation();
     setPending(appKey);
     const { error } = await installApp(appKey);
     setPending(null);
@@ -38,88 +53,138 @@ function AppsPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        eyebrow="Marketplace"
-        title="App Store"
-        description="Extend your store with powerful apps. Install with one click."
-        icon={LayoutGrid}
-        gradient="from-fuchsia-500 via-pink-500 to-rose-500"
-      />
+    <div className="space-y-8">
+      {/* Hero */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#7C3AED] via-[#8B5CF6] to-[#A855F7] p-8 sm:p-12 text-white">
+        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_right,white,transparent_60%)]" />
+        <div className="relative max-w-2xl">
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-medium backdrop-blur">
+            <LayoutGrid className="h-3.5 w-3.5" />
+            Marketplace
+          </div>
+          <h1 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight">
+            App Marketplace
+          </h1>
+          <p className="mt-3 text-lg text-white/90">
+            Extend your store with powerful apps.
+          </p>
+        </div>
+      </div>
 
+      {/* Search + Tabs */}
+      <div className="space-y-4">
+        <div className="relative max-w-xl">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search apps..."
+            className="pl-9 h-11"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {APP_CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              className={cn(
+                "px-4 py-2 rounded-full text-sm font-medium transition-all",
+                activeCategory === cat
+                  ? "bg-[#7C3AED] text-white shadow-md shadow-purple-500/30"
+                  : "bg-muted text-muted-foreground hover:bg-muted/70",
+              )}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Grid */}
       {loading ? (
         <div className="flex items-center justify-center py-20">
           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
         </div>
+      ) : filtered.length === 0 ? (
+        <div className="text-center py-20 text-muted-foreground">
+          No apps match your search.
+        </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {APPS.map((app) => {
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {filtered.map((app) => {
             const installed = isInstalled(app.key);
             const isPending = pending === app.key;
             const Icon = app.icon;
             return (
-              <Card
+              <Link
                 key={app.key}
-                className="group relative overflow-hidden p-5 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-primary/40"
+                to="/dashboard/apps/$appKey"
+                params={{ appKey: app.key }}
+                className="group block"
               >
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${app.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`}
-                />
-                <div className="relative flex flex-col h-full gap-4">
-                  <div className="flex items-start justify-between">
-                    <div
-                      className={`h-12 w-12 rounded-xl bg-gradient-to-br ${app.gradient} flex items-center justify-center ring-1 ring-border`}
-                    >
-                      <Icon className="h-6 w-6 text-foreground" />
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      {installed && (
-                        <Badge className="text-xs bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/15 animate-in fade-in zoom-in-95 duration-300">
-                          <Check className="h-3 w-3" />
-                          Installed
+                <Card className="relative h-full overflow-hidden p-5 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-[#7C3AED]/40">
+                  <div className="flex flex-col h-full gap-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div
+                        className={cn(
+                          "h-14 w-14 rounded-2xl bg-gradient-to-br flex items-center justify-center ring-1 ring-border shadow-sm",
+                          app.gradient,
+                        )}
+                      >
+                        <Icon className="h-7 w-7 text-foreground" />
+                      </div>
+                      <div className="flex flex-col items-end gap-1.5">
+                        {installed && (
+                          <Badge className="text-xs bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/15">
+                            <Check className="h-3 w-3" />
+                            Installed
+                          </Badge>
+                        )}
+                        <Badge variant="secondary" className="text-xs">
+                          {app.category}
                         </Badge>
-                      )}
-                      <Badge variant="secondary" className="text-xs">
-                        {app.category}
-                      </Badge>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex-1 space-y-1">
-                    <h3 className="font-semibold leading-tight">{app.name}</h3>
-                    <p className="text-sm text-muted-foreground line-clamp-2">
-                      {app.description}
-                    </p>
-                  </div>
-                  {installed ? (
-                    <Button
-                      size="sm"
-                      asChild
-                      className="w-full transition-all duration-300 animate-in fade-in"
-                    >
-                      <Link to="/dashboard/apps/$appKey" params={{ appKey: app.key }}>
-                        <ExternalLink className="h-4 w-4" />
+                    <div className="flex-1 space-y-1.5">
+                      <h3 className="font-semibold leading-tight text-base">{app.name}</h3>
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        {app.description}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-sm">
+                      <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
+                      <span className="font-medium">{app.rating.toFixed(1)}</span>
+                      <span className="text-muted-foreground">
+                        ({app.reviewCount.toLocaleString()})
+                      </span>
+                    </div>
+                    {installed ? (
+                      <Button
+                        size="sm"
+                        className="w-full bg-[#7C3AED] hover:bg-[#6D28D9] text-white"
+                      >
                         Open App
-                      </Link>
-                    </Button>
-                  ) : (
-                    <Button
-                      size="sm"
-                      disabled={isPending}
-                      onClick={() => install(app.key, app.name)}
-                      className="w-full transition-all duration-300"
-                    >
-                      {isPending ? (
-                        <>
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                          Installing...
-                        </>
-                      ) : (
-                        "Install App"
-                      )}
-                    </Button>
-                  )}
-                </div>
-              </Card>
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        disabled={isPending}
+                        onClick={(e) => install(e, app.key, app.name)}
+                        className="w-full bg-[#7C3AED] hover:bg-[#6D28D9] text-white"
+                      >
+                        {isPending ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Installing...
+                          </>
+                        ) : (
+                          "Install"
+                        )}
+                      </Button>
+                    )}
+                  </div>
+                </Card>
+              </Link>
             );
           })}
         </div>
