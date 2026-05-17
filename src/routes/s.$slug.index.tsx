@@ -18,8 +18,9 @@ import {
 } from "@/lib/storeTheme";
 import { useCart } from "@/hooks/use-cart";
 import { fetchSettings, getCachedSettings, setCachedSettings } from "@/lib/storefrontCache";
+import PixelInjector from "@/components/PixelInjector";
 
-type Product = Pick<
+type Product = Pick
   Tables<"products">,
   "id" | "name" | "price" | "images" | "category" | "stock"
 >;
@@ -72,7 +73,6 @@ function StorefrontHome() {
       setProducts(p ?? []);
       setLoading(false);
 
-      // Subscribe to live store_settings changes for this store
       channel = supabase
         .channel(`store-settings-${s.user_id}`)
         .on(
@@ -270,7 +270,7 @@ function StorefrontHome() {
                 {titles.featured_sub}
               </p>
             </div>
-            <a
+            
               href="#shop"
               className="hidden sm:inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-full transition-all duration-300 hover:scale-105"
               style={{ backgroundColor: t.surface, color: t.fg, border: `1px solid ${t.border}` }}
@@ -313,9 +313,7 @@ function StorefrontHome() {
           <div className="relative max-w-2xl mx-auto text-center">
             <div
               className="inline-flex items-center justify-center h-16 w-16 mb-6 rounded-2xl"
-              style={{
-                backgroundColor: t.primary + "18",
-              }}
+              style={{ backgroundColor: t.primary + "18" }}
             >
               <Mail className="h-7 w-7" style={{ color: t.primary }} />
             </div>
@@ -366,6 +364,11 @@ function StorefrontHome() {
 
   return (
     <StorefrontShell settings={settings}>
+      <PixelInjector
+        metaPixelId={settings.meta_pixel_id}
+        tiktokPixelId={settings.tiktok_pixel_id}
+      />
+
       {sectionOrder.map((key) => sectionRenderers[key]())}
 
       {/* All products */}
