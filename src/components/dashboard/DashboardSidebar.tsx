@@ -141,6 +141,7 @@ export function DashboardSidebar() {
         { title: "Developer", url: "/dashboard/developer", icon: Code2, gradient: "from-fuchsia-500 to-violet-500" },
         { title: t("dashboard.nav.credits"), url: "/dashboard/credits", icon: Coins, gradient: "from-yellow-500 to-amber-500" },
         { title: t("dashboard.nav.referrals"), url: "/dashboard/referrals", icon: Gift, gradient: "from-rose-500 to-pink-500" },
+        { title: "Store Settings", url: "/dashboard/store-settings", icon: StoreIcon, gradient: "from-emerald-500 to-teal-600" },
         { title: t("dashboard.nav.settings"), url: "/dashboard/settings", icon: Settings, gradient: "from-zinc-500 to-slate-600" },
       ],
     },
