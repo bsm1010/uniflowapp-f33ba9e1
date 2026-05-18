@@ -1358,6 +1358,7 @@ export type Database = {
           shipping_city: string
           shipping_country: string
           shipping_postal_code: string
+          source: string
           status: string
           store_owner_id: string
           store_slug: string
@@ -1377,6 +1378,7 @@ export type Database = {
           shipping_city: string
           shipping_country: string
           shipping_postal_code: string
+          source?: string
           status?: string
           store_owner_id: string
           store_slug: string
@@ -1396,6 +1398,7 @@ export type Database = {
           shipping_city?: string
           shipping_country?: string
           shipping_postal_code?: string
+          source?: string
           status?: string
           store_owner_id?: string
           store_slug?: string
