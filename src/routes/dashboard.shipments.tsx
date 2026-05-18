@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, Truck, Search, Copy, CheckCircle2 } from "lucide-react";
+import { Loader2, Truck, Search, Copy, CheckCircle2, MapPin } from "lucide-react";
 import deliveryMan from "@/assets/delivery-man.webp";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
