@@ -237,22 +237,27 @@ export const importZRExpressOrders = createServerFn({ method: "POST" })
       let imported = 0;
       let updated = 0;
 
+      console.log(`[importZR] toInsert=${toInsert.length} toUpdate=${toUpdate.length}`);
+
       if (toInsert.length) {
-        const { error: insErr, count } = await supabase
+        // orders RLS restricts INSERT to service_role; use admin client (caller already verified above).
+        const { error: insErr, count } = await supabaseAdmin
           .from("orders")
           .insert(toInsert, { count: "exact" });
         if (insErr) {
+          console.error("[importZR] insert error", insErr);
           return { ok: false, message: `Insert failed: ${insErr.message}` };
         }
         imported = count ?? toInsert.length;
       }
 
       for (const u of toUpdate) {
-        const { error: upErr } = await supabase
+        const { error: upErr } = await supabaseAdmin
           .from("orders")
           .update(u.patch)
           .eq("id", u.id);
-        if (!upErr) updated += 1;
+        if (upErr) console.error("[importZR] update error", upErr);
+        else updated += 1;
       }
 
       return {
