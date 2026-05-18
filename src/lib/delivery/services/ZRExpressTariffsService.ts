@@ -23,6 +23,11 @@ export interface FetchZRTariffsResult {
 }
 
 /** Raw shape returned by ZR Express (legacy Procolis + new platform). */
+interface ZRDeliveryPriceEntry {
+  deliveryType?: string;
+  price?: number | string;
+  discountedPrice?: number | string | null;
+}
 interface ZRTariffApiEntry {
   IDWilaya?: number | string;
   Wilaya?: string;
@@ -31,11 +36,16 @@ interface ZRTariffApiEntry {
   TarifStopDesk?: number | string;
   Domicile?: number | string;
   StopDesk?: number | string;
-  // New platform (api.zrexpress.app) schema:
+  // Legacy new-platform fields:
   toWilayaId?: number | string;
   toWilayaName?: string;
   homeDeliveryPrice?: number | string;
   stopDeskPrice?: number | string;
+  // Current api.zrexpress.app shape:
+  toTerritoryId?: string;
+  toTerritoryName?: string;
+  toTerritoryLevel?: string;
+  deliveryPrices?: ZRDeliveryPriceEntry[];
 }
 
 function toNumber(value: unknown): number {
@@ -122,17 +132,32 @@ export async function fetchZRTariffs(
     const tariffs: ZRTariffRow[] = [];
     for (const entry of rows) {
       const wilaya = String(
-        entry.Wilaya ?? entry.toWilayaName ?? entry.IDWilaya ?? entry.toWilayaId ?? "",
+        entry.Wilaya ??
+          entry.toTerritoryName ??
+          entry.toWilayaName ??
+          entry.IDWilaya ??
+          entry.toTerritoryId ??
+          entry.toWilayaId ??
+          "",
       ).trim();
       if (!wilaya) continue;
-      const city = String(entry.Commune ?? entry.toWilayaName ?? "").trim();
+      const city = String(
+        entry.Commune ?? entry.toTerritoryName ?? entry.toWilayaName ?? "",
+      ).trim();
 
-      const domicile = toNumber(
-        entry.TarifLivraison ?? entry.Domicile ?? entry.homeDeliveryPrice,
-      );
-      const stopdesk = toNumber(
-        entry.TarifStopDesk ?? entry.StopDesk ?? entry.stopDeskPrice,
-      );
+      let domicile = toNumber(entry.TarifLivraison ?? entry.Domicile ?? entry.homeDeliveryPrice);
+      let stopdesk = toNumber(entry.TarifStopDesk ?? entry.StopDesk ?? entry.stopDeskPrice);
+
+      // Current platform: deliveryPrices[] with deliveryType "home" | "pickup-point"
+      if (Array.isArray(entry.deliveryPrices)) {
+        for (const dp of entry.deliveryPrices) {
+          const t = (dp.deliveryType ?? "").toLowerCase();
+          const price = toNumber(dp.discountedPrice ?? dp.price);
+          if (price <= 0) continue;
+          if (t === "home" || t.includes("domicile")) domicile = price;
+          else if (t === "pickup-point" || t.includes("stop") || t.includes("desk")) stopdesk = price;
+        }
+      }
 
       if (domicile > 0) {
         tariffs.push({ wilaya, city, delivery_type: "domicile", price: domicile });
