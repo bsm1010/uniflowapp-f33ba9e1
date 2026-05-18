@@ -17,6 +17,7 @@ import {
   disconnectStoreDeliveryCompany,
   type StoreCompanyView,
 } from "@/lib/delivery/store-companies.functions";
+import { syncDeliveryCompanyTariffs } from "@/lib/delivery/sync-tariffs.functions";
 import zrExpressLogo from "@/assets/zrexpress-logo.png";
 import yalidineLogo from "@/assets/yalidine-logo.png";
 
