@@ -65,9 +65,6 @@ function Index() {
       <Hero />
       <Suspense fallback={<SectionFallback />}>
         <div className="cv-auto">
-          <EcommerceBanner />
-        </div>
-        <div className="cv-auto">
           <DashboardTools />
         </div>
         <div className="cv-auto">
