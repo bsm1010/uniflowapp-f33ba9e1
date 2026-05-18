@@ -246,6 +246,7 @@ function ShipmentsPage() {
                     <TableHead>Wilaya</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Created</TableHead>
+                    <TableHead className="text-right">Track</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
