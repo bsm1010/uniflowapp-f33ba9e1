@@ -248,6 +248,42 @@ export function ShippingCompaniesSection() {
     }
   };
 
+  const disconnect = async (companyId: string) => {
+    if (!session?.access_token) {
+      toast.error("Please sign in again.");
+      return;
+    }
+    if (!window.confirm("Clear all saved credentials for this carrier? You will need to paste new credentials to reconnect.")) {
+      return;
+    }
+    setBusyId(companyId);
+    try {
+      const res = await disconnectFn({ data: { accessToken: session.access_token, companyId } });
+      if (!res.ok) {
+        toast.error(res.message);
+        return;
+      }
+      toast.success(res.message);
+      setRows((p) => ({
+        ...p,
+        [companyId]: {
+          ...p[companyId],
+          enabled: false,
+          is_default: false,
+          has_key: false,
+          has_secret: false,
+          key_tail: "",
+        },
+      }));
+      setDraftJson((p) => ({ ...p, [companyId]: "" }));
+      setValidationStatus((p) => ({ ...p, [companyId]: undefined }));
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to disconnect.");
+    } finally {
+      setBusyId(null);
+    }
+  };
+
   return (
     <Card className="overflow-hidden">
       <div className="flex items-center justify-between border-b bg-muted/30 px-5 py-4">
