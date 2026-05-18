@@ -75,7 +75,7 @@ export const Route = createFileRoute("/api/public/hooks/sync-tariffs")({
         for (const link of links ?? []) {
           if (!link.api_key?.trim() || !link.api_secret?.trim()) {
             results.push({
-              owner_id: link.store_id,
+              store_id: link.store_id,
               company_id: link.company_id,
               ok: false,
               message: "Missing credentials — kept last saved tariffs.",
@@ -87,7 +87,7 @@ export const Route = createFileRoute("/api/public/hooks/sync-tariffs")({
           if (!fetched.success) {
             // Keep last saved tariffs untouched; just record the warning.
             results.push({
-              owner_id: link.store_id,
+              store_id: link.store_id,
               company_id: link.company_id,
               ok: false,
               message: `Could not refresh tariffs: ${fetched.message}`,
@@ -96,7 +96,7 @@ export const Route = createFileRoute("/api/public/hooks/sync-tariffs")({
           }
           if (fetched.tariffs.length === 0) {
             results.push({
-              owner_id: link.store_id,
+              store_id: link.store_id,
               company_id: link.company_id,
               ok: true,
               message: "Provider returned no tariffs.",
@@ -115,7 +115,7 @@ export const Route = createFileRoute("/api/public/hooks/sync-tariffs")({
 
           if (existingErr) {
             results.push({
-              owner_id: link.store_id,
+              store_id: link.store_id,
               company_id: link.company_id,
               ok: false,
               message: `Could not refresh tariffs: ${existingErr.message}`,
@@ -184,7 +184,7 @@ export const Route = createFileRoute("/api/public/hooks/sync-tariffs")({
           }
 
           results.push({
-            owner_id: link.store_id,
+            store_id: link.store_id,
             company_id: link.company_id,
             ok: true,
             message: `Synced ${fetched.tariffs.length} tariffs.`,
