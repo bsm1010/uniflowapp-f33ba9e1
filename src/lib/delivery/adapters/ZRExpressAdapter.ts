@@ -18,10 +18,9 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
 
   private authHeaders(): Record<string, string> {
     return {
+      Authorization: `Bearer ${(this.credentials.apiKey ?? "").trim()}`,
       "Content-Type": "application/json",
       Accept: "application/json",
-      token: (this.credentials.apiKey ?? "").trim(),
-      id: (this.credentials.apiSecret ?? "").trim(),
     };
   }
 
