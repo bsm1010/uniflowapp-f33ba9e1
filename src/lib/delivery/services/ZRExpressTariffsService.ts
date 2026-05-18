@@ -22,16 +22,20 @@ export interface FetchZRTariffsResult {
   tariffs: ZRTariffRow[];
 }
 
-/** Raw shape returned by Procolis — only the fields we actually consume. */
+/** Raw shape returned by ZR Express (legacy Procolis + new platform). */
 interface ZRTariffApiEntry {
   IDWilaya?: number | string;
   Wilaya?: string;
   Commune?: string;
   TarifLivraison?: number | string;
   TarifStopDesk?: number | string;
-  // Some payloads use alternative casings; keep them optional.
   Domicile?: number | string;
   StopDesk?: number | string;
+  // New platform (api.zrexpress.app) schema:
+  toWilayaId?: number | string;
+  toWilayaName?: string;
+  homeDeliveryPrice?: number | string;
+  stopDeskPrice?: number | string;
 }
 
 function toNumber(value: unknown): number {
