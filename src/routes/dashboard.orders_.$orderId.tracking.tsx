@@ -90,6 +90,7 @@ function TrackingPage() {
       const res = await trackFn({ data: { accessToken, orderId } });
       if (res.ok) {
         setTracking(res.tracking);
+        setLastRefreshed(new Date());
       } else {
         setErrorMsg(res.message);
       }
@@ -99,6 +100,16 @@ function TrackingPage() {
       setRefreshing(false);
     }
   };
+
+  // Auto-refresh every 30s while the page is open.
+  useEffect(() => {
+    if (!autoRefresh || !order?.tracking_number) return;
+    const id = setInterval(() => {
+      refreshTracking();
+    }, 30_000);
+    return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoRefresh, order?.tracking_number]);
 
   useEffect(() => {
     if (!user) return;
