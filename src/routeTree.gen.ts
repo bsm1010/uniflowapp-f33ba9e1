@@ -35,6 +35,7 @@ import { Route as DashboardOrdersRouteImport } from './routes/dashboard.orders'
 import { Route as DashboardNotificationsRouteImport } from './routes/dashboard.notifications'
 import { Route as DashboardLandingGeneratorRouteImport } from './routes/dashboard.landing-generator'
 import { Route as DashboardDomainsRouteImport } from './routes/dashboard.domains'
+import { Route as DashboardDeveloperRouteImport } from './routes/dashboard.developer'
 import { Route as DashboardDeliveryRouteImport } from './routes/dashboard.delivery'
 import { Route as DashboardDatabaseRouteImport } from './routes/dashboard.database'
 import { Route as DashboardCustomersRouteImport } from './routes/dashboard.customers'
@@ -53,9 +54,11 @@ import { Route as SSlugContactRouteImport } from './routes/s.$slug.contact'
 import { Route as SSlugCheckoutRouteImport } from './routes/s.$slug.checkout'
 import { Route as SSlugCartRouteImport } from './routes/s.$slug.cart'
 import { Route as SSlugAboutRouteImport } from './routes/s.$slug.about'
+import { Route as DashboardAppsSubmitRouteImport } from './routes/dashboard.apps.submit'
 import { Route as DashboardAppsSeoOptimizerRouteImport } from './routes/dashboard.apps.seo-optimizer'
 import { Route as DashboardAppsPopupBuilderRouteImport } from './routes/dashboard.apps.popup-builder'
 import { Route as DashboardAppsMultiLanguageRouteImport } from './routes/dashboard.apps.multi-language'
+import { Route as DashboardAppsMarketplaceRouteImport } from './routes/dashboard.apps.marketplace'
 import { Route as DashboardAppsImageEnhancerRouteImport } from './routes/dashboard.apps.image-enhancer'
 import { Route as DashboardAppsEmailMarketingRouteImport } from './routes/dashboard.apps.email-marketing'
 import { Route as DashboardAppsDiscountGeneratorRouteImport } from './routes/dashboard.apps.discount-generator'
@@ -208,6 +211,11 @@ const DashboardDomainsRoute = DashboardDomainsRouteImport.update({
   path: '/domains',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardDeveloperRoute = DashboardDeveloperRouteImport.update({
+  id: '/developer',
+  path: '/developer',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardDeliveryRoute = DashboardDeliveryRouteImport.update({
   id: '/delivery',
   path: '/delivery',
@@ -298,6 +306,11 @@ const SSlugAboutRoute = SSlugAboutRouteImport.update({
   path: '/s/$slug/about',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardAppsSubmitRoute = DashboardAppsSubmitRouteImport.update({
+  id: '/submit',
+  path: '/submit',
+  getParentRoute: () => DashboardAppsRoute,
+} as any)
 const DashboardAppsSeoOptimizerRoute =
   DashboardAppsSeoOptimizerRouteImport.update({
     id: '/seo-optimizer',
@@ -314,6 +327,12 @@ const DashboardAppsMultiLanguageRoute =
   DashboardAppsMultiLanguageRouteImport.update({
     id: '/multi-language',
     path: '/multi-language',
+    getParentRoute: () => DashboardAppsRoute,
+  } as any)
+const DashboardAppsMarketplaceRoute =
+  DashboardAppsMarketplaceRouteImport.update({
+    id: '/marketplace',
+    path: '/marketplace',
     getParentRoute: () => DashboardAppsRoute,
   } as any)
 const DashboardAppsImageEnhancerRoute =
@@ -448,6 +467,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/customers': typeof DashboardCustomersRoute
   '/dashboard/database': typeof DashboardDatabaseRoute
   '/dashboard/delivery': typeof DashboardDeliveryRoute
+  '/dashboard/developer': typeof DashboardDeveloperRoute
   '/dashboard/domains': typeof DashboardDomainsRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
@@ -476,9 +496,11 @@ export interface FileRoutesByFullPath {
   '/dashboard/apps/discount-generator': typeof DashboardAppsDiscountGeneratorRoute
   '/dashboard/apps/email-marketing': typeof DashboardAppsEmailMarketingRoute
   '/dashboard/apps/image-enhancer': typeof DashboardAppsImageEnhancerRoute
+  '/dashboard/apps/marketplace': typeof DashboardAppsMarketplaceRoute
   '/dashboard/apps/multi-language': typeof DashboardAppsMultiLanguageRoute
   '/dashboard/apps/popup-builder': typeof DashboardAppsPopupBuilderRoute
   '/dashboard/apps/seo-optimizer': typeof DashboardAppsSeoOptimizerRoute
+  '/dashboard/apps/submit': typeof DashboardAppsSubmitRoute
   '/s/$slug/about': typeof SSlugAboutRoute
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
@@ -515,6 +537,7 @@ export interface FileRoutesByTo {
   '/dashboard/customers': typeof DashboardCustomersRoute
   '/dashboard/database': typeof DashboardDatabaseRoute
   '/dashboard/delivery': typeof DashboardDeliveryRoute
+  '/dashboard/developer': typeof DashboardDeveloperRoute
   '/dashboard/domains': typeof DashboardDomainsRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
@@ -543,9 +566,11 @@ export interface FileRoutesByTo {
   '/dashboard/apps/discount-generator': typeof DashboardAppsDiscountGeneratorRoute
   '/dashboard/apps/email-marketing': typeof DashboardAppsEmailMarketingRoute
   '/dashboard/apps/image-enhancer': typeof DashboardAppsImageEnhancerRoute
+  '/dashboard/apps/marketplace': typeof DashboardAppsMarketplaceRoute
   '/dashboard/apps/multi-language': typeof DashboardAppsMultiLanguageRoute
   '/dashboard/apps/popup-builder': typeof DashboardAppsPopupBuilderRoute
   '/dashboard/apps/seo-optimizer': typeof DashboardAppsSeoOptimizerRoute
+  '/dashboard/apps/submit': typeof DashboardAppsSubmitRoute
   '/s/$slug/about': typeof SSlugAboutRoute
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
@@ -585,6 +610,7 @@ export interface FileRoutesById {
   '/dashboard/customers': typeof DashboardCustomersRoute
   '/dashboard/database': typeof DashboardDatabaseRoute
   '/dashboard/delivery': typeof DashboardDeliveryRoute
+  '/dashboard/developer': typeof DashboardDeveloperRoute
   '/dashboard/domains': typeof DashboardDomainsRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
@@ -613,9 +639,11 @@ export interface FileRoutesById {
   '/dashboard/apps/discount-generator': typeof DashboardAppsDiscountGeneratorRoute
   '/dashboard/apps/email-marketing': typeof DashboardAppsEmailMarketingRoute
   '/dashboard/apps/image-enhancer': typeof DashboardAppsImageEnhancerRoute
+  '/dashboard/apps/marketplace': typeof DashboardAppsMarketplaceRoute
   '/dashboard/apps/multi-language': typeof DashboardAppsMultiLanguageRoute
   '/dashboard/apps/popup-builder': typeof DashboardAppsPopupBuilderRoute
   '/dashboard/apps/seo-optimizer': typeof DashboardAppsSeoOptimizerRoute
+  '/dashboard/apps/submit': typeof DashboardAppsSubmitRoute
   '/s/$slug/about': typeof SSlugAboutRoute
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
@@ -656,6 +684,7 @@ export interface FileRouteTypes {
     | '/dashboard/customers'
     | '/dashboard/database'
     | '/dashboard/delivery'
+    | '/dashboard/developer'
     | '/dashboard/domains'
     | '/dashboard/landing-generator'
     | '/dashboard/notifications'
@@ -684,9 +713,11 @@ export interface FileRouteTypes {
     | '/dashboard/apps/discount-generator'
     | '/dashboard/apps/email-marketing'
     | '/dashboard/apps/image-enhancer'
+    | '/dashboard/apps/marketplace'
     | '/dashboard/apps/multi-language'
     | '/dashboard/apps/popup-builder'
     | '/dashboard/apps/seo-optimizer'
+    | '/dashboard/apps/submit'
     | '/s/$slug/about'
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
@@ -723,6 +754,7 @@ export interface FileRouteTypes {
     | '/dashboard/customers'
     | '/dashboard/database'
     | '/dashboard/delivery'
+    | '/dashboard/developer'
     | '/dashboard/domains'
     | '/dashboard/landing-generator'
     | '/dashboard/notifications'
@@ -751,9 +783,11 @@ export interface FileRouteTypes {
     | '/dashboard/apps/discount-generator'
     | '/dashboard/apps/email-marketing'
     | '/dashboard/apps/image-enhancer'
+    | '/dashboard/apps/marketplace'
     | '/dashboard/apps/multi-language'
     | '/dashboard/apps/popup-builder'
     | '/dashboard/apps/seo-optimizer'
+    | '/dashboard/apps/submit'
     | '/s/$slug/about'
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
@@ -792,6 +826,7 @@ export interface FileRouteTypes {
     | '/dashboard/customers'
     | '/dashboard/database'
     | '/dashboard/delivery'
+    | '/dashboard/developer'
     | '/dashboard/domains'
     | '/dashboard/landing-generator'
     | '/dashboard/notifications'
@@ -820,9 +855,11 @@ export interface FileRouteTypes {
     | '/dashboard/apps/discount-generator'
     | '/dashboard/apps/email-marketing'
     | '/dashboard/apps/image-enhancer'
+    | '/dashboard/apps/marketplace'
     | '/dashboard/apps/multi-language'
     | '/dashboard/apps/popup-builder'
     | '/dashboard/apps/seo-optimizer'
+    | '/dashboard/apps/submit'
     | '/s/$slug/about'
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
@@ -1050,6 +1087,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardDomainsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/developer': {
+      id: '/dashboard/developer'
+      path: '/developer'
+      fullPath: '/dashboard/developer'
+      preLoaderRoute: typeof DashboardDeveloperRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/delivery': {
       id: '/dashboard/delivery'
       path: '/delivery'
@@ -1176,6 +1220,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SSlugAboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/apps/submit': {
+      id: '/dashboard/apps/submit'
+      path: '/submit'
+      fullPath: '/dashboard/apps/submit'
+      preLoaderRoute: typeof DashboardAppsSubmitRouteImport
+      parentRoute: typeof DashboardAppsRoute
+    }
     '/dashboard/apps/seo-optimizer': {
       id: '/dashboard/apps/seo-optimizer'
       path: '/seo-optimizer'
@@ -1195,6 +1246,13 @@ declare module '@tanstack/react-router' {
       path: '/multi-language'
       fullPath: '/dashboard/apps/multi-language'
       preLoaderRoute: typeof DashboardAppsMultiLanguageRouteImport
+      parentRoute: typeof DashboardAppsRoute
+    }
+    '/dashboard/apps/marketplace': {
+      id: '/dashboard/apps/marketplace'
+      path: '/marketplace'
+      fullPath: '/dashboard/apps/marketplace'
+      preLoaderRoute: typeof DashboardAppsMarketplaceRouteImport
       parentRoute: typeof DashboardAppsRoute
     }
     '/dashboard/apps/image-enhancer': {
@@ -1350,9 +1408,11 @@ interface DashboardAppsRouteChildren {
   DashboardAppsDiscountGeneratorRoute: typeof DashboardAppsDiscountGeneratorRoute
   DashboardAppsEmailMarketingRoute: typeof DashboardAppsEmailMarketingRoute
   DashboardAppsImageEnhancerRoute: typeof DashboardAppsImageEnhancerRoute
+  DashboardAppsMarketplaceRoute: typeof DashboardAppsMarketplaceRoute
   DashboardAppsMultiLanguageRoute: typeof DashboardAppsMultiLanguageRoute
   DashboardAppsPopupBuilderRoute: typeof DashboardAppsPopupBuilderRoute
   DashboardAppsSeoOptimizerRoute: typeof DashboardAppsSeoOptimizerRoute
+  DashboardAppsSubmitRoute: typeof DashboardAppsSubmitRoute
   DashboardAppsIndexRoute: typeof DashboardAppsIndexRoute
   DashboardAppsListingAppKeyRoute: typeof DashboardAppsListingAppKeyRoute
 }
@@ -1367,9 +1427,11 @@ const DashboardAppsRouteChildren: DashboardAppsRouteChildren = {
   DashboardAppsDiscountGeneratorRoute: DashboardAppsDiscountGeneratorRoute,
   DashboardAppsEmailMarketingRoute: DashboardAppsEmailMarketingRoute,
   DashboardAppsImageEnhancerRoute: DashboardAppsImageEnhancerRoute,
+  DashboardAppsMarketplaceRoute: DashboardAppsMarketplaceRoute,
   DashboardAppsMultiLanguageRoute: DashboardAppsMultiLanguageRoute,
   DashboardAppsPopupBuilderRoute: DashboardAppsPopupBuilderRoute,
   DashboardAppsSeoOptimizerRoute: DashboardAppsSeoOptimizerRoute,
+  DashboardAppsSubmitRoute: DashboardAppsSubmitRoute,
   DashboardAppsIndexRoute: DashboardAppsIndexRoute,
   DashboardAppsListingAppKeyRoute: DashboardAppsListingAppKeyRoute,
 }
@@ -1390,6 +1452,7 @@ interface DashboardRouteChildren {
   DashboardCustomersRoute: typeof DashboardCustomersRoute
   DashboardDatabaseRoute: typeof DashboardDatabaseRoute
   DashboardDeliveryRoute: typeof DashboardDeliveryRoute
+  DashboardDeveloperRoute: typeof DashboardDeveloperRoute
   DashboardDomainsRoute: typeof DashboardDomainsRoute
   DashboardLandingGeneratorRoute: typeof DashboardLandingGeneratorRoute
   DashboardNotificationsRoute: typeof DashboardNotificationsRoute
@@ -1422,6 +1485,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardCustomersRoute: DashboardCustomersRoute,
   DashboardDatabaseRoute: DashboardDatabaseRoute,
   DashboardDeliveryRoute: DashboardDeliveryRoute,
+  DashboardDeveloperRoute: DashboardDeveloperRoute,
   DashboardDomainsRoute: DashboardDomainsRoute,
   DashboardLandingGeneratorRoute: DashboardLandingGeneratorRoute,
   DashboardNotificationsRoute: DashboardNotificationsRoute,
