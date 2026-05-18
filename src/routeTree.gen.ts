@@ -55,6 +55,7 @@ import { Route as SSlugContactRouteImport } from './routes/s.$slug.contact'
 import { Route as SSlugCheckoutRouteImport } from './routes/s.$slug.checkout'
 import { Route as SSlugCartRouteImport } from './routes/s.$slug.cart'
 import { Route as SSlugAboutRouteImport } from './routes/s.$slug.about'
+import { Route as DashboardNotificationsSettingsRouteImport } from './routes/dashboard.notifications.settings'
 import { Route as DashboardAppsSubmitRouteImport } from './routes/dashboard.apps.submit'
 import { Route as DashboardAppsSeoOptimizerRouteImport } from './routes/dashboard.apps.seo-optimizer'
 import { Route as DashboardAppsPopupBuilderRouteImport } from './routes/dashboard.apps.popup-builder'
@@ -82,6 +83,7 @@ import { Route as DashboardAppsMAppIdRouteImport } from './routes/dashboard.apps
 import { Route as DashboardAppsListingAppKeyRouteImport } from './routes/dashboard.apps.listing.$appKey'
 import { Route as ApiPublicHooksSyncTariffsRouteImport } from './routes/api.public.hooks.sync-tariffs'
 import { Route as ApiPublicHooksSyncShipmentStatusesRouteImport } from './routes/api/public/hooks/sync-shipment-statuses'
+import { Route as ApiPublicHooksPushDispatchRouteImport } from './routes/api/public/hooks/push-dispatch'
 import { Route as ApiPublicHooksInstagramRouteImport } from './routes/api.public.hooks.instagram'
 import { Route as ApiDbTableIdRecordIdRouteImport } from './routes/api.db.$tableId.$recordId'
 
@@ -316,6 +318,12 @@ const SSlugAboutRoute = SSlugAboutRouteImport.update({
   path: '/s/$slug/about',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardNotificationsSettingsRoute =
+  DashboardNotificationsSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => DashboardNotificationsRoute,
+  } as any)
 const DashboardAppsSubmitRoute = DashboardAppsSubmitRouteImport.update({
   id: '/submit',
   path: '/submit',
@@ -468,6 +476,12 @@ const ApiPublicHooksSyncShipmentStatusesRoute =
     path: '/api/public/hooks/sync-shipment-statuses',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksPushDispatchRoute =
+  ApiPublicHooksPushDispatchRouteImport.update({
+    id: '/api/public/hooks/push-dispatch',
+    path: '/api/public/hooks/push-dispatch',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksInstagramRoute = ApiPublicHooksInstagramRouteImport.update({
   id: '/api/public/hooks/instagram',
   path: '/api/public/hooks/instagram',
@@ -503,7 +517,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/developer': typeof DashboardDeveloperRoute
   '/dashboard/domains': typeof DashboardDomainsRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
-  '/dashboard/notifications': typeof DashboardNotificationsRoute
+  '/dashboard/notifications': typeof DashboardNotificationsRouteWithChildren
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/referrals': typeof DashboardReferralsRoute
@@ -536,6 +550,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/apps/popup-builder': typeof DashboardAppsPopupBuilderRoute
   '/dashboard/apps/seo-optimizer': typeof DashboardAppsSeoOptimizerRoute
   '/dashboard/apps/submit': typeof DashboardAppsSubmitRoute
+  '/dashboard/notifications/settings': typeof DashboardNotificationsSettingsRoute
   '/s/$slug/about': typeof SSlugAboutRoute
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
@@ -545,6 +560,7 @@ export interface FileRoutesByFullPath {
   '/s/$slug/': typeof SSlugIndexRoute
   '/api/db/$tableId/$recordId': typeof ApiDbTableIdRecordIdRoute
   '/api/public/hooks/instagram': typeof ApiPublicHooksInstagramRoute
+  '/api/public/hooks/push-dispatch': typeof ApiPublicHooksPushDispatchRoute
   '/api/public/hooks/sync-shipment-statuses': typeof ApiPublicHooksSyncShipmentStatusesRoute
   '/api/public/hooks/sync-tariffs': typeof ApiPublicHooksSyncTariffsRoute
   '/dashboard/apps/listing/$appKey': typeof DashboardAppsListingAppKeyRoute
@@ -578,7 +594,7 @@ export interface FileRoutesByTo {
   '/dashboard/developer': typeof DashboardDeveloperRoute
   '/dashboard/domains': typeof DashboardDomainsRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
-  '/dashboard/notifications': typeof DashboardNotificationsRoute
+  '/dashboard/notifications': typeof DashboardNotificationsRouteWithChildren
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/referrals': typeof DashboardReferralsRoute
@@ -611,6 +627,7 @@ export interface FileRoutesByTo {
   '/dashboard/apps/popup-builder': typeof DashboardAppsPopupBuilderRoute
   '/dashboard/apps/seo-optimizer': typeof DashboardAppsSeoOptimizerRoute
   '/dashboard/apps/submit': typeof DashboardAppsSubmitRoute
+  '/dashboard/notifications/settings': typeof DashboardNotificationsSettingsRoute
   '/s/$slug/about': typeof SSlugAboutRoute
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
@@ -620,6 +637,7 @@ export interface FileRoutesByTo {
   '/s/$slug': typeof SSlugIndexRoute
   '/api/db/$tableId/$recordId': typeof ApiDbTableIdRecordIdRoute
   '/api/public/hooks/instagram': typeof ApiPublicHooksInstagramRoute
+  '/api/public/hooks/push-dispatch': typeof ApiPublicHooksPushDispatchRoute
   '/api/public/hooks/sync-shipment-statuses': typeof ApiPublicHooksSyncShipmentStatusesRoute
   '/api/public/hooks/sync-tariffs': typeof ApiPublicHooksSyncTariffsRoute
   '/dashboard/apps/listing/$appKey': typeof DashboardAppsListingAppKeyRoute
@@ -656,7 +674,7 @@ export interface FileRoutesById {
   '/dashboard/developer': typeof DashboardDeveloperRoute
   '/dashboard/domains': typeof DashboardDomainsRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
-  '/dashboard/notifications': typeof DashboardNotificationsRoute
+  '/dashboard/notifications': typeof DashboardNotificationsRouteWithChildren
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/referrals': typeof DashboardReferralsRoute
@@ -689,6 +707,7 @@ export interface FileRoutesById {
   '/dashboard/apps/popup-builder': typeof DashboardAppsPopupBuilderRoute
   '/dashboard/apps/seo-optimizer': typeof DashboardAppsSeoOptimizerRoute
   '/dashboard/apps/submit': typeof DashboardAppsSubmitRoute
+  '/dashboard/notifications/settings': typeof DashboardNotificationsSettingsRoute
   '/s/$slug/about': typeof SSlugAboutRoute
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
@@ -698,6 +717,7 @@ export interface FileRoutesById {
   '/s/$slug/': typeof SSlugIndexRoute
   '/api/db/$tableId/$recordId': typeof ApiDbTableIdRecordIdRoute
   '/api/public/hooks/instagram': typeof ApiPublicHooksInstagramRoute
+  '/api/public/hooks/push-dispatch': typeof ApiPublicHooksPushDispatchRoute
   '/api/public/hooks/sync-shipment-statuses': typeof ApiPublicHooksSyncShipmentStatusesRoute
   '/api/public/hooks/sync-tariffs': typeof ApiPublicHooksSyncTariffsRoute
   '/dashboard/apps/listing/$appKey': typeof DashboardAppsListingAppKeyRoute
@@ -768,6 +788,7 @@ export interface FileRouteTypes {
     | '/dashboard/apps/popup-builder'
     | '/dashboard/apps/seo-optimizer'
     | '/dashboard/apps/submit'
+    | '/dashboard/notifications/settings'
     | '/s/$slug/about'
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
@@ -777,6 +798,7 @@ export interface FileRouteTypes {
     | '/s/$slug/'
     | '/api/db/$tableId/$recordId'
     | '/api/public/hooks/instagram'
+    | '/api/public/hooks/push-dispatch'
     | '/api/public/hooks/sync-shipment-statuses'
     | '/api/public/hooks/sync-tariffs'
     | '/dashboard/apps/listing/$appKey'
@@ -843,6 +865,7 @@ export interface FileRouteTypes {
     | '/dashboard/apps/popup-builder'
     | '/dashboard/apps/seo-optimizer'
     | '/dashboard/apps/submit'
+    | '/dashboard/notifications/settings'
     | '/s/$slug/about'
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
@@ -852,6 +875,7 @@ export interface FileRouteTypes {
     | '/s/$slug'
     | '/api/db/$tableId/$recordId'
     | '/api/public/hooks/instagram'
+    | '/api/public/hooks/push-dispatch'
     | '/api/public/hooks/sync-shipment-statuses'
     | '/api/public/hooks/sync-tariffs'
     | '/dashboard/apps/listing/$appKey'
@@ -920,6 +944,7 @@ export interface FileRouteTypes {
     | '/dashboard/apps/popup-builder'
     | '/dashboard/apps/seo-optimizer'
     | '/dashboard/apps/submit'
+    | '/dashboard/notifications/settings'
     | '/s/$slug/about'
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
@@ -929,6 +954,7 @@ export interface FileRouteTypes {
     | '/s/$slug/'
     | '/api/db/$tableId/$recordId'
     | '/api/public/hooks/instagram'
+    | '/api/public/hooks/push-dispatch'
     | '/api/public/hooks/sync-shipment-statuses'
     | '/api/public/hooks/sync-tariffs'
     | '/dashboard/apps/listing/$appKey'
@@ -959,6 +985,7 @@ export interface RootRouteChildren {
   SSlugTrackRoute: typeof SSlugTrackRoute
   SSlugIndexRoute: typeof SSlugIndexRoute
   ApiPublicHooksInstagramRoute: typeof ApiPublicHooksInstagramRoute
+  ApiPublicHooksPushDispatchRoute: typeof ApiPublicHooksPushDispatchRoute
   ApiPublicHooksSyncShipmentStatusesRoute: typeof ApiPublicHooksSyncShipmentStatusesRoute
   ApiPublicHooksSyncTariffsRoute: typeof ApiPublicHooksSyncTariffsRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
@@ -1291,6 +1318,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SSlugAboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/notifications/settings': {
+      id: '/dashboard/notifications/settings'
+      path: '/settings'
+      fullPath: '/dashboard/notifications/settings'
+      preLoaderRoute: typeof DashboardNotificationsSettingsRouteImport
+      parentRoute: typeof DashboardNotificationsRoute
+    }
     '/dashboard/apps/submit': {
       id: '/dashboard/apps/submit'
       path: '/submit'
@@ -1480,6 +1514,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksSyncShipmentStatusesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/push-dispatch': {
+      id: '/api/public/hooks/push-dispatch'
+      path: '/api/public/hooks/push-dispatch'
+      fullPath: '/api/public/hooks/push-dispatch'
+      preLoaderRoute: typeof ApiPublicHooksPushDispatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/instagram': {
       id: '/api/public/hooks/instagram'
       path: '/api/public/hooks/instagram'
@@ -1541,6 +1582,20 @@ const DashboardAppsRouteWithChildren = DashboardAppsRoute._addFileChildren(
   DashboardAppsRouteChildren,
 )
 
+interface DashboardNotificationsRouteChildren {
+  DashboardNotificationsSettingsRoute: typeof DashboardNotificationsSettingsRoute
+}
+
+const DashboardNotificationsRouteChildren: DashboardNotificationsRouteChildren =
+  {
+    DashboardNotificationsSettingsRoute: DashboardNotificationsSettingsRoute,
+  }
+
+const DashboardNotificationsRouteWithChildren =
+  DashboardNotificationsRoute._addFileChildren(
+    DashboardNotificationsRouteChildren,
+  )
+
 interface DashboardRouteChildren {
   DashboardAboutRoute: typeof DashboardAboutRoute
   DashboardAiAgentRoute: typeof DashboardAiAgentRoute
@@ -1556,7 +1611,7 @@ interface DashboardRouteChildren {
   DashboardDeveloperRoute: typeof DashboardDeveloperRoute
   DashboardDomainsRoute: typeof DashboardDomainsRoute
   DashboardLandingGeneratorRoute: typeof DashboardLandingGeneratorRoute
-  DashboardNotificationsRoute: typeof DashboardNotificationsRoute
+  DashboardNotificationsRoute: typeof DashboardNotificationsRouteWithChildren
   DashboardOrdersRoute: typeof DashboardOrdersRoute
   DashboardProductsRoute: typeof DashboardProductsRoute
   DashboardReferralsRoute: typeof DashboardReferralsRoute
@@ -1592,7 +1647,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardDeveloperRoute: DashboardDeveloperRoute,
   DashboardDomainsRoute: DashboardDomainsRoute,
   DashboardLandingGeneratorRoute: DashboardLandingGeneratorRoute,
-  DashboardNotificationsRoute: DashboardNotificationsRoute,
+  DashboardNotificationsRoute: DashboardNotificationsRouteWithChildren,
   DashboardOrdersRoute: DashboardOrdersRoute,
   DashboardProductsRoute: DashboardProductsRoute,
   DashboardReferralsRoute: DashboardReferralsRoute,
@@ -1659,6 +1714,7 @@ const rootRouteChildren: RootRouteChildren = {
   SSlugTrackRoute: SSlugTrackRoute,
   SSlugIndexRoute: SSlugIndexRoute,
   ApiPublicHooksInstagramRoute: ApiPublicHooksInstagramRoute,
+  ApiPublicHooksPushDispatchRoute: ApiPublicHooksPushDispatchRoute,
   ApiPublicHooksSyncShipmentStatusesRoute:
     ApiPublicHooksSyncShipmentStatusesRoute,
   ApiPublicHooksSyncTariffsRoute: ApiPublicHooksSyncTariffsRoute,
@@ -1670,13 +1726,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
