@@ -21,32 +21,35 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
       return { ok: false, message: "Invalid API credentials: missing secretKey (token)." };
     }
     if (!this.credentials.apiSecret || !this.credentials.apiSecret.trim()) {
-      return { ok: false, message: "Invalid API credentials: missing tenantId (key)." };
+      return { ok: false, message: "Invalid API credentials: missing tenantId." };
     }
 
     const token = this.credentials.apiKey.trim();
-    const key = this.credentials.apiSecret.trim();
+    const tenantId = this.credentials.apiSecret.trim();
     const url = `${ZR_BASE_URL}/tarification`;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 12_000);
 
     try {
-      // Procolis validation: GET /tarification with `token` + `key` headers.
-      // If it returns data (200 OK), the credentials are valid.
+      // Procolis /tarification requires POST. Send both `key` and `id` headers
+      // (different Procolis docs name the tenant header differently).
       const res = await fetch(url, {
-        method: "GET",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
           token,
-          key,
+          key: tenantId,
+          id: tenantId,
         },
+        body: JSON.stringify({}),
         signal: controller.signal,
       });
 
       const bodyText = await res.text();
       console.log("[ZRExpress] validateCredentials response", {
         url,
+        method: "POST",
         status: res.status,
         statusText: res.statusText,
         bodyPreview: bodyText.slice(0, 500),
@@ -59,15 +62,13 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
         };
       }
 
-      // Ensure body is parseable and non-empty so we know /tarification actually
-      // returned tariff data (not an empty 200 from a misrouted request).
       let parsed: unknown = null;
       try {
         parsed = bodyText ? JSON.parse(bodyText) : null;
       } catch {
         return {
           ok: false,
-          message: "ZR Express returned a non-JSON response. Check that headers `token` and `key` are correct.",
+          message: "ZR Express returned a non-JSON response. Verify your credentials are correct.",
         };
       }
 
@@ -135,6 +136,7 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
         "Content-Type": "application/json",
         token: this.credentials.apiKey,
         key: this.credentials.apiSecret ?? "",
+        id: this.credentials.apiSecret ?? "",
       },
       body: JSON.stringify(payload),
     });
