@@ -80,14 +80,13 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.18 0 0);
 
-  /* Primary: solid black */
-  --primary: oklch(0.18 0 0);
-  --primary-foreground: oklch(1 0 0);
+  /* Primary: Fennecly purple */
+  --primary: oklch(0.47 0.27 295);
+  --primary-foreground: oklch(0.99 0.005 295);
 
-  /* Brand kept as black so any existing brand utility stays neutral */
-  --brand: oklch(0.18 0 0);
-  --brand-foreground: oklch(1 0 0);
-  --brand-glow: oklch(0.3 0 0);
+  --brand: oklch(0.47 0.27 295);
+  --brand-foreground: oklch(0.99 0.005 295);
+  --brand-glow: oklch(0.62 0.25 305);
 
   --secondary: oklch(0.97 0 0); /* #f6f6f7 */
   --secondary-foreground: oklch(0.18 0 0);
@@ -103,7 +102,7 @@
 
   --border: oklch(0.91 0 0); /* #e5e7eb */
   --input: oklch(0.91 0 0);
-  --ring: oklch(0.18 0 0);
+  --ring: oklch(0.47 0.27 295);
 
   --chart-1: oklch(0.18 0 0);
   --chart-2: oklch(0.5 0 0);
