@@ -110,7 +110,7 @@ export const Route = createFileRoute("/api/public/hooks/sync-tariffs")({
           const { data: existing, error: existingErr } = await supabaseAdmin
             .from("delivery_tariffs")
             .select("id, wilaya, city, delivery_type, price")
-            .eq("store_id", link.store_id)
+            .eq("owner_id", link.store_id)
             .eq("company_id", link.company_id);
 
           if (existingErr) {
@@ -134,7 +134,7 @@ export const Route = createFileRoute("/api/public/hooks/sync-tariffs")({
           }
 
           const toInsert: Array<{
-            store_id: string;
+            owner_id: string;
             company_id: string;
             wilaya: string;
             city: string;
@@ -156,7 +156,7 @@ export const Route = createFileRoute("/api/public/hooks/sync-tariffs")({
               }
             } else {
               toInsert.push({
-                store_id: link.store_id,
+                owner_id: link.store_id,
                 company_id: link.company_id,
                 wilaya: t.wilaya,
                 city: t.city,

@@ -86,7 +86,7 @@ export const syncDeliveryCompanyTariffs = createServerFn({ method: "POST" })
       const { data: existing, error: existingErr } = await supabase
         .from("delivery_tariffs")
         .select("id, wilaya, city, delivery_type, price")
-        .eq("store_id", userId)
+        .eq("owner_id", userId)
         .eq("company_id", data.companyId);
       if (existingErr) {
         return { ok: false, message: `Failed to read tariffs: ${existingErr.message}` };
@@ -105,7 +105,7 @@ export const syncDeliveryCompanyTariffs = createServerFn({ method: "POST" })
 
       // 4. Reconcile: update changed rows, insert new ones in one batch.
       const toInsert: Array<{
-        store_id: string;
+        owner_id: string;
         company_id: string;
         wilaya: string;
         city: string;
@@ -127,7 +127,7 @@ export const syncDeliveryCompanyTariffs = createServerFn({ method: "POST" })
           }
         } else {
           toInsert.push({
-            store_id: userId,
+            owner_id: userId,
             company_id: data.companyId,
             wilaya: t.wilaya,
             city: t.city,

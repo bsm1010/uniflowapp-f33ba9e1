@@ -33,7 +33,7 @@ function DeliverySettingsPage() {
       const { data, error } = await supabase
         .from("delivery_tariffs")
         .select("wilaya, price")
-        .eq("store_id", user.id);
+        .eq("owner_id", user.id);
       if (error) {
         toast.error("Failed to load delivery prices");
       } else {
@@ -78,7 +78,7 @@ function DeliverySettingsPage() {
     }
     setSaving(true);
 
-    const toUpsert: { store_id: string; wilaya: string; price: number }[] = [];
+    const toUpsert: { owner_id: string; wilaya: string; price: number }[] = [];
     const toDelete: string[] = [];
 
     for (const w of dirtyKeys) {
@@ -92,7 +92,7 @@ function DeliverySettingsPage() {
           setSaving(false);
           return;
         }
-        toUpsert.push({ store_id: user.id, wilaya: w, price: num });
+        toUpsert.push({ owner_id: user.id, wilaya: w, price: num });
       }
     }
 
@@ -100,14 +100,14 @@ function DeliverySettingsPage() {
       if (toUpsert.length > 0) {
         const { error } = await supabase
           .from("delivery_tariffs")
-          .upsert(toUpsert, { onConflict: "store_id,wilaya" });
+          .upsert(toUpsert, { onConflict: "owner_id,wilaya" });
         if (error) throw error;
       }
       if (toDelete.length > 0) {
         const { error } = await supabase
           .from("delivery_tariffs")
           .delete()
-          .eq("store_id", user.id)
+          .eq("owner_id", user.id)
           .in("wilaya", toDelete);
         if (error) throw error;
       }

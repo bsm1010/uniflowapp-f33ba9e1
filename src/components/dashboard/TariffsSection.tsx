@@ -135,7 +135,7 @@ export function TariffsSection() {
     const { data, error } = await supabase
       .from("delivery_tariffs")
       .select("wilaya, city, delivery_type, price")
-      .eq("store_id", user.id)
+      .eq("owner_id", user.id)
       .eq("company_id", companyId);
     if (error) {
       toast.error("Failed to load delivery prices");
@@ -235,7 +235,7 @@ export function TariffsSection() {
     setSaving(true);
 
     const toUpsert: {
-      store_id: string;
+      owner_id: string;
       company_id: string;
       wilaya: string;
       city: string;
@@ -257,7 +257,7 @@ export function TariffsSection() {
           return;
         }
         toUpsert.push({
-          store_id: user.id,
+          owner_id: user.id,
           company_id: companyId,
           wilaya,
           city,
@@ -272,7 +272,7 @@ export function TariffsSection() {
         const { error } = await supabase
           .from("delivery_tariffs")
           .upsert(toUpsert, {
-            onConflict: "store_id,company_id,wilaya,city,delivery_type",
+            onConflict: "owner_id,company_id,wilaya,city,delivery_type",
           });
         if (error) throw error;
       }
@@ -280,7 +280,7 @@ export function TariffsSection() {
         const { error } = await supabase
           .from("delivery_tariffs")
           .delete()
-          .eq("store_id", user.id)
+          .eq("owner_id", user.id)
           .eq("company_id", companyId)
           .eq("wilaya", d.wilaya)
           .eq("city", d.city)
