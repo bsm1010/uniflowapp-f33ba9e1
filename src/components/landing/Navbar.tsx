@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "./LanguageSwitcher";
@@ -42,13 +42,11 @@ function AnimatedLogo() {
   const [phase, setPhase] = useState<"running" | "settled">("running");
 
   useEffect(() => {
-    // Only animate once per session
     const hasAnimated = sessionStorage.getItem("logo-animated");
     if (hasAnimated) {
       setPhase("settled");
       return;
     }
-    // After 1.2s animation completes, mark as settled
     const timer = setTimeout(() => {
       setPhase("settled");
       sessionStorage.setItem("logo-animated", "true");
@@ -64,7 +62,6 @@ function AnimatedLogo() {
         width={180}
         height={56}
         loading="eager"
-        fetchPriority="high"
         decoding="async"
         className={[
           "h-14 w-auto object-contain dark:brightness-0 dark:invert",
@@ -88,7 +85,6 @@ export function Navbar() {
   ];
   return (
     <>
-      {/* Inject keyframes once */}
       <style>{`
         @keyframes logo-run {
           0%   { transform: translateX(-110vw) scaleX(1.15) rotate(-3deg); opacity: 0; }
@@ -105,7 +101,7 @@ export function Navbar() {
       <header className="fixed top-0 inset-x-0 z-50 animate-in fade-in slide-in-from-top-3 duration-500">
         <div className="mx-auto max-w-6xl px-4 mt-4">
           <div className="flex items-center justify-between rounded-2xl border border-border/60 bg-background/70 backdrop-blur-xl px-4 py-3 shadow-soft overflow-hidden">
-            
+
             <AnimatedLogo />
 
             <nav className="hidden md:flex items-center gap-7">
