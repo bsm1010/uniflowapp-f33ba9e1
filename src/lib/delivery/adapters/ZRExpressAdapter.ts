@@ -26,7 +26,7 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
 
     const token = this.credentials.apiKey.trim();
     const tenantId = this.credentials.apiSecret.trim();
-    const url = `${ZR_BASE_URL}/tarification`;
+    const url = `${ZR_BASE_URL}/tarifs`;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 12_000);
 
