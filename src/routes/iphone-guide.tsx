@@ -7,7 +7,11 @@ export const Route = createFileRoute("/iphone-guide")({
   head: () => ({
     meta: [
       { title: "Add Fennecly to iPhone — Quick Guide" },
-      { name: "description", content: "How to install Fennecly on your iPhone home screen and enable notifications." },
+      {
+        name: "description",
+        content:
+          "How to install Fennecly on your iPhone home screen and enable notifications.",
+      },
       { name: "theme-color", content: "#09090f" },
     ],
   }),
@@ -18,7 +22,7 @@ const steps = [
     number: "01",
     icon: Share,
     title: "Tap the Share button",
-    desc: 'Open fennecly.online in Safari, then tap the Share icon (□↑) at the bottom of your screen.',
+    desc: "Open fennecly.online in Safari, then tap the Share icon at the bottom of your screen.",
     tip: "Must use Safari — Chrome won't show the option.",
     color: "#7C3AED",
     bg: "rgba(124,58,237,0.12)",
@@ -48,8 +52,10 @@ function IphoneGuidePage() {
     <div
       className="min-h-screen w-full"
       style={{
-        background: "linear-gradient(160deg, #09090f 0%, #0f0a1e 50%, #080d18 100%)",
-        fontFamily: "'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif",
+        background:
+          "linear-gradient(160deg, #09090f 0%, #0f0a1e 50%, #080d18 100%)",
+        fontFamily:
+          "'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif",
       }}
     >
       {/* Ambient glows */}
@@ -59,7 +65,6 @@ function IphoneGuidePage() {
       </div>
 
       <div className="relative z-10 mx-auto max-w-sm px-5 pb-16 pt-12">
-
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -67,9 +72,14 @@ function IphoneGuidePage() {
           transition={{ duration: 0.5 }}
           className="mb-10 text-center"
         >
-          {/* Logo mark */}
-          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-[20px]"
-            style={{ background: "linear-gradient(135deg, #1a1030, #0d0820)", border: "1px solid rgba(139,92,246,0.3)", boxShadow: "0 0 30px rgba(139,92,246,0.2)" }}>
+          <div
+            className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-[20px]"
+            style={{
+              background: "linear-gradient(135deg, #1a1030, #0d0820)",
+              border: "1px solid rgba(139,92,246,0.3)",
+              boxShadow: "0 0 30px rgba(139,92,246,0.2)",
+            }}
+          >
             <svg width="28" height="28" viewBox="0 0 18 18" fill="none">
               <rect x="1" y="1" width="6.5" height="6.5" rx="1.5" fill="#AFA9EC" />
               <rect x="10.5" y="1" width="6.5" height="6.5" rx="1.5" fill="#7F77DD" />
@@ -79,11 +89,13 @@ function IphoneGuidePage() {
           </div>
 
           <h1 className="text-3xl font-bold tracking-tight text-white">
-            Add Fennecly<br />to your iPhone
+            Add Fennecly
+            <br />
+            to your iPhone
           </h1>
           <p className="mt-3 text-base text-white/50 leading-relaxed">
-            3 quick steps — takes less than a minute.
-            Get instant order notifications on your home screen.
+            3 quick steps — takes less than a minute. Get instant order
+            notifications on your home screen.
           </p>
         </motion.div>
 
@@ -101,27 +113,36 @@ function IphoneGuidePage() {
                 border: "1px solid rgba(255,255,255,0.07)",
               }}
             >
-              {/* Step number watermark */}
               <span className="absolute right-4 top-3 text-5xl font-black tracking-tighter opacity-[0.06] text-white select-none">
                 {step.number}
               </span>
 
               <div className="flex items-start gap-4">
-                {/* Icon */}
-                <div className="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
-                  style={{ background: step.bg, border: `1px solid ${step.color}33` }}>
+                <div
+                  className="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
+                  style={{
+                    background: step.bg,
+                    border: `1px solid ${step.color}33`,
+                  }}
+                >
                   <step.icon className="h-5 w-5" style={{ color: step.color }} />
                 </div>
 
                 <div className="min-w-0">
-                  <p className="font-semibold text-white text-[15px] leading-snug">{step.title}</p>
-                  <p className="mt-1.5 text-sm text-white/50 leading-relaxed">{step.desc}</p>
-
-                  {/* Tip */}
-                  <div className="mt-3 flex items-start gap-1.5 rounded-lg px-3 py-2"
-                    style={{ background: "rgba(255,255,255,0.04)" }}>
+                  <p className="font-semibold text-white text-[15px] leading-snug">
+                    {step.title}
+                  </p>
+                  <p className="mt-1.5 text-sm text-white/50 leading-relaxed">
+                    {step.desc}
+                  </p>
+                  <div
+                    className="mt-3 flex items-start gap-1.5 rounded-lg px-3 py-2"
+                    style={{ background: "rgba(255,255,255,0.04)" }}
+                  >
                     <span className="mt-px text-[10px]">💡</span>
-                    <p className="text-[11px] text-white/35 leading-relaxed">{step.tip}</p>
+                    <p className="text-[11px] text-white/35 leading-relaxed">
+                      {step.tip}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -129,18 +150,22 @@ function IphoneGuidePage() {
           ))}
         </div>
 
-        {/* Done state */}
+        {/* Done */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.55 }}
           className="mt-6 rounded-2xl p-5 text-center"
           style={{
-            background: "linear-gradient(135deg, rgba(5,150,105,0.12), rgba(5,150,105,0.05))",
+            background:
+              "linear-gradient(135deg, rgba(5,150,105,0.12), rgba(5,150,105,0.05))",
             border: "1px solid rgba(5,150,105,0.2)",
           }}
         >
-          <CheckCircle2 className="mx-auto h-8 w-8 mb-2" style={{ color: "#34d399" }} />
+          <CheckCircle2
+            className="mx-auto h-8 w-8 mb-2"
+            style={{ color: "#34d399" }}
+          />
           <p className="font-semibold text-white">You're all set!</p>
           <p className="mt-1 text-sm text-white/45">
             Open Fennecly from your home screen and manage your store on the go.
