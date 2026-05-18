@@ -71,77 +71,53 @@ export async function fetchZRTariffs(
   const headers = {
     "Content-Type": "application/json",
     Accept: "application/json",
-    "X-Tenant": tenantId.trim(),
-    "X-Api-Key": apiKey.trim(),
     token: apiKey.trim(),
-    key: tenantId.trim(),
     id: tenantId.trim(),
   } as Record<string, string>;
 
-  // Probe candidate tariff endpoints. The new ZR Express platform exposes
-  // `GET /api/v1/delivery-pricing/rates`; we also try legacy paths as fallback.
-  const attempts: Array<{ url: string; method: "GET" | "POST" }> = [
-    { url: `${ZR_BASE_URL}/delivery-pricing/rates`, method: "GET" },
-    { url: `${ZR_BASE_URL}/tarification`, method: "POST" },
-    { url: `${ZR_BASE_URL}/tarification`, method: "GET" },
-    { url: `${ZR_BASE_URL}/tarifs`, method: "POST" },
-  ];
+  const url = `${ZR_BASE_URL}/delivery-pricing/rates`;
 
-  let lastError = "";
   let json: unknown = null;
   try {
-    for (const attempt of attempts) {
-      const res = await fetch(attempt.url, {
-        method: attempt.method,
-        headers,
-        body: attempt.method === "POST" ? JSON.stringify({}) : undefined,
-        signal: controller.signal,
-      });
-      const bodyText = await res.text();
-      console.log("[ZRExpress] fetchTariffs attempt", {
-        url: attempt.url,
-        method: attempt.method,
-        status: res.status,
-        statusText: res.statusText,
-        bodyPreview: bodyText.slice(0, 400),
-      });
-      if (!res.ok) {
-        lastError = `${attempt.method} ${attempt.url} → ${res.status} ${res.statusText}`;
-        if (res.status === 401 || res.status === 403) {
-          return {
-            success: false,
-            message: `ZR Express rejected credentials (${res.status}).`,
-            tariffs: [],
-          };
-        }
-        continue;
+    const res = await fetch(url, {
+      method: "GET",
+      headers,
+      signal: controller.signal,
+    });
+    const bodyText = await res.text();
+    console.log("[ZRExpress] fetchTariffs", {
+      url,
+      status: res.status,
+      statusText: res.statusText,
+      bodyPreview: bodyText.slice(0, 400),
+    });
+    if (!res.ok) {
+      if (res.status === 401 || res.status === 403) {
+        return {
+          success: false,
+          message: `ZR Express rejected credentials (${res.status}).`,
+          tariffs: [],
+        };
       }
-      try {
-        json = bodyText ? JSON.parse(bodyText) : null;
-        break;
-      } catch {
-        lastError = `${attempt.url} non-JSON`;
-        continue;
-      }
-    }
-
-    if (!json) {
       return {
         success: false,
-        message: `ZR Express: no tariff endpoint responded. Last error: ${lastError || "unknown"}`,
+        message: `ZR Express ${res.status} ${res.statusText}: ${bodyText.slice(0, 200)}`,
         tariffs: [],
       };
+    }
+    try {
+      json = bodyText ? JSON.parse(bodyText) : null;
+    } catch {
+      return { success: false, message: "ZR Express returned non-JSON response.", tariffs: [] };
     }
 
     const rows: ZRTariffApiEntry[] = Array.isArray(json)
       ? (json as ZRTariffApiEntry[])
       : Array.isArray((json as { data?: ZRTariffApiEntry[] }).data)
         ? (json as { data: ZRTariffApiEntry[] }).data
-        : Array.isArray((json as { Tarifs?: ZRTariffApiEntry[] }).Tarifs)
-          ? (json as { Tarifs: ZRTariffApiEntry[] }).Tarifs
-          : Array.isArray((json as { rates?: ZRTariffApiEntry[] }).rates)
-            ? (json as { rates: ZRTariffApiEntry[] }).rates
-            : [];
+        : Array.isArray((json as { rates?: ZRTariffApiEntry[] }).rates)
+          ? (json as { rates: ZRTariffApiEntry[] }).rates
+          : [];
 
     const tariffs: ZRTariffRow[] = [];
     for (const entry of rows) {
