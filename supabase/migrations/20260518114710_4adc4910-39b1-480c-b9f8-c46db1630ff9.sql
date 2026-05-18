@@ -1,0 +1,1 @@
+REVOKE SELECT (stripe_connect_id) ON public.developer_profiles FROM anon, authenticated;
