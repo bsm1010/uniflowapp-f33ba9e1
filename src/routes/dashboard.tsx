@@ -8,6 +8,8 @@ import { DashboardTopbar } from "@/components/dashboard/DashboardTopbar";
 import { OnboardingWizard } from "@/components/dashboard/OnboardingWizard";
 import { CreditsProvider } from "@/hooks/use-credits";
 import { PaywallDialog } from "@/components/dashboard/PaywallDialog";
+import { CurrentStoreProvider } from "@/hooks/use-current-store";
+import { StorePickerDialog } from "@/components/dashboard/StorePickerDialog";
 
 const WelcomeDialog = lazy(() =>
   import("@/components/dashboard/WelcomeDialog").then((m) => ({ default: m.WelcomeDialog })),
