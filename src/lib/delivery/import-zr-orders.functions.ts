@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { createAuthenticatedDeliveryClient } from "./authenticated-client";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { normalizeProviderKey } from "./registry";
 import type { TablesInsert, TablesUpdate } from "@/integrations/supabase/types";
 
