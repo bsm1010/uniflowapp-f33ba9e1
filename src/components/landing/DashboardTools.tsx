@@ -1,5 +1,4 @@
 import { useTranslation } from "react-i18next";
-import { motion } from "framer-motion";
 import deliveryMan from "@/assets/delivery-man.webp";
 import {
   ShoppingCart,
@@ -41,28 +40,21 @@ export function DashboardTools() {
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
           {/* Left — Image */}
-          <motion.div
-            initial={{ opacity: 0, x: -40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-            className="flex justify-center lg:justify-start"
-          >
+          <div className="flex justify-center lg:justify-start">
             <img
               src={deliveryMan}
               alt={t("dashTools.imageAlt")}
+              width={640}
+              height={640}
               className="w-full max-w-md lg:max-w-lg xl:max-w-xl drop-shadow-2xl"
-              loading="lazy"
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
             />
-          </motion.div>
+          </div>
 
           {/* Right — Tools */}
-          <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.7, ease: "easeOut", delay: 0.15 }}
-          >
+          <div>
             <span className="inline-block rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-primary">
               {t("dashTools.kicker")}
             </span>
@@ -77,14 +69,10 @@ export function DashboardTools() {
             </p>
 
             <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
-              {tools.map(({ icon: Icon, key }, i) => (
-                <motion.div
+              {tools.map(({ icon: Icon, key }) => (
+                <div
                   key={key}
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.35, delay: 0.05 * i }}
-                  className="group flex items-center gap-2.5 rounded-xl border border-border/60 bg-card/60 px-3 py-3 backdrop-blur-sm transition-all hover:border-primary/40 hover:shadow-md hover:shadow-primary/5"
+                  className="group flex items-center gap-2.5 rounded-xl border border-border/60 bg-card/60 px-3 py-3 transition-colors hover:border-primary/40"
                 >
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary/20">
                     <Icon className="h-4.5 w-4.5" />
@@ -92,10 +80,10 @@ export function DashboardTools() {
                   <span className="text-sm font-medium text-foreground">
                     {t(`dashTools.items.${key}`)}
                   </span>
-                </motion.div>
+                </div>
               ))}
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>
