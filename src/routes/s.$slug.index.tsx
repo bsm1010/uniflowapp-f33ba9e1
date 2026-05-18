@@ -365,11 +365,6 @@ function StorefrontHome() {
 
   return (
     <StorefrontShell settings={settings}>
-      <PixelInjector
-        metaPixelId={settings.meta_pixel_id}
-        tiktokPixelId={settings.tiktok_pixel_id}
-      />
-
       {sectionOrder.map((key) => sectionRenderers[key]())}
 
       {/* All products */}
