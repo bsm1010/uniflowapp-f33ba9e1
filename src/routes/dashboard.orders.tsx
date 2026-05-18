@@ -198,7 +198,7 @@ function OrdersPage() {
       supabase.removeChannel(channel);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id]);
+  }, [user?.id, currentStore?.id]);
 
   const updateStatus = async (orderId: string, status: Status) => {
     const prev = orders;
