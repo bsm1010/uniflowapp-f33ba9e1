@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentStore } from "@/hooks/use-current-store";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
-// Real wilaya centroids (longitude, latitude) converted to SVG coordinates
 const WILAYAS = [
   { code: "01", name: "Adrar", x: 142, y: 340 },
   { code: "02", name: "Chlef", x: 274, y: 122 },
@@ -65,18 +64,28 @@ const WILAYAS = [
   { code: "58", name: "El Meniaa", x: 282, y: 308 },
 ];
 
-function getColor(count: number, max: number): string {
-  if (count === 0) return "hsl(220 13% 91%)";
+// Algeria rough border path for SVG background
+const ALGERIA_PATH = "M 60 100 L 80 95 L 120 90 L 180 88 L 240 85 L 300 83 L 360 85 L 410 90 L 440 95 L 455 105 L 458 130 L 455 160 L 450 200 L 448 240 L 445 280 L 442 320 L 440 360 L 438 400 L 435 440 L 430 480 L 420 500 L 400 510 L 350 510 L 300 508 L 250 505 L 200 500 L 150 490 L 100 475 L 70 455 L 50 420 L 45 380 L 42 340 L 40 300 L 42 260 L 45 220 L 50 180 L 55 140 L 60 100 Z";
+
+function getGlowColor(count: number, max: number): string {
+  if (count === 0) return "transparent";
   const t = Math.min(count / Math.max(max, 1), 1);
-  // interpolate from light purple to deep purple
-  const lightness = Math.round(85 - t * 55);
-  const saturation = Math.round(40 + t * 60);
-  return `hsl(262 ${saturation}% ${lightness}%)`;
+  const opacity = 0.3 + t * 0.5;
+  return `rgba(139, 92, 246, ${opacity})`;
+}
+
+function getFillColor(count: number, max: number): string {
+  if (count === 0) return "rgba(139, 92, 246, 0.08)";
+  const t = Math.min(count / Math.max(max, 1), 1);
+  if (t < 0.25) return "rgba(167, 139, 250, 0.6)";
+  if (t < 0.5) return "rgba(139, 92, 246, 0.75)";
+  if (t < 0.75) return "rgba(109, 40, 217, 0.85)";
+  return "rgba(91, 33, 182, 0.95)";
 }
 
 function getRadius(count: number, max: number): number {
-  if (count === 0) return 8;
-  return 8 + Math.round((count / Math.max(max, 1)) * 18);
+  if (count === 0) return 6;
+  return 8 + Math.round((count / Math.max(max, 1)) * 20);
 }
 
 export function AlgeriaOrdersMap() {
@@ -90,6 +99,7 @@ export function AlgeriaOrdersMap() {
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [totalOrders, setTotalOrders] = useState(0);
+  const [hoveredWilaya, setHoveredWilaya] = useState<string | null>(null);
 
   useEffect(() => {
     if (!currentStore?.id) return;
@@ -114,7 +124,6 @@ export function AlgeriaOrdersMap() {
 
   const max = Math.max(...Object.values(ordersByWilaya), 1);
 
-  // Top 5 wilayas
   const topWilayas = [...WILAYAS]
     .map((w) => ({ ...w, count: ordersByWilaya[w.name] ?? 0 }))
     .filter((w) => w.count > 0)
@@ -122,180 +131,266 @@ export function AlgeriaOrdersMap() {
     .slice(0, 5);
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-6">
+    <div className="rounded-2xl border border-border bg-card overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-border/50">
         <div>
-          <h3 className="text-lg font-semibold">Orders by Wilaya</h3>
-          <p className="text-sm text-muted-foreground">
-            {totalOrders} total orders across Algeria
+          <h3 className="text-lg font-semibold tracking-tight">Orders by Wilaya</h3>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            <span className="font-semibold text-foreground">{totalOrders}</span> total orders across Algeria
           </p>
         </div>
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <div className="h-3 w-3 rounded-full bg-gray-200" />
-          <span>0</span>
-          <div className="h-2 w-16 rounded-full"
-            style={{ background: "linear-gradient(to right, #c4b5fd, #6d28d9)" }}
-          />
-          <span>High</span>
+        {/* Legend */}
+        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+          <div className="flex items-center gap-1.5">
+            <div className="h-2.5 w-2.5 rounded-full bg-violet-200/60 border border-violet-300/40" />
+            <span>Low</span>
+          </div>
+          <div className="h-px w-8 bg-gradient-to-r from-violet-300 to-violet-700" />
+          <div className="flex items-center gap-1.5">
+            <div className="h-2.5 w-2.5 rounded-full bg-violet-700" />
+            <span>High</span>
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3">
         {/* MAP */}
-        <div className="lg:col-span-2 relative">
+        <div className="lg:col-span-2 relative p-4 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+          {/* Grid lines for atmosphere */}
+          <div className="absolute inset-0 opacity-5"
+            style={{
+              backgroundImage: "linear-gradient(rgba(139,92,246,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(139,92,246,0.5) 1px, transparent 1px)",
+              backgroundSize: "40px 40px"
+            }}
+          />
+
           {loading ? (
-            <div className="h-[500px] flex items-center justify-center">
-              <div className="flex flex-col items-center gap-3 text-muted-foreground">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            <div className="h-[480px] flex items-center justify-center">
+              <div className="flex flex-col items-center gap-3 text-slate-400">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
                 <span className="text-sm">Loading map...</span>
               </div>
             </div>
           ) : (
             <div className="relative">
-              <svg
-                viewBox="0 0 480 520"
-                className="w-full h-auto"
-                style={{ maxHeight: "500px" }}
-              >
-                {/* Algeria outline background */}
-                <rect
-                  x="40" y="90" width="400" height="400"
-                  rx="4" fill="hsl(220 13% 96%)"
-                  stroke="hsl(220 13% 85%)" strokeWidth="1"
+              <svg viewBox="0 0 500 530" className="w-full h-auto" style={{ maxHeight: "480px" }}>
+                <defs>
+                  <radialGradient id="mapBg" cx="50%" cy="40%" r="60%">
+                    <stop offset="0%" stopColor="rgba(139,92,246,0.06)" />
+                    <stop offset="100%" stopColor="rgba(0,0,0,0)" />
+                  </radialGradient>
+                  <filter id="glow">
+                    <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+                    <feMerge>
+                      <feMergeNode in="coloredBlur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                  <filter id="softglow">
+                    <feGaussianBlur stdDeviation="6" result="coloredBlur" />
+                    <feMerge>
+                      <feMergeNode in="coloredBlur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                </defs>
+
+                {/* Algeria background shape */}
+                <path
+                  d={ALGERIA_PATH}
+                  fill="rgba(139,92,246,0.04)"
+                  stroke="rgba(139,92,246,0.2)"
+                  strokeWidth="1.5"
+                  strokeDasharray="4 3"
                 />
+                <path d={ALGERIA_PATH} fill="url(#mapBg)" />
 
                 {/* Wilaya bubbles */}
-                {WILAYAS.map((wilaya) => {
+                {WILAYAS.map((wilaya, i) => {
                   const count = ordersByWilaya[wilaya.name] ?? 0;
                   const r = getRadius(count, max);
-                  const fill = getColor(count, max);
+                  const fill = getFillColor(count, max);
+                  const isHovered = hoveredWilaya === wilaya.code;
+                  const hasOrders = count > 0;
+
                   return (
                     <motion.g
                       key={wilaya.code}
                       initial={{ scale: 0, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
-                      transition={{ delay: parseInt(wilaya.code) * 0.01, duration: 0.3 }}
+                      transition={{ delay: i * 0.008, duration: 0.4, type: "spring", stiffness: 200 }}
                     >
+                      {/* Glow ring for wilayas with orders */}
+                      {hasOrders && (
+                        <circle
+                          cx={wilaya.x}
+                          cy={wilaya.y}
+                          r={r + 5}
+                          fill="none"
+                          stroke={getGlowColor(count, max)}
+                          strokeWidth="8"
+                          filter="url(#softglow)"
+                          opacity={isHovered ? 1 : 0.5}
+                        />
+                      )}
+
+                      {/* Main bubble */}
                       <circle
                         cx={wilaya.x}
                         cy={wilaya.y}
-                        r={r}
+                        r={isHovered ? r + 3 : r}
                         fill={fill}
-                        stroke="white"
-                        strokeWidth="1.5"
-                        style={{ cursor: "pointer", transition: "r 0.2s" }}
+                        stroke={hasOrders ? "rgba(167,139,250,0.8)" : "rgba(139,92,246,0.2)"}
+                        strokeWidth={hasOrders ? "1.5" : "1"}
+                        style={{ cursor: "pointer", transition: "all 0.2s ease" }}
+                        filter={hasOrders ? "url(#glow)" : undefined}
                         onMouseEnter={(e) => {
                           const rect = e.currentTarget.closest("svg")!.getBoundingClientRect();
+                          const svgEl = e.currentTarget.closest("svg")!;
+                          const svgRect = svgEl.getBoundingClientRect();
+                          const scaleX = svgRect.width / 500;
+                          const scaleY = svgRect.height / 530;
                           setTooltip({
                             name: wilaya.name,
                             count,
-                            x: e.clientX - rect.left,
-                            y: e.clientY - rect.top,
+                            x: wilaya.x * scaleX,
+                            y: wilaya.y * scaleY,
                           });
+                          setHoveredWilaya(wilaya.code);
                         }}
-                        onMouseLeave={() => setTooltip(null)}
+                        onMouseLeave={() => {
+                          setTooltip(null);
+                          setHoveredWilaya(null);
+                        }}
                       />
+
+                      {/* Order count label */}
                       {count > 0 && (
                         <text
                           x={wilaya.x}
                           y={wilaya.y}
                           textAnchor="middle"
                           dominantBaseline="middle"
-                          fontSize={count > 9 ? "7" : "8"}
+                          fontSize={r > 16 ? "8" : "7"}
                           fill="white"
-                          fontWeight="600"
+                          fontWeight="700"
                           pointerEvents="none"
                         >
                           {count}
                         </text>
                       )}
-                      <text
-                        x={wilaya.x}
-                        y={wilaya.y + r + 8}
-                        textAnchor="middle"
-                        fontSize="5.5"
-                        fill="hsl(220 13% 45%)"
-                        pointerEvents="none"
-                      >
-                        {wilaya.code}
-                      </text>
+
+                      {/* Wilaya code — only show on hover or if has orders */}
+                      {(hasOrders || isHovered) && (
+                        <text
+                          x={wilaya.x}
+                          y={wilaya.y + r + 9}
+                          textAnchor="middle"
+                          fontSize="5"
+                          fill={hasOrders ? "rgba(167,139,250,0.9)" : "rgba(100,100,120,0.6)"}
+                          fontWeight="600"
+                          pointerEvents="none"
+                        >
+                          {wilaya.code}
+                        </text>
+                      )}
                     </motion.g>
                   );
                 })}
               </svg>
 
               {/* Tooltip */}
-              {tooltip && (
-                <div
-                  className="absolute z-10 pointer-events-none bg-popover border border-border rounded-lg px-3 py-2 shadow-lg text-sm"
-                  style={{ left: tooltip.x + 12, top: tooltip.y - 45 }}
-                >
-                  <div className="font-semibold">{tooltip.name}</div>
-                  <div className="text-muted-foreground">
-                    {tooltip.count} {tooltip.count === 1 ? "order" : "orders"}
-                  </div>
-                </div>
-              )}
+              <AnimatePresence>
+                {tooltip && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9, y: 4 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9, y: 4 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute z-20 pointer-events-none"
+                    style={{ left: tooltip.x + 14, top: tooltip.y - 52 }}
+                  >
+                    <div className="bg-slate-900 border border-violet-500/40 rounded-xl px-3 py-2 shadow-2xl shadow-violet-900/30">
+                      <div className="font-semibold text-white text-sm">{tooltip.name}</div>
+                      <div className="text-violet-300 text-xs mt-0.5">
+                        {tooltip.count === 0 ? "No orders" : `${tooltip.count} ${tooltip.count === 1 ? "order" : "orders"}`}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           )}
         </div>
 
-        {/* TOP WILAYAS SIDEBAR */}
-        <div className="flex flex-col gap-3">
-          <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+        {/* SIDEBAR */}
+        <div className="flex flex-col gap-4 p-6 border-l border-border/50 bg-card">
+          <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
             Top Wilayas
           </h4>
+
           {topWilayas.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No orders yet</p>
+            <div className="flex flex-col items-center justify-center flex-1 gap-2 py-8 text-center">
+              <div className="h-10 w-10 rounded-full bg-violet-500/10 flex items-center justify-center">
+                <span className="text-xl">🗺️</span>
+              </div>
+              <p className="text-sm text-muted-foreground">No orders yet</p>
+              <p className="text-xs text-muted-foreground/60">Orders will appear here once placed</p>
+            </div>
           ) : (
-            topWilayas.map((w, i) => (
-              <motion.div
-                key={w.code}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className="flex items-center gap-3"
-              >
-                <div className="text-xs font-bold text-muted-foreground w-4">
-                  #{i + 1}
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium">{w.name}</span>
-                    <span className="text-sm font-bold">{w.count}</span>
+            <div className="flex flex-col gap-3">
+              {topWilayas.map((w, i) => (
+                <motion.div
+                  key={w.code}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.08, duration: 0.4 }}
+                  className="group flex items-center gap-3 p-2 rounded-xl hover:bg-muted/50 transition-colors cursor-default"
+                >
+                  <div className="flex h-6 w-6 items-center justify-center rounded-lg text-xs font-black"
+                    style={{
+                      background: i === 0 ? "linear-gradient(135deg, #f59e0b, #d97706)" :
+                                  i === 1 ? "linear-gradient(135deg, #94a3b8, #64748b)" :
+                                  i === 2 ? "linear-gradient(135deg, #cd7c2f, #a16207)" :
+                                  "linear-gradient(135deg, #6d28d9, #4c1d95)",
+                      color: "white"
+                    }}
+                  >
+                    {i + 1}
                   </div>
-                  <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-                    <motion.div
-                      className="h-full rounded-full bg-primary"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${(w.count / max) * 100}%` }}
-                      transition={{ delay: i * 0.1 + 0.3, duration: 0.5 }}
-                    />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-sm font-medium truncate">{w.name}</span>
+                      <span className="text-sm font-bold text-violet-600 dark:text-violet-400 ml-2 shrink-0">{w.count}</span>
+                    </div>
+                    <div className="h-1 rounded-full bg-muted overflow-hidden">
+                      <motion.div
+                        className="h-full rounded-full"
+                        style={{ background: "linear-gradient(90deg, #8b5cf6, #6d28d9)" }}
+                        initial={{ width: 0 }}
+                        animate={{ width: `${(w.count / max) * 100}%` }}
+                        transition={{ delay: i * 0.08 + 0.3, duration: 0.6, ease: "easeOut" }}
+                      />
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            ))
+                </motion.div>
+              ))}
+            </div>
           )}
 
-          {/* Summary stats */}
-          <div className="mt-4 pt-4 border-t border-border space-y-2">
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Wilayas with orders</span>
-              <span className="font-medium">
-                {Object.keys(ordersByWilaya).length}
-              </span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Most active</span>
-              <span className="font-medium">
-                {topWilayas[0]?.name ?? "—"}
-              </span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Total orders</span>
-              <span className="font-medium">{totalOrders}</span>
-            </div>
+          {/* Stats */}
+          <div className="mt-auto pt-4 border-t border-border/50 space-y-3">
+            {[
+              { label: "Wilayas with orders", value: Object.keys(ordersByWilaya).length },
+              { label: "Most active", value: topWilayas[0]?.name ?? "—" },
+              { label: "Total orders", value: totalOrders },
+            ].map((stat) => (
+              <div key={stat.label} className="flex justify-between items-center text-sm">
+                <span className="text-muted-foreground">{stat.label}</span>
+                <span className="font-semibold text-foreground">{stat.value}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
