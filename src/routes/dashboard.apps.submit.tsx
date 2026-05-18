@@ -96,42 +96,95 @@ function SubmitAppPage() {
   const removeScreenshot = (idx: number) =>
     setScreenshots((s) => s.filter((_, i) => i !== idx));
 
+  const slugify = (s: string) =>
+    s
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+      .slice(0, 60);
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
-      toast.error("Please sign in");
+      toast.error("Please sign in to submit an app");
       return;
     }
-    const parsed = schema.safeParse({
+    if (uploading) {
+      toast.error("Please wait for uploads to finish");
+      return;
+    }
+
+    const finalSlug = form.slug.trim() || slugify(form.title);
+    const payload = {
       ...form,
-      price: form.is_free ? 0 : Number(form.price),
-    });
+      slug: finalSlug,
+      long_description: form.long_description ?? "",
+      price: form.is_free ? 0 : Number(form.price) || 0,
+    };
+
+    const parsed = schema.safeParse(payload);
     if (!parsed.success) {
-      toast.error(parsed.error.issues[0]?.message ?? "Invalid form");
+      const issue = parsed.error.issues[0];
+      const field = issue?.path?.join(".") || "form";
+      toast.error(`${field}: ${issue?.message ?? "Invalid value"}`);
+      console.error("App submit validation failed", parsed.error.issues);
       return;
     }
+
     setSubmitting(true);
-    const { error } = await supabase.from("apps").insert({
-      developer_id: user.id,
-      title: parsed.data.title,
-      slug: parsed.data.slug,
-      short_description: parsed.data.short_description,
-      long_description: parsed.data.long_description,
-      category: parsed.data.category,
-      app_url: parsed.data.app_url,
-      price: parsed.data.price,
-      is_free: parsed.data.is_free,
-      icon_url: iconUrl,
-      screenshots,
-      status: "pending",
-    });
-    setSubmitting(false);
-    if (error) {
-      toast.error(error.message);
-      return;
+    try {
+      const { data, error } = await supabase
+        .from("apps")
+        .insert({
+          developer_id: user.id,
+          title: parsed.data.title,
+          slug: parsed.data.slug,
+          short_description: parsed.data.short_description,
+          long_description: parsed.data.long_description,
+          category: parsed.data.category,
+          app_url: parsed.data.app_url,
+          price: parsed.data.price,
+          is_free: parsed.data.is_free,
+          icon_url: iconUrl,
+          screenshots,
+          status: "pending",
+        })
+        .select("id")
+        .single();
+
+      if (error) {
+        console.error("App insert error", error);
+        if (error.code === "23505") {
+          toast.error("That slug is already taken. Try a different one.");
+        } else {
+          toast.error(error.message || "Failed to submit app");
+        }
+        return;
+      }
+
+      toast.success("App submitted for review!");
+      setForm({
+        title: "",
+        slug: "",
+        short_description: "",
+        long_description: "",
+        category: "Other",
+        app_url: "",
+        price: 0,
+        is_free: true,
+      });
+      setIconUrl(null);
+      setScreenshots([]);
+      navigate({ to: "/dashboard/developer" });
+      void data;
+    } catch (err) {
+      console.error("Unexpected submit error", err);
+      toast.error(err instanceof Error ? err.message : "Unexpected error");
+    } finally {
+      setSubmitting(false);
     }
-    toast.success("App submitted for review!");
-    navigate({ to: "/dashboard/developer" });
   };
 
   return (
@@ -164,10 +217,9 @@ function SubmitAppPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="slug">Slug</Label>
+              <Label htmlFor="slug">Slug <span className="text-muted-foreground text-xs">(auto from name if empty)</span></Label>
               <Input
                 id="slug"
-                required
                 value={form.slug}
                 onChange={(e) => setForm({ ...form, slug: e.target.value.toLowerCase() })}
                 placeholder="my-awesome-app"
