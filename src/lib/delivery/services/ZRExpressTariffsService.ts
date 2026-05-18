@@ -23,6 +23,11 @@ export interface FetchZRTariffsResult {
 }
 
 /** Raw shape returned by ZR Express (legacy Procolis + new platform). */
+interface ZRDeliveryPriceEntry {
+  deliveryType?: string;
+  price?: number | string;
+  discountedPrice?: number | string | null;
+}
 interface ZRTariffApiEntry {
   IDWilaya?: number | string;
   Wilaya?: string;
@@ -31,11 +36,16 @@ interface ZRTariffApiEntry {
   TarifStopDesk?: number | string;
   Domicile?: number | string;
   StopDesk?: number | string;
-  // New platform (api.zrexpress.app) schema:
+  // Legacy new-platform fields:
   toWilayaId?: number | string;
   toWilayaName?: string;
   homeDeliveryPrice?: number | string;
   stopDeskPrice?: number | string;
+  // Current api.zrexpress.app shape:
+  toTerritoryId?: string;
+  toTerritoryName?: string;
+  toTerritoryLevel?: string;
+  deliveryPrices?: ZRDeliveryPriceEntry[];
 }
 
 function toNumber(value: unknown): number {
