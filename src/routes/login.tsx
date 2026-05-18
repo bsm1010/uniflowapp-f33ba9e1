@@ -104,12 +104,12 @@ function LoginPage() {
   />
 
   <div className="flex justify-end">
-    <button
-      type="button"
+    <Link
+      to="/forgot-password"
       className="text-sm text-purple-500 transition-colors hover:text-purple-400"
     >
       Forgot password?
-    </button>
+    </Link>
   </div>
 
   {errors.password && (
