@@ -29,6 +29,8 @@ import {
   RotateCcw,
   AlertTriangle,
   Bell,
+  Store as StoreIcon,
+  Code2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import fennecyIcon from "@/assets/fennecly-icon.webp";
@@ -135,6 +137,8 @@ export function DashboardSidebar() {
         { title: "Custom Domains", url: "/dashboard/domains", icon: Globe, gradient: "from-sky-500 to-blue-600" },
         { title: t("dashboard.nav.database"), url: "/dashboard/database", icon: Database, gradient: "from-slate-600 to-slate-800" },
         { title: t("dashboard.nav.appStore"), url: "/dashboard/apps", icon: Blocks, gradient: "from-violet-500 to-purple-500" },
+        { title: "Marketplace", url: "/dashboard/apps/marketplace", icon: StoreIcon, gradient: "from-purple-500 to-pink-500" },
+        { title: "Developer", url: "/dashboard/developer", icon: Code2, gradient: "from-fuchsia-500 to-violet-500" },
         { title: t("dashboard.nav.credits"), url: "/dashboard/credits", icon: Coins, gradient: "from-yellow-500 to-amber-500" },
         { title: t("dashboard.nav.referrals"), url: "/dashboard/referrals", icon: Gift, gradient: "from-rose-500 to-pink-500" },
         { title: t("dashboard.nav.settings"), url: "/dashboard/settings", icon: Settings, gradient: "from-zinc-500 to-slate-600" },
