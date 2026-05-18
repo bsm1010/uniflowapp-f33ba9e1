@@ -84,8 +84,13 @@ export const trackOrderShipment = createServerFn({ method: "POST" })
         })
         .eq("order_id", data.orderId);
 
-      const { raw: _raw, ...safe } = tracking;
-      return { ok: true, tracking: safe as TrackingResult, provider: zr!.name };
+      const dto: TrackingDTO = {
+        trackingNumber: tracking.trackingNumber,
+        status: tracking.status,
+        lastUpdate: tracking.lastUpdate,
+        history: tracking.history ?? [],
+      };
+      return { ok: true, tracking: dto, provider: zr!.name };
     } catch (e) {
       return {
         ok: false,
