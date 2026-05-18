@@ -30,7 +30,7 @@ import type { Tables } from "@/integrations/supabase/types";
 
 type Order = Tables<"orders">;
 
-export const Route = createFileRoute("/dashboard/orders/$orderId/tracking")({
+export const Route = createFileRoute("/dashboard/orders_/$orderId/tracking")({
   component: TrackingPage,
   head: () => ({ meta: [{ title: "Order tracking — Fennecly" }] }),
 });
@@ -63,6 +63,8 @@ function TrackingPage() {
   const [tracking, setTracking] = useState<TrackingDTO | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
 
   const loadOrder = async () => {
     if (!user) return;
@@ -88,6 +90,7 @@ function TrackingPage() {
       const res = await trackFn({ data: { accessToken, orderId } });
       if (res.ok) {
         setTracking(res.tracking);
+        setLastRefreshed(new Date());
       } else {
         setErrorMsg(res.message);
       }
@@ -97,6 +100,16 @@ function TrackingPage() {
       setRefreshing(false);
     }
   };
+
+  // Auto-refresh every 30s while the page is open.
+  useEffect(() => {
+    if (!autoRefresh || !order?.tracking_number) return;
+    const id = setInterval(() => {
+      refreshTracking();
+    }, 30_000);
+    return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoRefresh, order?.tracking_number]);
 
   useEffect(() => {
     if (!user) return;
@@ -150,15 +163,31 @@ function TrackingPage() {
           icon={Truck}
           gradient="from-emerald-500 via-teal-500 to-cyan-500"
         />
-        <div className="pt-6">
-          <Button onClick={refreshTracking} disabled={refreshing || !order.tracking_number}>
-            {refreshing ? (
-              <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
-            ) : (
-              <RefreshCw className="h-4 w-4 mr-1.5" />
-            )}
-            Refresh Status
-          </Button>
+        <div className="pt-6 flex flex-col items-end gap-2">
+          <div className="flex items-center gap-2">
+            <label className="flex items-center gap-1.5 text-xs text-muted-foreground cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={autoRefresh}
+                onChange={(e) => setAutoRefresh(e.target.checked)}
+                className="accent-primary h-3.5 w-3.5"
+              />
+              Auto-refresh 30s
+            </label>
+            <Button onClick={refreshTracking} disabled={refreshing || !order.tracking_number}>
+              {refreshing ? (
+                <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4 mr-1.5" />
+              )}
+              Refresh Status
+            </Button>
+          </div>
+          {lastRefreshed && (
+            <span className="text-[11px] text-muted-foreground">
+              Updated {lastRefreshed.toLocaleTimeString()}
+            </span>
+          )}
         </div>
       </div>
 

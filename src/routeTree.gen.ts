@@ -76,7 +76,7 @@ import { Route as SSlugCheckoutSuccessRouteImport } from './routes/s.$slug.check
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
-import { Route as DashboardOrdersOrderIdTrackingRouteImport } from './routes/dashboard.orders.$orderId.tracking'
+import { Route as DashboardOrdersOrderIdTrackingRouteImport } from './routes/dashboard.orders_.$orderId.tracking'
 import { Route as DashboardAppsMAppIdRouteImport } from './routes/dashboard.apps.m.$appId'
 import { Route as DashboardAppsListingAppKeyRouteImport } from './routes/dashboard.apps.listing.$appKey'
 import { Route as ApiPublicHooksSyncTariffsRouteImport } from './routes/api.public.hooks.sync-tariffs'
@@ -435,9 +435,9 @@ const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
 } as any)
 const DashboardOrdersOrderIdTrackingRoute =
   DashboardOrdersOrderIdTrackingRouteImport.update({
-    id: '/$orderId/tracking',
-    path: '/$orderId/tracking',
-    getParentRoute: () => DashboardOrdersRoute,
+    id: '/orders_/$orderId/tracking',
+    path: '/orders/$orderId/tracking',
+    getParentRoute: () => DashboardRoute,
   } as any)
 const DashboardAppsMAppIdRoute = DashboardAppsMAppIdRouteImport.update({
   id: '/m/$appId',
@@ -498,7 +498,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/domains': typeof DashboardDomainsRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
-  '/dashboard/orders': typeof DashboardOrdersRouteWithChildren
+  '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/referrals': typeof DashboardReferralsRoute
   '/dashboard/returns': typeof DashboardReturnsRoute
@@ -572,7 +572,7 @@ export interface FileRoutesByTo {
   '/dashboard/domains': typeof DashboardDomainsRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
-  '/dashboard/orders': typeof DashboardOrdersRouteWithChildren
+  '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/referrals': typeof DashboardReferralsRoute
   '/dashboard/returns': typeof DashboardReturnsRoute
@@ -649,7 +649,7 @@ export interface FileRoutesById {
   '/dashboard/domains': typeof DashboardDomainsRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
-  '/dashboard/orders': typeof DashboardOrdersRouteWithChildren
+  '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/referrals': typeof DashboardReferralsRoute
   '/dashboard/returns': typeof DashboardReturnsRoute
@@ -693,7 +693,7 @@ export interface FileRoutesById {
   '/api/public/hooks/sync-tariffs': typeof ApiPublicHooksSyncTariffsRoute
   '/dashboard/apps/listing/$appKey': typeof DashboardAppsListingAppKeyRoute
   '/dashboard/apps/m/$appId': typeof DashboardAppsMAppIdRoute
-  '/dashboard/orders/$orderId/tracking': typeof DashboardOrdersOrderIdTrackingRoute
+  '/dashboard/orders_/$orderId/tracking': typeof DashboardOrdersOrderIdTrackingRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -921,7 +921,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/sync-tariffs'
     | '/dashboard/apps/listing/$appKey'
     | '/dashboard/apps/m/$appId'
-    | '/dashboard/orders/$orderId/tracking'
+    | '/dashboard/orders_/$orderId/tracking'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -1426,12 +1426,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dashboard/orders/$orderId/tracking': {
-      id: '/dashboard/orders/$orderId/tracking'
-      path: '/$orderId/tracking'
+    '/dashboard/orders_/$orderId/tracking': {
+      id: '/dashboard/orders_/$orderId/tracking'
+      path: '/orders/$orderId/tracking'
       fullPath: '/dashboard/orders/$orderId/tracking'
       preLoaderRoute: typeof DashboardOrdersOrderIdTrackingRouteImport
-      parentRoute: typeof DashboardOrdersRoute
+      parentRoute: typeof DashboardRoute
     }
     '/dashboard/apps/m/$appId': {
       id: '/dashboard/apps/m/$appId'
@@ -1522,18 +1522,6 @@ const DashboardAppsRouteWithChildren = DashboardAppsRoute._addFileChildren(
   DashboardAppsRouteChildren,
 )
 
-interface DashboardOrdersRouteChildren {
-  DashboardOrdersOrderIdTrackingRoute: typeof DashboardOrdersOrderIdTrackingRoute
-}
-
-const DashboardOrdersRouteChildren: DashboardOrdersRouteChildren = {
-  DashboardOrdersOrderIdTrackingRoute: DashboardOrdersOrderIdTrackingRoute,
-}
-
-const DashboardOrdersRouteWithChildren = DashboardOrdersRoute._addFileChildren(
-  DashboardOrdersRouteChildren,
-)
-
 interface DashboardRouteChildren {
   DashboardAboutRoute: typeof DashboardAboutRoute
   DashboardAiAgentRoute: typeof DashboardAiAgentRoute
@@ -1550,7 +1538,7 @@ interface DashboardRouteChildren {
   DashboardDomainsRoute: typeof DashboardDomainsRoute
   DashboardLandingGeneratorRoute: typeof DashboardLandingGeneratorRoute
   DashboardNotificationsRoute: typeof DashboardNotificationsRoute
-  DashboardOrdersRoute: typeof DashboardOrdersRouteWithChildren
+  DashboardOrdersRoute: typeof DashboardOrdersRoute
   DashboardProductsRoute: typeof DashboardProductsRoute
   DashboardReferralsRoute: typeof DashboardReferralsRoute
   DashboardReturnsRoute: typeof DashboardReturnsRoute
@@ -1566,6 +1554,7 @@ interface DashboardRouteChildren {
   DashboardIndexRoute: typeof DashboardIndexRoute
   DashboardAdminMarketplaceRoute: typeof DashboardAdminMarketplaceRoute
   DashboardAdminPaymentsRoute: typeof DashboardAdminPaymentsRoute
+  DashboardOrdersOrderIdTrackingRoute: typeof DashboardOrdersOrderIdTrackingRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
@@ -1584,7 +1573,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardDomainsRoute: DashboardDomainsRoute,
   DashboardLandingGeneratorRoute: DashboardLandingGeneratorRoute,
   DashboardNotificationsRoute: DashboardNotificationsRoute,
-  DashboardOrdersRoute: DashboardOrdersRouteWithChildren,
+  DashboardOrdersRoute: DashboardOrdersRoute,
   DashboardProductsRoute: DashboardProductsRoute,
   DashboardReferralsRoute: DashboardReferralsRoute,
   DashboardReturnsRoute: DashboardReturnsRoute,
@@ -1600,6 +1589,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardIndexRoute: DashboardIndexRoute,
   DashboardAdminMarketplaceRoute: DashboardAdminMarketplaceRoute,
   DashboardAdminPaymentsRoute: DashboardAdminPaymentsRoute,
+  DashboardOrdersOrderIdTrackingRoute: DashboardOrdersOrderIdTrackingRoute,
 }
 
 const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
