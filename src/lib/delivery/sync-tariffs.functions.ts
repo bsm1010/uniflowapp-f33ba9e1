@@ -68,7 +68,7 @@ export const syncDeliveryCompanyTariffs = createServerFn({ method: "POST" })
         };
       }
 
-      const fetched = await fetchZRTariffs(link.api_key, link.api_secret);
+      const fetched = await fetchZRTariffs(link.api_key, link.api_secret ?? "");
       if (!fetched.success) {
         return { ok: false, message: fetched.message };
       }
