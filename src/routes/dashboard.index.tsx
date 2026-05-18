@@ -17,6 +17,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { useCurrentStore } from "@/hooks/use-current-store";
 import { useSubscription } from "@/hooks/use-subscription";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
