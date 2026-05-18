@@ -1,24 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Bell, Share, Plus } from "lucide-react";
-import QRCode from "qrcode";
 
 const GUIDE_URL = "https://fennecly.online/iphone-guide";
+
+// QR via free API — no npm package needed
+const QR_URL = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(GUIDE_URL)}&bgcolor=000000&color=ffffff&format=png&margin=4`;
 
 export function IphoneShortcutBanner() {
   const [dismissed, setDismissed] = useState(
     () => localStorage.getItem("iphone-banner-v2-dismissed") === "true"
   );
-  const [qrDataUrl, setQrDataUrl] = useState<string>("");
-
-  useEffect(() => {
-    QRCode.toDataURL(GUIDE_URL, {
-      width: 180,
-      margin: 2,
-      color: { dark: "#ffffff", light: "#00000000" },
-      errorCorrectionLevel: "M",
-    }).then(setQrDataUrl).catch(() => {});
-  }, []);
 
   if (dismissed) return null;
 
@@ -53,20 +45,19 @@ export function IphoneShortcutBanner() {
           <X className="h-4 w-4" />
         </button>
 
-        <div className="relative flex items-stretch gap-0">
+        <div className="relative flex items-stretch">
 
-          {/* ── LEFT: Text content ── */}
+          {/* LEFT: Text */}
           <div className="flex-1 p-6 pr-4">
-
-            {/* Badge */}
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full px-3 py-1"
-              style={{ background: "rgba(139,92,246,0.18)", border: "1px solid rgba(139,92,246,0.3)" }}>
+            <div
+              className="mb-4 inline-flex items-center gap-2 rounded-full px-3 py-1"
+              style={{ background: "rgba(139,92,246,0.18)", border: "1px solid rgba(139,92,246,0.3)" }}
+            >
               <span className="text-xs font-bold tracking-widest uppercase text-violet-300">New</span>
               <span className="h-1 w-1 rounded-full bg-violet-400/60" />
               <span className="text-xs text-violet-300/70">iPhone Ready</span>
             </div>
 
-            {/* Headline */}
             <h2 className="text-xl font-bold leading-snug text-white sm:text-2xl">
               📱 Fennecly is now<br />
               <span style={{ color: "#a78bfa" }}>available on iPhone</span>
@@ -76,61 +67,58 @@ export function IphoneShortcutBanner() {
               No App Store needed. Scan the QR code with your iPhone camera to open the install guide.
             </p>
 
-            {/* Steps row */}
             <div className="mt-5 flex flex-wrap gap-2">
               {[
                 { icon: Share, label: "Tap Share" },
                 { icon: Plus, label: "Add to Home" },
                 { icon: Bell, label: "Allow Notifs" },
               ].map((step, i) => (
-                <div key={i} className="flex items-center gap-1.5 rounded-xl px-3 py-2"
-                  style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                <div
+                  key={i}
+                  className="flex items-center gap-1.5 rounded-xl px-3 py-2"
+                  style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.07)" }}
+                >
                   <step.icon className="h-3.5 w-3.5 text-violet-400" />
                   <span className="text-xs font-medium text-white/60">{step.label}</span>
                 </div>
               ))}
             </div>
 
-            {/* Clickable link fallback */}
             <a
               href={GUIDE_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-4 inline-flex items-center gap-1.5 text-xs text-violet-400/70 hover:text-violet-300 transition-colors underline underline-offset-2"
+              className="mt-4 inline-flex items-center gap-1 text-xs text-violet-400/70 hover:text-violet-300 transition-colors underline underline-offset-2"
             >
-              Or tap here to open the guide
+              Or tap here to open the guide →
             </a>
           </div>
 
-          {/* ── RIGHT: QR Code ── */}
-          <div className="flex shrink-0 flex-col items-center justify-center px-5 py-6"
-            style={{ borderLeft: "1px solid rgba(255,255,255,0.06)" }}>
-            <div className="relative rounded-2xl p-3"
+          {/* RIGHT: QR Code */}
+          <div
+            className="flex shrink-0 flex-col items-center justify-center px-5 py-6"
+            style={{ borderLeft: "1px solid rgba(255,255,255,0.06)" }}
+          >
+            <div
+              className="relative rounded-2xl p-3"
               style={{
                 background: "rgba(139,92,246,0.08)",
                 border: "1px solid rgba(139,92,246,0.2)",
                 boxShadow: "0 0 40px rgba(139,92,246,0.15)",
-              }}>
-              {qrDataUrl ? (
-                <img
-                  src={qrDataUrl}
-                  alt="QR code to open Fennecly iPhone install guide"
-                  width={148}
-                  height={148}
-                  className="block rounded-xl"
-                />
-              ) : (
-                /* Skeleton while generating */
-                <div className="h-[148px] w-[148px] animate-pulse rounded-xl bg-white/5" />
-              )}
-
-              {/* Corner accents */}
+              }}
+            >
+              <img
+                src={QR_URL}
+                alt="Scan to open Fennecly iPhone install guide"
+                width={148}
+                height={148}
+                className="block rounded-xl"
+              />
               <div className="absolute left-2 top-2 h-4 w-4 rounded-tl-md border-l-2 border-t-2 border-violet-400/50" />
               <div className="absolute right-2 top-2 h-4 w-4 rounded-tr-md border-r-2 border-t-2 border-violet-400/50" />
               <div className="absolute bottom-2 left-2 h-4 w-4 rounded-bl-md border-b-2 border-l-2 border-violet-400/50" />
               <div className="absolute bottom-2 right-2 h-4 w-4 rounded-br-md border-b-2 border-r-2 border-violet-400/50" />
             </div>
-
             <p className="mt-2.5 text-center text-[11px] font-medium text-white/30 leading-tight">
               Scan with iPhone<br />camera app
             </p>
