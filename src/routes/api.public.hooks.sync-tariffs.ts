@@ -75,7 +75,7 @@ export const Route = createFileRoute("/api/public/hooks/sync-tariffs")({
         for (const link of links ?? []) {
           if (!link.api_key?.trim() || !link.api_secret?.trim()) {
             results.push({
-              store_id: link.store_id,
+              owner_id: link.store_id,
               company_id: link.company_id,
               ok: false,
               message: "Missing credentials — kept last saved tariffs.",
@@ -87,7 +87,7 @@ export const Route = createFileRoute("/api/public/hooks/sync-tariffs")({
           if (!fetched.success) {
             // Keep last saved tariffs untouched; just record the warning.
             results.push({
-              store_id: link.store_id,
+              owner_id: link.store_id,
               company_id: link.company_id,
               ok: false,
               message: `Could not refresh tariffs: ${fetched.message}`,
@@ -96,7 +96,7 @@ export const Route = createFileRoute("/api/public/hooks/sync-tariffs")({
           }
           if (fetched.tariffs.length === 0) {
             results.push({
-              store_id: link.store_id,
+              owner_id: link.store_id,
               company_id: link.company_id,
               ok: true,
               message: "Provider returned no tariffs.",
@@ -110,12 +110,12 @@ export const Route = createFileRoute("/api/public/hooks/sync-tariffs")({
           const { data: existing, error: existingErr } = await supabaseAdmin
             .from("delivery_tariffs")
             .select("id, wilaya, city, delivery_type, price")
-            .eq("store_id", link.store_id)
+            .eq("owner_id", link.store_id)
             .eq("company_id", link.company_id);
 
           if (existingErr) {
             results.push({
-              store_id: link.store_id,
+              owner_id: link.store_id,
               company_id: link.company_id,
               ok: false,
               message: `Could not refresh tariffs: ${existingErr.message}`,
@@ -156,7 +156,7 @@ export const Route = createFileRoute("/api/public/hooks/sync-tariffs")({
               }
             } else {
               toInsert.push({
-                store_id: link.store_id,
+                owner_id: link.store_id,
                 company_id: link.company_id,
                 wilaya: t.wilaya,
                 city: t.city,
@@ -173,7 +173,7 @@ export const Route = createFileRoute("/api/public/hooks/sync-tariffs")({
               .insert(toInsert, { count: "exact" });
             if (insErr) {
               results.push({
-                store_id: link.store_id,
+                owner_id: link.store_id,
                 company_id: link.company_id,
                 ok: false,
                 message: `Could not refresh tariffs: ${insErr.message}`,
@@ -184,7 +184,7 @@ export const Route = createFileRoute("/api/public/hooks/sync-tariffs")({
           }
 
           results.push({
-            store_id: link.store_id,
+            owner_id: link.store_id,
             company_id: link.company_id,
             ok: true,
             message: `Synced ${fetched.tariffs.length} tariffs.`,

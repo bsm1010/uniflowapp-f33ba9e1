@@ -46,7 +46,7 @@ export const syncDeliveryCompanyTariffs = createServerFn({ method: "POST" })
       const { data: link, error: linkErr } = await supabase
         .from("store_delivery_companies")
         .select("api_key, api_secret, enabled")
-        .eq("store_id", userId)
+        .eq("owner_id", userId)
         .eq("company_id", data.companyId)
         .maybeSingle();
       if (linkErr || !link) {
@@ -86,7 +86,7 @@ export const syncDeliveryCompanyTariffs = createServerFn({ method: "POST" })
       const { data: existing, error: existingErr } = await supabase
         .from("delivery_tariffs")
         .select("id, wilaya, city, delivery_type, price")
-        .eq("store_id", userId)
+        .eq("owner_id", userId)
         .eq("company_id", data.companyId);
       if (existingErr) {
         return { ok: false, message: `Failed to read tariffs: ${existingErr.message}` };
@@ -127,7 +127,7 @@ export const syncDeliveryCompanyTariffs = createServerFn({ method: "POST" })
           }
         } else {
           toInsert.push({
-            store_id: userId,
+            owner_id: userId,
             company_id: data.companyId,
             wilaya: t.wilaya,
             city: t.city,
