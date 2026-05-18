@@ -65,7 +65,7 @@ export async function fetchZRTariffs(
   const timeout = setTimeout(() => controller.abort(), 15_000);
 
   try {
-    const url = `${ZR_BASE_URL}/tarification`;
+    const url = `${ZR_BASE_URL}/tarifs`;
     const res = await fetch(url, {
       method: "POST",
       headers: {
