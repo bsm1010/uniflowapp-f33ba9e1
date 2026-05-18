@@ -30,7 +30,7 @@ import type { Tables } from "@/integrations/supabase/types";
 
 type Order = Tables<"orders">;
 
-export const Route = createFileRoute("/dashboard/orders/$orderId/tracking")({
+export const Route = createFileRoute("/dashboard/orders_/$orderId/tracking")({
   component: TrackingPage,
   head: () => ({ meta: [{ title: "Order tracking — Fennecly" }] }),
 });
