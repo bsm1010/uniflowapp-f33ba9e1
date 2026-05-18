@@ -10,6 +10,8 @@ import { CreditsProvider } from "@/hooks/use-credits";
 import { PaywallDialog } from "@/components/dashboard/PaywallDialog";
 import { CurrentStoreProvider } from "@/hooks/use-current-store";
 import { StorePickerDialog } from "@/components/dashboard/StorePickerDialog";
+import { IOSInstallBanner } from "@/components/dashboard/IOSInstallBanner";
+import { registerServiceWorker } from "@/lib/pwa/register-sw";
 
 const WelcomeDialog = lazy(() =>
   import("@/components/dashboard/WelcomeDialog").then((m) => ({ default: m.WelcomeDialog })),
@@ -47,6 +49,10 @@ function DashboardLayout() {
       navigate({ to: "/login" });
     }
   }, [loading, user, navigate]);
+
+  useEffect(() => {
+    registerServiceWorker();
+  }, []);
 
   useEffect(() => {
     if (!user) return;
@@ -101,6 +107,7 @@ function DashboardLayout() {
           <div className="min-h-screen flex w-full bg-background">
             <DashboardSidebar />
             <SidebarInset className="flex-1 flex flex-col min-w-0">
+              <IOSInstallBanner />
               <DashboardTopbar name={name} avatarUrl={avatarUrl} />
               <main className="flex-1 p-4 md:p-8">
                 <Outlet />
