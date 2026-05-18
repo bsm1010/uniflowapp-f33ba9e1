@@ -550,6 +550,10 @@ export function ShippingCompaniesSection() {
                       )}
                     </div>
                   )}
+
+                  {connState === "connected" && isZRExpress(c.name) && (
+                    <ZRExpressRatesPreview companyId={c.id} />
+                  )}
                 </li>
               );
             })}
