@@ -22,7 +22,7 @@ if (!i18n.isInitialized) {
         fr: { translation: fr },
         ar: { translation: ar },
       },
-      fallbackLng: "ar",
+      fallbackLng: "en",
       supportedLngs: ["en", "fr", "ar"],
       interpolation: { escapeValue: false },
       detection: {
@@ -31,18 +31,6 @@ if (!i18n.isInitialized) {
         lookupLocalStorage: "lang",
       },
     });
-
-  // Force Arabic on the very first visit (before any language has been stored).
-  if (typeof window !== "undefined") {
-    try {
-      if (!localStorage.getItem("lang")) {
-        localStorage.setItem("lang", "ar");
-        i18n.changeLanguage("ar");
-      }
-    } catch {
-      /* ignore */
-    }
-  }
 }
 
 export function applyDirection(lng: string) {
@@ -55,4 +43,11 @@ export function applyDirection(lng: string) {
 
 i18n.on("languageChanged", applyDirection);
 
+// Apply direction on initial load so RTL is correct on first paint,
+// not only after the user switches languages.
+if (typeof document !== "undefined") {
+  applyDirection(i18n.language || "en");
+}
+
 export default i18n;
+
