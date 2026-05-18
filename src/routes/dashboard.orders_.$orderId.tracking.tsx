@@ -63,6 +63,8 @@ function TrackingPage() {
   const [tracking, setTracking] = useState<TrackingDTO | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
 
   const loadOrder = async () => {
     if (!user) return;
