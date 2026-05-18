@@ -78,7 +78,7 @@ function DeliverySettingsPage() {
     }
     setSaving(true);
 
-    const toUpsert: { store_id: string; wilaya: string; price: number }[] = [];
+    const toUpsert: { owner_id: string; wilaya: string; price: number }[] = [];
     const toDelete: string[] = [];
 
     for (const w of dirtyKeys) {
@@ -100,7 +100,7 @@ function DeliverySettingsPage() {
       if (toUpsert.length > 0) {
         const { error } = await supabase
           .from("delivery_tariffs")
-          .upsert(toUpsert, { onConflict: "store_id,wilaya" });
+          .upsert(toUpsert, { onConflict: "owner_id,wilaya" });
         if (error) throw error;
       }
       if (toDelete.length > 0) {
