@@ -163,15 +163,31 @@ function TrackingPage() {
           icon={Truck}
           gradient="from-emerald-500 via-teal-500 to-cyan-500"
         />
-        <div className="pt-6">
-          <Button onClick={refreshTracking} disabled={refreshing || !order.tracking_number}>
-            {refreshing ? (
-              <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
-            ) : (
-              <RefreshCw className="h-4 w-4 mr-1.5" />
-            )}
-            Refresh Status
-          </Button>
+        <div className="pt-6 flex flex-col items-end gap-2">
+          <div className="flex items-center gap-2">
+            <label className="flex items-center gap-1.5 text-xs text-muted-foreground cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={autoRefresh}
+                onChange={(e) => setAutoRefresh(e.target.checked)}
+                className="accent-primary h-3.5 w-3.5"
+              />
+              Auto-refresh 30s
+            </label>
+            <Button onClick={refreshTracking} disabled={refreshing || !order.tracking_number}>
+              {refreshing ? (
+                <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4 mr-1.5" />
+              )}
+              Refresh Status
+            </Button>
+          </div>
+          {lastRefreshed && (
+            <span className="text-[11px] text-muted-foreground">
+              Updated {lastRefreshed.toLocaleTimeString()}
+            </span>
+          )}
         </div>
       </div>
 
