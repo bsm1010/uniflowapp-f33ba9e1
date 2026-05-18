@@ -35,6 +35,7 @@ export const Route = createFileRoute("/dashboard/")({
 
 function DashboardHome() {
   const { user } = useAuth();
+  const { currentStore } = useCurrentStore();
   const { t } = useTranslation();
   const { status, daysRemaining, hadPaidSubscription } = useSubscription();
   const [name, setName] = useState("");
