@@ -321,6 +321,26 @@ export function DashboardSidebar() {
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive("/dashboard/admin/marketplace")}
+                    tooltip="Marketplace Review"
+                    className="h-9"
+                  >
+                    <Link
+                      to="/dashboard/admin/marketplace"
+                      className={`group/menu-item relative rounded-lg transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
+                        isActive("/dashboard/admin/marketplace")
+                          ? "bg-gradient-to-r from-sidebar-accent to-sidebar-accent/40 text-sidebar-accent-foreground font-medium shadow-sm"
+                          : "hover:bg-sidebar-accent/50"
+                      }`}
+                    >
+                      {renderIcon(ShieldCheck, "from-purple-500 to-pink-500", isActive("/dashboard/admin/marketplace"))}
+                      <span className="text-sm">Marketplace Review</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
