@@ -89,7 +89,7 @@ export const importZRExpressOrders = createServerFn({ method: "POST" })
         return { ok: false, message: "Create your store first (no store slug found)." };
       }
 
-      // Call ZRExpress.
+      // Call ZRExpress with pagination.
       const url = `${ZR_BASE}/api/v1/parcels/search`;
       const headers: Record<string, string> = {
         Authorization: `Bearer ${secretKey}`,
@@ -97,66 +97,52 @@ export const importZRExpressOrders = createServerFn({ method: "POST" })
         "X-Api-Key": secretKey,
         "Content-Type": "application/json",
       };
-      const res = await fetch(url, {
-        method: "POST",
-        headers,
-        body: JSON.stringify({}),
-      });
-      const bodyText = await res.text();
-      console.log(`[importZR] status=${res.status} bytes=${bodyText.length}`);
-      if (!res.ok) {
-        return {
-          ok: false,
-          message: `ZRExpress returned ${res.status}: ${bodyText.slice(0, 200)}`,
-        };
-      }
-      let parsed: unknown;
-      try {
-        parsed = JSON.parse(bodyText);
-      } catch {
-        return { ok: false, message: "ZRExpress returned non-JSON response." };
-      }
 
-      // Tolerate multiple envelope shapes.
-      const obj = (parsed && typeof parsed === "object" ? parsed : {}) as Record<string, unknown>;
-      let arr: unknown[] = Array.isArray(parsed)
-        ? (parsed as unknown[])
-        : Array.isArray(obj.data) ? (obj.data as unknown[])
-        : Array.isArray(obj.parcels) ? (obj.parcels as unknown[])
-        : Array.isArray(obj.items) ? (obj.items as unknown[])
-        : Array.isArray(obj.results) ? (obj.results as unknown[])
-        : Array.isArray((obj.data as Record<string, unknown> | undefined)?.parcels)
-          ? ((obj.data as Record<string, unknown>).parcels as unknown[])
-        : Array.isArray((obj.data as Record<string, unknown> | undefined)?.items)
-          ? ((obj.data as Record<string, unknown>).items as unknown[])
-        : [];
-
-      // Fallback: pick the first array-valued property anywhere in the envelope.
-      if (arr.length === 0 && !Array.isArray(parsed)) {
-        for (const v of Object.values(obj)) {
-          if (Array.isArray(v) && v.length && typeof v[0] === "object") {
-            arr = v as unknown[];
-            break;
-          }
+      const arr: Record<string, unknown>[] = [];
+      const PAGE_SIZE = 200;
+      let pageNumber = 1;
+      const MAX_PAGES = 100;
+      while (pageNumber <= MAX_PAGES) {
+        const res = await fetch(url, {
+          method: "POST",
+          headers,
+          body: JSON.stringify({ pageNumber, pageSize: PAGE_SIZE }),
+        });
+        const bodyText = await res.text();
+        if (!res.ok) {
+          return {
+            ok: false,
+            message: `ZRExpress returned ${res.status}: ${bodyText.slice(0, 200)}`,
+          };
         }
-      }
-
-      console.log(`[importZR] top-level keys=${Object.keys(obj).join(",")} arr.length=${arr.length}`);
-      if (arr.length > 0) {
-        console.log(`[importZR] sample item keys=${Object.keys(arr[0] as object).join(",")}`);
-        console.log(`[importZR] sample item=${JSON.stringify(arr[0]).slice(0, 800)}`);
-      } else {
-        console.log(`[importZR] empty arr; raw preview=${bodyText.slice(0, 800)}`);
+        let parsed: unknown;
+        try {
+          parsed = JSON.parse(bodyText);
+        } catch {
+          return { ok: false, message: "ZRExpress returned non-JSON response." };
+        }
+        const obj = (parsed && typeof parsed === "object" ? parsed : {}) as Record<string, unknown>;
+        const items: unknown[] = Array.isArray(parsed)
+          ? (parsed as unknown[])
+          : Array.isArray(obj.items) ? (obj.items as unknown[])
+          : Array.isArray(obj.data) ? (obj.data as unknown[])
+          : Array.isArray(obj.parcels) ? (obj.parcels as unknown[])
+          : Array.isArray(obj.results) ? (obj.results as unknown[])
+          : [];
+        for (const it of items) {
+          if (it && typeof it === "object") arr.push(it as Record<string, unknown>);
+        }
+        const hasNext = obj.hasNext === true;
+        const totalPages = typeof obj.totalPages === "number" ? obj.totalPages : null;
+        console.log(`[importZR] page=${pageNumber} got=${items.length} total=${obj.totalCount ?? "?"} hasNext=${hasNext}`);
+        if (items.length === 0) break;
+        if (!hasNext && (totalPages === null || pageNumber >= totalPages)) break;
+        if (Array.isArray(parsed)) break; // not paginated
+        pageNumber += 1;
       }
 
       if (arr.length === 0) {
-        return {
-          ok: true,
-          message: "No orders found at ZRExpress.",
-          imported: 0,
-          updated: 0,
-          total: 0,
-        };
+        return { ok: true, message: "No orders found at ZRExpress.", imported: 0, updated: 0, total: 0 };
       }
 
       // Existing imports for this store (match by tracking_number).
@@ -173,43 +159,64 @@ export const importZRExpressOrders = createServerFn({ method: "POST" })
       const toInsert: TablesInsert<"orders">[] = [];
       const toUpdate: Array<{ id: string; patch: TablesUpdate<"orders"> }> = [];
 
-      for (const raw of arr) {
-        if (!raw || typeof raw !== "object") continue;
-        const p = raw as Record<string, unknown>;
+      const asObj = (v: unknown): Record<string, unknown> =>
+        v && typeof v === "object" ? (v as Record<string, unknown>) : {};
 
-        const tracking = pickStr(p, [
-          "tracking",
-          "tracking_number",
-          "trackingNumber",
-          "trackingId",
-          "Tracking",
-          "code",
-        ]);
+      for (const p of arr) {
+        const customer = asObj(p.customer);
+        const phoneObj = asObj(customer.phone);
+        const addr = asObj(p.deliveryAddress);
+        const state = asObj(p.state);
+
+        const tracking =
+          pickStr(p, ["trackingNumber", "tracking", "tracking_number", "trackingId", "code"]) ||
+          pickStr(asObj(p.id ? { v: p.id } : {}), ["v"]);
         if (!tracking) continue;
 
-        const name = pickStr(p, ["client", "customer_name", "customerName", "recipient", "Client", "name"]);
-        const phone = pickStr(p, ["mobile_a", "mobileA", "phone", "telephone", "MobileA", "Tel"]);
-        const wilaya = pickStr(p, ["wilaya", "Wilaya", "wilaya_name", "destination_wilaya", "to_wilaya"]);
-        const address = pickStr(p, ["address", "Adresse", "adresse", "delivery_address", "street"]);
-        const commune = pickStr(p, ["commune", "Commune", "city", "town"]);
-        const total = pickNum(p, ["total", "montant", "Montant", "amount", "price", "value", "TProduit"]);
-        const status = pickStr(p, ["status", "situation", "state", "Situation", "etat"]) || "pending";
-        const createdAt = pickDate(p, ["created_at", "createdAt", "date", "Date", "Date_Creation"]);
+        const name = pickStr(customer, ["name", "fullName"]) || pickStr(p, ["customerName", "client", "name"]);
+        const phone =
+          pickStr(phoneObj, ["number1", "number2", "number3"]) ||
+          pickStr(p, ["phone", "mobile_a", "mobileA", "telephone", "Tel"]);
+        const street = pickStr(addr, ["street", "address", "line1"]);
+        const city = pickStr(addr, ["city", "district"]);
+        const wilayaCode = pickNum(addr, ["cityTerritoryCode", "wilayaCode"]);
+        const postalCode = pickStr(addr, ["postalCode", "zip"]);
+        const wilaya = wilayaCode
+          ? String(wilayaCode).padStart(2, "0")
+          : pickStr(addr, ["wilaya"]) || (postalCode ? postalCode.slice(0, 2) : "");
+
+        const total = pickNum(p, ["amount", "total", "montant", "price", "value", "TProduit"]);
+        const status =
+          pickStr(state, ["name", "description"]) ||
+          pickStr(p, ["status", "situation", "etat"]) ||
+          "pending";
+        const createdAt = pickDate(p, ["createdAt", "created_at", "date", "Date_Creation"]);
+        const productDesc = pickStr(p, ["productsDescription", "description"]);
+        const deliveryTypeRaw = pickStr(p, ["deliveryType", "delivery_type"]).toLowerCase();
+        const deliveryType =
+          deliveryTypeRaw.includes("pickup") || deliveryTypeRaw.includes("stop")
+            ? "stopdesk"
+            : "domicile";
+
+        const notesParts: string[] = ["ZRExpress import"];
+        if (street) notesParts.push(`Address: ${street}`);
+        if (city) notesParts.push(`Commune: ${city}`);
+        if (productDesc) notesParts.push(`Product: ${productDesc}`);
 
         const row: TablesInsert<"orders"> = {
           store_owner_id: userId,
           store_slug: storeSlug,
           customer_name: name || "ZRExpress customer",
           customer_email: "",
-          shipping_address: phone, // existing convention: phone lives in shipping_address
-          shipping_city: commune || address || "",
+          shipping_address: phone || street || "",
+          shipping_city: city || "",
           shipping_postal_code: wilaya,
           shipping_country: "DZ",
-          notes: address ? `ZRExpress import — ${address}` : "ZRExpress import",
+          notes: notesParts.join(" • "),
           subtotal: total,
           total,
           status: status.toLowerCase(),
-          delivery_type: "domicile",
+          delivery_type: deliveryType,
           tracking_number: tracking,
           source: "zrexpress",
         };
@@ -224,9 +231,11 @@ export const importZRExpressOrders = createServerFn({ method: "POST" })
               shipping_address: row.shipping_address,
               shipping_city: row.shipping_city,
               shipping_postal_code: row.shipping_postal_code,
+              notes: row.notes,
               total: row.total,
               subtotal: row.subtotal,
               status: row.status,
+              delivery_type: row.delivery_type,
             },
           });
         } else {
