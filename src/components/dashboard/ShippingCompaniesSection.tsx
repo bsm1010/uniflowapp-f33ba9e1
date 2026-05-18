@@ -14,6 +14,7 @@ import {
   listStoreDeliveryCompanies,
   setStoreDeliveryCompanyDefault,
   setStoreDeliveryCompanyEnabled,
+  disconnectStoreDeliveryCompany,
   type StoreCompanyView,
 } from "@/lib/delivery/store-companies.functions";
 import zrExpressLogo from "@/assets/zrexpress-logo.png";
