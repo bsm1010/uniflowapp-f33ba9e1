@@ -10,8 +10,16 @@ const InputSchema = z.object({
   orderId: z.string().uuid(),
 });
 
+export type TrackingHistoryEntry = { status: string; date: string; location?: string };
+export type TrackingDTO = {
+  trackingNumber: string;
+  status: string;
+  lastUpdate?: string;
+  history: TrackingHistoryEntry[];
+};
+
 export type TrackOrderResult =
-  | { ok: true; tracking: TrackingResult; provider: string }
+  | { ok: true; tracking: TrackingDTO; provider: string }
   | { ok: false; message: string };
 
 export const trackOrderShipment = createServerFn({ method: "POST" })
