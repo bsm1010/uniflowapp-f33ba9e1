@@ -3,8 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Bell, Share, Plus } from "lucide-react";
 
 const GUIDE_URL = "https://fennecly.online/iphone-guide";
-
-// QR via free API — no npm package needed
 const QR_URL = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(GUIDE_URL)}&bgcolor=000000&color=ffffff&format=png&margin=4`;
 
 export function IphoneShortcutBanner() {
@@ -47,19 +45,24 @@ export function IphoneShortcutBanner() {
 
         <div className="relative flex items-stretch">
 
-          {/* LEFT: Text */}
+          {/* ── LEFT: Text content ── */}
           <div className="flex-1 p-6 pr-4">
+            {/* Badge */}
             <div
               className="mb-4 inline-flex items-center gap-2 rounded-full px-3 py-1"
-              style={{ background: "rgba(139,92,246,0.18)", border: "1px solid rgba(139,92,246,0.3)" }}
+              style={{
+                background: "rgba(139,92,246,0.18)",
+                border: "1px solid rgba(139,92,246,0.3)",
+              }}
             >
               <span className="text-xs font-bold tracking-widest uppercase text-violet-300">New</span>
               <span className="h-1 w-1 rounded-full bg-violet-400/60" />
               <span className="text-xs text-violet-300/70">iPhone Ready</span>
             </div>
 
+            {/* Headline */}
             <h2 className="text-xl font-bold leading-snug text-white sm:text-2xl">
-              📱 Fennecly is now<br />
+              Fennecly is now<br />
               <span style={{ color: "#a78bfa" }}>available on iPhone</span>
             </h2>
 
@@ -67,6 +70,7 @@ export function IphoneShortcutBanner() {
               No App Store needed. Scan the QR code with your iPhone camera to open the install guide.
             </p>
 
+            {/* Steps */}
             <div className="mt-5 flex flex-wrap gap-2">
               {[
                 { icon: Share, label: "Tap Share" },
@@ -76,7 +80,10 @@ export function IphoneShortcutBanner() {
                 <div
                   key={i}
                   className="flex items-center gap-1.5 rounded-xl px-3 py-2"
-                  style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.07)" }}
+                  style={{
+                    background: "rgba(255,255,255,0.05)",
+                    border: "1px solid rgba(255,255,255,0.07)",
+                  }}
                 >
                   <step.icon className="h-3.5 w-3.5 text-violet-400" />
                   <span className="text-xs font-medium text-white/60">{step.label}</span>
@@ -84,6 +91,7 @@ export function IphoneShortcutBanner() {
               ))}
             </div>
 
+            {/* Fallback link */}
             <a
               href={GUIDE_URL}
               target="_blank"
@@ -94,34 +102,53 @@ export function IphoneShortcutBanner() {
             </a>
           </div>
 
-          {/* RIGHT: QR Code */}
+          {/* ── RIGHT: QR Code + iPhone mockup ── */}
           <div
-            className="flex shrink-0 flex-col items-center justify-center px-5 py-6"
+            className="hidden sm:flex shrink-0 items-center gap-3 px-5 py-4"
             style={{ borderLeft: "1px solid rgba(255,255,255,0.06)" }}
           >
-            <div
-              className="relative rounded-2xl p-3"
-              style={{
-                background: "rgba(139,92,246,0.08)",
-                border: "1px solid rgba(139,92,246,0.2)",
-                boxShadow: "0 0 40px rgba(139,92,246,0.15)",
-              }}
-            >
-              <img
-                src={QR_URL}
-                alt="Scan to open Fennecly iPhone install guide"
-                width={148}
-                height={148}
-                className="block rounded-xl"
-              />
-              <div className="absolute left-2 top-2 h-4 w-4 rounded-tl-md border-l-2 border-t-2 border-violet-400/50" />
-              <div className="absolute right-2 top-2 h-4 w-4 rounded-tr-md border-r-2 border-t-2 border-violet-400/50" />
-              <div className="absolute bottom-2 left-2 h-4 w-4 rounded-bl-md border-b-2 border-l-2 border-violet-400/50" />
-              <div className="absolute bottom-2 right-2 h-4 w-4 rounded-br-md border-b-2 border-r-2 border-violet-400/50" />
+            {/* QR Code */}
+            <div className="flex flex-col items-center gap-2">
+              <div
+                className="relative rounded-2xl p-3"
+                style={{
+                  background: "rgba(139,92,246,0.08)",
+                  border: "1px solid rgba(139,92,246,0.2)",
+                  boxShadow: "0 0 40px rgba(139,92,246,0.15)",
+                }}
+              >
+                <img
+                  src={QR_URL}
+                  alt="Scan to open Fennecly iPhone install guide"
+                  width={130}
+                  height={130}
+                  className="block rounded-xl"
+                />
+                {/* Corner accents */}
+                <div className="absolute left-2 top-2 h-4 w-4 rounded-tl-md border-l-2 border-t-2 border-violet-400/50" />
+                <div className="absolute right-2 top-2 h-4 w-4 rounded-tr-md border-r-2 border-t-2 border-violet-400/50" />
+                <div className="absolute bottom-2 left-2 h-4 w-4 rounded-bl-md border-b-2 border-l-2 border-violet-400/50" />
+                <div className="absolute bottom-2 right-2 h-4 w-4 rounded-br-md border-b-2 border-r-2 border-violet-400/50" />
+              </div>
+              <p className="text-center text-[11px] font-medium text-white/30 leading-tight">
+                Scan with iPhone<br />camera app
+              </p>
             </div>
-            <p className="mt-2.5 text-center text-[11px] font-medium text-white/30 leading-tight">
-              Scan with iPhone<br />camera app
-            </p>
+
+            {/* iPhone mockup image */}
+            <div className="relative h-full flex items-end justify-center" style={{ minHeight: 180 }}>
+              <img
+                src="/images/iphone-mockup.png"
+                alt="Fennecly on iPhone"
+                className="object-contain drop-shadow-2xl"
+                style={{
+                  height: 200,
+                  width: "auto",
+                  transform: "rotate(2deg)",
+                  filter: "drop-shadow(0 20px 40px rgba(139,92,246,0.3))",
+                }}
+              />
+            </div>
           </div>
 
         </div>
