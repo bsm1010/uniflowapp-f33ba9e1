@@ -1,5 +1,4 @@
 import { useTranslation } from "react-i18next";
-import { motion } from "framer-motion";
 import deliveryMan from "@/assets/delivery-man.webp";
 import {
   ShoppingCart,
