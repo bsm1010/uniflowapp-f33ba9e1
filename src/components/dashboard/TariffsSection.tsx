@@ -117,7 +117,7 @@ export function TariffsSection() {
         supabase
           .from("store_delivery_companies")
           .select("company_id, is_default, enabled")
-          .eq("owner_id", user.id),
+          .eq("store_id", user.id),
       ]);
       const list = (comps ?? []) as Company[];
       setCompanies(list);
