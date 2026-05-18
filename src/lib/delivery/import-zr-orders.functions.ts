@@ -219,7 +219,7 @@ export const importZRExpressOrders = createServerFn({ method: "POST" })
       if (toInsert.length) {
         const { error: insErr, count } = await supabase
           .from("orders")
-          .insert(toInsert as never, { count: "exact" });
+          .insert(toInsert as never[], { count: "exact" });
         if (insErr) {
           return { ok: false, message: `Insert failed: ${insErr.message}` };
         }
