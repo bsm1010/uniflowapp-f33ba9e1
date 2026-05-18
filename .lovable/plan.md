@@ -1,66 +1,81 @@
-# ZRExpress integration — full fix
+# Multi-Store Support for Fennecly
 
-## What's already in place (verified)
+This is a large change. Today the whole app assumes **one store per user** — `store_settings.user_id` is the store, and every other table (orders, products, delivery_tariffs, ai_agent_settings, chatbot_settings, currency_settings, custom_domains, analytics_integrations, discount_codes, popups, abandoned_carts, contact_messages, instagram_connections, …) scopes data by `user_id` (the owner) via RLS.
 
-- `ZRExpressAdapter` already calls Procolis with the correct headers (`token: secretKey`, `key: tenantId`) for `add_colis`, `lire`, and `token` (validate).
-- `ZRExpressTariffsService` already fetches `/tarification` and normalizes to `{wilaya, city, delivery_type, price}`.
-- `syncDeliveryCompanyTariffs` already upserts those into `delivery_tariffs` for the store.
-- `delivery_tariffs` is already read by the checkout (`AlgerianCheckoutForm`) and the order server fn to compute shipping price by wilaya + delivery type.
-- `ShippingCompaniesSection` already parses the pasted JSON `{secretKey, tenantId}` correctly and maps them to `apiKey`/`apiSecret`.
+Moving to multi-store means introducing a `stores` table and re-scoping every owner-keyed table to `store_id`. I want to confirm the plan before executing because it touches ~20 tables, all RLS policies, and most dashboard pages.
 
-So credential storage, tariff fetch, and checkout pricing are wired. The gaps are: validation is mocked, orders never reach Procolis, no status sync, no manual resend, errors are swallowed.
+---
 
-## Changes
+## 1. Database
 
-### 1. Re-enable real credential validation
-`src/lib/delivery/validate.functions.ts` currently sets `result = { success: true }` without pinging the provider. Replace with a real call to `ZRExpressService.validateApiKey(secretKey, tenantId)` (already implemented — hits `/token` on Procolis). Return the actual error message on failure so the UI shows it.
+### New `stores` table
+- `id uuid pk`, `owner_id uuid` (→ profiles), `name`, `slug` (unique), `logo_url`, `description`, `category`, `currency`, `is_default bool`, `created_at`, `updated_at`.
+- RLS: owner can CRUD their own stores. Public can `SELECT` minimal columns by slug (for storefront).
+- Migration backfills one store per existing user from `store_settings` and stamps it as `is_default`.
 
-### 2. Push order to ZRExpress on creation
-In `src/lib/orders/create-order.functions.ts`, after the `shipments` row is inserted, look up the store's default delivery company (or the `companyId` passed in), load its credentials, and call `ZRExpressAdapter.createShipment(...)`. On success:
-- update the `shipments` row with `tracking_number`, `status: "created"`, `provider_response`
-- update the `orders` row with `tracking_number` and `status: "confirmed"`
+### Add `store_id` to existing tables
+Tables to migrate (nullable column → backfill from owner's default store → set NOT NULL → swap RLS):
+`store_settings`, `products`, `categories`, `orders`, `order_items` (via order), `abandoned_carts`, `chatbot_conversations`, `chatbot_settings`, `ai_agent_settings`, `ai_agent_analytics`, `currency_settings`, `analytics_integrations`, `delivery_tariffs`, `discount_codes`, `popups`, `contact_messages`, `custom_domains`, `instagram_connections`, `ig_conversations`, `ig_messages`, `installed_apps`, `shipments` (if owner-scoped), `notifications` stays per-user.
 
-On failure: keep the shipment in `pending` with `last_error` set so the dashboard can show it and the user can retry. Order creation itself must NOT fail just because the provider push failed (graceful degradation).
+> Note: `store_settings` becomes 1:1 with `stores` (keyed by `store_id`) instead of 1:1 with `user_id`.
 
-Schema additions to `shipments` (migration): `tracking_number text`, `last_error text`, `provider_response jsonb`, `last_sync_at timestamptz`. Add `tracking_number text` to `orders` as well.
+### RLS rewrite
+All existing "owner = auth.uid()" policies become "store belongs to auth.uid()" via a `SECURITY DEFINER` helper `public.user_owns_store(_store_id uuid)`.
 
-### 3. Manual "Send to ZRExpress" button
-New server fn `pushOrderToProvider({ accessToken, orderId, companyId? })` in `src/lib/delivery/push-order.functions.ts`:
-- auth the caller, verify the order belongs to them
-- resolve company (passed-in or store default)
-- call the adapter, persist tracking number + status to `shipments` + `orders`
-- return `{ ok, message, trackingNumber? }`
+### Per-user "current store"
+Add `profiles.current_store_id uuid` so the active store survives reloads. The client sets it on switch.
 
-UI: in `src/routes/dashboard.orders.tsx`, add a "Send to ZRExpress" action per row when the shipment is `pending` or has `last_error`. Show the tracking number and last error inline once available.
+## 2. Backend code changes
+- All `createServerFn` handlers that today filter by `user_id` must filter by `store_id` (and verify ownership via the helper).
+- `import-zr-orders.functions.ts`, `push-order.functions.ts`, `track-shipment.functions.ts`, `sync-tariffs.functions.ts`, `create-order.functions.ts`, builder/sections, ai-agent, etc. all need the active `storeId` passed in or read from `profiles.current_store_id`.
+- Public storefront (`/s/$slug`) resolves `slug` against `stores` (not `store_settings.user_id`).
 
-### 4. Periodic status sync
-New public cron route `src/routes/api/public/hooks/sync-shipment-statuses.ts`:
-- guarded by the project anon key in the `apikey` header (standard pattern)
-- selects active shipments (`status IN ('pending','created','in_transit')`) with a tracking number, joined to their store's credentials
-- calls `adapter.trackShipment(tracking_number)` for each
-- updates `shipments.status` + `last_sync_at`, and mirrors a coarse status onto `orders.status` (in_transit → shipped, delivered → delivered, failed/cancelled → cancelled)
+## 3. UI — new pieces
+- **`useCurrentStore()` hook**: loads stores for the user, exposes `currentStore`, `stores`, `setCurrent(id)`. Persists to `profiles.current_store_id`.
+- **`StorePickerDialog`**: full-screen frosted-glass modal (backdrop-blur). Fennecly logo, title "Which store would you like to manage?", grid of store cards (logo, name, category, orders badge), hover lift, dashed "+ Create New Store" card. Auto-opens on login if `stores.length > 1` and no current store. Skipped if only one.
+- **`CreateStoreWizard`**: 3 steps (name/category/currency → logo/description → confirm preview). On confirm, inserts store + sets it current + navigates to dashboard.
+- **Sidebar/topbar store switcher**: current logo + name button → opens `StorePickerDialog`.
+- **`/dashboard/store-settings`** route: edit name / logo / category / currency, delete store (blocked when it's the only store).
 
-Schedule via `pg_cron` + `pg_net` every 30 minutes against the stable `project--{id}.lovable.app` URL.
+## 4. Data isolation
+Enforced server-side by RLS (helper function). Client always passes `store_id` from the active store; if missing, queries return empty.
 
-### 5. Clear error UX
-- `pushOrderToProvider` returns a typed error message (no raw provider stack traces) — the UI toasts it and stores `last_error` so it's visible later.
-- `validateAndActivateDeliveryCompany` already surfaces a message; with #1 done it'll reflect real Procolis errors (invalid token, expired tenant, network).
-- Shipments table in `dashboard.shipments.tsx` shows `last_error` when present.
+## 5. Style
+Reuse existing PageHeader, Card, Button, Dialog primitives, design tokens, font-display headings — matches the rest of Fennecly.
 
-## Technical notes
+---
 
-- Tariff sync remains a manual "Sync tariffs" button (already wired in `TariffsSection`). Optionally trigger it once at connect time after #1 succeeds — small follow-on.
-- The `orders.tracking_number` column needs adding via migration. `shipments` likely already has `tracking_number` (check before migrating).
-- Status mapping uses the existing `mapZRStatus` in the adapter — no duplication.
-- Cron job uses `apikey: <anon>` header per project guidelines; no new secret needed.
+## Technical details (for review)
 
-## Files touched
+```text
+stores
+  id, owner_id, name, slug UNIQUE, logo_url, description,
+  category, currency DEFAULT 'DZD', is_default, created_at, updated_at
 
-- migration: add columns to `shipments` and `orders`
-- `src/lib/delivery/validate.functions.ts` — real validation
-- `src/lib/delivery/push-order.functions.ts` — NEW
-- `src/lib/orders/create-order.functions.ts` — auto-push after insert
-- `src/routes/api/public/hooks/sync-shipment-statuses.ts` — NEW (cron target)
-- `src/routes/dashboard.orders.tsx` — manual send button + tracking/error display
-- `src/routes/dashboard.shipments.tsx` — show last_error + tracking
-- pg_cron schedule via insert tool
+profiles
+  + current_store_id uuid NULL → stores(id) ON DELETE SET NULL
+
+helper
+  public.user_owns_store(_store_id uuid) RETURNS bool
+    SECURITY DEFINER, checks stores.owner_id = auth.uid()
+
+every owner-scoped table
+  + store_id uuid NULL  -- backfill from default store
+  ALTER ... SET NOT NULL after backfill
+  DROP old "auth.uid() = user_id" policies
+  CREATE policies USING public.user_owns_store(store_id)
+```
+
+Backfill strategy: for each user with rows in table T but no store yet, insert a default store from `store_settings` (or a generic "My Store" if absent), then `UPDATE T SET store_id = <that store>`. Atomic per-table, in a single migration.
+
+---
+
+## Scope check before I start
+
+Two confirmations would help:
+1. **Storefront URLs** (`/s/$slug`) — today the slug lives on `store_settings`. After migration, each store has its own slug and its own public storefront. Confirmed?
+2. **Subscription / credits** stay per-user (not per-store), since billing is on the account. Confirmed?
+
+If both are yes, I'll execute as one migration + a follow-up code pass (server fns + UI). If you want, I can deliver in two phases: (A) DB + switcher + create flow + isolation, then (B) per-page polish & store-settings page.
+
+Reply "go" to proceed with the full plan, or tell me which pieces to drop / change.
