@@ -47,18 +47,16 @@ function DashboardHome() {
     revenue: 0,
     customers: 0,
   });
-  const [recentOrders, setRecentOrders] = useState
-    Array<{
-      id: string;
-      customer_name: string;
-      total: number;
-      status: string;
-      created_at: string;
-      product_name: string | null;
-      product_image: string | null;
-      item_count: number;
-    }>
-  >([]);
+  const [recentOrders, setRecentOrders] = useState<Array<{
+    id: string;
+    customer_name: string;
+    total: number;
+    status: string;
+    created_at: string;
+    product_name: string | null;
+    product_image: string | null;
+    item_count: number;
+  }>>([]);
 
   const loadDashboard = useCallback(() => {
     if (!user) return;
