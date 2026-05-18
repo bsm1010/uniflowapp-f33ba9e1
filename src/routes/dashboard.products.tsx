@@ -14,6 +14,7 @@ import {
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { useCurrentStore } from "@/hooks/use-current-store";
 import { useSubscription } from "@/hooks/use-subscription";
 import { ExpiredOverlay } from "@/components/dashboard/ExpiredOverlay";
 import { PageHeader, EmptyState } from "@/components/dashboard/PageHeader";
@@ -64,6 +65,7 @@ function formatPrice(n: number) {
 
 function ProductsPage() {
   const { user } = useAuth();
+  const { currentStore, loading: storeLoading } = useCurrentStore();
   const { isExpired } = useSubscription();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -74,11 +76,21 @@ function ProductsPage() {
 
   const load = useCallback(async () => {
     if (!user) return;
+    if (storeLoading) return;
     setLoading(true);
-    const { data, error } = await supabase
+    let q = supabase
       .from("products")
       .select("id,name,description,price,stock,category,images")
       .order("created_at", { ascending: false });
+    if (currentStore?.id) {
+      q = q.eq("store_id", currentStore.id);
+    } else {
+      // No store selected yet — show nothing rather than other-store data
+      setProducts([]);
+      setLoading(false);
+      return;
+    }
+    const { data, error } = await q;
     setLoading(false);
     if (error) {
       toast.error(error.message);
@@ -91,7 +103,7 @@ function ProductsPage() {
         images: p.images ?? [],
       })),
     );
-  }, [user]);
+  }, [user, currentStore?.id, storeLoading]);
 
   useEffect(() => {
     load();

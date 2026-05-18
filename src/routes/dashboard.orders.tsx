@@ -20,6 +20,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { CreateShipmentDialog } from "@/components/dashboard/CreateShipmentDialog";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
+import { useCurrentStore } from "@/hooks/use-current-store";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { sendOrderStatusSms } from "@/lib/orders/sms.functions";
@@ -75,6 +76,7 @@ const STATUS_VARIANT: Record<string, { label: string; className: string }> = {
 
 function OrdersPage() {
   const { user } = useAuth();
+  const { currentStore } = useCurrentStore();
   const pushFn = useServerFn(pushOrderToProvider);
   const importZRFn = useServerFn(importZRExpressOrders);
   const [orders, setOrders] = useState<Order[] | null>(null);
@@ -149,11 +151,13 @@ function OrdersPage() {
 
   const loadOrders = async () => {
     if (!user) return;
-    const { data: ords } = await supabase
+    let q = supabase
       .from("orders")
       .select("*")
       .eq("store_owner_id", user.id)
       .order("created_at", { ascending: false });
+    if (currentStore?.id) q = q.eq("store_id", currentStore.id);
+    const { data: ords } = await q;
     const list = ords ?? [];
     setOrders(list);
     if (list.length) {
@@ -194,7 +198,7 @@ function OrdersPage() {
       supabase.removeChannel(channel);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id]);
+  }, [user?.id, currentStore?.id]);
 
   const updateStatus = async (orderId: string, status: Status) => {
     const prev = orders;

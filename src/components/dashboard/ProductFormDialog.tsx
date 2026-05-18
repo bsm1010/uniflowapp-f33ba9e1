@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { useCurrentStore } from "@/hooks/use-current-store";
 import { generateVoice } from "@/lib/ai/voice-generator";
 import {
   Dialog,
@@ -66,6 +67,7 @@ interface Props {
 
 export function ProductFormDialog({ open, onOpenChange, product, onSaved }: Props) {
   const { user } = useAuth();
+  const { currentStore } = useCurrentStore();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("0");
@@ -186,7 +188,7 @@ export function ProductFormDialog({ open, onOpenChange, product, onSaved }: Prop
     };
     const { error } = product
       ? await supabase.from("products").update(payload).eq("id", product.id)
-      : await supabase.from("products").insert({ ...payload, user_id: user.id });
+      : await supabase.from("products").insert({ ...payload, user_id: user.id, store_id: currentStore?.id ?? null });
     setSaving(false);
     if (error) {
       toast.error(error.message);
