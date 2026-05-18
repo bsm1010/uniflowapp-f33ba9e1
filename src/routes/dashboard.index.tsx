@@ -136,7 +136,7 @@ function DashboardHome() {
 
       const recent = recentRes.data ?? [];
       const recentIds = recent.map((o) => o.id);
-      const itemsByOrder: Record
+      const itemsByOrder: Record<
         string,
         { product_name: string; image_url: string | null; count: number }
       > = {};
