@@ -18,33 +18,82 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
 
   async validateCredentials(): Promise<ValidationResult> {
     if (!this.hasCredentials()) {
-      return { ok: false, message: "Invalid API credentials" };
+      return { ok: false, message: "Invalid API credentials: missing secretKey (token)." };
     }
     if (!this.credentials.apiSecret || !this.credentials.apiSecret.trim()) {
-      return { ok: false, message: "Invalid API credentials" };
+      return { ok: false, message: "Invalid API credentials: missing tenantId (key)." };
     }
+
+    const token = this.credentials.apiKey.trim();
+    const key = this.credentials.apiSecret.trim();
+    const url = `${ZR_BASE_URL}/tarification`;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 12_000);
+
     try {
-      // `token` endpoint validates the secretKey/tenantId pair without side effects.
-      await this.request<unknown>(`${ZR_BASE_URL}/token`, {
-        method: "POST",
+      // Procolis validation: GET /tarification with `token` + `key` headers.
+      // If it returns data (200 OK), the credentials are valid.
+      const res = await fetch(url, {
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
-          token: this.credentials.apiKey,
-          key: this.credentials.apiSecret,
+          Accept: "application/json",
+          token,
+          key,
         },
-        body: JSON.stringify({}),
-        timeoutMs: 10_000,
+        signal: controller.signal,
       });
-      return { ok: true, message: "ZR Express connected successfully" };
+
+      const bodyText = await res.text();
+      console.log("[ZRExpress] validateCredentials response", {
+        url,
+        status: res.status,
+        statusText: res.statusText,
+        bodyPreview: bodyText.slice(0, 500),
+      });
+
+      if (!res.ok) {
+        return {
+          ok: false,
+          message: `ZR Express API error (${res.status} ${res.statusText}): ${bodyText.slice(0, 200) || "no body"}`,
+        };
+      }
+
+      // Ensure body is parseable and non-empty so we know /tarification actually
+      // returned tariff data (not an empty 200 from a misrouted request).
+      let parsed: unknown = null;
+      try {
+        parsed = bodyText ? JSON.parse(bodyText) : null;
+      } catch {
+        return {
+          ok: false,
+          message: "ZR Express returned a non-JSON response. Check that headers `token` and `key` are correct.",
+        };
+      }
+
+      const rows = Array.isArray(parsed)
+        ? parsed
+        : Array.isArray((parsed as { Tarifs?: unknown[] } | null)?.Tarifs)
+          ? (parsed as { Tarifs: unknown[] }).Tarifs
+          : null;
+
+      if (!rows || rows.length === 0) {
+        return {
+          ok: false,
+          message: "ZR Express responded but returned no tariffs. Verify your account is active.",
+        };
+      }
+
+      return { ok: true, message: `ZR Express connected (${rows.length} tariffs available).` };
     } catch (e) {
       const raw = e instanceof Error ? e.message : String(e);
-      const lower = raw.toLowerCase();
-      if (lower.includes("aborted") || lower.includes("timeout")) {
+      console.error("[ZRExpress] validateCredentials error", raw);
+      if (raw.toLowerCase().includes("aborted")) {
         return { ok: false, message: "ZR Express API timed out. Try again." };
       }
-      // Treat any other failure (401/403/network/parse) as an invalid-credential
-      // outcome from the user's perspective.
-      return { ok: false, message: "Invalid API credentials" };
+      return { ok: false, message: `ZR Express request failed: ${raw}` };
+    } finally {
+      clearTimeout(timer);
     }
   }
 
