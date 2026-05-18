@@ -73,7 +73,7 @@ export function Navbar() {
                   {l.label}
                 </Link>
               ) : (
-                
+                <a
                   key={l.href}
                   href={l.href}
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
