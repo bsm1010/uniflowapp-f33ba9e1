@@ -430,7 +430,13 @@ function OrdersPage() {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
-                            <span className="font-medium">{o.customer_name}</span>
+                            <Link
+                              to="/dashboard/orders/$orderId/tracking"
+                              params={{ orderId: o.id }}
+                              className="font-medium hover:text-primary hover:underline"
+                            >
+                              {o.customer_name}
+                            </Link>
                             {o.source === "zrexpress" && (
                               <Badge
                                 variant="outline"
@@ -440,9 +446,13 @@ function OrdersPage() {
                               </Badge>
                             )}
                           </div>
-                          <div className="text-[11px] font-mono text-muted-foreground">
+                          <Link
+                            to="/dashboard/orders/$orderId/tracking"
+                            params={{ orderId: o.id }}
+                            className="text-[11px] font-mono text-muted-foreground hover:text-primary"
+                          >
                             #{o.id.slice(0, 8).toUpperCase()}
-                          </div>
+                          </Link>
                         </TableCell>
                         <TableCell>
                           <a
