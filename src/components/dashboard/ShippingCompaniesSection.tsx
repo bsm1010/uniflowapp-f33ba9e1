@@ -20,6 +20,11 @@ import {
 import { syncDeliveryCompanyTariffs } from "@/lib/delivery/sync-tariffs.functions";
 import zrExpressLogo from "@/assets/zrexpress-logo.png";
 import yalidineLogo from "@/assets/yalidine-logo.png";
+import { ZRExpressRatesPreview } from "@/components/dashboard/ZRExpressRatesPreview";
+
+function isZRExpress(name: string): boolean {
+  return /zr\s*[-_]?\s*express|zrexpress/i.test(name);
+}
 
 type Company = { id: string; name: string };
 
@@ -544,6 +549,10 @@ export function ShippingCompaniesSection() {
                         </>
                       )}
                     </div>
+                  )}
+
+                  {connState === "connected" && isZRExpress(c.name) && (
+                    <ZRExpressRatesPreview companyId={c.id} />
                   )}
                 </li>
               );
