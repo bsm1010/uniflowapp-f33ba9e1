@@ -65,6 +65,9 @@ function Index() {
           <DashboardTools />
         </div>
         <div className="cv-auto">
+          <WindowsDownload />
+        </div>
+        <div className="cv-auto">
           <Features />
         </div>
         <div className="cv-auto">
@@ -75,9 +78,6 @@ function Index() {
         </div>
         <div className="cv-auto">
           <Testimonials />
-        </div>
-        <div className="cv-auto">
-          <WindowsDownload />
         </div>
         <div className="cv-auto">
           <CTA />
