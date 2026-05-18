@@ -28,10 +28,6 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
     if (!this.hasCredentials()) {
       return { ok: false, message: "Invalid API credentials: missing secretKey (token)." };
     }
-    if (!this.credentials.apiSecret || !this.credentials.apiSecret.trim()) {
-      return { ok: false, message: "Invalid API credentials: missing tenantId." };
-    }
-
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 12_000);
     const url = `${ZR_BASE_URL}/delivery-pricing/rates`;
