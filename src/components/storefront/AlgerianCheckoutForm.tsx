@@ -14,11 +14,15 @@
       : "0 20px 50px -20px rgba(15,23,42,0.12)",
   }}
 >
-  <motion.div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+  <motion.div
+    className="pointer-events-none absolute inset-0 overflow-hidden"
+    aria-hidden
+  >
     <div
       className="absolute -top-20 -right-20 h-60 w-60 rounded-full blur-3xl opacity-40"
       style={{ backgroundColor: t.primary }}
     />
+
     <div
       className="absolute bottom-0 left-0 h-40 w-40 rounded-full blur-2xl opacity-25"
       style={{ backgroundColor: t.accent }}
@@ -26,17 +30,29 @@
   </motion.div>
 
   <div className="relative z-10">
-    <h2 className="text-2xl font-bold tracking-tight" style={{ color: t.fg }}>
+    <h2
+      className="text-2xl font-bold tracking-tight"
+      style={{ color: t.fg }}
+    >
       {tr("storefront.cod.title")}
     </h2>
-    <p className="mt-2 text-sm" style={{ color: t.muted }}>
+
+    <p
+      className="mt-2 text-sm"
+      style={{ color: t.muted }}
+    >
       {tr("storefront.cod.subtitle")}
     </p>
   </div>
 
   <div className="relative z-10 grid grid-cols-1 gap-4 sm:grid-cols-2">
     <Field
-      icon={<User className="h-4 w-4" style={{ color: t.primary }} />}
+      icon={
+        <User
+          className="h-4 w-4"
+          style={{ color: t.primary }}
+        />
+      }
       label={tr("storefront.cod.firstName")}
       error={errors.firstName}
       mutedColor={t.muted}
@@ -56,7 +72,12 @@
     </Field>
 
     <Field
-      icon={<User className="h-4 w-4" style={{ color: t.primary }} />}
+      icon={
+        <User
+          className="h-4 w-4"
+          style={{ color: t.primary }}
+        />
+      }
       label={tr("storefront.cod.lastName")}
       error={errors.lastName}
       mutedColor={t.muted}
@@ -78,7 +99,12 @@
 
   <div className="relative z-10">
     <Field
-      icon={<Phone className="h-4 w-4" style={{ color: t.primary }} />}
+      icon={
+        <Phone
+          className="h-4 w-4"
+          style={{ color: t.primary }}
+        />
+      }
       label={tr("storefront.cod.phone")}
       error={errors.phone}
       mutedColor={t.muted}
@@ -101,7 +127,12 @@
 
   <motion.div className="relative z-10 grid grid-cols-1 gap-4 sm:grid-cols-2">
     <Field
-      icon={<MapPin className="h-4 w-4" style={{ color: t.primary }} />}
+      icon={
+        <MapPin
+          className="h-4 w-4"
+          style={{ color: t.primary }}
+        />
+      }
       label={tr("storefront.cod.wilaya")}
       error={errors.wilaya}
       mutedColor={t.muted}
@@ -126,7 +157,12 @@
     </Field>
 
     <Field
-      icon={<MapPin className="h-4 w-4" style={{ color: t.primary }} />}
+      icon={
+        <MapPin
+          className="h-4 w-4"
+          style={{ color: t.primary }}
+        />
+      }
       label={tr("storefront.cod.city")}
       error={errors.city}
       mutedColor={t.muted}
@@ -151,10 +187,13 @@
         }}
       />
     </Field>
-  </div>
+  </motion.div>
 
   <div className="relative z-10">
-    <Field label={tr("storefront.cod.deliveryType")} mutedColor={t.muted}>
+    <Field
+      label={tr("storefront.cod.deliveryType")}
+      mutedColor={t.muted}
+    >
       <div className="grid grid-cols-2 gap-3">
         {(["domicile", "stopdesk"] as const).map((opt) => {
           const active = deliveryType === opt;
@@ -171,7 +210,9 @@
                   : t.surface,
                 color: active ? t.onPrimary : t.fg,
                 border: `1px solid ${active ? t.primary : t.border}`,
-                boxShadow: active ? `0 10px 30px -10px ${t.primary}88` : "none",
+                boxShadow: active
+                  ? `0 10px 30px -10px ${t.primary}88`
+                  : "none",
               }}
             >
               <div className="flex flex-col items-center gap-2">
@@ -180,6 +221,7 @@
                 ) : (
                   <Building2 className="h-5 w-5" />
                 )}
+
                 <span className="text-sm font-medium">
                   {opt === "domicile"
                     ? tr("storefront.cod.deliveryHome")
@@ -189,7 +231,7 @@
             </button>
           );
         })}
-      </motion.div>
+      </div>
     </Field>
   </div>
 
@@ -205,7 +247,10 @@
       style={{ color: t.muted }}
     >
       <span>{tr("storefront.cod.subtotal")}</span>
-      <span style={{ color: t.fg }}>{subtotal.toFixed(2)} DA</span>
+
+      <span style={{ color: t.fg }}>
+        {subtotal.toFixed(2)} DA
+      </span>
     </div>
 
     <div
@@ -213,14 +258,15 @@
       style={{ color: t.muted }}
     >
       <span>{tr("storefront.cod.shipping")}</span>
+
       <span style={{ color: t.fg }}>
         {!wilaya
           ? "—"
           : shippingLoading
-            ? "…"
-            : shippingPrice === null
-              ? tr("storefront.cod.shippingUnavailable")
-              : `${shippingPrice.toFixed(2)} DA`}
+          ? "…"
+          : shippingPrice === null
+          ? tr("storefront.cod.shippingUnavailable")
+          : `${shippingPrice.toFixed(2)} DA`}
       </span>
     </div>
 
@@ -228,10 +274,17 @@
       className="mt-4 flex items-center justify-between pt-4"
       style={{ borderTop: `1px solid ${t.border}` }}
     >
-      <div className="text-sm" style={{ color: t.muted }}>
+      <div
+        className="text-sm"
+        style={{ color: t.muted }}
+      >
         {tr("storefront.cod.totalLine", { count: quantity })}
       </div>
-      <motion.div className="text-2xl font-bold" style={{ color: t.primary }}>
+
+      <motion.div
+        className="text-2xl font-bold"
+        style={{ color: t.primary }}
+      >
         {total.toFixed(2)} DA
       </motion.div>
     </div>
@@ -253,6 +306,9 @@
     ) : (
       <ShoppingBag className="h-5 w-5" />
     )}
-    {submitting ? tr("storefront.cod.placing") : tr("storefront.cod.orderNow")}
+
+    {submitting
+      ? tr("storefront.cod.placing")
+      : tr("storefront.cod.orderNow")}
   </button>
 </motion.form>
