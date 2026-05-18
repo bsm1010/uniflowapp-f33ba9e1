@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { createAuthenticatedDeliveryClient } from "./authenticated-client";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { normalizeProviderKey } from "./registry";
 import type { TablesInsert, TablesUpdate } from "@/integrations/supabase/types";
 
@@ -116,18 +117,37 @@ export const importZRExpressOrders = createServerFn({ method: "POST" })
         return { ok: false, message: "ZRExpress returned non-JSON response." };
       }
 
-      // Tolerate multiple envelope shapes: array | { data } | { parcels } | { items } | { results }.
-      const arr: unknown[] = Array.isArray(parsed)
-        ? parsed
-        : Array.isArray((parsed as Record<string, unknown>).data)
-          ? ((parsed as Record<string, unknown>).data as unknown[])
-          : Array.isArray((parsed as Record<string, unknown>).parcels)
-            ? ((parsed as Record<string, unknown>).parcels as unknown[])
-            : Array.isArray((parsed as Record<string, unknown>).items)
-              ? ((parsed as Record<string, unknown>).items as unknown[])
-              : Array.isArray((parsed as Record<string, unknown>).results)
-                ? ((parsed as Record<string, unknown>).results as unknown[])
-                : [];
+      // Tolerate multiple envelope shapes.
+      const obj = (parsed && typeof parsed === "object" ? parsed : {}) as Record<string, unknown>;
+      let arr: unknown[] = Array.isArray(parsed)
+        ? (parsed as unknown[])
+        : Array.isArray(obj.data) ? (obj.data as unknown[])
+        : Array.isArray(obj.parcels) ? (obj.parcels as unknown[])
+        : Array.isArray(obj.items) ? (obj.items as unknown[])
+        : Array.isArray(obj.results) ? (obj.results as unknown[])
+        : Array.isArray((obj.data as Record<string, unknown> | undefined)?.parcels)
+          ? ((obj.data as Record<string, unknown>).parcels as unknown[])
+        : Array.isArray((obj.data as Record<string, unknown> | undefined)?.items)
+          ? ((obj.data as Record<string, unknown>).items as unknown[])
+        : [];
+
+      // Fallback: pick the first array-valued property anywhere in the envelope.
+      if (arr.length === 0 && !Array.isArray(parsed)) {
+        for (const v of Object.values(obj)) {
+          if (Array.isArray(v) && v.length && typeof v[0] === "object") {
+            arr = v as unknown[];
+            break;
+          }
+        }
+      }
+
+      console.log(`[importZR] top-level keys=${Object.keys(obj).join(",")} arr.length=${arr.length}`);
+      if (arr.length > 0) {
+        console.log(`[importZR] sample item keys=${Object.keys(arr[0] as object).join(",")}`);
+        console.log(`[importZR] sample item=${JSON.stringify(arr[0]).slice(0, 800)}`);
+      } else {
+        console.log(`[importZR] empty arr; raw preview=${bodyText.slice(0, 800)}`);
+      }
 
       if (arr.length === 0) {
         return {
@@ -217,22 +237,27 @@ export const importZRExpressOrders = createServerFn({ method: "POST" })
       let imported = 0;
       let updated = 0;
 
+      console.log(`[importZR] toInsert=${toInsert.length} toUpdate=${toUpdate.length}`);
+
       if (toInsert.length) {
-        const { error: insErr, count } = await supabase
+        // orders RLS restricts INSERT to service_role; use admin client (caller already verified above).
+        const { error: insErr, count } = await supabaseAdmin
           .from("orders")
           .insert(toInsert, { count: "exact" });
         if (insErr) {
+          console.error("[importZR] insert error", insErr);
           return { ok: false, message: `Insert failed: ${insErr.message}` };
         }
         imported = count ?? toInsert.length;
       }
 
       for (const u of toUpdate) {
-        const { error: upErr } = await supabase
+        const { error: upErr } = await supabaseAdmin
           .from("orders")
           .update(u.patch)
           .eq("id", u.id);
-        if (!upErr) updated += 1;
+        if (upErr) console.error("[importZR] update error", upErr);
+        else updated += 1;
       }
 
       return {
