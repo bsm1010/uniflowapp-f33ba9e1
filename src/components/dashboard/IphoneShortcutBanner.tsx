@@ -24,7 +24,7 @@ export function IphoneShortcutBanner() {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -10 }}
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        className="relative mt-4 overflow-hidden rounded-3xl"
+        className="relative mt-4 overflow-visible rounded-3xl"
         style={{
           background: "linear-gradient(135deg, #09090f 0%, #120f24 50%, #0b1220 100%)",
           border: "1px solid rgba(139,92,246,0.2)",
@@ -38,7 +38,7 @@ export function IphoneShortcutBanner() {
         {/* Dismiss */}
         <button
           onClick={handleDismiss}
-          className="absolute right-4 top-4 z-10 flex h-7 w-7 items-center justify-center rounded-full text-white/30 transition hover:bg-white/10 hover:text-white/70"
+          className="absolute right-4 top-4 z-20 flex h-7 w-7 items-center justify-center rounded-full text-white/30 transition hover:bg-white/10 hover:text-white/70"
         >
           <X className="h-4 w-4" />
         </button>
@@ -60,7 +60,6 @@ export function IphoneShortcutBanner() {
               <span className="text-xs text-violet-300/70">iPhone Ready</span>
             </div>
 
-            {/* Headline */}
             <h2 className="text-xl font-bold leading-snug text-white sm:text-2xl">
               Fennecly is now<br />
               <span style={{ color: "#a78bfa" }}>available on iPhone</span>
@@ -70,7 +69,6 @@ export function IphoneShortcutBanner() {
               No App Store needed. Scan the QR code with your iPhone camera to open the install guide.
             </p>
 
-            {/* Steps */}
             <div className="mt-5 flex flex-wrap gap-2">
               {[
                 { icon: Share, label: "Tap Share" },
@@ -91,7 +89,6 @@ export function IphoneShortcutBanner() {
               ))}
             </div>
 
-            {/* Fallback link */}
             <a
               href={GUIDE_URL}
               target="_blank"
@@ -102,18 +99,18 @@ export function IphoneShortcutBanner() {
             </a>
           </div>
 
-          {/* ── RIGHT: QR Code + iPhone mockup ── */}
+          {/* ── RIGHT: QR + floating iPhone ── */}
           <div
-            className="hidden sm:flex shrink-0 items-center gap-3 px-5 py-4"
+            className="hidden sm:flex shrink-0 items-center gap-4 pl-5 pr-6 py-5 relative"
             style={{ borderLeft: "1px solid rgba(255,255,255,0.06)" }}
           >
             {/* QR Code */}
-            <div className="flex flex-col items-center gap-2">
+            <div className="flex flex-col items-center gap-2 z-10">
               <div
-                className="relative rounded-2xl p-3"
+                className="relative rounded-2xl p-2.5"
                 style={{
                   background: "rgba(139,92,246,0.08)",
-                  border: "1px solid rgba(139,92,246,0.2)",
+                  border: "1px solid rgba(139,92,246,0.25)",
                   boxShadow: "0 0 40px rgba(139,92,246,0.15)",
                 }}
               >
@@ -123,8 +120,10 @@ export function IphoneShortcutBanner() {
                   width={130}
                   height={130}
                   className="block rounded-xl"
+                  loading="eager"
+                  decoding="async"
+                  fetchPriority="high"
                 />
-                {/* Corner accents */}
                 <div className="absolute left-2 top-2 h-4 w-4 rounded-tl-md border-l-2 border-t-2 border-violet-400/50" />
                 <div className="absolute right-2 top-2 h-4 w-4 rounded-tr-md border-r-2 border-t-2 border-violet-400/50" />
                 <div className="absolute bottom-2 left-2 h-4 w-4 rounded-bl-md border-b-2 border-l-2 border-violet-400/50" />
@@ -135,20 +134,43 @@ export function IphoneShortcutBanner() {
               </p>
             </div>
 
-            {/* iPhone mockup image */}
-            <div className="relative h-full flex items-end justify-center" style={{ minHeight: 180 }}>
+            {/* Floating iPhone mockup — overflows card top and bottom */}
+            <motion.div
+              animate={{ y: [0, -14, 0] }}
+              transition={{
+                duration: 3.5,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="absolute right-0 z-20"
+              style={{
+                bottom: "-40px",
+                top: "-40px",
+                width: 180,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                pointerEvents: "none",
+              }}
+            >
               <img
                 src="/images/iphone-mockup.png"
                 alt="Fennecly on iPhone"
-                className="object-contain drop-shadow-2xl"
+                loading="eager"
+                decoding="async"
+                fetchPriority="high"
                 style={{
-                  height: 200,
+                  height: 300,
                   width: "auto",
-                  transform: "rotate(2deg)",
-                  filter: "drop-shadow(0 20px 40px rgba(139,92,246,0.3))",
+                  objectFit: "contain",
+                  transform: "rotate(3deg)",
+                  filter: "drop-shadow(0 24px 48px rgba(139,92,246,0.45))",
                 }}
               />
-            </div>
+            </motion.div>
+
+            {/* Spacer so the floating phone doesn't collapse layout */}
+            <div style={{ width: 160 }} />
           </div>
 
         </div>
