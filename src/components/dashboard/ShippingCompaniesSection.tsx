@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Truck, Loader2, Star, ShieldCheck, AlertCircle, CheckCircle2, XCircle, Lock, Plug, PlugZap } from "lucide-react";
+import { Truck, Loader2, Star, ShieldCheck, AlertCircle, CheckCircle2, XCircle, Lock, Plug, PlugZap, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,6 +14,7 @@ import {
   listStoreDeliveryCompanies,
   setStoreDeliveryCompanyDefault,
   setStoreDeliveryCompanyEnabled,
+  disconnectStoreDeliveryCompany,
   type StoreCompanyView,
 } from "@/lib/delivery/store-companies.functions";
 import zrExpressLogo from "@/assets/zrexpress-logo.png";
@@ -47,6 +48,7 @@ export function ShippingCompaniesSection() {
   const listFn = useServerFn(listStoreDeliveryCompanies);
   const setEnabledFn = useServerFn(setStoreDeliveryCompanyEnabled);
   const setDefaultFn = useServerFn(setStoreDeliveryCompanyDefault);
+  const disconnectFn = useServerFn(disconnectStoreDeliveryCompany);
 
   const [companies, setCompanies] = useState<Company[]>([]);
   const [rows, setRows] = useState<Record<string, StoreCompanyView>>({});
@@ -246,6 +248,42 @@ export function ShippingCompaniesSection() {
     }
   };
 
+  const disconnect = async (companyId: string) => {
+    if (!session?.access_token) {
+      toast.error("Please sign in again.");
+      return;
+    }
+    if (!window.confirm("Clear all saved credentials for this carrier? You will need to paste new credentials to reconnect.")) {
+      return;
+    }
+    setBusyId(companyId);
+    try {
+      const res = await disconnectFn({ data: { accessToken: session.access_token, companyId } });
+      if (!res.ok) {
+        toast.error(res.message);
+        return;
+      }
+      toast.success(res.message);
+      setRows((p) => ({
+        ...p,
+        [companyId]: {
+          ...p[companyId],
+          enabled: false,
+          is_default: false,
+          has_key: false,
+          has_secret: false,
+          key_tail: "",
+        },
+      }));
+      setDraftJson((p) => ({ ...p, [companyId]: "" }));
+      setValidationStatus((p) => ({ ...p, [companyId]: undefined }));
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to disconnect.");
+    } finally {
+      setBusyId(null);
+    }
+  };
+
   return (
     <Card className="overflow-hidden">
       <div className="flex items-center justify-between border-b bg-muted/30 px-5 py-4">
@@ -428,20 +466,35 @@ export function ShippingCompaniesSection() {
                       <p className="text-[11px] text-muted-foreground">
                         Stored encrypted on the server. Only the last 4 chars are shown.
                       </p>
-                      <Button
-                        type="button"
-                        size="sm"
-                        onClick={() => connect(c.id)}
-                        disabled={isValidating || !draftHasJson}
-                        className="gap-1.5"
-                      >
-                        {isValidating ? (
-                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                        ) : (
-                          <Plug className="h-3.5 w-3.5" />
+                      <div className="flex items-center gap-2">
+                        {r?.has_key && (
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            onClick={() => disconnect(c.id)}
+                            disabled={isValidating || busyId === c.id}
+                            className="gap-1.5 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                            Disconnect
+                          </Button>
                         )}
-                        {isValidating ? "Connecting…" : r?.has_key ? "Reconnect" : "Connect"}
-                      </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => connect(c.id)}
+                          disabled={isValidating || !draftHasJson}
+                          className="gap-1.5"
+                        >
+                          {isValidating ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          ) : (
+                            <Plug className="h-3.5 w-3.5" />
+                          )}
+                          {isValidating ? "Connecting…" : r?.has_key ? "Reconnect" : "Connect"}
+                        </Button>
+                      </div>
                     </div>
                   </div>
 

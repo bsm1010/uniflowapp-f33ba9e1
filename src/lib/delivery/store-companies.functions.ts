@@ -170,3 +170,40 @@ export const setStoreDeliveryCompanyDefault = createServerFn({ method: "POST" })
       return { ok: false, message: "Unexpected server error." };
     }
   });
+
+const DisconnectInput = z.object({
+  accessToken: z.string().min(1).max(4096),
+  companyId: z.string().uuid(),
+});
+
+/**
+ * Fully wipe stored credentials for a carrier and reset to disconnected state.
+ * Clears api_key, api_secret, enabled, is_default — leaves no cached values.
+ */
+export const disconnectStoreDeliveryCompany = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => DisconnectInput.parse(input))
+  .handler(async ({ data }): Promise<{ ok: boolean; message: string }> => {
+    try {
+      const auth = await createAuthenticatedDeliveryClient(data.accessToken);
+      if ("error" in auth) {
+        return { ok: false, message: "Your session expired. Please sign in again." };
+      }
+
+      const { client: supabase, userId } = auth;
+      const { error } = await supabase
+        .from("store_delivery_companies")
+        .delete()
+        .eq("store_id", userId)
+        .eq("company_id", data.companyId);
+
+      if (error) {
+        console.error("[disconnectStoreDeliveryCompany] delete error:", error.message);
+        return { ok: false, message: `Failed to disconnect: ${error.message}` };
+      }
+      return { ok: true, message: "Credentials cleared. Carrier disconnected." };
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Unexpected server error.";
+      console.error("[disconnectStoreDeliveryCompany]", msg);
+      return { ok: false, message: msg };
+    }
+  });
