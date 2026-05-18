@@ -151,11 +151,13 @@ function OrdersPage() {
 
   const loadOrders = async () => {
     if (!user) return;
-    const { data: ords } = await supabase
+    let q = supabase
       .from("orders")
       .select("*")
       .eq("store_owner_id", user.id)
       .order("created_at", { ascending: false });
+    if (currentStore?.id) q = q.eq("store_id", currentStore.id);
+    const { data: ords } = await q;
     const list = ords ?? [];
     setOrders(list);
     if (list.length) {
