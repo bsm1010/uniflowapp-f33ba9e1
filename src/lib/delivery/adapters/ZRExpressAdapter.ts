@@ -17,8 +17,12 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
   readonly label = "ZR Express";
 
   private authHeaders(): Record<string, string> {
+    const token = (this.credentials.apiKey ?? "").trim();
+    const tenant = (this.credentials.apiSecret ?? "").trim();
     return {
-      Authorization: `Bearer ${(this.credentials.apiKey ?? "").trim()}`,
+      Authorization: `Bearer ${token}`,
+      "X-Tenant": tenant,
+      "X-Api-Key": token,
       "Content-Type": "application/json",
       Accept: "application/json",
     };

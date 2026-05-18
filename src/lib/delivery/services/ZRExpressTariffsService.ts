@@ -78,8 +78,12 @@ export async function fetchZRTariffs(
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 15_000);
 
+  const token = apiKey.trim();
+  const tenant = (_tenantId ?? "").trim();
   const headers = {
-    Authorization: `Bearer ${apiKey.trim()}`,
+    Authorization: `Bearer ${token}`,
+    "X-Tenant": tenant,
+    "X-Api-Key": token,
     "Content-Type": "application/json",
     Accept: "application/json",
   } as Record<string, string>;
