@@ -125,6 +125,7 @@ export function DashboardTopbar({ name, avatarUrl }: { name: string; avatarUrl?:
   return (
     <header className="h-16 border-b border-border/60 bg-background/80 backdrop-blur-xl sticky top-0 z-30 flex items-center gap-3 px-4">
       <SidebarTrigger />
+      <StoreSwitcherButton />
       <div className="hidden md:flex items-center gap-2 max-w-md flex-1">
         <div className="relative w-full" ref={containerRef}>
           <Search className="pointer-events-none absolute top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground start-3" />
