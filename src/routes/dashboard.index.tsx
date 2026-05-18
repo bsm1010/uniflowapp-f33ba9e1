@@ -193,7 +193,15 @@ function DashboardHome() {
         () => loadDashboard(),
       )
       .subscribe();
-    const onFocus = () => loadDashboard();
+    // Only refetch on focus if it has been >30s since last load — avoids
+    // hammering the database every time the user alt-tabs.
+    let lastFocusReload = Date.now();
+    const onFocus = () => {
+      if (Date.now() - lastFocusReload > 30_000) {
+        lastFocusReload = Date.now();
+        loadDashboard();
+      }
+    };
     window.addEventListener("focus", onFocus);
     return () => {
       supabase.removeChannel(channel);
