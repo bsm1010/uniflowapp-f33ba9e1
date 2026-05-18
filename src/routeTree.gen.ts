@@ -75,6 +75,7 @@ import { Route as SSlugCheckoutSuccessRouteImport } from './routes/s.$slug.check
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
+import { Route as DashboardAppsMAppIdRouteImport } from './routes/dashboard.apps.m.$appId'
 import { Route as DashboardAppsListingAppKeyRouteImport } from './routes/dashboard.apps.listing.$appKey'
 import { Route as ApiPublicHooksSyncTariffsRouteImport } from './routes/api.public.hooks.sync-tariffs'
 import { Route as ApiPublicHooksInstagramRouteImport } from './routes/api.public.hooks.instagram'
@@ -423,6 +424,11 @@ const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   path: '/lovable/email/auth/preview',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardAppsMAppIdRoute = DashboardAppsMAppIdRouteImport.update({
+  id: '/m/$appId',
+  path: '/m/$appId',
+  getParentRoute: () => DashboardAppsRoute,
+} as any)
 const DashboardAppsListingAppKeyRoute =
   DashboardAppsListingAppKeyRouteImport.update({
     id: '/listing/$appKey',
@@ -512,6 +518,7 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/instagram': typeof ApiPublicHooksInstagramRoute
   '/api/public/hooks/sync-tariffs': typeof ApiPublicHooksSyncTariffsRoute
   '/dashboard/apps/listing/$appKey': typeof DashboardAppsListingAppKeyRoute
+  '/dashboard/apps/m/$appId': typeof DashboardAppsMAppIdRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -582,6 +589,7 @@ export interface FileRoutesByTo {
   '/api/public/hooks/instagram': typeof ApiPublicHooksInstagramRoute
   '/api/public/hooks/sync-tariffs': typeof ApiPublicHooksSyncTariffsRoute
   '/dashboard/apps/listing/$appKey': typeof DashboardAppsListingAppKeyRoute
+  '/dashboard/apps/m/$appId': typeof DashboardAppsMAppIdRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -655,6 +663,7 @@ export interface FileRoutesById {
   '/api/public/hooks/instagram': typeof ApiPublicHooksInstagramRoute
   '/api/public/hooks/sync-tariffs': typeof ApiPublicHooksSyncTariffsRoute
   '/dashboard/apps/listing/$appKey': typeof DashboardAppsListingAppKeyRoute
+  '/dashboard/apps/m/$appId': typeof DashboardAppsMAppIdRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -729,6 +738,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/instagram'
     | '/api/public/hooks/sync-tariffs'
     | '/dashboard/apps/listing/$appKey'
+    | '/dashboard/apps/m/$appId'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -799,6 +809,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/instagram'
     | '/api/public/hooks/sync-tariffs'
     | '/dashboard/apps/listing/$appKey'
+    | '/dashboard/apps/m/$appId'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -871,6 +882,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/instagram'
     | '/api/public/hooks/sync-tariffs'
     | '/dashboard/apps/listing/$appKey'
+    | '/dashboard/apps/m/$appId'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -1367,6 +1379,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/apps/m/$appId': {
+      id: '/dashboard/apps/m/$appId'
+      path: '/m/$appId'
+      fullPath: '/dashboard/apps/m/$appId'
+      preLoaderRoute: typeof DashboardAppsMAppIdRouteImport
+      parentRoute: typeof DashboardAppsRoute
+    }
     '/dashboard/apps/listing/$appKey': {
       id: '/dashboard/apps/listing/$appKey'
       path: '/listing/$appKey'
@@ -1415,6 +1434,7 @@ interface DashboardAppsRouteChildren {
   DashboardAppsSubmitRoute: typeof DashboardAppsSubmitRoute
   DashboardAppsIndexRoute: typeof DashboardAppsIndexRoute
   DashboardAppsListingAppKeyRoute: typeof DashboardAppsListingAppKeyRoute
+  DashboardAppsMAppIdRoute: typeof DashboardAppsMAppIdRoute
 }
 
 const DashboardAppsRouteChildren: DashboardAppsRouteChildren = {
@@ -1434,6 +1454,7 @@ const DashboardAppsRouteChildren: DashboardAppsRouteChildren = {
   DashboardAppsSubmitRoute: DashboardAppsSubmitRoute,
   DashboardAppsIndexRoute: DashboardAppsIndexRoute,
   DashboardAppsListingAppKeyRoute: DashboardAppsListingAppKeyRoute,
+  DashboardAppsMAppIdRoute: DashboardAppsMAppIdRoute,
 }
 
 const DashboardAppsRouteWithChildren = DashboardAppsRoute._addFileChildren(
