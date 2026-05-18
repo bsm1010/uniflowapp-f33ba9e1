@@ -326,6 +326,16 @@ function ShipmentsPage() {
                             day: "numeric",
                           })}
                         </TableCell>
+                        <TableCell className="text-right">
+                          <Link
+                            to="/dashboard/orders/$orderId/tracking"
+                            params={{ orderId: s.order_id }}
+                            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1 text-xs font-medium hover:bg-accent hover:text-accent-foreground"
+                          >
+                            <MapPin className="h-3 w-3" />
+                            View
+                          </Link>
+                        </TableCell>
                       </TableRow>
                     );
                   })}
