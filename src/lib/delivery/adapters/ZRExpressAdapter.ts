@@ -152,12 +152,13 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
 
     const data = await this.request<{
       Colis?: Array<{ Situation?: string; DateH_Action?: string }>;
-    }>(`${ZR_BASE_URL}/lire`, {
+    }>(`${ZR_BASE_URL}/colis/${encodeURIComponent(trackingNumber)}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         token: this.credentials.apiKey,
         key: this.credentials.apiSecret ?? "",
+        id: this.credentials.apiSecret ?? "",
       },
       body: JSON.stringify({ Colis: [{ Tracking: trackingNumber }] }),
     });
