@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, Truck, Search, Copy, CheckCircle2 } from "lucide-react";
+import { Loader2, Truck, Search, Copy, CheckCircle2, MapPin } from "lucide-react";
 import deliveryMan from "@/assets/delivery-man.webp";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
@@ -246,6 +246,7 @@ function ShipmentsPage() {
                     <TableHead>Wilaya</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Created</TableHead>
+                    <TableHead className="text-right">Track</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -324,6 +325,16 @@ function ShipmentsPage() {
                             month: "short",
                             day: "numeric",
                           })}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Link
+                            to="/dashboard/orders/$orderId/tracking"
+                            params={{ orderId: s.order_id }}
+                            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1 text-xs font-medium hover:bg-accent hover:text-accent-foreground"
+                          >
+                            <MapPin className="h-3 w-3" />
+                            View
+                          </Link>
                         </TableCell>
                       </TableRow>
                     );
