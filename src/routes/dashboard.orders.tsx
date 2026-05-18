@@ -76,6 +76,7 @@ const STATUS_VARIANT: Record<string, { label: string; className: string }> = {
 function OrdersPage() {
   const { user } = useAuth();
   const pushFn = useServerFn(pushOrderToProvider);
+  const importZRFn = useServerFn(importZRExpressOrders);
   const [orders, setOrders] = useState<Order[] | null>(null);
   const [items, setItems] = useState<Record<string, OrderItem[]>>({});
   const [shipments, setShipments] = useState<Record<string, Shipment>>({});
@@ -83,6 +84,43 @@ function OrdersPage() {
   const [shipOrder, setShipOrder] = useState<Order | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [pushingId, setPushingId] = useState<string | null>(null);
+  const [importingZR, setImportingZR] = useState(false);
+
+  const importFromZRExpress = async () => {
+    if (!user) return;
+    const { data: sessionData } = await supabase.auth.getSession();
+    const accessToken = sessionData.session?.access_token;
+    if (!accessToken) {
+      toast.error("Please sign in again.");
+      return;
+    }
+    // Resolve ZRExpress company id.
+    const { data: companies } = await supabase
+      .from("delivery_companies")
+      .select("id, name")
+      .eq("is_active", true);
+    const zr = (companies ?? []).find((c) =>
+      /zr\s*[-_]?\s*express|zrexpress/i.test(c.name),
+    );
+    if (!zr) {
+      toast.error("ZRExpress is not available.");
+      return;
+    }
+    setImportingZR(true);
+    try {
+      const res = await importZRFn({ data: { accessToken, companyId: zr.id } });
+      if (res.ok) {
+        toast.success(res.message);
+        loadOrders();
+      } else {
+        toast.error(res.message);
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Import failed.");
+    } finally {
+      setImportingZR(false);
+    }
+  };
 
   const sendToProvider = async (orderId: string) => {
     const { data: sessionData } = await supabase.auth.getSession();
