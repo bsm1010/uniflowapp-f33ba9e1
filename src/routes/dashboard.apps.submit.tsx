@@ -217,10 +217,9 @@ function SubmitAppPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="slug">Slug</Label>
+              <Label htmlFor="slug">Slug <span className="text-muted-foreground text-xs">(auto from name if empty)</span></Label>
               <Input
                 id="slug"
-                required
                 value={form.slug}
                 onChange={(e) => setForm({ ...form, slug: e.target.value.toLowerCase() })}
                 placeholder="my-awesome-app"
