@@ -14,16 +14,12 @@
       : "0 20px 50px -20px rgba(15,23,42,0.12)",
   }}
 >
-  {/* Soft theme accent — does not change card base color */}
-  <motion.div
-    className="pointer-events-none absolute inset-0 overflow-hidden"
-    aria-hidden
-  >
+  <motion.div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
     <div
       className="absolute -top-20 -right-20 h-60 w-60 rounded-full blur-3xl opacity-40"
       style={{ backgroundColor: t.primary }}
     />
-    <motion.div
+    <div
       className="absolute bottom-0 left-0 h-40 w-40 rounded-full blur-2xl opacity-25"
       style={{ backgroundColor: t.accent }}
     />
@@ -36,7 +32,7 @@
     <p className="mt-2 text-sm" style={{ color: t.muted }}>
       {tr("storefront.cod.subtitle")}
     </p>
-  </motion.div>
+  </div>
 
   <div className="relative z-10 grid grid-cols-1 gap-4 sm:grid-cols-2">
     <Field
@@ -50,13 +46,11 @@
         value={firstName}
         onChange={(e) => setFirstName(e.target.value)}
         placeholder="Ahmed"
-        className="w-full rounded-2xl px-4 py-3 text-sm outline-none transition-all focus:ring-2"
+        className="w-full rounded-2xl px-4 py-3 text-sm outline-none transition-all"
         style={{
           backgroundColor: t.bg,
           color: t.fg,
           border: `1px solid ${t.border}`,
-          // @ts-expect-error CSS variable for focus ring
-          "--tw-ring-color": `${t.primary}55`,
         }}
       />
     </Field>
@@ -72,18 +66,17 @@
         value={lastName}
         onChange={(e) => setLastName(e.target.value)}
         placeholder="Benali"
-        className="w-full rounded-2xl px-4 py-3 text-sm outline-none transition-all focus:ring-2"
+        className="w-full rounded-2xl px-4 py-3 text-sm outline-none transition-all"
         style={{
           backgroundColor: t.bg,
           color: t.fg,
           border: `1px solid ${t.border}`,
-          "--tw-ring-color": `${t.primary}55`,
         }}
       />
     </Field>
   </div>
 
-  <motion.div className="relative z-10">
+  <div className="relative z-10">
     <Field
       icon={<Phone className="h-4 w-4" style={{ color: t.primary }} />}
       label={tr("storefront.cod.phone")}
@@ -96,18 +89,17 @@
         onChange={(e) => setPhone(e.target.value)}
         placeholder="0555 12 34 56"
         inputMode="tel"
-        className="w-full rounded-2xl px-4 py-3 text-sm outline-none transition-all focus:ring-2"
+        className="w-full rounded-2xl px-4 py-3 text-sm outline-none transition-all"
         style={{
           backgroundColor: t.bg,
           color: t.fg,
           border: `1px solid ${t.border}`,
-          "--tw-ring-color": `${t.primary}55`,
         }}
       />
     </Field>
-  </motion.div>
+  </div>
 
-  <div className="relative z-10 grid grid-cols-1 gap-4 sm:grid-cols-2">
+  <motion.div className="relative z-10 grid grid-cols-1 gap-4 sm:grid-cols-2">
     <Field
       icon={<MapPin className="h-4 w-4" style={{ color: t.primary }} />}
       label={tr("storefront.cod.wilaya")}
@@ -182,7 +174,7 @@
                 boxShadow: active ? `0 10px 30px -10px ${t.primary}88` : "none",
               }}
             >
-              <motion.div className="flex flex-col items-center gap-2">
+              <div className="flex flex-col items-center gap-2">
                 {opt === "domicile" ? (
                   <Home className="h-5 w-5" />
                 ) : (
@@ -193,11 +185,11 @@
                     ? tr("storefront.cod.deliveryHome")
                     : tr("storefront.cod.deliveryStopdesk")}
                 </span>
-              </motion.div>
+              </div>
             </button>
           );
         })}
-      </div>
+      </motion.div>
     </Field>
   </div>
 
@@ -232,17 +224,17 @@
       </span>
     </div>
 
-    <motion.div
+    <div
       className="mt-4 flex items-center justify-between pt-4"
       style={{ borderTop: `1px solid ${t.border}` }}
     >
-      <motion.div className="text-sm" style={{ color: t.muted }}>
+      <div className="text-sm" style={{ color: t.muted }}>
         {tr("storefront.cod.totalLine", { count: quantity })}
-      </motion.div>
-      <div className="text-2xl font-bold" style={{ color: t.primary }}>
-        {total.toFixed(2)} DA
       </div>
-    </motion.div>
+      <motion.div className="text-2xl font-bold" style={{ color: t.primary }}>
+        {total.toFixed(2)} DA
+      </motion.div>
+    </div>
   </div>
 
   <button
