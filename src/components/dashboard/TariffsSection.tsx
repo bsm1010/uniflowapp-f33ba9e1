@@ -235,7 +235,7 @@ export function TariffsSection() {
     setSaving(true);
 
     const toUpsert: {
-      store_id: string;
+      owner_id: string;
       company_id: string;
       wilaya: string;
       city: string;
@@ -272,7 +272,7 @@ export function TariffsSection() {
         const { error } = await supabase
           .from("delivery_tariffs")
           .upsert(toUpsert, {
-            onConflict: "store_id,company_id,wilaya,city,delivery_type",
+            onConflict: "owner_id,company_id,wilaya,city,delivery_type",
           });
         if (error) throw error;
       }

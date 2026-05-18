@@ -134,7 +134,7 @@ export const Route = createFileRoute("/api/public/hooks/sync-tariffs")({
           }
 
           const toInsert: Array<{
-            store_id: string;
+            owner_id: string;
             company_id: string;
             wilaya: string;
             city: string;

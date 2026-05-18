@@ -46,7 +46,7 @@ export const syncDeliveryCompanyTariffs = createServerFn({ method: "POST" })
       const { data: link, error: linkErr } = await supabase
         .from("store_delivery_companies")
         .select("api_key, api_secret, enabled")
-        .eq("owner_id", userId)
+        .eq("store_id", userId)
         .eq("company_id", data.companyId)
         .maybeSingle();
       if (linkErr || !link) {
@@ -105,7 +105,7 @@ export const syncDeliveryCompanyTariffs = createServerFn({ method: "POST" })
 
       // 4. Reconcile: update changed rows, insert new ones in one batch.
       const toInsert: Array<{
-        store_id: string;
+        owner_id: string;
         company_id: string;
         wilaya: string;
         city: string;
