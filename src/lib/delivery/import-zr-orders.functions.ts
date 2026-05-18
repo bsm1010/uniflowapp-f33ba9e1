@@ -176,7 +176,7 @@ export const importZRExpressOrders = createServerFn({ method: "POST" })
         const status = pickStr(p, ["status", "situation", "state", "Situation", "etat"]) || "pending";
         const createdAt = pickDate(p, ["created_at", "createdAt", "date", "Date", "Date_Creation"]);
 
-        const row: Record<string, unknown> = {
+        const row: TablesInsert<"orders"> = {
           store_owner_id: userId,
           store_slug: storeSlug,
           customer_name: name || "ZRExpress customer",
