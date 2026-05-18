@@ -339,13 +339,33 @@ function OrdersPage() {
 
   return (
     <div className="max-w-7xl mx-auto pb-24">
-      <PageHeader
-        eyebrow="Sales"
-        title="Orders"
-        description="Manage incoming orders and update their delivery status."
-        icon={ShoppingBag}
-        gradient="from-emerald-500 via-teal-500 to-cyan-500"
-      />
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <PageHeader
+          eyebrow="Sales"
+          title="Orders"
+          description="Manage incoming orders and update their delivery status."
+          icon={ShoppingBag}
+          gradient="from-emerald-500 via-teal-500 to-cyan-500"
+        />
+        <div className="pt-6">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={importFromZRExpress}
+            disabled={importingZR}
+            className="gap-1.5"
+          >
+            {importingZR ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <RefreshCw className="h-4 w-4" />
+            )}
+            {orders && orders.some((o) => o.source === "zrexpress")
+              ? "Sync ZRExpress orders"
+              : "Import ZRExpress orders"}
+          </Button>
+        </div>
+      </div>
 
       {orders === null ? (
         <div className="flex items-center justify-center py-20">
