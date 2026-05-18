@@ -22,7 +22,7 @@ import { APPS_BY_KEY, type AppDef } from "@/lib/apps";
 import { useInstalledApps } from "@/hooks/use-installed-apps";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/dashboard/apps/$appKey")({
+export const Route = createFileRoute("/dashboard/apps/listing/$appKey")({
   component: AppLandingPage,
   loader: ({ params }) => {
     const app = APPS_BY_KEY[params.appKey];

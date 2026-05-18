@@ -171,7 +171,7 @@ export function InstalledAppsSection() {
                       asChild
                     >
                       <Link
-                        to="/dashboard/apps/$appKey"
+                        to="/dashboard/apps/listing/$appKey"
                         params={{ appKey: app.key }}
                       >
                         <ExternalLink className="mr-2 h-4 w-4" />
