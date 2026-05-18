@@ -1,3 +1,4 @@
+import { IphoneShortcutBanner } from "@/components/dashboard/IphoneShortcutBanner";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -46,7 +47,7 @@ function DashboardHome() {
     revenue: 0,
     customers: 0,
   });
-  const [recentOrders, setRecentOrders] = useState<
+  const [recentOrders, setRecentOrders] = useState
     Array<{
       id: string;
       customer_name: string;
@@ -96,8 +97,6 @@ function DashboardHome() {
       if (storeId) q = q.eq("store_id", storeId);
       return q;
     };
-    // Fetch only the columns we need for stats + recent. Cap aggregates at 1000
-    // so big stores don't waterfall the entire orders table on every load.
     const scopedOrdersForAgg = () => {
       let q = supabase
         .from("orders")
@@ -139,7 +138,7 @@ function DashboardHome() {
 
       const recent = recentRes.data ?? [];
       const recentIds = recent.map((o) => o.id);
-      const itemsByOrder: Record<
+      const itemsByOrder: Record
         string,
         { product_name: string; image_url: string | null; count: number }
       > = {};
@@ -193,8 +192,6 @@ function DashboardHome() {
         () => loadDashboard(),
       )
       .subscribe();
-    // Only refetch on focus if it has been >30s since last load — avoids
-    // hammering the database every time the user alt-tabs.
     let lastFocusReload = Date.now();
     const onFocus = () => {
       if (Date.now() - lastFocusReload > 30_000) {
@@ -270,6 +267,7 @@ function DashboardHome() {
       </motion.div>
 
       <WindowsAppBanner />
+      <IphoneShortcutBanner />
 
       <SubscriptionStatusCard
         status={status}
