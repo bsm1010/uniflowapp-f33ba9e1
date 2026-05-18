@@ -429,7 +429,17 @@ function OrdersPage() {
                           />
                         </TableCell>
                         <TableCell>
-                          <div className="font-medium">{o.customer_name}</div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">{o.customer_name}</span>
+                            {o.source === "zrexpress" && (
+                              <Badge
+                                variant="outline"
+                                className="bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30 text-[10px] px-1.5 py-0"
+                              >
+                                ZRExpress
+                              </Badge>
+                            )}
+                          </div>
                           <div className="text-[11px] font-mono text-muted-foreground">
                             #{o.id.slice(0, 8).toUpperCase()}
                           </div>
