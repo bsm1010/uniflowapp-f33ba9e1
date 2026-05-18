@@ -20,7 +20,7 @@ import { useCart } from "@/hooks/use-cart";
 import { fetchSettings, getCachedSettings, setCachedSettings } from "@/lib/storefrontCache";
 import PixelInjector from "@/components/PixelInjector";
 
-type Product = Pick
+type Product = Pick<
   Tables<"products">,
   "id" | "name" | "price" | "images" | "category" | "stock"
 >;
