@@ -148,8 +148,15 @@ export function ShippingCompaniesSection() {
   };
 
   const connect = async (companyId: string) => {
-    const raw = (draftJson[companyId] ?? "").trim();
-    if (!raw) {
+    const rawInput = draftJson[companyId] ?? "";
+    // Sanitize: strip BOM, zero-width chars, normalize smart quotes, trim.
+    const sanitized = rawInput
+      .replace(/^\uFEFF/, "")
+      .replace(/[\u200B-\u200D\u2060]/g, "")
+      .replace(/[\u2018\u2019\u201A\u201B]/g, "'")
+      .replace(/[\u201C\u201D\u201E\u201F]/g, '"')
+      .trim();
+    if (!sanitized) {
       const msg = "Please paste your API credentials as JSON.";
       setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
       toast.error(msg);
@@ -158,16 +165,23 @@ export function ShippingCompaniesSection() {
     let apiKey = "";
     let apiSecret = "";
     let parsed: unknown;
+    const tryParse = (s: string): unknown => JSON.parse(s);
     try {
-      parsed = JSON.parse(raw);
+      parsed = tryParse(sanitized);
     } catch {
-      const msg = "Invalid JSON format. Please paste valid credentials.";
-      setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
-      toast.error(msg);
-      return;
+      // Attempt repair: collapse stray newlines/tabs inside the JSON body.
+      try {
+        parsed = tryParse(sanitized.replace(/[\r\n\t]+/g, " "));
+      } catch (e) {
+        const detail = e instanceof Error ? e.message : "Unknown parse error";
+        const msg = `Invalid JSON format: ${detail}`;
+        setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
+        toast.error(msg);
+        return;
+      }
     }
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
-      const msg = "Invalid JSON format. Please paste valid credentials.";
+      const msg = "Invalid JSON: expected an object with secretKey and tenantId.";
       setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
       toast.error(msg);
       return;
@@ -182,8 +196,9 @@ export function ShippingCompaniesSection() {
       toast.error(msg);
       return;
     }
-    apiKey = sk.trim();
-    apiSecret = tid.trim();
+    // Strip all whitespace from credentials (handles accidental line breaks from copy/paste).
+    apiKey = sk.replace(/\s+/g, "");
+    apiSecret = tid.replace(/\s+/g, "");
     if (!user || !session?.access_token) {
       const msg = "Please sign in again to connect.";
       setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
@@ -396,14 +411,18 @@ export function ShippingCompaniesSection() {
                       id={`creds-${c.id}`}
                       placeholder={`{\n  "secretKey": "...",\n  "tenantId": "...",\n  "createdAt": "...",\n  "expireInDays": 365\n}`}
                       autoComplete="off"
+                      autoCorrect="off"
+                      autoCapitalize="off"
                       spellCheck={false}
-                      rows={5}
+                      wrap="off"
+                      rows={6}
                       value={draftJson[c.id] ?? ""}
                       onChange={(e) => {
                         setDraftJson((p) => ({ ...p, [c.id]: e.target.value }));
                         setValidationStatus((p) => ({ ...p, [c.id]: undefined }));
                       }}
-                      className={`font-mono text-xs leading-relaxed transition-colors ${textareaBorder}`}
+                      style={{ whiteSpace: "pre", overflowWrap: "normal", wordBreak: "normal" }}
+                      className={`font-mono text-xs leading-relaxed overflow-auto transition-colors ${textareaBorder}`}
                     />
                     <div className="flex items-center justify-between gap-2">
                       <p className="text-[11px] text-muted-foreground">
