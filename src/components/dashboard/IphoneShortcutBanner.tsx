@@ -1,136 +1,141 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Bell, Share, Plus } from "lucide-react";
+import QRCode from "qrcode";
+
+const GUIDE_URL = "https://fennecly.online/iphone-guide";
 
 export function IphoneShortcutBanner() {
-  const [dismissed, setDismissed] = useState(() =>
-    localStorage.getItem("iphone-banner-dismissed") === "true"
+  const [dismissed, setDismissed] = useState(
+    () => localStorage.getItem("iphone-banner-v2-dismissed") === "true"
   );
+  const [qrDataUrl, setQrDataUrl] = useState<string>("");
+
+  useEffect(() => {
+    QRCode.toDataURL(GUIDE_URL, {
+      width: 180,
+      margin: 2,
+      color: { dark: "#ffffff", light: "#00000000" },
+      errorCorrectionLevel: "M",
+    }).then(setQrDataUrl).catch(() => {});
+  }, []);
 
   if (dismissed) return null;
 
   const handleDismiss = () => {
-    localStorage.setItem("iphone-banner-dismissed", "true");
+    localStorage.setItem("iphone-banner-v2-dismissed", "true");
     setDismissed(true);
   };
 
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ opacity: 0, y: -8 }}
+        initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -8 }}
-        transition={{ duration: 0.4, delay: 0.1 }}
-        className="mt-4 relative overflow-hidden rounded-2xl border border-white/10"
+        exit={{ opacity: 0, y: -10 }}
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        className="relative mt-4 overflow-hidden rounded-3xl"
         style={{
-          background: "linear-gradient(135deg, #0f0f1a 0%, #1a1035 40%, #0f1a2e 100%)",
+          background: "linear-gradient(135deg, #09090f 0%, #120f24 50%, #0b1220 100%)",
+          border: "1px solid rgba(139,92,246,0.2)",
+          boxShadow: "0 24px 64px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)",
         }}
       >
-        {/* Glow effects */}
-        <div className="absolute -top-10 left-20 h-32 w-32 rounded-full bg-violet-600/20 blur-3xl pointer-events-none" />
-        <div className="absolute -top-10 right-40 h-32 w-32 rounded-full bg-blue-600/15 blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-1/2 h-20 w-64 -translate-x-1/2 rounded-full bg-violet-500/10 blur-2xl pointer-events-none" />
+        {/* Ambient glows */}
+        <div className="pointer-events-none absolute -top-20 left-16 h-52 w-52 rounded-full bg-violet-600/20 blur-3xl" />
+        <div className="pointer-events-none absolute right-48 top-0 h-40 w-40 rounded-full bg-blue-500/10 blur-3xl" />
 
-        <div className="relative flex items-center gap-4 px-5 py-4">
+        {/* Dismiss */}
+        <button
+          onClick={handleDismiss}
+          className="absolute right-4 top-4 z-10 flex h-7 w-7 items-center justify-center rounded-full text-white/30 transition hover:bg-white/10 hover:text-white/70"
+        >
+          <X className="h-4 w-4" />
+        </button>
 
-          {/* 3D iPhone mockup */}
-          <div className="shrink-0 hidden sm:block">
-            <div className="relative" style={{ width: 52, height: 88 }}>
-              {/* Phone body */}
-              <div
-                className="absolute inset-0 rounded-[14px] border border-white/20"
-                style={{
-                  background: "linear-gradient(145deg, #2a2a3e 0%, #1a1a2e 50%, #111120 100%)",
-                  boxShadow: "4px 6px 20px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1), -2px -2px 8px rgba(139,92,246,0.15)",
-                }}
-              />
-              {/* Screen */}
-              <div
-                className="absolute rounded-[10px] overflow-hidden"
-                style={{
-                  top: 6, left: 4, right: 4, bottom: 6,
-                  background: "linear-gradient(160deg, #1e1040 0%, #0d0d1f 100%)",
-                }}
-              >
-                {/* Status bar */}
-                <div className="flex justify-between items-center px-2 pt-1">
-                  <span style={{ fontSize: 4, color: "rgba(255,255,255,0.6)" }}>9:41</span>
-                  <div className="flex gap-0.5 items-center">
-                    <div className="h-1 w-1 rounded-full bg-white/60" />
-                    <div className="h-1 w-1 rounded-full bg-white/60" />
-                    <div className="h-1 w-1 rounded-full bg-white/60" />
-                  </div>
-                </div>
-                {/* Notification card on screen */}
-                <div className="mx-1 mt-1 rounded-md p-1"
-                  style={{ background: "rgba(139,92,246,0.25)", border: "0.5px solid rgba(139,92,246,0.4)" }}>
-                  <div className="flex items-center gap-1">
-                    <div className="h-2.5 w-2.5 rounded-sm bg-violet-500 flex items-center justify-center">
-                      <Bell style={{ width: 5, height: 5, color: "white" }} />
-                    </div>
-                    <span style={{ fontSize: 3.5, color: "rgba(255,255,255,0.9)", fontWeight: 600 }}>Fennecly</span>
-                  </div>
-                  <p style={{ fontSize: 3, color: "rgba(255,255,255,0.6)", marginTop: 1 }}>New order received! 🎉</p>
-                </div>
-                {/* App icon grid */}
-                <div className="grid grid-cols-3 gap-1 px-1.5 mt-2">
-                  {["bg-violet-500", "bg-blue-500", "bg-emerald-500", "bg-orange-500", "bg-pink-500", "bg-cyan-500"].map((c, i) => (
-                    <div key={i} className={`${c} rounded-sm`} style={{ height: 8, opacity: 0.8 }} />
-                  ))}
-                </div>
-              </div>
-              {/* Home indicator */}
-              <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 h-0.5 w-5 rounded-full bg-white/30" />
-              {/* Side button */}
-              <div className="absolute -right-0.5 top-6 h-4 w-0.5 rounded-full bg-white/20" />
-              {/* Volume buttons */}
-              <div className="absolute -left-0.5 top-5 h-3 w-0.5 rounded-full bg-white/20" />
-              <div className="absolute -left-0.5 top-9 h-3 w-0.5 rounded-full bg-white/20" />
+        <div className="relative flex items-stretch gap-0">
+
+          {/* ── LEFT: Text content ── */}
+          <div className="flex-1 p-6 pr-4">
+
+            {/* Badge */}
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full px-3 py-1"
+              style={{ background: "rgba(139,92,246,0.18)", border: "1px solid rgba(139,92,246,0.3)" }}>
+              <span className="text-xs font-bold tracking-widest uppercase text-violet-300">New</span>
+              <span className="h-1 w-1 rounded-full bg-violet-400/60" />
+              <span className="text-xs text-violet-300/70">iPhone Ready</span>
             </div>
-          </div>
 
-          {/* Text content */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-sm font-bold text-white">
-                📱 Fennecly is now available on iPhone!
-              </span>
-              <span className="text-xs px-2 py-0.5 rounded-full font-semibold"
-                style={{ background: "rgba(139,92,246,0.3)", color: "#c4b5fd", border: "1px solid rgba(139,92,246,0.4)" }}>
-                New
-              </span>
-            </div>
-            <p className="mt-0.5 text-xs text-white/50">
-              Get instant order notifications on your iPhone — no app store needed.
+            {/* Headline */}
+            <h2 className="text-xl font-bold leading-snug text-white sm:text-2xl">
+              📱 Fennecly is now<br />
+              <span style={{ color: "#a78bfa" }}>available on iPhone</span>
+            </h2>
+
+            <p className="mt-2.5 text-sm leading-relaxed text-white/50 max-w-xs">
+              No App Store needed. Scan the QR code with your iPhone camera to open the install guide.
             </p>
-            {/* Steps */}
-            <div className="mt-2 flex items-center gap-3 flex-wrap">
+
+            {/* Steps row */}
+            <div className="mt-5 flex flex-wrap gap-2">
               {[
                 { icon: Share, label: "Tap Share" },
-                { icon: Plus, label: "Add to Home Screen" },
-                { icon: Bell, label: "Allow Notifications" },
+                { icon: Plus, label: "Add to Home" },
+                { icon: Bell, label: "Allow Notifs" },
               ].map((step, i) => (
-                <div key={i} className="flex items-center gap-1.5">
-                  {i > 0 && <div className="h-px w-3 bg-white/20" />}
-                  <div className="flex items-center gap-1">
-                    <div className="h-5 w-5 rounded-md flex items-center justify-center"
-                      style={{ background: "rgba(139,92,246,0.2)", border: "1px solid rgba(139,92,246,0.3)" }}>
-                      <step.icon className="h-3 w-3 text-violet-400" />
-                    </div>
-                    <span className="text-xs text-white/60">{step.label}</span>
-                  </div>
+                <div key={i} className="flex items-center gap-1.5 rounded-xl px-3 py-2"
+                  style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                  <step.icon className="h-3.5 w-3.5 text-violet-400" />
+                  <span className="text-xs font-medium text-white/60">{step.label}</span>
                 </div>
               ))}
             </div>
+
+            {/* Clickable link fallback */}
+            <a
+              href={GUIDE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex items-center gap-1.5 text-xs text-violet-400/70 hover:text-violet-300 transition-colors underline underline-offset-2"
+            >
+              Or tap here to open the guide
+            </a>
           </div>
 
-          {/* Dismiss */}
-          <button
-            onClick={handleDismiss}
-            className="shrink-0 h-7 w-7 rounded-full flex items-center justify-center transition-colors hover:bg-white/10 text-white/40 hover:text-white/80"
-          >
-            <X className="h-4 w-4" />
-          </button>
+          {/* ── RIGHT: QR Code ── */}
+          <div className="flex shrink-0 flex-col items-center justify-center px-5 py-6"
+            style={{ borderLeft: "1px solid rgba(255,255,255,0.06)" }}>
+            <div className="relative rounded-2xl p-3"
+              style={{
+                background: "rgba(139,92,246,0.08)",
+                border: "1px solid rgba(139,92,246,0.2)",
+                boxShadow: "0 0 40px rgba(139,92,246,0.15)",
+              }}>
+              {qrDataUrl ? (
+                <img
+                  src={qrDataUrl}
+                  alt="QR code to open Fennecly iPhone install guide"
+                  width={148}
+                  height={148}
+                  className="block rounded-xl"
+                />
+              ) : (
+                /* Skeleton while generating */
+                <div className="h-[148px] w-[148px] animate-pulse rounded-xl bg-white/5" />
+              )}
+
+              {/* Corner accents */}
+              <div className="absolute left-2 top-2 h-4 w-4 rounded-tl-md border-l-2 border-t-2 border-violet-400/50" />
+              <div className="absolute right-2 top-2 h-4 w-4 rounded-tr-md border-r-2 border-t-2 border-violet-400/50" />
+              <div className="absolute bottom-2 left-2 h-4 w-4 rounded-bl-md border-b-2 border-l-2 border-violet-400/50" />
+              <div className="absolute bottom-2 right-2 h-4 w-4 rounded-br-md border-b-2 border-r-2 border-violet-400/50" />
+            </div>
+
+            <p className="mt-2.5 text-center text-[11px] font-medium text-white/30 leading-tight">
+              Scan with iPhone<br />camera app
+            </p>
+          </div>
+
         </div>
       </motion.div>
     </AnimatePresence>
