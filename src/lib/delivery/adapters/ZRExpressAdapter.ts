@@ -6,7 +6,7 @@ import type {
   ValidationResult,
 } from "../types";
 
-const ZR_BASE_URL = "https://procolis.com/api_v1";
+const ZR_BASE_URL = "https://api.zrexpress.app/api/v1";
 
 /**
  * Adapter for ZR Express (Procolis API).
@@ -26,7 +26,7 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
 
     const token = this.credentials.apiKey.trim();
     const tenantId = this.credentials.apiSecret.trim();
-    const url = `${ZR_BASE_URL}/tarification`;
+    const url = `${ZR_BASE_URL}/tarifs`;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 12_000);
 
@@ -130,7 +130,7 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
 
     const data = await this.request<{
       Colis?: Array<{ Tracking?: string; MessageRetour?: string }>;
-    }>(`${ZR_BASE_URL}/add_colis`, {
+    }>(`${ZR_BASE_URL}/colis`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -152,12 +152,13 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
 
     const data = await this.request<{
       Colis?: Array<{ Situation?: string; DateH_Action?: string }>;
-    }>(`${ZR_BASE_URL}/lire`, {
+    }>(`${ZR_BASE_URL}/colis/${encodeURIComponent(trackingNumber)}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         token: this.credentials.apiKey,
         key: this.credentials.apiSecret ?? "",
+        id: this.credentials.apiSecret ?? "",
       },
       body: JSON.stringify({ Colis: [{ Tracking: trackingNumber }] }),
     });
