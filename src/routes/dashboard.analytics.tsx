@@ -2,10 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { BarChart3, TrendingUp } from "lucide-react";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
+import { AlgeriaOrdersMap } from "@/components/dashboard/AlgeriaOrdersMap";
 
 export const Route = createFileRoute("/dashboard/analytics")({
   component: AnalyticsPage,
-  head: () => ({ meta: [{ title: "Analytics — Storely" }] }),
+  head: () => ({ meta: [{ title: "Analytics — Fennecly" }] }),
 });
 
 function AnalyticsPage() {
@@ -39,6 +40,12 @@ function AnalyticsPage() {
           </Card>
         ))}
       </div>
+
+      {/* Algeria Orders Map */}
+      <div className="mt-6">
+        <AlgeriaOrdersMap />
+      </div>
+
       <Card className="mt-6 border-border/60 shadow-soft">
         <CardContent className="p-6">
           <h3 className="font-semibold">Traffic overview</h3>
