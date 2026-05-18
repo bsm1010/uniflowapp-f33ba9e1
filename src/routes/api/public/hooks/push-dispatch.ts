@@ -36,18 +36,30 @@ export const Route = createFileRoute("/api/public/hooks/push-dispatch")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const secretHeader = request.headers.get("x-cron-secret") ?? "";
-        const expected = process.env.CRON_SECRET ?? "";
-        if (!expected || secretHeader !== expected) {
-          return new Response("Unauthorized", { status: 401 });
-        }
-
         let payload: z.infer<typeof PayloadSchema>;
         try {
           payload = PayloadSchema.parse(await request.json());
         } catch {
           return new Response("Bad payload", { status: 400 });
         }
+
+        // Auth: verify the notification_id exists in DB and matches user_id.
+        // This prevents external abuse — only real notifications can trigger pushes.
+        if (!payload.notification_id) {
+          return new Response("Missing notification_id", { status: 400 });
+        }
+        const { data: notif } = await supabaseAdmin
+          .from("notifications")
+          .select("id, user_id, title, message, type")
+          .eq("id", payload.notification_id)
+          .maybeSingle();
+        if (!notif || notif.user_id !== payload.user_id) {
+          return new Response("Unauthorized", { status: 401 });
+        }
+        // Trust DB as source of truth
+        payload.title = notif.title;
+        payload.message = notif.message ?? "";
+        payload.type = notif.type ?? "info";
 
         // Honor preferences
         const { data: prefs } = await supabaseAdmin
