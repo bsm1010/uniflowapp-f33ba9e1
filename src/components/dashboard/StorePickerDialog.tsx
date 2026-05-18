@@ -56,7 +56,7 @@ export function StorePickerDialog() {
                 key={s.id}
                 onClick={() => pick(s)}
                 className={cn(
-                  "group relative rounded-2xl border bg-white p-5 text-left transition-all duration-200",
+                  "group relative rounded-2xl border bg-white p-5 text-left transition-all duration-200 text-gray-900",
                   "hover:-translate-y-1 hover:shadow-xl hover:border-primary/50",
                   currentStore?.id === s.id && "ring-2 ring-primary",
                 )}
