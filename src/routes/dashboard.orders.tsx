@@ -73,12 +73,39 @@ const STATUS_VARIANT: Record<string, { label: string; className: string }> = {
 
 function OrdersPage() {
   const { user } = useAuth();
+  const pushFn = useServerFn(pushOrderToProvider);
   const [orders, setOrders] = useState<Order[] | null>(null);
   const [items, setItems] = useState<Record<string, OrderItem[]>>({});
   const [shipments, setShipments] = useState<Record<string, Shipment>>({});
   const [query, setQuery] = useState("");
   const [shipOrder, setShipOrder] = useState<Order | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [pushingId, setPushingId] = useState<string | null>(null);
+
+  const sendToProvider = async (orderId: string) => {
+    const { data: sessionData } = await supabase.auth.getSession();
+    const accessToken = sessionData.session?.access_token;
+    if (!accessToken) {
+      toast.error("Please sign in again.");
+      return;
+    }
+    setPushingId(orderId);
+    try {
+      const res = await pushFn({ data: { accessToken, orderId } });
+      if (res.ok) {
+        toast.success(res.message);
+        loadOrders();
+      } else {
+        toast.error(res.message);
+        loadOrders();
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to send to delivery provider.");
+    } finally {
+      setPushingId(null);
+    }
+  };
+
 
   const loadOrders = async () => {
     if (!user) return;
