@@ -66,6 +66,7 @@ interface Props {
 
 export function ProductFormDialog({ open, onOpenChange, product, onSaved }: Props) {
   const { user } = useAuth();
+  const { currentStore } = useCurrentStore();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("0");
