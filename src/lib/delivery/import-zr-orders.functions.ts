@@ -116,18 +116,37 @@ export const importZRExpressOrders = createServerFn({ method: "POST" })
         return { ok: false, message: "ZRExpress returned non-JSON response." };
       }
 
-      // Tolerate multiple envelope shapes: array | { data } | { parcels } | { items } | { results }.
-      const arr: unknown[] = Array.isArray(parsed)
-        ? parsed
-        : Array.isArray((parsed as Record<string, unknown>).data)
-          ? ((parsed as Record<string, unknown>).data as unknown[])
-          : Array.isArray((parsed as Record<string, unknown>).parcels)
-            ? ((parsed as Record<string, unknown>).parcels as unknown[])
-            : Array.isArray((parsed as Record<string, unknown>).items)
-              ? ((parsed as Record<string, unknown>).items as unknown[])
-              : Array.isArray((parsed as Record<string, unknown>).results)
-                ? ((parsed as Record<string, unknown>).results as unknown[])
-                : [];
+      // Tolerate multiple envelope shapes.
+      const obj = (parsed && typeof parsed === "object" ? parsed : {}) as Record<string, unknown>;
+      let arr: unknown[] = Array.isArray(parsed)
+        ? (parsed as unknown[])
+        : Array.isArray(obj.data) ? (obj.data as unknown[])
+        : Array.isArray(obj.parcels) ? (obj.parcels as unknown[])
+        : Array.isArray(obj.items) ? (obj.items as unknown[])
+        : Array.isArray(obj.results) ? (obj.results as unknown[])
+        : Array.isArray((obj.data as Record<string, unknown> | undefined)?.parcels)
+          ? ((obj.data as Record<string, unknown>).parcels as unknown[])
+        : Array.isArray((obj.data as Record<string, unknown> | undefined)?.items)
+          ? ((obj.data as Record<string, unknown>).items as unknown[])
+        : [];
+
+      // Fallback: pick the first array-valued property anywhere in the envelope.
+      if (arr.length === 0 && !Array.isArray(parsed)) {
+        for (const v of Object.values(obj)) {
+          if (Array.isArray(v) && v.length && typeof v[0] === "object") {
+            arr = v as unknown[];
+            break;
+          }
+        }
+      }
+
+      console.log(`[importZR] top-level keys=${Object.keys(obj).join(",")} arr.length=${arr.length}`);
+      if (arr.length > 0) {
+        console.log(`[importZR] sample item keys=${Object.keys(arr[0] as object).join(",")}`);
+        console.log(`[importZR] sample item=${JSON.stringify(arr[0]).slice(0, 800)}`);
+      } else {
+        console.log(`[importZR] empty arr; raw preview=${bodyText.slice(0, 800)}`);
+      }
 
       if (arr.length === 0) {
         return {
