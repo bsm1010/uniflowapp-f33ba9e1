@@ -147,6 +147,7 @@ export async function pushOrderInternal(
       productName,
       totalPrice: Number(order.total),
       notes: order.notes ?? undefined,
+      deliveryType: order.delivery_type ?? "domicile",
     });
 
     // Upsert shipment row.

@@ -103,33 +103,53 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
       };
     }
 
-    const payload = {
-      externalId: input.orderId,
+    const dt = (input.deliveryType ?? "").toLowerCase();
+    const deliveryType =
+      dt === "stopdesk" || dt === "stop-desk" || dt === "stop_desk" || dt === "pickup-point"
+        ? "stop-desk"
+        : "home";
+
+    const body = {
       customerName: input.customerName,
-      customerPhone: input.customerPhone,
-      address: input.address,
+      phone: input.customerPhone,
       wilaya: input.wilaya,
       commune: input.commune ?? input.wilaya,
-      total: Math.round(input.totalPrice),
+      address: input.address,
       productName: input.productName ?? "Order",
+      price: Math.round(input.totalPrice),
+      deliveryType,
+      externalId: input.orderId,
       notes: input.notes ?? "",
     };
 
-    const data = await this.request<{
-      trackingNumber?: string;
-      tracking?: string;
-      data?: { trackingNumber?: string; tracking?: string };
-    }>(`${ZR_BASE_URL}/parcels`, {
+    const url = `${ZR_BASE_URL}/parcels`;
+    const res = await fetch(url, {
       method: "POST",
       headers: this.authHeaders(),
-      body: JSON.stringify(payload),
+      body: JSON.stringify(body),
     });
+    const text = await res.text();
+    let data: Record<string, unknown> = {};
+    try {
+      data = text ? JSON.parse(text) : {};
+    } catch {
+      // non-JSON
+    }
+    console.log("[ZRExpress] createShipment", {
+      url,
+      status: res.status,
+      bodyPreview: text.slice(0, 500),
+    });
+    if (!res.ok) {
+      throw new Error(
+        `ZR Express ${res.status}: ${text.slice(0, 300) || res.statusText}`,
+      );
+    }
 
+    const inner = (data.data ?? data) as Record<string, unknown>;
     const tracking =
-      data.trackingNumber ??
-      data.tracking ??
-      data.data?.trackingNumber ??
-      data.data?.tracking ??
+      pickStr(data, ["trackingNumber", "tracking", "tracking_number", "id"]) ||
+      pickStr(inner, ["trackingNumber", "tracking", "tracking_number", "id"]) ||
       this.generateTrackingNumber("ZRE");
     return { trackingNumber: tracking, status: "created", raw: data };
   }
@@ -139,24 +159,68 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
       return { trackingNumber, status: "in_transit" };
     }
 
-    const data = await this.request<{
-      status?: string;
-      updatedAt?: string;
-      data?: { status?: string; updatedAt?: string };
-    }>(`${ZR_BASE_URL}/parcels/${encodeURIComponent(trackingNumber)}`, {
-      method: "GET",
-      headers: this.authHeaders(),
-    });
+    const url = `${ZR_BASE_URL}/parcels/${encodeURIComponent(trackingNumber)}`;
+    const res = await fetch(url, { method: "GET", headers: this.authHeaders() });
+    const text = await res.text();
+    let data: Record<string, unknown> = {};
+    try {
+      data = text ? JSON.parse(text) : {};
+    } catch {
+      // ignore
+    }
+    if (!res.ok) {
+      throw new Error(
+        `ZR Express ${res.status}: ${text.slice(0, 300) || res.statusText}`,
+      );
+    }
+    const inner = (data.data ?? data) as Record<string, unknown>;
+    const stateObj = (inner.state ?? inner.status ?? {}) as Record<string, unknown>;
+    const statusRaw =
+      pickStr(inner, ["status"]) ||
+      pickStr(stateObj, ["name", "description", "label"]);
+    const updatedAt =
+      pickStr(inner, ["updatedAt", "updated_at", "lastUpdate"]) || undefined;
 
-    const status = data.status ?? data.data?.status;
-    const updatedAt = data.updatedAt ?? data.data?.updatedAt;
+    const historyRaw =
+      (inner.history as unknown[]) ??
+      (inner.events as unknown[]) ??
+      (inner.timeline as unknown[]) ??
+      [];
+    const history = Array.isArray(historyRaw)
+      ? historyRaw
+          .map((h) => {
+            const e = (h ?? {}) as Record<string, unknown>;
+            const st = (e.state ?? {}) as Record<string, unknown>;
+            return {
+              status:
+                pickStr(e, ["status", "name", "label", "description"]) ||
+                pickStr(st, ["name", "description"]),
+              date:
+                pickStr(e, ["date", "createdAt", "created_at", "at", "timestamp"]) ||
+                "",
+              location: pickStr(e, ["location", "city", "wilaya"]) || undefined,
+            };
+          })
+          .filter((h) => h.status || h.date)
+      : [];
+
     return {
       trackingNumber,
-      status: mapZRStatus(status),
+      status: mapZRStatus(statusRaw),
       lastUpdate: updatedAt,
+      history,
       raw: data,
     };
   }
+}
+
+function pickStr(obj: Record<string, unknown>, keys: string[]): string {
+  for (const k of keys) {
+    const v = obj[k];
+    if (typeof v === "string" && v.trim()) return v.trim();
+    if (typeof v === "number") return String(v);
+  }
+  return "";
 }
 
 function mapZRStatus(status?: string): TrackingResult["status"] {

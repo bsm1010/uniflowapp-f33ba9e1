@@ -27,6 +27,7 @@ export interface CreateShipmentInput {
   totalPrice: number;
   weight?: number;
   notes?: string;
+  deliveryType?: string;
 }
 
 export interface CreateShipmentResult {
