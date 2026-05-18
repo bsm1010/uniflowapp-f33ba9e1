@@ -19,6 +19,7 @@ import { NotificationsBell } from "./NotificationsBell";
 import { ThemeToggle } from "./ThemeToggle";
 import { LanguageSwitcher } from "@/components/landing/LanguageSwitcher";
 import { CreditsBadge } from "./CreditsBadge";
+import { StoreSwitcherButton } from "./StoreSwitcherButton";
 
 type SearchTarget = { label: string; to: string; keywords: string };
 
