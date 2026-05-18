@@ -48,6 +48,7 @@ export function ShippingCompaniesSection() {
   const listFn = useServerFn(listStoreDeliveryCompanies);
   const setEnabledFn = useServerFn(setStoreDeliveryCompanyEnabled);
   const setDefaultFn = useServerFn(setStoreDeliveryCompanyDefault);
+  const disconnectFn = useServerFn(disconnectStoreDeliveryCompany);
 
   const [companies, setCompanies] = useState<Company[]>([]);
   const [rows, setRows] = useState<Record<string, StoreCompanyView>>({});
