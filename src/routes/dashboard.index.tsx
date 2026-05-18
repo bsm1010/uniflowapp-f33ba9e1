@@ -17,6 +17,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { useCurrentStore } from "@/hooks/use-current-store";
 import { useSubscription } from "@/hooks/use-subscription";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -34,6 +35,7 @@ export const Route = createFileRoute("/dashboard/")({
 
 function DashboardHome() {
   const { user } = useAuth();
+  const { currentStore } = useCurrentStore();
   const { t } = useTranslation();
   const { status, daysRemaining, hadPaidSubscription } = useSubscription();
   const [name, setName] = useState("");
@@ -59,6 +61,8 @@ function DashboardHome() {
 
   const loadDashboard = useCallback(() => {
     if (!user) return;
+    const storeId = currentStore?.id ?? null;
+
     supabase
       .from("profiles")
       .select("name")
@@ -76,30 +80,64 @@ function DashboardHome() {
       .limit(1)
       .then(({ data }) => setHasPendingPayment((data?.length ?? 0) > 0));
 
-    Promise.all([
-      supabase
+    const scopedProducts = () => {
+      let q = supabase
         .from("products")
         .select("id", { count: "exact", head: true })
-        .eq("user_id", user.id),
-      supabase
+        .eq("user_id", user.id);
+      if (storeId) q = q.eq("store_id", storeId);
+      return q;
+    };
+    const scopedOrdersCount = () => {
+      let q = supabase
         .from("orders")
-        .select("id,customer_name,customer_email,total,status,created_at")
+        .select("id", { count: "exact", head: true })
+        .eq("store_owner_id", user.id);
+      if (storeId) q = q.eq("store_id", storeId);
+      return q;
+    };
+    // Fetch only the columns we need for stats + recent. Cap aggregates at 1000
+    // so big stores don't waterfall the entire orders table on every load.
+    const scopedOrdersForAgg = () => {
+      let q = supabase
+        .from("orders")
+        .select("customer_email,total")
         .eq("store_owner_id", user.id)
-        .order("created_at", { ascending: false }),
-    ]).then(async ([prodRes, ordersRes]) => {
-      const orders = ordersRes.data ?? [];
-      const revenue = orders.reduce((n, o) => n + Number(o.total ?? 0), 0);
+        .order("created_at", { ascending: false })
+        .limit(1000);
+      if (storeId) q = q.eq("store_id", storeId);
+      return q;
+    };
+    const scopedRecentOrders = () => {
+      let q = supabase
+        .from("orders")
+        .select("id,customer_name,total,status,created_at")
+        .eq("store_owner_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(5);
+      if (storeId) q = q.eq("store_id", storeId);
+      return q;
+    };
+
+    Promise.all([
+      scopedProducts(),
+      scopedOrdersCount(),
+      scopedOrdersForAgg(),
+      scopedRecentOrders(),
+    ]).then(async ([prodRes, ordersCountRes, ordersAggRes, recentRes]) => {
+      const agg = ordersAggRes.data ?? [];
+      const revenue = agg.reduce((n, o) => n + Number(o.total ?? 0), 0);
       const customers = new Set(
-        orders.map((o) => o.customer_email.toLowerCase()),
+        agg.map((o) => (o.customer_email ?? "").toLowerCase()).filter(Boolean),
       ).size;
       setCounts({
         products: prodRes.count ?? 0,
-        orders: orders.length,
+        orders: ordersCountRes.count ?? 0,
         revenue,
         customers,
       });
 
-      const recent = orders.slice(0, 5);
+      const recent = recentRes.data ?? [];
       const recentIds = recent.map((o) => o.id);
       const itemsByOrder: Record<
         string,
@@ -134,7 +172,7 @@ function DashboardHome() {
         })),
       );
     });
-  }, [user]);
+  }, [user, currentStore?.id]);
 
   useEffect(() => {
     loadDashboard();
@@ -155,7 +193,15 @@ function DashboardHome() {
         () => loadDashboard(),
       )
       .subscribe();
-    const onFocus = () => loadDashboard();
+    // Only refetch on focus if it has been >30s since last load — avoids
+    // hammering the database every time the user alt-tabs.
+    let lastFocusReload = Date.now();
+    const onFocus = () => {
+      if (Date.now() - lastFocusReload > 30_000) {
+        lastFocusReload = Date.now();
+        loadDashboard();
+      }
+    };
     window.addEventListener("focus", onFocus);
     return () => {
       supabase.removeChannel(channel);
