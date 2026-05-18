@@ -141,6 +141,7 @@ export const createOrder = createServerFn({ method: "POST" })
         subtotal,
         total,
         status: "pending",
+        delivery_type: data.deliveryType,
       })
       .select("id, created_at")
       .single();
@@ -189,15 +190,26 @@ export const createOrder = createServerFn({ method: "POST" })
       console.error("createOrder: failed to create seller notification", notificationErr);
     }
 
-    // 7. Create shipment (best-effort)
-    if (data.companyId) {
-      await admin.from("shipments").insert({
-        store_id: storeOwnerId,
-        order_id: order.id,
-        company_id: data.companyId,
-        status: "pending",
-      });
+    // 7. Push to delivery provider (best-effort, never blocks order creation).
+    //    On failure the shipment row is still created with last_error so the
+    //    seller can retry from the dashboard.
+    try {
+      const push = await pushOrderWithAdmin(order.id, storeOwnerId, data.companyId);
+      if (push.ok) {
+        console.log("createOrder: pushed to provider", {
+          orderId: order.id,
+          tracking: push.trackingNumber,
+        });
+      } else {
+        console.warn("createOrder: provider push failed", {
+          orderId: order.id,
+          reason: push.message,
+        });
+      }
+    } catch (pushErr) {
+      console.error("createOrder: provider push threw", pushErr);
     }
 
     return { orderId: order.id, subtotal, deliveryPrice, total };
   });
+
