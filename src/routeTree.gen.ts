@@ -63,7 +63,6 @@ import { Route as DashboardAppsAnalyticsRouteImport } from './routes/dashboard.a
 import { Route as DashboardAppsAiDescriptionsRouteImport } from './routes/dashboard.apps.ai-descriptions'
 import { Route as DashboardAppsAdGeneratorRouteImport } from './routes/dashboard.apps.ad-generator'
 import { Route as DashboardAppsAbandonedCartRouteImport } from './routes/dashboard.apps.abandoned-cart'
-import { Route as DashboardAppsAppKeyRouteImport } from './routes/dashboard.apps.$appKey'
 import { Route as DashboardAdminPaymentsRouteImport } from './routes/dashboard.admin.payments'
 import { Route as ApiDbTableIdRouteImport } from './routes/api.db.$tableId'
 import { Route as SSlugPProductIdRouteImport } from './routes/s.$slug.p.$productId'
@@ -71,6 +70,7 @@ import { Route as SSlugCheckoutSuccessRouteImport } from './routes/s.$slug.check
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
+import { Route as DashboardAppsListingAppKeyRouteImport } from './routes/dashboard.apps.listing.$appKey'
 import { Route as ApiPublicHooksSyncTariffsRouteImport } from './routes/api.public.hooks.sync-tariffs'
 import { Route as ApiPublicHooksInstagramRouteImport } from './routes/api.public.hooks.instagram'
 import { Route as ApiDbTableIdRecordIdRouteImport } from './routes/api.db.$tableId.$recordId'
@@ -356,11 +356,6 @@ const DashboardAppsAbandonedCartRoute =
     path: '/abandoned-cart',
     getParentRoute: () => DashboardAppsRoute,
   } as any)
-const DashboardAppsAppKeyRoute = DashboardAppsAppKeyRouteImport.update({
-  id: '/$appKey',
-  path: '/$appKey',
-  getParentRoute: () => DashboardAppsRoute,
-} as any)
 const DashboardAdminPaymentsRoute = DashboardAdminPaymentsRouteImport.update({
   id: '/admin/payments',
   path: '/admin/payments',
@@ -397,6 +392,12 @@ const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   path: '/lovable/email/auth/preview',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardAppsListingAppKeyRoute =
+  DashboardAppsListingAppKeyRouteImport.update({
+    id: '/listing/$appKey',
+    path: '/listing/$appKey',
+    getParentRoute: () => DashboardAppsRoute,
+  } as any)
 const ApiPublicHooksSyncTariffsRoute =
   ApiPublicHooksSyncTariffsRouteImport.update({
     id: '/api/public/hooks/sync-tariffs',
@@ -452,7 +453,6 @@ export interface FileRoutesByFullPath {
   '/dashboard/': typeof DashboardIndexRoute
   '/api/db/$tableId': typeof ApiDbTableIdRouteWithChildren
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
-  '/dashboard/apps/$appKey': typeof DashboardAppsAppKeyRoute
   '/dashboard/apps/abandoned-cart': typeof DashboardAppsAbandonedCartRoute
   '/dashboard/apps/ad-generator': typeof DashboardAppsAdGeneratorRoute
   '/dashboard/apps/ai-descriptions': typeof DashboardAppsAiDescriptionsRoute
@@ -475,6 +475,7 @@ export interface FileRoutesByFullPath {
   '/api/db/$tableId/$recordId': typeof ApiDbTableIdRecordIdRoute
   '/api/public/hooks/instagram': typeof ApiPublicHooksInstagramRoute
   '/api/public/hooks/sync-tariffs': typeof ApiPublicHooksSyncTariffsRoute
+  '/dashboard/apps/listing/$appKey': typeof DashboardAppsListingAppKeyRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -517,7 +518,6 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardIndexRoute
   '/api/db/$tableId': typeof ApiDbTableIdRouteWithChildren
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
-  '/dashboard/apps/$appKey': typeof DashboardAppsAppKeyRoute
   '/dashboard/apps/abandoned-cart': typeof DashboardAppsAbandonedCartRoute
   '/dashboard/apps/ad-generator': typeof DashboardAppsAdGeneratorRoute
   '/dashboard/apps/ai-descriptions': typeof DashboardAppsAiDescriptionsRoute
@@ -540,6 +540,7 @@ export interface FileRoutesByTo {
   '/api/db/$tableId/$recordId': typeof ApiDbTableIdRecordIdRoute
   '/api/public/hooks/instagram': typeof ApiPublicHooksInstagramRoute
   '/api/public/hooks/sync-tariffs': typeof ApiPublicHooksSyncTariffsRoute
+  '/dashboard/apps/listing/$appKey': typeof DashboardAppsListingAppKeyRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -585,7 +586,6 @@ export interface FileRoutesById {
   '/dashboard/': typeof DashboardIndexRoute
   '/api/db/$tableId': typeof ApiDbTableIdRouteWithChildren
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
-  '/dashboard/apps/$appKey': typeof DashboardAppsAppKeyRoute
   '/dashboard/apps/abandoned-cart': typeof DashboardAppsAbandonedCartRoute
   '/dashboard/apps/ad-generator': typeof DashboardAppsAdGeneratorRoute
   '/dashboard/apps/ai-descriptions': typeof DashboardAppsAiDescriptionsRoute
@@ -608,6 +608,7 @@ export interface FileRoutesById {
   '/api/db/$tableId/$recordId': typeof ApiDbTableIdRecordIdRoute
   '/api/public/hooks/instagram': typeof ApiPublicHooksInstagramRoute
   '/api/public/hooks/sync-tariffs': typeof ApiPublicHooksSyncTariffsRoute
+  '/dashboard/apps/listing/$appKey': typeof DashboardAppsListingAppKeyRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -654,7 +655,6 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/api/db/$tableId'
     | '/dashboard/admin/payments'
-    | '/dashboard/apps/$appKey'
     | '/dashboard/apps/abandoned-cart'
     | '/dashboard/apps/ad-generator'
     | '/dashboard/apps/ai-descriptions'
@@ -677,6 +677,7 @@ export interface FileRouteTypes {
     | '/api/db/$tableId/$recordId'
     | '/api/public/hooks/instagram'
     | '/api/public/hooks/sync-tariffs'
+    | '/dashboard/apps/listing/$appKey'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -719,7 +720,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/api/db/$tableId'
     | '/dashboard/admin/payments'
-    | '/dashboard/apps/$appKey'
     | '/dashboard/apps/abandoned-cart'
     | '/dashboard/apps/ad-generator'
     | '/dashboard/apps/ai-descriptions'
@@ -742,6 +742,7 @@ export interface FileRouteTypes {
     | '/api/db/$tableId/$recordId'
     | '/api/public/hooks/instagram'
     | '/api/public/hooks/sync-tariffs'
+    | '/dashboard/apps/listing/$appKey'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -786,7 +787,6 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/api/db/$tableId'
     | '/dashboard/admin/payments'
-    | '/dashboard/apps/$appKey'
     | '/dashboard/apps/abandoned-cart'
     | '/dashboard/apps/ad-generator'
     | '/dashboard/apps/ai-descriptions'
@@ -809,6 +809,7 @@ export interface FileRouteTypes {
     | '/api/db/$tableId/$recordId'
     | '/api/public/hooks/instagram'
     | '/api/public/hooks/sync-tariffs'
+    | '/dashboard/apps/listing/$appKey'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -1219,13 +1220,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAppsAbandonedCartRouteImport
       parentRoute: typeof DashboardAppsRoute
     }
-    '/dashboard/apps/$appKey': {
-      id: '/dashboard/apps/$appKey'
-      path: '/$appKey'
-      fullPath: '/dashboard/apps/$appKey'
-      preLoaderRoute: typeof DashboardAppsAppKeyRouteImport
-      parentRoute: typeof DashboardAppsRoute
-    }
     '/dashboard/admin/payments': {
       id: '/dashboard/admin/payments'
       path: '/admin/payments'
@@ -1275,6 +1269,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/apps/listing/$appKey': {
+      id: '/dashboard/apps/listing/$appKey'
+      path: '/listing/$appKey'
+      fullPath: '/dashboard/apps/listing/$appKey'
+      preLoaderRoute: typeof DashboardAppsListingAppKeyRouteImport
+      parentRoute: typeof DashboardAppsRoute
+    }
     '/api/public/hooks/sync-tariffs': {
       id: '/api/public/hooks/sync-tariffs'
       path: '/api/public/hooks/sync-tariffs'
@@ -1300,7 +1301,6 @@ declare module '@tanstack/react-router' {
 }
 
 interface DashboardAppsRouteChildren {
-  DashboardAppsAppKeyRoute: typeof DashboardAppsAppKeyRoute
   DashboardAppsAbandonedCartRoute: typeof DashboardAppsAbandonedCartRoute
   DashboardAppsAdGeneratorRoute: typeof DashboardAppsAdGeneratorRoute
   DashboardAppsAiDescriptionsRoute: typeof DashboardAppsAiDescriptionsRoute
@@ -1314,10 +1314,10 @@ interface DashboardAppsRouteChildren {
   DashboardAppsPopupBuilderRoute: typeof DashboardAppsPopupBuilderRoute
   DashboardAppsSeoOptimizerRoute: typeof DashboardAppsSeoOptimizerRoute
   DashboardAppsIndexRoute: typeof DashboardAppsIndexRoute
+  DashboardAppsListingAppKeyRoute: typeof DashboardAppsListingAppKeyRoute
 }
 
 const DashboardAppsRouteChildren: DashboardAppsRouteChildren = {
-  DashboardAppsAppKeyRoute: DashboardAppsAppKeyRoute,
   DashboardAppsAbandonedCartRoute: DashboardAppsAbandonedCartRoute,
   DashboardAppsAdGeneratorRoute: DashboardAppsAdGeneratorRoute,
   DashboardAppsAiDescriptionsRoute: DashboardAppsAiDescriptionsRoute,
@@ -1331,6 +1331,7 @@ const DashboardAppsRouteChildren: DashboardAppsRouteChildren = {
   DashboardAppsPopupBuilderRoute: DashboardAppsPopupBuilderRoute,
   DashboardAppsSeoOptimizerRoute: DashboardAppsSeoOptimizerRoute,
   DashboardAppsIndexRoute: DashboardAppsIndexRoute,
+  DashboardAppsListingAppKeyRoute: DashboardAppsListingAppKeyRoute,
 }
 
 const DashboardAppsRouteWithChildren = DashboardAppsRoute._addFileChildren(
@@ -1454,3 +1455,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

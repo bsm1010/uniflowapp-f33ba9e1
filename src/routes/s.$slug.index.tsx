@@ -18,14 +18,14 @@ import {
 } from "@/lib/storeTheme";
 import { useCart } from "@/hooks/use-cart";
 import { fetchSettings, getCachedSettings, setCachedSettings } from "@/lib/storefrontCache";
-import PixelInjector from "@/components/PixelInjector";
 
-type Product = Pick
+
+type Product = Pick<
   Tables<"products">,
   "id" | "name" | "price" | "images" | "category" | "stock"
 >;
 
-export const Route = createFileRoute("/s/$slug")({
+export const Route = createFileRoute("/s/$slug/")({
   component: StorefrontHome,
   loader: ({ params }) => fetchSettings(params.slug),
   head: ({ params }) => ({
@@ -271,7 +271,7 @@ function StorefrontHome() {
                 {titles.featured_sub}
               </p>
             </div>
-            
+            <a
               href="#shop"
               className="hidden sm:inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-full transition-all duration-300 hover:scale-105"
               style={{ backgroundColor: t.surface, color: t.fg, border: `1px solid ${t.border}` }}
@@ -365,11 +365,6 @@ function StorefrontHome() {
 
   return (
     <StorefrontShell settings={settings}>
-      <PixelInjector
-        metaPixelId={settings.meta_pixel_id}
-        tiktokPixelId={settings.tiktok_pixel_id}
-      />
-
       {sectionOrder.map((key) => sectionRenderers[key]())}
 
       {/* All products */}
