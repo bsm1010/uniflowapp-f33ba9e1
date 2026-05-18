@@ -6,7 +6,7 @@ import type {
   ValidationResult,
 } from "../types";
 
-const ZR_BASE_URL = "https://procolis.com/api_v1";
+const ZR_BASE_URL = "https://api.zrexpress.app/api/v1";
 
 /**
  * Adapter for ZR Express (Procolis API).
