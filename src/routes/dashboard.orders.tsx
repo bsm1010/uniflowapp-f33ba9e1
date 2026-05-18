@@ -13,6 +13,7 @@ import {
   X,
   Send,
   AlertCircle,
+  RefreshCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -23,6 +24,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { sendOrderStatusSms } from "@/lib/orders/sms.functions";
 import { pushOrderToProvider } from "@/lib/delivery/push-order.functions";
+import { importZRExpressOrders } from "@/lib/delivery/import-zr-orders.functions";
 import {
   Tooltip,
   TooltipContent,
@@ -74,6 +76,7 @@ const STATUS_VARIANT: Record<string, { label: string; className: string }> = {
 function OrdersPage() {
   const { user } = useAuth();
   const pushFn = useServerFn(pushOrderToProvider);
+  const importZRFn = useServerFn(importZRExpressOrders);
   const [orders, setOrders] = useState<Order[] | null>(null);
   const [items, setItems] = useState<Record<string, OrderItem[]>>({});
   const [shipments, setShipments] = useState<Record<string, Shipment>>({});
@@ -81,6 +84,43 @@ function OrdersPage() {
   const [shipOrder, setShipOrder] = useState<Order | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [pushingId, setPushingId] = useState<string | null>(null);
+  const [importingZR, setImportingZR] = useState(false);
+
+  const importFromZRExpress = async () => {
+    if (!user) return;
+    const { data: sessionData } = await supabase.auth.getSession();
+    const accessToken = sessionData.session?.access_token;
+    if (!accessToken) {
+      toast.error("Please sign in again.");
+      return;
+    }
+    // Resolve ZRExpress company id.
+    const { data: companies } = await supabase
+      .from("delivery_companies")
+      .select("id, name")
+      .eq("is_active", true);
+    const zr = (companies ?? []).find((c) =>
+      /zr\s*[-_]?\s*express|zrexpress/i.test(c.name),
+    );
+    if (!zr) {
+      toast.error("ZRExpress is not available.");
+      return;
+    }
+    setImportingZR(true);
+    try {
+      const res = await importZRFn({ data: { accessToken, companyId: zr.id } });
+      if (res.ok) {
+        toast.success(res.message);
+        loadOrders();
+      } else {
+        toast.error(res.message);
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Import failed.");
+    } finally {
+      setImportingZR(false);
+    }
+  };
 
   const sendToProvider = async (orderId: string) => {
     const { data: sessionData } = await supabase.auth.getSession();
@@ -299,13 +339,33 @@ function OrdersPage() {
 
   return (
     <div className="max-w-7xl mx-auto pb-24">
-      <PageHeader
-        eyebrow="Sales"
-        title="Orders"
-        description="Manage incoming orders and update their delivery status."
-        icon={ShoppingBag}
-        gradient="from-emerald-500 via-teal-500 to-cyan-500"
-      />
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <PageHeader
+          eyebrow="Sales"
+          title="Orders"
+          description="Manage incoming orders and update their delivery status."
+          icon={ShoppingBag}
+          gradient="from-emerald-500 via-teal-500 to-cyan-500"
+        />
+        <div className="pt-6">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={importFromZRExpress}
+            disabled={importingZR}
+            className="gap-1.5"
+          >
+            {importingZR ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <RefreshCw className="h-4 w-4" />
+            )}
+            {orders && orders.some((o) => o.source === "zrexpress")
+              ? "Sync ZRExpress orders"
+              : "Import ZRExpress orders"}
+          </Button>
+        </div>
+      </div>
 
       {orders === null ? (
         <div className="flex items-center justify-center py-20">
@@ -369,7 +429,17 @@ function OrdersPage() {
                           />
                         </TableCell>
                         <TableCell>
-                          <div className="font-medium">{o.customer_name}</div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">{o.customer_name}</span>
+                            {o.source === "zrexpress" && (
+                              <Badge
+                                variant="outline"
+                                className="bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30 text-[10px] px-1.5 py-0"
+                              >
+                                ZRExpress
+                              </Badge>
+                            )}
+                          </div>
                           <div className="text-[11px] font-mono text-muted-foreground">
                             #{o.id.slice(0, 8).toUpperCase()}
                           </div>
