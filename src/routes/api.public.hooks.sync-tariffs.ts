@@ -173,7 +173,7 @@ export const Route = createFileRoute("/api/public/hooks/sync-tariffs")({
               .insert(toInsert, { count: "exact" });
             if (insErr) {
               results.push({
-                owner_id: link.store_id,
+                store_id: link.store_id,
                 company_id: link.company_id,
                 ok: false,
                 message: `Could not refresh tariffs: ${insErr.message}`,
