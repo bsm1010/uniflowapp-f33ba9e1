@@ -150,8 +150,8 @@ export const importZRExpressOrders = createServerFn({ method: "POST" })
         if (r.tracking_number) existingMap.set(r.tracking_number, r.id);
       }
 
-      const toInsert: Array<Record<string, unknown>> = [];
-      const toUpdate: Array<{ id: string; patch: Record<string, unknown> }> = [];
+      const toInsert: TablesInsert<"orders">[] = [];
+      const toUpdate: Array<{ id: string; patch: TablesUpdate<"orders"> }> = [];
 
       for (const raw of arr) {
         if (!raw || typeof raw !== "object") continue;
