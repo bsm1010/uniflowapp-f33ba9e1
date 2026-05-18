@@ -241,6 +241,21 @@ export function ShippingCompaniesSection() {
         },
       }));
       setDraftJson((p) => ({ ...p, [companyId]: "" }));
+
+      // Auto-sync territory rates after successful connection (ZR Express).
+      try {
+        const sync = await syncTariffsFn({
+          data: { accessToken: session.access_token, companyId },
+        });
+        if (sync.ok) {
+          toast.success(sync.message);
+        } else {
+          console.warn("[ZRExpress] auto-sync failed:", sync.message);
+          toast.message("Connected, but tariff sync failed", { description: sync.message });
+        }
+      } catch (e) {
+        console.warn("[ZRExpress] auto-sync error", e);
+      }
     } catch {
       const msg = "Could not connect. Check your credentials and try again.";
       setValidationStatus((p) => ({ ...p, [companyId]: { ok: false, message: msg } }));
