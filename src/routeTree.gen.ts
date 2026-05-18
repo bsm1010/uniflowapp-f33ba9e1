@@ -11,7 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ThemesRouteImport } from './routes/themes'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CustomizeRouteImport } from './routes/customize'
 import { Route as AiAgentRouteImport } from './routes/ai-agent'
@@ -85,9 +87,19 @@ const SignupRoute = SignupRouteImport.update({
   path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -420,7 +432,9 @@ export interface FileRoutesByFullPath {
   '/ai-agent': typeof AiAgentRoute
   '/customize': typeof CustomizeRoute
   '/dashboard': typeof DashboardRouteWithChildren
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/themes': typeof ThemesRoute
   '/dashboard/about': typeof DashboardAboutRoute
@@ -486,7 +500,9 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ai-agent': typeof AiAgentRoute
   '/customize': typeof CustomizeRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/themes': typeof ThemesRoute
   '/dashboard/about': typeof DashboardAboutRoute
@@ -553,7 +569,9 @@ export interface FileRoutesById {
   '/ai-agent': typeof AiAgentRoute
   '/customize': typeof CustomizeRoute
   '/dashboard': typeof DashboardRouteWithChildren
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/themes': typeof ThemesRoute
   '/dashboard/about': typeof DashboardAboutRoute
@@ -622,7 +640,9 @@ export interface FileRouteTypes {
     | '/ai-agent'
     | '/customize'
     | '/dashboard'
+    | '/forgot-password'
     | '/login'
+    | '/reset-password'
     | '/signup'
     | '/themes'
     | '/dashboard/about'
@@ -688,7 +708,9 @@ export interface FileRouteTypes {
     | '/'
     | '/ai-agent'
     | '/customize'
+    | '/forgot-password'
     | '/login'
+    | '/reset-password'
     | '/signup'
     | '/themes'
     | '/dashboard/about'
@@ -754,7 +776,9 @@ export interface FileRouteTypes {
     | '/ai-agent'
     | '/customize'
     | '/dashboard'
+    | '/forgot-password'
     | '/login'
+    | '/reset-password'
     | '/signup'
     | '/themes'
     | '/dashboard/about'
@@ -822,7 +846,9 @@ export interface RootRouteChildren {
   AiAgentRoute: typeof AiAgentRoute
   CustomizeRoute: typeof CustomizeRoute
   DashboardRoute: typeof DashboardRouteWithChildren
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
   ThemesRoute: typeof ThemesRoute
   ApiDbTableIdRoute: typeof ApiDbTableIdRouteWithChildren
@@ -856,11 +882,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -1435,7 +1475,9 @@ const rootRouteChildren: RootRouteChildren = {
   AiAgentRoute: AiAgentRoute,
   CustomizeRoute: CustomizeRoute,
   DashboardRoute: DashboardRouteWithChildren,
+  ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
   ThemesRoute: ThemesRoute,
   ApiDbTableIdRoute: ApiDbTableIdRouteWithChildren,
