@@ -79,6 +79,7 @@ import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/em
 import { Route as DashboardAppsMAppIdRouteImport } from './routes/dashboard.apps.m.$appId'
 import { Route as DashboardAppsListingAppKeyRouteImport } from './routes/dashboard.apps.listing.$appKey'
 import { Route as ApiPublicHooksSyncTariffsRouteImport } from './routes/api.public.hooks.sync-tariffs'
+import { Route as ApiPublicHooksSyncShipmentStatusesRouteImport } from './routes/api/public/hooks/sync-shipment-statuses'
 import { Route as ApiPublicHooksInstagramRouteImport } from './routes/api.public.hooks.instagram'
 import { Route as ApiDbTableIdRecordIdRouteImport } from './routes/api.db.$tableId.$recordId'
 
@@ -448,6 +449,12 @@ const ApiPublicHooksSyncTariffsRoute =
     path: '/api/public/hooks/sync-tariffs',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksSyncShipmentStatusesRoute =
+  ApiPublicHooksSyncShipmentStatusesRouteImport.update({
+    id: '/api/public/hooks/sync-shipment-statuses',
+    path: '/api/public/hooks/sync-shipment-statuses',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksInstagramRoute = ApiPublicHooksInstagramRouteImport.update({
   id: '/api/public/hooks/instagram',
   path: '/api/public/hooks/instagram',
@@ -524,6 +531,7 @@ export interface FileRoutesByFullPath {
   '/s/$slug/': typeof SSlugIndexRoute
   '/api/db/$tableId/$recordId': typeof ApiDbTableIdRecordIdRoute
   '/api/public/hooks/instagram': typeof ApiPublicHooksInstagramRoute
+  '/api/public/hooks/sync-shipment-statuses': typeof ApiPublicHooksSyncShipmentStatusesRoute
   '/api/public/hooks/sync-tariffs': typeof ApiPublicHooksSyncTariffsRoute
   '/dashboard/apps/listing/$appKey': typeof DashboardAppsListingAppKeyRoute
   '/dashboard/apps/m/$appId': typeof DashboardAppsMAppIdRoute
@@ -596,6 +604,7 @@ export interface FileRoutesByTo {
   '/s/$slug': typeof SSlugIndexRoute
   '/api/db/$tableId/$recordId': typeof ApiDbTableIdRecordIdRoute
   '/api/public/hooks/instagram': typeof ApiPublicHooksInstagramRoute
+  '/api/public/hooks/sync-shipment-statuses': typeof ApiPublicHooksSyncShipmentStatusesRoute
   '/api/public/hooks/sync-tariffs': typeof ApiPublicHooksSyncTariffsRoute
   '/dashboard/apps/listing/$appKey': typeof DashboardAppsListingAppKeyRoute
   '/dashboard/apps/m/$appId': typeof DashboardAppsMAppIdRoute
@@ -671,6 +680,7 @@ export interface FileRoutesById {
   '/s/$slug/': typeof SSlugIndexRoute
   '/api/db/$tableId/$recordId': typeof ApiDbTableIdRecordIdRoute
   '/api/public/hooks/instagram': typeof ApiPublicHooksInstagramRoute
+  '/api/public/hooks/sync-shipment-statuses': typeof ApiPublicHooksSyncShipmentStatusesRoute
   '/api/public/hooks/sync-tariffs': typeof ApiPublicHooksSyncTariffsRoute
   '/dashboard/apps/listing/$appKey': typeof DashboardAppsListingAppKeyRoute
   '/dashboard/apps/m/$appId': typeof DashboardAppsMAppIdRoute
@@ -747,6 +757,7 @@ export interface FileRouteTypes {
     | '/s/$slug/'
     | '/api/db/$tableId/$recordId'
     | '/api/public/hooks/instagram'
+    | '/api/public/hooks/sync-shipment-statuses'
     | '/api/public/hooks/sync-tariffs'
     | '/dashboard/apps/listing/$appKey'
     | '/dashboard/apps/m/$appId'
@@ -819,6 +830,7 @@ export interface FileRouteTypes {
     | '/s/$slug'
     | '/api/db/$tableId/$recordId'
     | '/api/public/hooks/instagram'
+    | '/api/public/hooks/sync-shipment-statuses'
     | '/api/public/hooks/sync-tariffs'
     | '/dashboard/apps/listing/$appKey'
     | '/dashboard/apps/m/$appId'
@@ -893,6 +905,7 @@ export interface FileRouteTypes {
     | '/s/$slug/'
     | '/api/db/$tableId/$recordId'
     | '/api/public/hooks/instagram'
+    | '/api/public/hooks/sync-shipment-statuses'
     | '/api/public/hooks/sync-tariffs'
     | '/dashboard/apps/listing/$appKey'
     | '/dashboard/apps/m/$appId'
@@ -921,6 +934,7 @@ export interface RootRouteChildren {
   SSlugTrackRoute: typeof SSlugTrackRoute
   SSlugIndexRoute: typeof SSlugIndexRoute
   ApiPublicHooksInstagramRoute: typeof ApiPublicHooksInstagramRoute
+  ApiPublicHooksSyncShipmentStatusesRoute: typeof ApiPublicHooksSyncShipmentStatusesRoute
   ApiPublicHooksSyncTariffsRoute: typeof ApiPublicHooksSyncTariffsRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
@@ -1420,6 +1434,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksSyncTariffsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/sync-shipment-statuses': {
+      id: '/api/public/hooks/sync-shipment-statuses'
+      path: '/api/public/hooks/sync-shipment-statuses'
+      fullPath: '/api/public/hooks/sync-shipment-statuses'
+      preLoaderRoute: typeof ApiPublicHooksSyncShipmentStatusesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/instagram': {
       id: '/api/public/hooks/instagram'
       path: '/api/public/hooks/instagram'
@@ -1595,6 +1616,8 @@ const rootRouteChildren: RootRouteChildren = {
   SSlugTrackRoute: SSlugTrackRoute,
   SSlugIndexRoute: SSlugIndexRoute,
   ApiPublicHooksInstagramRoute: ApiPublicHooksInstagramRoute,
+  ApiPublicHooksSyncShipmentStatusesRoute:
+    ApiPublicHooksSyncShipmentStatusesRoute,
   ApiPublicHooksSyncTariffsRoute: ApiPublicHooksSyncTariffsRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,

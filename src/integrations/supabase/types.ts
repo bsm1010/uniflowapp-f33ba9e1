@@ -1351,6 +1351,7 @@ export type Database = {
           created_at: string
           customer_email: string
           customer_name: string
+          delivery_type: string
           id: string
           notes: string | null
           shipping_address: string
@@ -1362,12 +1363,14 @@ export type Database = {
           store_slug: string
           subtotal: number
           total: number
+          tracking_number: string | null
           updated_at: string
         }
         Insert: {
           created_at?: string
           customer_email: string
           customer_name: string
+          delivery_type?: string
           id?: string
           notes?: string | null
           shipping_address: string
@@ -1379,12 +1382,14 @@ export type Database = {
           store_slug: string
           subtotal?: number
           total?: number
+          tracking_number?: string | null
           updated_at?: string
         }
         Update: {
           created_at?: string
           customer_email?: string
           customer_name?: string
+          delivery_type?: string
           id?: string
           notes?: string | null
           shipping_address?: string
@@ -1396,6 +1401,7 @@ export type Database = {
           store_slug?: string
           subtotal?: number
           total?: number
+          tracking_number?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -1814,8 +1820,12 @@ export type Database = {
         Row: {
           company_id: string | null
           created_at: string
+          delivery_type: string
           id: string
+          last_error: string | null
+          last_sync_at: string | null
           order_id: string
+          provider_response: Json | null
           status: string
           store_id: string
           tracking_number: string
@@ -1824,8 +1834,12 @@ export type Database = {
         Insert: {
           company_id?: string | null
           created_at?: string
+          delivery_type?: string
           id?: string
+          last_error?: string | null
+          last_sync_at?: string | null
           order_id: string
+          provider_response?: Json | null
           status?: string
           store_id: string
           tracking_number?: string
@@ -1834,8 +1848,12 @@ export type Database = {
         Update: {
           company_id?: string | null
           created_at?: string
+          delivery_type?: string
           id?: string
+          last_error?: string | null
+          last_sync_at?: string | null
           order_id?: string
+          provider_response?: Json | null
           status?: string
           store_id?: string
           tracking_number?: string

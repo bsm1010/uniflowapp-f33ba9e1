@@ -11,14 +11,25 @@ import {
   Download,
   Printer,
   X,
+  Send,
+  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CreateShipmentDialog } from "@/components/dashboard/CreateShipmentDialog";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { sendOrderStatusSms } from "@/lib/orders/sms.functions";
+import { pushOrderToProvider } from "@/lib/delivery/push-order.functions";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 import type { Tables } from "@/integrations/supabase/types";
 import { PageHeader, EmptyState } from "@/components/dashboard/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
@@ -62,12 +73,39 @@ const STATUS_VARIANT: Record<string, { label: string; className: string }> = {
 
 function OrdersPage() {
   const { user } = useAuth();
+  const pushFn = useServerFn(pushOrderToProvider);
   const [orders, setOrders] = useState<Order[] | null>(null);
   const [items, setItems] = useState<Record<string, OrderItem[]>>({});
   const [shipments, setShipments] = useState<Record<string, Shipment>>({});
   const [query, setQuery] = useState("");
   const [shipOrder, setShipOrder] = useState<Order | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [pushingId, setPushingId] = useState<string | null>(null);
+
+  const sendToProvider = async (orderId: string) => {
+    const { data: sessionData } = await supabase.auth.getSession();
+    const accessToken = sessionData.session?.access_token;
+    if (!accessToken) {
+      toast.error("Please sign in again.");
+      return;
+    }
+    setPushingId(orderId);
+    try {
+      const res = await pushFn({ data: { accessToken, orderId } });
+      if (res.ok) {
+        toast.success(res.message);
+        loadOrders();
+      } else {
+        toast.error(res.message);
+        loadOrders();
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to send to delivery provider.");
+    } finally {
+      setPushingId(null);
+    }
+  };
+
 
   const loadOrders = async () => {
     if (!user) return;
@@ -409,22 +447,59 @@ function OrdersPage() {
                           {Number(o.total).toFixed(2)} DA
                         </TableCell>
                         <TableCell className="text-right whitespace-nowrap">
-                          {shipments[o.id] ? (
-                            <div className="inline-flex flex-col items-end gap-0.5">
-                              <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
-                                <CheckCircle2 className="h-3.5 w-3.5" />
-                                {shipments[o.id].status}
-                              </span>
-                              <span className="text-[11px] font-mono text-muted-foreground">
-                                {shipments[o.id].tracking_number}
-                              </span>
-                            </div>
-                          ) : (
-                            <Button size="sm" variant="outline" onClick={() => setShipOrder(o)} className="h-8">
-                              <Truck className="h-3.5 w-3.5" />
-                              Create Shipment
-                            </Button>
-                          )}
+                          {(() => {
+                            const ship = shipments[o.id];
+                            const hasTracking =
+                              ship && ship.tracking_number && ship.tracking_number.trim() !== "";
+                            const hasError = ship && ship.last_error;
+                            if (hasTracking) {
+                              return (
+                                <div className="inline-flex flex-col items-end gap-0.5">
+                                  <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                                    <CheckCircle2 className="h-3.5 w-3.5" />
+                                    {ship.status}
+                                  </span>
+                                  <span className="text-[11px] font-mono text-muted-foreground">
+                                    {ship.tracking_number}
+                                  </span>
+                                </div>
+                              );
+                            }
+                            return (
+                              <div className="inline-flex flex-col items-end gap-1">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => sendToProvider(o.id)}
+                                  disabled={pushingId === o.id}
+                                  className="h-8"
+                                >
+                                  {pushingId === o.id ? (
+                                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                  ) : (
+                                    <Send className="h-3.5 w-3.5" />
+                                  )}
+                                  Send to ZRExpress
+                                </Button>
+                                {hasError && (
+                                  <TooltipProvider>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <span className="inline-flex items-center gap-1 text-[11px] text-rose-600 dark:text-rose-400 max-w-[180px] truncate">
+                                          <AlertCircle className="h-3 w-3 shrink-0" />
+                                          <span className="truncate">{ship.last_error}</span>
+                                        </span>
+                                      </TooltipTrigger>
+                                      <TooltipContent className="max-w-sm">
+                                        {ship.last_error}
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </TooltipProvider>
+                                )}
+                              </div>
+                            );
+                          })()}
+
                         </TableCell>
                       </TableRow>
                     );

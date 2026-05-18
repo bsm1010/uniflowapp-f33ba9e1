@@ -1,7 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-// import { validateApiKeyForCompany } from "./services"; // Re-enable for real provider ping
 import { createAuthenticatedDeliveryClient } from "./authenticated-client";
+import { ZRExpressAdapter } from "./adapters/ZRExpressAdapter";
+import { YalidineAdapter } from "./adapters/YalidineAdapter";
+import { normalizeProviderKey } from "./registry";
 
 const InputSchema = z.object({
   accessToken: z.string().min(1).max(4096),
@@ -46,11 +48,34 @@ export const validateAndActivateDeliveryCompany = createServerFn({ method: "POST
         return { ok: false, message: "This delivery company is not available." };
       }
 
-      // NOTE: External provider validation is temporarily disabled.
-      // We trust the JSON-validated credentials (secretKey + tenantId) from the
-      // client and persist them. Real provider ping can be re-enabled later by
-      // calling `validateApiKeyForCompany(company.name, data.apiKey, data.apiSecret)`.
-      const result = { success: true, message: "Credentials saved successfully" };
+      // Real provider validation: hit the carrier's auth endpoint with the
+      // pasted credentials. For ZR Express this is `/token`, for Yalidine
+      // a lightweight authenticated GET.
+      const apiKey = data.apiKey.trim();
+      const apiSecret = data.apiSecret.trim();
+      const provider = normalizeProviderKey(company.name);
+
+      let validation: { ok: boolean; message: string };
+      if (provider === "zr_express" || provider === "zrexpress") {
+        if (!apiSecret) {
+          return {
+            ok: false,
+            message: "ZR Express requires both secretKey and tenantId.",
+          };
+        }
+        const adapter = new ZRExpressAdapter({ apiKey, apiSecret });
+        validation = await adapter.validateCredentials();
+      } else if (provider === "yalidine") {
+        const adapter = new YalidineAdapter({ apiKey, apiSecret });
+        validation = await adapter.validateCredentials();
+      } else {
+        // Unknown provider — trust the credentials so other carriers still work.
+        validation = { ok: true, message: "Credentials saved." };
+      }
+
+      if (!validation.ok) {
+        return { ok: false, message: validation.message };
+      }
 
       if (data.setDefault) {
         await supabase
@@ -66,8 +91,8 @@ export const validateAndActivateDeliveryCompany = createServerFn({ method: "POST
           {
             store_id: userId,
             company_id: data.companyId,
-            api_key: data.apiKey.trim(),
-            api_secret: data.apiSecret.trim(),
+            api_key: apiKey,
+            api_secret: apiSecret,
             enabled: true,
             is_default: data.setDefault ?? false,
           },
@@ -78,10 +103,10 @@ export const validateAndActivateDeliveryCompany = createServerFn({ method: "POST
         return { ok: false, message: `Validated but failed to persist: ${upsertErr.message}` };
       }
 
-      return { ok: true, message: result.message };
+      return { ok: true, message: validation.message };
     } catch (e) {
-      const tag = e instanceof Error ? e.name : "UnknownError";
-      console.error(`[validateAndActivateDeliveryCompany] unexpected: ${tag}`);
-      return { ok: false, message: "Unexpected server error." };
+      const msg = e instanceof Error ? e.message : "Unexpected server error.";
+      console.error(`[validateAndActivateDeliveryCompany] ${msg}`);
+      return { ok: false, message: msg };
     }
   });
