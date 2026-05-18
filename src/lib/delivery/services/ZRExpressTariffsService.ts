@@ -7,7 +7,7 @@
  * rest of the app can treat it the same as manual tariffs.
  */
 
-const ZR_BASE_URL = "https://procolis.com/api_v1";
+const ZR_BASE_URL = "https://api.zrexpress.app/api/v1";
 
 export interface ZRTariffRow {
   wilaya: string;
