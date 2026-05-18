@@ -76,6 +76,7 @@ const STATUS_VARIANT: Record<string, { label: string; className: string }> = {
 
 function OrdersPage() {
   const { user } = useAuth();
+  const { currentStore } = useCurrentStore();
   const pushFn = useServerFn(pushOrderToProvider);
   const importZRFn = useServerFn(importZRExpressOrders);
   const [orders, setOrders] = useState<Order[] | null>(null);
