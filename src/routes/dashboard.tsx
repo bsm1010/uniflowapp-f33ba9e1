@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate, useLocation } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,7 +22,6 @@ const OnboardingTour = lazy(() =>
 
 import { LogoLoader } from "@/components/ui/logo-loader";
 
-// Defer the help chatbot — it's not needed for first paint.
 const HelpChatbot = lazy(() =>
   import("@/components/dashboard/HelpChatbot").then((m) => ({ default: m.HelpChatbot })),
 );
@@ -31,11 +30,55 @@ export const Route = createFileRoute("/dashboard")({
   component: DashboardLayout,
   head: () => ({
     meta: [
-      { title: "Dashboard — Storely" },
-      { name: "description", content: "Manage your Storely store." },
+      { title: "Dashboard — Fennecly" },
+      { name: "description", content: "Manage your Fennecly store." },
     ],
   }),
 });
+
+function AnimatedOutlet() {
+  const location = useLocation();
+  const [displayLocation, setDisplayLocation] = useState(location);
+  const [transitionStage, setTransitionStage] = useState<"fadeIn" | "fadeOut">("fadeIn");
+
+  useEffect(() => {
+    if (location.pathname !== displayLocation.pathname) {
+      setTransitionStage("fadeOut");
+    }
+  }, [location, displayLocation]);
+
+  return (
+    <>
+      <style>{`
+        @keyframes pageFadeIn {
+          from { opacity: 0; transform: translateY(6px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pageFadeOut {
+          from { opacity: 1; transform: translateY(0); }
+          to   { opacity: 0; transform: translateY(-6px); }
+        }
+        .page-fade-in {
+          animation: pageFadeIn 0.22s ease forwards;
+        }
+        .page-fade-out {
+          animation: pageFadeOut 0.15s ease forwards;
+        }
+      `}</style>
+      <div
+        className={transitionStage === "fadeIn" ? "page-fade-in" : "page-fade-out"}
+        onAnimationEnd={() => {
+          if (transitionStage === "fadeOut") {
+            setDisplayLocation(location);
+            setTransitionStage("fadeIn");
+          }
+        }}
+      >
+        <Outlet />
+      </div>
+    </>
+  );
+}
 
 function DashboardLayout() {
   const { user, loading } = useAuth();
@@ -110,7 +153,7 @@ function DashboardLayout() {
               <IOSInstallBanner />
               <DashboardTopbar name={name} avatarUrl={avatarUrl} />
               <main className="flex-1 p-4 md:p-8">
-                <Outlet />
+                <AnimatedOutlet />
               </main>
             </SidebarInset>
           </div>
