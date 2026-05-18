@@ -130,7 +130,7 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
 
     const data = await this.request<{
       Colis?: Array<{ Tracking?: string; MessageRetour?: string }>;
-    }>(`${ZR_BASE_URL}/add_colis`, {
+    }>(`${ZR_BASE_URL}/colis`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
