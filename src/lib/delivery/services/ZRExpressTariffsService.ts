@@ -65,26 +65,37 @@ export async function fetchZRTariffs(
   const timeout = setTimeout(() => controller.abort(), 15_000);
 
   try {
-    const res = await fetch(`${ZR_BASE_URL}/tarification`, {
-      method: "POST",
+    const url = `${ZR_BASE_URL}/tarification`;
+    const res = await fetch(url, {
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
+        Accept: "application/json",
         token: apiKey.trim(),
         key: tenantId.trim(),
       },
-      body: JSON.stringify({}),
       signal: controller.signal,
+    });
+
+    const bodyText = await res.text();
+    console.log("[ZRExpress] fetchTariffs response", {
+      url,
+      status: res.status,
+      statusText: res.statusText,
+      bodyPreview: bodyText.slice(0, 500),
     });
 
     if (!res.ok) {
       return {
         success: false,
-        message: `ZR Express API error (${res.status})`,
+        message: `ZR Express API error (${res.status} ${res.statusText}): ${bodyText.slice(0, 200)}`,
         tariffs: [],
       };
     }
 
-    const json = (await res.json()) as ZRTariffApiEntry[] | { Tarifs?: ZRTariffApiEntry[] };
+    const json = (bodyText ? JSON.parse(bodyText) : []) as
+      | ZRTariffApiEntry[]
+      | { Tarifs?: ZRTariffApiEntry[] };
     const rows: ZRTariffApiEntry[] = Array.isArray(json) ? json : (json.Tarifs ?? []);
 
     const tariffs: ZRTariffRow[] = [];
