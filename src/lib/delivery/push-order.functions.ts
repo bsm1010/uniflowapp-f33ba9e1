@@ -91,14 +91,14 @@ export async function pushOrderInternal(
     companyId = def?.company_id ?? undefined;
   }
   if (!companyId) {
-    const { data: any } = await supabase
+    const { data: anyEnabled } = await supabase
       .from("store_delivery_companies")
       .select("company_id")
       .eq("store_id", storeOwnerId)
       .eq("enabled", true)
       .limit(1)
       .maybeSingle();
-    companyId = any?.company_id ?? undefined;
+    companyId = anyEnabled?.company_id ?? undefined;
   }
   if (!companyId) {
     return {
