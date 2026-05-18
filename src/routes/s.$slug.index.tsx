@@ -25,7 +25,7 @@ type Product = Pick<
   "id" | "name" | "price" | "images" | "category" | "stock"
 >;
 
-export const Route = createFileRoute("/s/$slug")({
+export const Route = createFileRoute("/s/$slug/")({
   component: StorefrontHome,
   loader: ({ params }) => fetchSettings(params.slug),
   head: ({ params }) => ({
