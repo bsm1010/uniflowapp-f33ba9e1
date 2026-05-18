@@ -294,7 +294,7 @@ function AppsPage() {
               return (
                 <Link
                   key={app.key}
-                  to="/dashboard/apps/$appKey"
+                  to="/dashboard/apps/listing/$appKey"
                   params={{ appKey: app.key }}
                   className="group block"
                 >
