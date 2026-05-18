@@ -223,6 +223,13 @@ function OrdersPage() {
     const rows = (orders ?? []).filter((o) => selectedIds.has(o.id));
     const win = window.open("", "_blank");
     if (!win) return;
+    const esc = (s: unknown) =>
+      String(s ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
     const html = `
       <html><head><title>Shipping Labels</title><style>
         body{font-family:system-ui,sans-serif;padding:20px}
@@ -236,13 +243,13 @@ function OrdersPage() {
         .map((o) => {
           const its = items[o.id] ?? [];
           return `<div class="label">
-            <h2>${o.customer_name}</h2>
-            <div class="id">#${o.id.slice(0, 8).toUpperCase()}</div>
-            <div class="row"><strong>Phone:</strong> ${o.shipping_address}</div>
-            <div class="row"><strong>Wilaya:</strong> ${o.shipping_postal_code}</div>
-            <div class="row"><strong>City:</strong> ${o.shipping_city}</div>
-            <div class="row"><strong>Items:</strong> ${its.map((i) => `${i.product_name} ×${i.quantity}`).join(", ")}</div>
-            <div class="row"><strong>Total:</strong> ${Number(o.total).toFixed(2)} DA</div>
+            <h2>${esc(o.customer_name)}</h2>
+            <div class="id">#${esc(o.id.slice(0, 8).toUpperCase())}</div>
+            <div class="row"><strong>Phone:</strong> ${esc(o.shipping_address)}</div>
+            <div class="row"><strong>Wilaya:</strong> ${esc(o.shipping_postal_code)}</div>
+            <div class="row"><strong>City:</strong> ${esc(o.shipping_city)}</div>
+            <div class="row"><strong>Items:</strong> ${its.map((i) => `${esc(i.product_name)} ×${esc(i.quantity)}`).join(", ")}</div>
+            <div class="row"><strong>Total:</strong> ${esc(Number(o.total).toFixed(2))} DA</div>
           </div>`;
         })
         .join("")}
