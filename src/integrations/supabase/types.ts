@@ -257,6 +257,136 @@ export type Database = {
         }
         Relationships: []
       }
+      app_purchases: {
+        Row: {
+          amount_paid: number
+          app_id: string
+          created_at: string
+          id: string
+          stripe_payment_id: string | null
+          user_id: string
+        }
+        Insert: {
+          amount_paid?: number
+          app_id: string
+          created_at?: string
+          id?: string
+          stripe_payment_id?: string | null
+          user_id: string
+        }
+        Update: {
+          amount_paid?: number
+          app_id?: string
+          created_at?: string
+          id?: string
+          stripe_payment_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "app_purchases_app_id_fkey"
+            columns: ["app_id"]
+            isOneToOne: false
+            referencedRelation: "apps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      app_reviews: {
+        Row: {
+          app_id: string
+          comment: string
+          created_at: string
+          id: string
+          rating: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          app_id: string
+          comment?: string
+          created_at?: string
+          id?: string
+          rating: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          app_id?: string
+          comment?: string
+          created_at?: string
+          id?: string
+          rating?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "app_reviews_app_id_fkey"
+            columns: ["app_id"]
+            isOneToOne: false
+            referencedRelation: "apps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      apps: {
+        Row: {
+          app_url: string
+          category: string
+          created_at: string
+          developer_id: string
+          icon_url: string | null
+          id: string
+          is_free: boolean
+          long_description: string
+          price: number
+          rejection_reason: string | null
+          screenshots: string[]
+          short_description: string
+          slug: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          app_url?: string
+          category?: string
+          created_at?: string
+          developer_id: string
+          icon_url?: string | null
+          id?: string
+          is_free?: boolean
+          long_description?: string
+          price?: number
+          rejection_reason?: string | null
+          screenshots?: string[]
+          short_description?: string
+          slug: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          app_url?: string
+          category?: string
+          created_at?: string
+          developer_id?: string
+          icon_url?: string | null
+          id?: string
+          is_free?: boolean
+          long_description?: string
+          price?: number
+          rejection_reason?: string | null
+          screenshots?: string[]
+          short_description?: string
+          slug?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       category_images: {
         Row: {
           category_name: string
@@ -731,6 +861,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      developer_profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string
+          created_at: string
+          display_name: string
+          id: string
+          stripe_connect_id: string | null
+          updated_at: string
+          user_id: string
+          website: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string
+          created_at?: string
+          display_name?: string
+          id?: string
+          stripe_connect_id?: string | null
+          updated_at?: string
+          user_id: string
+          website?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string
+          created_at?: string
+          display_name?: string
+          id?: string
+          stripe_connect_id?: string | null
+          updated_at?: string
+          user_id?: string
+          website?: string
+        }
+        Relationships: []
       }
       discount_codes: {
         Row: {
