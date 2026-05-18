@@ -36,8 +36,7 @@ export function StorePickerDialog() {
     <>
       <Dialog open={pickerOpen} onOpenChange={(o) => (o ? null : closePicker())}>
         <DialogContent
-          className="max-w-4xl border-border/60 bg-background/80 backdrop-blur-2xl shadow-2xl"
-          style={{ backdropFilter: "blur(24px)" }}
+          className="max-w-4xl border border-gray-200 bg-white shadow-2xl"
         >
           <div className="flex flex-col items-center text-center mb-6">
             <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center mb-3 shadow-soft">
@@ -57,30 +56,30 @@ export function StorePickerDialog() {
                 key={s.id}
                 onClick={() => pick(s)}
                 className={cn(
-                  "group relative rounded-2xl border bg-card p-5 text-left transition-all duration-200",
+                  "group relative rounded-2xl border bg-white p-5 text-left transition-all duration-200",
                   "hover:-translate-y-1 hover:shadow-xl hover:border-primary/50",
                   currentStore?.id === s.id && "ring-2 ring-primary",
                 )}
               >
                 <div className="flex items-start gap-3 mb-3">
-                  <div className="h-12 w-12 rounded-xl bg-muted overflow-hidden flex items-center justify-center shrink-0">
+                  <div className="h-12 w-12 rounded-xl bg-gray-100 overflow-hidden flex items-center justify-center shrink-0">
                     {s.logo_url ? (
                       <img src={s.logo_url} alt="" className="h-full w-full object-cover" />
                     ) : (
-                      <StoreIcon className="h-5 w-5 text-muted-foreground" />
+                      <StoreIcon className="h-5 w-5 text-gray-400" />
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="font-semibold truncate">{s.name}</div>
-                    <div className="text-xs text-muted-foreground capitalize truncate">{s.category}</div>
+                    <div className="text-xs text-gray-500 capitalize truncate">{s.category}</div>
                   </div>
                 </div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-accent px-2 py-1 text-accent-foreground">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-1 text-gray-600">
                     <ShoppingBag className="h-3 w-3" />
                     {counts[s.id] ?? 0} orders
                   </span>
-                  <span className="text-muted-foreground">{s.currency}</span>
+                  <span className="text-gray-400">{s.currency}</span>
                 </div>
               </button>
             ))}
@@ -90,7 +89,7 @@ export function StorePickerDialog() {
                 closePicker();
                 setWizardOpen(true);
               }}
-              className="rounded-2xl border-2 border-dashed border-border hover:border-primary/60 p-5 flex flex-col items-center justify-center gap-2 min-h-[140px] text-muted-foreground hover:text-foreground transition-colors"
+              className="rounded-2xl border-2 border-dashed border-gray-200 hover:border-primary/60 p-5 flex flex-col items-center justify-center gap-2 min-h-[140px] text-gray-400 hover:text-gray-600 transition-colors"
             >
               <Plus className="h-6 w-6" />
               <span className="text-sm font-medium">Create New Store</span>
