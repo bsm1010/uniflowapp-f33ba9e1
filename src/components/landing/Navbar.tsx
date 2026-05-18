@@ -122,7 +122,7 @@ export function Navbar() {
                   >
                     {l.label}
                   </a>
-                ),
+                )
               )}
             </nav>
 
