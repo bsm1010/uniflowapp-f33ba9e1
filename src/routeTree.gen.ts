@@ -69,6 +69,7 @@ import { Route as DashboardAppsAiDescriptionsRouteImport } from './routes/dashbo
 import { Route as DashboardAppsAdGeneratorRouteImport } from './routes/dashboard.apps.ad-generator'
 import { Route as DashboardAppsAbandonedCartRouteImport } from './routes/dashboard.apps.abandoned-cart'
 import { Route as DashboardAdminPaymentsRouteImport } from './routes/dashboard.admin.payments'
+import { Route as DashboardAdminMarketplaceRouteImport } from './routes/dashboard.admin.marketplace'
 import { Route as ApiDbTableIdRouteImport } from './routes/api.db.$tableId'
 import { Route as SSlugPProductIdRouteImport } from './routes/s.$slug.p.$productId'
 import { Route as SSlugCheckoutSuccessRouteImport } from './routes/s.$slug.checkout.success'
@@ -393,6 +394,12 @@ const DashboardAdminPaymentsRoute = DashboardAdminPaymentsRouteImport.update({
   path: '/admin/payments',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardAdminMarketplaceRoute =
+  DashboardAdminMarketplaceRouteImport.update({
+    id: '/admin/marketplace',
+    path: '/admin/marketplace',
+    getParentRoute: () => DashboardRoute,
+  } as any)
 const ApiDbTableIdRoute = ApiDbTableIdRouteImport.update({
   id: '/api/db/$tableId',
   path: '/api/db/$tableId',
@@ -492,6 +499,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/voice-generator': typeof DashboardVoiceGeneratorRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/db/$tableId': typeof ApiDbTableIdRouteWithChildren
+  '/dashboard/admin/marketplace': typeof DashboardAdminMarketplaceRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
   '/dashboard/apps/abandoned-cart': typeof DashboardAppsAbandonedCartRoute
   '/dashboard/apps/ad-generator': typeof DashboardAppsAdGeneratorRoute
@@ -563,6 +571,7 @@ export interface FileRoutesByTo {
   '/dashboard/voice-generator': typeof DashboardVoiceGeneratorRoute
   '/dashboard': typeof DashboardIndexRoute
   '/api/db/$tableId': typeof ApiDbTableIdRouteWithChildren
+  '/dashboard/admin/marketplace': typeof DashboardAdminMarketplaceRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
   '/dashboard/apps/abandoned-cart': typeof DashboardAppsAbandonedCartRoute
   '/dashboard/apps/ad-generator': typeof DashboardAppsAdGeneratorRoute
@@ -637,6 +646,7 @@ export interface FileRoutesById {
   '/dashboard/voice-generator': typeof DashboardVoiceGeneratorRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/db/$tableId': typeof ApiDbTableIdRouteWithChildren
+  '/dashboard/admin/marketplace': typeof DashboardAdminMarketplaceRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
   '/dashboard/apps/abandoned-cart': typeof DashboardAppsAbandonedCartRoute
   '/dashboard/apps/ad-generator': typeof DashboardAppsAdGeneratorRoute
@@ -712,6 +722,7 @@ export interface FileRouteTypes {
     | '/dashboard/voice-generator'
     | '/dashboard/'
     | '/api/db/$tableId'
+    | '/dashboard/admin/marketplace'
     | '/dashboard/admin/payments'
     | '/dashboard/apps/abandoned-cart'
     | '/dashboard/apps/ad-generator'
@@ -783,6 +794,7 @@ export interface FileRouteTypes {
     | '/dashboard/voice-generator'
     | '/dashboard'
     | '/api/db/$tableId'
+    | '/dashboard/admin/marketplace'
     | '/dashboard/admin/payments'
     | '/dashboard/apps/abandoned-cart'
     | '/dashboard/apps/ad-generator'
@@ -856,6 +868,7 @@ export interface FileRouteTypes {
     | '/dashboard/voice-generator'
     | '/dashboard/'
     | '/api/db/$tableId'
+    | '/dashboard/admin/marketplace'
     | '/dashboard/admin/payments'
     | '/dashboard/apps/abandoned-cart'
     | '/dashboard/apps/ad-generator'
@@ -1337,6 +1350,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAdminPaymentsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/admin/marketplace': {
+      id: '/dashboard/admin/marketplace'
+      path: '/admin/marketplace'
+      fullPath: '/dashboard/admin/marketplace'
+      preLoaderRoute: typeof DashboardAdminMarketplaceRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/api/db/$tableId': {
       id: '/api/db/$tableId'
       path: '/api/db/$tableId'
@@ -1491,6 +1511,7 @@ interface DashboardRouteChildren {
   DashboardUpgradeRoute: typeof DashboardUpgradeRoute
   DashboardVoiceGeneratorRoute: typeof DashboardVoiceGeneratorRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardAdminMarketplaceRoute: typeof DashboardAdminMarketplaceRoute
   DashboardAdminPaymentsRoute: typeof DashboardAdminPaymentsRoute
 }
 
@@ -1524,6 +1545,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardUpgradeRoute: DashboardUpgradeRoute,
   DashboardVoiceGeneratorRoute: DashboardVoiceGeneratorRoute,
   DashboardIndexRoute: DashboardIndexRoute,
+  DashboardAdminMarketplaceRoute: DashboardAdminMarketplaceRoute,
   DashboardAdminPaymentsRoute: DashboardAdminPaymentsRoute,
 }
 
