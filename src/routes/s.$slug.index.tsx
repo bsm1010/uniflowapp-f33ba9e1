@@ -18,7 +18,7 @@ import {
 } from "@/lib/storeTheme";
 import { useCart } from "@/hooks/use-cart";
 import { fetchSettings, getCachedSettings, setCachedSettings } from "@/lib/storefrontCache";
-import PixelInjector from "@/components/PixelInjector";
+
 
 type Product = Pick<
   Tables<"products">,
