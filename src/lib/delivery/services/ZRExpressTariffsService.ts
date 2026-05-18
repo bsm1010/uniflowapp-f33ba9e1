@@ -145,12 +145,18 @@ export async function fetchZRTariffs(
 
     const tariffs: ZRTariffRow[] = [];
     for (const entry of rows) {
-      const wilaya = String(entry.Wilaya ?? entry.IDWilaya ?? "").trim();
+      const wilaya = String(
+        entry.Wilaya ?? entry.toWilayaName ?? entry.IDWilaya ?? entry.toWilayaId ?? "",
+      ).trim();
       if (!wilaya) continue;
-      const city = String(entry.Commune ?? "").trim();
+      const city = String(entry.Commune ?? entry.toWilayaName ?? "").trim();
 
-      const domicile = toNumber(entry.TarifLivraison ?? entry.Domicile);
-      const stopdesk = toNumber(entry.TarifStopDesk ?? entry.StopDesk);
+      const domicile = toNumber(
+        entry.TarifLivraison ?? entry.Domicile ?? entry.homeDeliveryPrice,
+      );
+      const stopdesk = toNumber(
+        entry.TarifStopDesk ?? entry.StopDesk ?? entry.stopDeskPrice,
+      );
 
       if (domicile > 0) {
         tariffs.push({ wilaya, city, delivery_type: "domicile", price: domicile });
