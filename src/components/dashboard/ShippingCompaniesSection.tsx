@@ -466,20 +466,35 @@ export function ShippingCompaniesSection() {
                       <p className="text-[11px] text-muted-foreground">
                         Stored encrypted on the server. Only the last 4 chars are shown.
                       </p>
-                      <Button
-                        type="button"
-                        size="sm"
-                        onClick={() => connect(c.id)}
-                        disabled={isValidating || !draftHasJson}
-                        className="gap-1.5"
-                      >
-                        {isValidating ? (
-                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                        ) : (
-                          <Plug className="h-3.5 w-3.5" />
+                      <div className="flex items-center gap-2">
+                        {r?.has_key && (
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            onClick={() => disconnect(c.id)}
+                            disabled={isValidating || busyId === c.id}
+                            className="gap-1.5 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                            Disconnect
+                          </Button>
                         )}
-                        {isValidating ? "Connecting…" : r?.has_key ? "Reconnect" : "Connect"}
-                      </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => connect(c.id)}
+                          disabled={isValidating || !draftHasJson}
+                          className="gap-1.5"
+                        >
+                          {isValidating ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          ) : (
+                            <Plug className="h-3.5 w-3.5" />
+                          )}
+                          {isValidating ? "Connecting…" : r?.has_key ? "Reconnect" : "Connect"}
+                        </Button>
+                      </div>
                     </div>
                   </div>
 
