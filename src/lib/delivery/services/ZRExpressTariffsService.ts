@@ -22,16 +22,20 @@ export interface FetchZRTariffsResult {
   tariffs: ZRTariffRow[];
 }
 
-/** Raw shape returned by Procolis — only the fields we actually consume. */
+/** Raw shape returned by ZR Express (legacy Procolis + new platform). */
 interface ZRTariffApiEntry {
   IDWilaya?: number | string;
   Wilaya?: string;
   Commune?: string;
   TarifLivraison?: number | string;
   TarifStopDesk?: number | string;
-  // Some payloads use alternative casings; keep them optional.
   Domicile?: number | string;
   StopDesk?: number | string;
+  // New platform (api.zrexpress.app) schema:
+  toWilayaId?: number | string;
+  toWilayaName?: string;
+  homeDeliveryPrice?: number | string;
+  stopDeskPrice?: number | string;
 }
 
 function toNumber(value: unknown): number {
@@ -64,51 +68,95 @@ export async function fetchZRTariffs(
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 15_000);
 
+  const headers = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    "X-Tenant": tenantId.trim(),
+    "X-Api-Key": apiKey.trim(),
+    token: apiKey.trim(),
+    key: tenantId.trim(),
+    id: tenantId.trim(),
+  } as Record<string, string>;
+
+  // Probe candidate tariff endpoints. The new ZR Express platform exposes
+  // `GET /api/v1/delivery-pricing/rates`; we also try legacy paths as fallback.
+  const attempts: Array<{ url: string; method: "GET" | "POST" }> = [
+    { url: `${ZR_BASE_URL}/delivery-pricing/rates`, method: "GET" },
+    { url: `${ZR_BASE_URL}/tarification`, method: "POST" },
+    { url: `${ZR_BASE_URL}/tarification`, method: "GET" },
+    { url: `${ZR_BASE_URL}/tarifs`, method: "POST" },
+  ];
+
+  let lastError = "";
+  let json: unknown = null;
   try {
-    const url = `${ZR_BASE_URL}/tarifs`;
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        token: apiKey.trim(),
-        key: tenantId.trim(),
-        id: tenantId.trim(),
-      },
-      body: JSON.stringify({}),
-      signal: controller.signal,
-    });
+    for (const attempt of attempts) {
+      const res = await fetch(attempt.url, {
+        method: attempt.method,
+        headers,
+        body: attempt.method === "POST" ? JSON.stringify({}) : undefined,
+        signal: controller.signal,
+      });
+      const bodyText = await res.text();
+      console.log("[ZRExpress] fetchTariffs attempt", {
+        url: attempt.url,
+        method: attempt.method,
+        status: res.status,
+        statusText: res.statusText,
+        bodyPreview: bodyText.slice(0, 400),
+      });
+      if (!res.ok) {
+        lastError = `${attempt.method} ${attempt.url} → ${res.status} ${res.statusText}`;
+        if (res.status === 401 || res.status === 403) {
+          return {
+            success: false,
+            message: `ZR Express rejected credentials (${res.status}).`,
+            tariffs: [],
+          };
+        }
+        continue;
+      }
+      try {
+        json = bodyText ? JSON.parse(bodyText) : null;
+        break;
+      } catch {
+        lastError = `${attempt.url} non-JSON`;
+        continue;
+      }
+    }
 
-    const bodyText = await res.text();
-    console.log("[ZRExpress] fetchTariffs response", {
-      url,
-      method: "POST",
-      status: res.status,
-      statusText: res.statusText,
-      bodyPreview: bodyText.slice(0, 500),
-    });
-
-    if (!res.ok) {
+    if (!json) {
       return {
         success: false,
-        message: `ZR Express API error (${res.status} ${res.statusText}): ${bodyText.slice(0, 200)}`,
+        message: `ZR Express: no tariff endpoint responded. Last error: ${lastError || "unknown"}`,
         tariffs: [],
       };
     }
 
-    const json = (bodyText ? JSON.parse(bodyText) : []) as
-      | ZRTariffApiEntry[]
-      | { Tarifs?: ZRTariffApiEntry[] };
-    const rows: ZRTariffApiEntry[] = Array.isArray(json) ? json : (json.Tarifs ?? []);
+    const rows: ZRTariffApiEntry[] = Array.isArray(json)
+      ? (json as ZRTariffApiEntry[])
+      : Array.isArray((json as { data?: ZRTariffApiEntry[] }).data)
+        ? (json as { data: ZRTariffApiEntry[] }).data
+        : Array.isArray((json as { Tarifs?: ZRTariffApiEntry[] }).Tarifs)
+          ? (json as { Tarifs: ZRTariffApiEntry[] }).Tarifs
+          : Array.isArray((json as { rates?: ZRTariffApiEntry[] }).rates)
+            ? (json as { rates: ZRTariffApiEntry[] }).rates
+            : [];
 
     const tariffs: ZRTariffRow[] = [];
     for (const entry of rows) {
-      const wilaya = String(entry.Wilaya ?? entry.IDWilaya ?? "").trim();
+      const wilaya = String(
+        entry.Wilaya ?? entry.toWilayaName ?? entry.IDWilaya ?? entry.toWilayaId ?? "",
+      ).trim();
       if (!wilaya) continue;
-      const city = String(entry.Commune ?? "").trim();
+      const city = String(entry.Commune ?? entry.toWilayaName ?? "").trim();
 
-      const domicile = toNumber(entry.TarifLivraison ?? entry.Domicile);
-      const stopdesk = toNumber(entry.TarifStopDesk ?? entry.StopDesk);
+      const domicile = toNumber(
+        entry.TarifLivraison ?? entry.Domicile ?? entry.homeDeliveryPrice,
+      );
+      const stopdesk = toNumber(
+        entry.TarifStopDesk ?? entry.StopDesk ?? entry.stopDeskPrice,
+      );
 
       if (domicile > 0) {
         tariffs.push({ wilaya, city, delivery_type: "domicile", price: domicile });
