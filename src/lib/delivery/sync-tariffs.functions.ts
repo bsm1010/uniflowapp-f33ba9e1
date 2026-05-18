@@ -55,7 +55,7 @@ export const syncDeliveryCompanyTariffs = createServerFn({ method: "POST" })
       if (!link.enabled) {
         return { ok: false, message: "This delivery company is disabled for your store." };
       }
-      if (!link.api_key?.trim() || !link.api_secret?.trim()) {
+      if (!link.api_key?.trim()) {
         return { ok: false, message: "Missing API credentials for this provider." };
       }
 
@@ -68,7 +68,7 @@ export const syncDeliveryCompanyTariffs = createServerFn({ method: "POST" })
         };
       }
 
-      const fetched = await fetchZRTariffs(link.api_key, link.api_secret);
+      const fetched = await fetchZRTariffs(link.api_key, link.api_secret ?? "");
       if (!fetched.success) {
         return { ok: false, message: fetched.message };
       }
