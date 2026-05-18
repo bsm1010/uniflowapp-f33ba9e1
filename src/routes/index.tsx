@@ -6,7 +6,6 @@ import { Hero } from "@/components/landing/Hero";
 
 import flowImage from "@/assets/fennecly-flow.png";
 
-// Defer below-the-fold sections so the hero paints faster.
 const DashboardTools = lazy(() =>
   import("@/components/landing/DashboardTools").then((m) => ({
     default: m.DashboardTools,
@@ -59,20 +58,20 @@ export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
     meta: [
-      { title: "Fennecly — AI Automation Platform" },
+      { title: "Fennecly — Build Your Online Store" },
       {
         name: "description",
         content:
-          "Automate customer conversations, generate leads, and increase sales with Fennecly AI-powered messaging automation.",
+          "Launch your online store in minutes. Manage products, orders, and delivery all in one place. No coding needed.",
       },
       {
         property: "og:title",
-        content: "Fennecly — AI Automation Platform",
+        content: "Fennecly — Build Your Online Store",
       },
       {
         property: "og:description",
         content:
-          "Automate Instagram, Messenger, and WhatsApp conversations using AI.",
+          "The easiest way to sell online in Algeria. Launch your store in minutes.",
       },
     ],
   }),
@@ -89,52 +88,20 @@ function Index() {
 
       <Hero />
 
-      {/* NEW AI WORKFLOW SECTION */}
+      {/* IMAGE SHOWCASE SECTION */}
       <section className="relative overflow-hidden py-24">
         <div className="mx-auto max-w-7xl px-6">
-          <div className="grid items-center gap-16 lg:grid-cols-2">
-            
-            {/* LEFT CONTENT */}
-            <div>
-              <div className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white backdrop-blur">
-                ⚡ AI Automation Platform
-              </div>
+          <div className="relative">
+            {/* Purple glow behind card */}
+            <div className="absolute inset-0 rounded-[40px] bg-purple-600/20 blur-3xl" />
 
-              <h2 className="mt-6 text-5xl font-bold tracking-tight text-white">
-                Turn conversations into
-                <span className="block text-orange-500">
-                  real revenue
-                </span>
-              </h2>
-
-              <p className="mt-6 text-lg leading-8 text-zinc-400">
-                Fennecly helps businesses automate replies,
-                capture leads, and boost sales directly from
-                Instagram, Messenger, and WhatsApp using AI.
-              </p>
-
-              <div className="mt-8 flex flex-wrap gap-4">
-                <button className="rounded-2xl bg-orange-500 px-6 py-3 font-medium text-white transition hover:scale-105 hover:bg-orange-400">
-                  Start Free
-                </button>
-
-                <button className="rounded-2xl border border-white/10 bg-white/5 px-6 py-3 font-medium text-white backdrop-blur transition hover:bg-white/10">
-                  Learn More
-                </button>
-              </div>
-            </div>
-
-            {/* RIGHT IMAGE */}
-            <div className="relative">
-              <div className="absolute inset-0 rounded-[40px] bg-orange-500/20 blur-3xl" />
-
-              <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-black/40 p-6 backdrop-blur-xl">
-                <img
-                  src={flowImage}
-                  alt="Fennecly workflow"
-                  className="w-full object-contain"
-                />
-              </div>
+            {/* Big image card - no text, no buttons */}
+            <div className="relative overflow-hidden rounded-[40px] border border-purple-500/20 bg-black/40 p-8 backdrop-blur-xl shadow-2xl shadow-purple-900/30">
+              <img
+                src={flowImage}
+                alt="Fennecly platform"
+                className="w-full object-contain"
+              />
             </div>
           </div>
         </div>
