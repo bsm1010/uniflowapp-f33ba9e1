@@ -271,7 +271,7 @@ function StorefrontHome() {
                 {titles.featured_sub}
               </p>
             </div>
-            
+            <a
               href="#shop"
               className="hidden sm:inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-full transition-all duration-300 hover:scale-105"
               style={{ backgroundColor: t.surface, color: t.fg, border: `1px solid ${t.border}` }}
