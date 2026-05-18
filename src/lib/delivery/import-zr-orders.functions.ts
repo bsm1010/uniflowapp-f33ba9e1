@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { createAuthenticatedDeliveryClient } from "./authenticated-client";
 import { normalizeProviderKey } from "./registry";
+import type { TablesInsert, TablesUpdate } from "@/integrations/supabase/types";
 
 const InputSchema = z.object({
   accessToken: z.string().min(1).max(4096),
