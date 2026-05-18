@@ -67,19 +67,22 @@ export async function fetchZRTariffs(
   try {
     const url = `${ZR_BASE_URL}/tarification`;
     const res = await fetch(url, {
-      method: "GET",
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
         token: apiKey.trim(),
         key: tenantId.trim(),
+        id: tenantId.trim(),
       },
+      body: JSON.stringify({}),
       signal: controller.signal,
     });
 
     const bodyText = await res.text();
     console.log("[ZRExpress] fetchTariffs response", {
       url,
+      method: "POST",
       status: res.status,
       statusText: res.statusText,
       bodyPreview: bodyText.slice(0, 500),
