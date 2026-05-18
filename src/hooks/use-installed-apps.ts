@@ -70,6 +70,16 @@ export function useInstalledApps() {
       if (!error) {
         setInstalled((prev) => new Set(prev).add(appKey));
         window.dispatchEvent(new Event("apps:updated"));
+        try {
+          const { APPS_BY_KEY } = await import("@/lib/apps");
+          const appName = APPS_BY_KEY[appKey]?.name ?? appKey;
+          fetch("https://hook.eu1.make.com/i7tb97vlvbcnrq70ii5hmitmk8lox8lk", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: user.email, app_name: appName }),
+            mode: "no-cors",
+          }).catch(() => {});
+        } catch {}
       }
       return { error };
     },
