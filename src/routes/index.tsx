@@ -5,9 +5,6 @@ import { Navbar } from "@/components/landing/Navbar";
 import { Hero } from "@/components/landing/Hero";
 
 // Defer below-the-fold sections so the hero paints faster.
-const EcommerceBanner = lazy(() =>
-  import("@/components/landing/EcommerceBanner").then((m) => ({ default: m.EcommerceBanner })),
-);
 const DashboardTools = lazy(() =>
   import("@/components/landing/DashboardTools").then((m) => ({ default: m.DashboardTools })),
 );
