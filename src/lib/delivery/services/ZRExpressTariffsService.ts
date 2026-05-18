@@ -55,12 +55,12 @@ function toNumber(value: unknown): number {
  */
 export async function fetchZRTariffs(
   apiKey: string,
-  tenantId: string,
+  _tenantId?: string,
 ): Promise<FetchZRTariffsResult> {
-  if (!apiKey?.trim() || !tenantId?.trim()) {
+  if (!apiKey?.trim()) {
     return {
       success: false,
-      message: "Missing ZR Express credentials (token / key).",
+      message: "Missing ZR Express credentials (Bearer token).",
       tariffs: [],
     };
   }
@@ -69,11 +69,11 @@ export async function fetchZRTariffs(
   const timeout = setTimeout(() => controller.abort(), 15_000);
 
   const headers = {
+    Authorization: `Bearer ${apiKey.trim()}`,
     "Content-Type": "application/json",
     Accept: "application/json",
-    token: apiKey.trim(),
-    id: tenantId.trim(),
   } as Record<string, string>;
+
 
   const url = `${ZR_BASE_URL}/delivery-pricing/rates`;
 
