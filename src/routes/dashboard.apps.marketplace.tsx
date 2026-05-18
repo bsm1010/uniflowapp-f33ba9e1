@@ -68,7 +68,7 @@ const CATEGORIES = [
 ];
 
 function MarketplacePage() {
-  const { apps } = Route.useLoaderData();
+  const { apps } = Route.useLoaderData() as { apps: AppRow[] };
   const [query, setQuery] = useState("");
   const [cat, setCat] = useState("All");
 
