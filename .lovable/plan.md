@@ -1,97 +1,40 @@
-# Fennecly Builder & Custom Domain Upgrade Plan
+## Goal
 
-This is a large, multi-system upgrade. I'll deliver it in **3 shippable phases** so you can review progress, rather than dumping 50+ files at once with no review point.
+Build a Shopify-style marketplace for developer-submitted apps that lives alongside the existing built-in apps (APPS in `src/lib/apps.ts` stays untouched). Clicking any app card — built-in or marketplace — opens the Shopify-style detail page you screenshotted (left meta column, hero/screenshots, install/buy button).
 
----
+## Phased approach
 
-## Phase 1 — Custom Domain Connection Wizard (ship first)
+Splitting into 4 phases so each turn ships something working. After each phase you preview, give feedback, then I continue.
 
-**New backend table** `custom_domains`:
-- `domain`, `user_id`, `store_slug`, `type` (root/www/subdomain)
-- `status` (pending / verifying / verified / failed / ssl_active)
-- `dns_records` (jsonb), `verification_token`, `last_checked_at`, `error_message`
-- RLS: owners only
+### Phase 1 — Foundation + Shopify-style detail page (this turn)
+- DB migration: `apps`, `app_purchases`, `app_reviews`, `developer_profiles` tables + RLS + storage bucket `marketplace-assets`
+- `useAppRoles` hook + `is_marketplace_admin` check
+- Replace current `dashboard.apps.listing.$appKey.tsx` with the Shopify-style layout: sticky left rail (icon, title, pricing, rating, developer, Install/Buy button), centered hero screenshot, right-side screenshot stack, long description, screenshot lightbox carousel
+- Works for both built-in apps (from `APPS`) and marketplace apps (from DB) via a unified loader
 
-**Server functions** (`src/lib/domains/domains.functions.ts`):
-- `addCustomDomain(domain)` → validates, generates DNS records, returns wizard payload
-- `verifyDomainDNS(domainId)` → does DNS lookup via Cloudflare DoH (`https://cloudflare-dns.com/dns-query`), updates status
-- `removeDomain(domainId)`
-- `detectProvider(domain)` → checks NS records, returns Cloudflare/GoDaddy/Namecheap/Hostinger/Other
+### Phase 2 — Submission + browse + developer dashboard
+- `/dashboard/apps/submit` — submission form (name, description, category, URL, price, up to 5 screenshots → Supabase Storage)
+- `/dashboard/apps/marketplace` — browse approved apps with category filter, price filter (free/paid), search
+- `/dashboard/developer` — developer's own apps with status badges, edit, earnings; profile section (bio, website)
 
-**Wizard UI** `src/components/domains/ConnectDomainWizard.tsx` — premium 5-step modal:
-1. **Enter domain** — input with live validation, root/www/subdomain auto-detect
-2. **DNS records** — copy-able A + CNAME + TXT cards with provider auto-detect badge
-3. **Visual tutorial** — 4 illustrated cards (provider → DNS → add records → save), per-provider deep links
-4. **Verification** — animated radar/pulse, "Checking DNS…", auto-retry every 5s up to 12 attempts
-5. **Success** — confetti, SSL active, store-published confirmation
+### Phase 3 — Admin review + ratings
+- `/dashboard/admin/marketplace` — admin panel (gated by `marketplace_admin` role) with pending/approved/rejected tabs and approve/reject actions; sends `notifications` row to developer
+- Rating/review system on detail page (1-5 stars + text, only buyers can leave reviews); average rating shown on cards
+- "My Apps" tab merging built-in installed + marketplace purchased; "Developer" badge for users with submitted apps
 
-Plus: troubleshooting accordion, FAQ section, copy-to-clipboard everywhere, dark/light, mobile responsive, gradient + glassmorphism styling, framer-motion step transitions.
+### Phase 4 — Stripe payments
+- Enable Lovable Payments (Stripe) — requires Pro plan; I'll run the eligibility check and walk you through
+- "Buy for $X" creates a Stripe checkout session via server function; webhook records `app_purchases` row with `stripe_payment_id`
+- 10% platform fee via `application_fee_amount` (needs Stripe Connect for developers — added in this phase)
 
-**Settings integration** — new section in `dashboard.settings.tsx` (or new `dashboard.domains.tsx`) listing connected domains with status badges and a "Connect Custom Domain" CTA opening the wizard.
+## Technical notes
 
----
+- **Coexistence**: built-in `APPS` (Discount Generator, Email Marketing, …) keep their current install flow via `installed_apps` + the Make.com webhook. Marketplace apps use `app_purchases`. The detail page route detects which source the app comes from.
+- **Routes**: All under `/dashboard/*` (uses the existing auth-gated dashboard layout). No new public routes.
+- **Storage**: New public bucket `marketplace-assets` for screenshots and app icons. Folder-scoped RLS (`{user_id}/...`).
+- **Server functions**: Submission moderation, purchase creation, and Stripe checkout go through `createServerFn` with `requireSupabaseAuth`.
+- **Admin gate**: New `marketplace_admin` value added to the existing `app_role` enum and granted via `user_roles`.
 
-## Phase 2 — Modern Builder Component Library
+## What I need from you to start
 
-**Component registry** `src/components/storefront/blocks/` — ~30 premium block components grouped by category:
-
-```
-hero/         (HeroSplit, HeroCentered, HeroVideo, HeroGradient)
-products/     (ProductGrid, ProductCarousel, FeaturedProduct, BentoProducts)
-social-proof/ (Testimonials, ReviewsSlider, BrandLogos, StatsCounter, UGCWall)
-media/        (ImageGallery, MasonryGallery, VideoSection, BeforeAfter, TikTokReels)
-banners/      (Marquee, AnnouncementBar, PromoBanner, CountdownBanner)
-content/      (FAQ, Features, ComparisonTable, Pricing, BentoGrid, InteractiveCards)
-trust/        (TrustBadges, Guarantees, Shipping)
-cta/          (CTASection, Newsletter, ContactForm, FloatingButton, StickyCart)
-```
-
-Each block:
-- Lazy-loaded via dynamic import
-- Strict TypeScript props interface
-- Uses semantic tokens from `styles.css` (no hard-coded colors)
-- framer-motion entrance + hover animations
-- Responsive (mobile + desktop)
-- Editable schema (`schema.ts` per block) declaring fields → autogenerates editor controls
-
-**Block registry** `src/components/storefront/blocks/registry.ts` exports `{ key, label, category, icon, component, defaultProps, schema }` for every block.
-
----
-
-## Phase 3 — Builder UX Upgrade
-
-**New customize page** `src/routes/customize.tsx` redesign:
-- **Left panel**: searchable component library with category tabs, favorites, drag handles
-- **Center**: live preview iframe with desktop/mobile toggle
-- **Right panel**: contextual editor — when a section is selected, shows controls auto-generated from its schema:
-  - Border radius slider, shadow presets, blur/glass toggle, gradient picker
-  - Hover/entrance animation dropdowns, layout width, section spacing
-  - Button style variants, image aspect ratios, color/typography overrides
-- **Top bar**: undo/redo, save indicator (auto-save every 3s debounced), duplicate, delete, drag reorder
-- **Section templates** library: preset combos + one-click page layouts
-- **AI section generator**: button calls Lovable AI Gateway with store niche → returns block config
-- **Import/export**: JSON download/upload of the section list
-
-**Data model** — extend `store_settings.sections` to store ordered array of `{ id, blockKey, props, styleOverrides }` instead of the current fixed section keys.
-
----
-
-## Technical details
-
-- **Routing/links**: typed Tanstack `<Link>`, no react-router
-- **DNS verification**: server-side via Cloudflare DoH JSON API (no API key, fast, edge-compatible)
-- **Drag-drop**: reuse existing `@dnd-kit` already in project
-- **Animations**: framer-motion (already present)
-- **Provider detection**: NS lookup → match against known patterns
-- **SSL**: documented as automatic via the hosting layer (Vercel/Netlify/Cloudflare) once DNS verifies — wizard reflects this
-- All new files keep components <300 lines, schemas separate from rendering
-
----
-
-## What I need from you
-
-This is **3–4 days of work in one shot**. To keep quality high I'll **ship Phase 1 first** (domain wizard end-to-end, fully working including the DB migration), then **Phase 2** (block library), then **Phase 3** (builder UX). Each phase is reviewable and usable on its own.
-
-**Confirm to proceed and I'll start with Phase 1 (custom domain wizard + DB migration).**
-
-If you'd rather I bundle everything into one mega-delivery anyway, say "do it all at once" and I will — just expect a much larger diff that's harder to review.
+Just approve this plan. I'll start with Phase 1 (DB migration first, you approve it, then I build the detail page).
