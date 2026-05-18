@@ -26,66 +26,97 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
 
     const token = this.credentials.apiKey.trim();
     const tenantId = this.credentials.apiSecret.trim();
-    const url = `${ZR_BASE_URL}/tarifs`;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 12_000);
 
+    // Per ZR Express NEW docs (docs.zrexpress.app), auth uses TWO separate
+    // headers: X-Tenant + X-Api-Key. We also send `token`/`id`/`key` for
+    // backward compatibility with the legacy Procolis API.
+    const headers = {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "X-Tenant": tenantId,
+      "X-Api-Key": token,
+      token,
+      key: tenantId,
+      id: tenantId,
+    } as Record<string, string>;
+
+    // Probe candidate tariff endpoints in order. Stop on the first 2xx with rows.
+    const attempts: Array<{ url: string; method: "GET" | "POST" }> = [
+      { url: `${ZR_BASE_URL}/delivery-pricing/rates`, method: "GET" },
+      { url: `${ZR_BASE_URL}/tarification`, method: "POST" },
+      { url: `${ZR_BASE_URL}/tarification`, method: "GET" },
+      { url: `${ZR_BASE_URL}/tarifs`, method: "POST" },
+    ];
+
+    let lastErr = "";
     try {
-      // Procolis /tarification requires POST. Send both `key` and `id` headers
-      // (different Procolis docs name the tenant header differently).
-      const res = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          token,
-          key: tenantId,
-          id: tenantId,
-        },
-        body: JSON.stringify({}),
-        signal: controller.signal,
-      });
+      for (const attempt of attempts) {
+        try {
+          const res = await fetch(attempt.url, {
+            method: attempt.method,
+            headers,
+            body: attempt.method === "POST" ? JSON.stringify({}) : undefined,
+            signal: controller.signal,
+          });
+          const bodyText = await res.text();
+          console.log("[ZRExpress] validateCredentials attempt", {
+            url: attempt.url,
+            method: attempt.method,
+            status: res.status,
+            statusText: res.statusText,
+            bodyPreview: bodyText.slice(0, 400),
+          });
 
-      const bodyText = await res.text();
-      console.log("[ZRExpress] validateCredentials response", {
-        url,
-        method: "POST",
-        status: res.status,
-        statusText: res.statusText,
-        bodyPreview: bodyText.slice(0, 500),
-      });
+          if (!res.ok) {
+            lastErr = `${attempt.method} ${attempt.url} → ${res.status} ${res.statusText}: ${bodyText.slice(0, 160)}`;
+            // 401/403 = bad credentials, no point trying other endpoints
+            if (res.status === 401 || res.status === 403) {
+              return {
+                ok: false,
+                message: `ZR Express rejected credentials (${res.status}): ${bodyText.slice(0, 200) || res.statusText}`,
+              };
+            }
+            continue;
+          }
 
-      if (!res.ok) {
-        return {
-          ok: false,
-          message: `ZR Express API error (${res.status} ${res.statusText}): ${bodyText.slice(0, 200) || "no body"}`,
-        };
+          let parsed: unknown = null;
+          try {
+            parsed = bodyText ? JSON.parse(bodyText) : null;
+          } catch {
+            lastErr = `${attempt.url} returned non-JSON`;
+            continue;
+          }
+
+          const rows = Array.isArray(parsed)
+            ? parsed
+            : Array.isArray((parsed as { data?: unknown[] } | null)?.data)
+              ? (parsed as { data: unknown[] }).data
+              : Array.isArray((parsed as { Tarifs?: unknown[] } | null)?.Tarifs)
+                ? (parsed as { Tarifs: unknown[] }).Tarifs
+                : Array.isArray((parsed as { rates?: unknown[] } | null)?.rates)
+                  ? (parsed as { rates: unknown[] }).rates
+                  : null;
+
+          if (!rows || rows.length === 0) {
+            lastErr = `${attempt.url} returned no rows`;
+            continue;
+          }
+
+          return {
+            ok: true,
+            message: `ZR Express connected via ${attempt.url} (${rows.length} rates).`,
+          };
+        } catch (e) {
+          lastErr = e instanceof Error ? e.message : String(e);
+          if (lastErr.toLowerCase().includes("aborted")) throw e;
+        }
       }
-
-      let parsed: unknown = null;
-      try {
-        parsed = bodyText ? JSON.parse(bodyText) : null;
-      } catch {
-        return {
-          ok: false,
-          message: "ZR Express returned a non-JSON response. Verify your credentials are correct.",
-        };
-      }
-
-      const rows = Array.isArray(parsed)
-        ? parsed
-        : Array.isArray((parsed as { Tarifs?: unknown[] } | null)?.Tarifs)
-          ? (parsed as { Tarifs: unknown[] }).Tarifs
-          : null;
-
-      if (!rows || rows.length === 0) {
-        return {
-          ok: false,
-          message: "ZR Express responded but returned no tariffs. Verify your account is active.",
-        };
-      }
-
-      return { ok: true, message: `ZR Express connected (${rows.length} tariffs available).` };
+      return {
+        ok: false,
+        message: `ZR Express: no tariff endpoint responded. Last error: ${lastErr || "unknown"}`,
+      };
     } catch (e) {
       const raw = e instanceof Error ? e.message : String(e);
       console.error("[ZRExpress] validateCredentials error", raw);
