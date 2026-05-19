@@ -81,7 +81,7 @@ function ProductsPage() {
         images: p.images ?? [],
         tags: p.tags ?? [],
         status: (p.status ?? "draft") as "draft" | "published",
-        variants: p.variants ?? [],
+        variants: (Array.isArray(p.variants) ? p.variants : []) as ProductVariant[],
         sales_count: p.sales_count ?? 0,
       }))
     );
