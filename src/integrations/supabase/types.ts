@@ -1726,11 +1726,18 @@ export type Database = {
           low_stock_threshold: number
           name: string
           price: number
+          sale_price: number | null
+          sales_count: number
+          sku: string | null
+          status: string
           stock: number
           stock_alert_sent_at: string | null
           store_id: string | null
+          tags: string[]
           updated_at: string
           user_id: string
+          variants: Json
+          weight: number | null
         }
         Insert: {
           category?: string | null
@@ -1741,11 +1748,18 @@ export type Database = {
           low_stock_threshold?: number
           name: string
           price?: number
+          sale_price?: number | null
+          sales_count?: number
+          sku?: string | null
+          status?: string
           stock?: number
           stock_alert_sent_at?: string | null
           store_id?: string | null
+          tags?: string[]
           updated_at?: string
           user_id: string
+          variants?: Json
+          weight?: number | null
         }
         Update: {
           category?: string | null
@@ -1756,11 +1770,18 @@ export type Database = {
           low_stock_threshold?: number
           name?: string
           price?: number
+          sale_price?: number | null
+          sales_count?: number
+          sku?: string | null
+          status?: string
           stock?: number
           stock_alert_sent_at?: string | null
           store_id?: string | null
+          tags?: string[]
           updated_at?: string
           user_id?: string
+          variants?: Json
+          weight?: number | null
         }
         Relationships: [
           {
@@ -2331,6 +2352,7 @@ export type Database = {
           currency: string
           description: string
           id: string
+          is_active: boolean
           is_default: boolean
           logo_url: string | null
           name: string
@@ -2344,6 +2366,7 @@ export type Database = {
           currency?: string
           description?: string
           id?: string
+          is_active?: boolean
           is_default?: boolean
           logo_url?: string | null
           name?: string
@@ -2357,6 +2380,7 @@ export type Database = {
           currency?: string
           description?: string
           id?: string
+          is_active?: boolean
           is_default?: boolean
           logo_url?: string | null
           name?: string
