@@ -11,6 +11,9 @@ import {
   DollarSign,
   Megaphone,
   Wand2,
+  MessageSquare,
+  ShieldAlert,
+  Wallet,
   type LucideIcon,
 } from "lucide-react";
 
