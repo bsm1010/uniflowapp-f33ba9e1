@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowLeft,
   Check,
@@ -15,7 +15,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { APPS_BY_KEY, type AppDef } from "@/lib/apps";
 import { useInstalledApps } from "@/hooks/use-installed-apps";
+import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+
+function isImageUrl(s: string) {
+  return s.startsWith("http://") || s.startsWith("https://") || s.startsWith("/");
+}
 
 export const Route = createFileRoute("/dashboard/apps/listing/$appKey")({
   component: AppLandingPage,
@@ -71,16 +76,26 @@ function Lightbox({
 
       <div
         className={cn(
-          "aspect-[16/10] w-full max-w-5xl rounded-2xl bg-gradient-to-br flex items-center justify-center",
-          app.screenshots[index],
+          "aspect-[16/10] w-full max-w-5xl rounded-2xl flex items-center justify-center overflow-hidden",
+          isImageUrl(app.screenshots[index])
+            ? "bg-black/20"
+            : "bg-gradient-to-br " + app.screenshots[index],
         )}
       >
-        <div className="text-white/90 text-center">
-          <Icon className="h-24 w-24 mx-auto mb-4 drop-shadow-lg" />
-          <p className="text-sm font-medium uppercase tracking-wider">
-            Screenshot {index + 1} of {total}
-          </p>
-        </div>
+        {isImageUrl(app.screenshots[index]) ? (
+          <img
+            src={app.screenshots[index]}
+            alt={`Screenshot ${index + 1} of ${total}`}
+            className="w-full h-full object-contain"
+          />
+        ) : (
+          <div className="text-white/90 text-center">
+            <Icon className="h-24 w-24 mx-auto mb-4 drop-shadow-lg" />
+            <p className="text-sm font-medium uppercase tracking-wider">
+              Screenshot {index + 1} of {total}
+            </p>
+          </div>
+        )}
       </div>
 
       <button
@@ -95,11 +110,48 @@ function Lightbox({
 
 // ── Main Page ───────────────────────────────────────────────────────
 function AppLandingPage() {
-  const { app } = Route.useLoaderData() as { app: AppDef };
+  const { app: baseApp } = Route.useLoaderData() as { app: AppDef };
   const { isInstalled, install: installApp } = useInstalledApps();
   const navigate = useNavigate();
   const [installing, setInstalling] = useState(false);
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
+  const [overrideData, setOverrideData] = useState<{
+    name: string | null;
+    description: string | null;
+    long_description: string | null;
+    screenshots: string[];
+  } | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("builtin_app_edits")
+        .select("name, description, long_description, screenshots")
+        .eq("app_key", baseApp.key)
+        .maybeSingle();
+      if (data) {
+        setOverrideData({
+          name: data.name,
+          description: data.description,
+          long_description: data.long_description,
+          screenshots: Array.isArray(data.screenshots) ? data.screenshots : [],
+        });
+      }
+    })();
+  }, [baseApp.key]);
+
+  const app: AppDef = overrideData
+    ? {
+        ...baseApp,
+        name: overrideData.name ?? baseApp.name,
+        description: overrideData.description ?? baseApp.description,
+        longDescription: overrideData.long_description ?? baseApp.longDescription,
+        screenshots:
+          overrideData.screenshots.length > 0
+            ? overrideData.screenshots
+            : baseApp.screenshots,
+      }
+    : baseApp;
 
   const Icon = app.icon;
   const installed = isInstalled(app.key);
@@ -226,19 +278,29 @@ function AppLandingPage() {
             <button
               onClick={() => setLightboxIdx(heroIdx)}
               className={cn(
-                "block w-full aspect-[4/3] rounded-2xl bg-gradient-to-br ring-1 ring-border overflow-hidden transition hover:ring-foreground/30",
-                app.screenshots[heroIdx],
+                "block w-full aspect-[4/3] rounded-2xl ring-1 ring-border overflow-hidden transition hover:ring-foreground/30",
+                isImageUrl(app.screenshots[heroIdx])
+                  ? "bg-muted"
+                  : "bg-gradient-to-br " + app.screenshots[heroIdx],
               )}
             >
-              <div className="h-full w-full flex flex-col items-center justify-center text-white/90 p-8">
-                <Icon className="h-24 w-24 mb-4 drop-shadow-lg" />
-                <p className="text-3xl font-bold text-center leading-tight drop-shadow">
-                  {app.name}
-                </p>
-                <p className="text-sm font-medium uppercase tracking-wider mt-3 opacity-80">
-                  {app.category}
-                </p>
-              </div>
+              {isImageUrl(app.screenshots[heroIdx]) ? (
+                <img
+                  src={app.screenshots[heroIdx]}
+                  alt={app.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="h-full w-full flex flex-col items-center justify-center text-white/90 p-8">
+                  <Icon className="h-24 w-24 mb-4 drop-shadow-lg" />
+                  <p className="text-3xl font-bold text-center leading-tight drop-shadow">
+                    {app.name}
+                  </p>
+                  <p className="text-sm font-medium uppercase tracking-wider mt-3 opacity-80">
+                    {app.category}
+                  </p>
+                </div>
+              )}
             </button>
           </div>
 
@@ -251,13 +313,21 @@ function AppLandingPage() {
                   key={realIdx}
                   onClick={() => setLightboxIdx(realIdx)}
                   className={cn(
-                    "block w-full aspect-[4/3] rounded-xl bg-gradient-to-br ring-1 ring-border overflow-hidden transition hover:ring-foreground/30 group",
-                    shot,
+                    "block w-full aspect-[4/3] rounded-xl ring-1 ring-border overflow-hidden transition hover:ring-foreground/30 group",
+                    isImageUrl(shot) ? "bg-muted" : "bg-gradient-to-br " + shot,
                   )}
                 >
-                  <div className="h-full w-full flex items-center justify-center">
-                    <Icon className="h-8 w-8 text-white/90 drop-shadow group-hover:scale-110 transition" />
-                  </div>
+                  {isImageUrl(shot) ? (
+                    <img
+                      src={shot}
+                      alt={`Screenshot ${realIdx}`}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="h-full w-full flex items-center justify-center">
+                      <Icon className="h-8 w-8 text-white/90 drop-shadow group-hover:scale-110 transition" />
+                    </div>
+                  )}
                 </button>
               );
             })}

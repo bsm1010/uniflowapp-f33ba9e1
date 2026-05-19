@@ -342,6 +342,26 @@ export function DashboardSidebar() {
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive("/dashboard/admin/apps")}
+                    tooltip="Built-in Apps"
+                    className="h-9"
+                  >
+                    <Link
+                      to="/dashboard/admin/apps"
+                      className={`group/menu-item relative rounded-lg transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
+                        isActive("/dashboard/admin/apps")
+                          ? "bg-gradient-to-r from-sidebar-accent to-sidebar-accent/40 text-sidebar-accent-foreground font-medium shadow-sm"
+                          : "hover:bg-sidebar-accent/50"
+                      }`}
+                    >
+                      {renderIcon(Blocks, "from-blue-500 to-cyan-500", isActive("/dashboard/admin/apps"))}
+                      <span className="text-sm">Built-in Apps</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
