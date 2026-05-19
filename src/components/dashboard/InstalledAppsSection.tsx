@@ -104,7 +104,7 @@ export function InstalledAppsSection() {
         <Card className="rounded-3xl border border-dashed border-border bg-card backdrop-blur-xl">
           <CardContent className="flex flex-col items-center justify-center p-12 text-center">
             <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-600 to-pink-600 shadow-lg shadow-purple-500/20">
-              <Blocks className="h-8 w-8 text-foreground" />
+              <Blocks className="h-8 w-8 text-white" />
             </div>
 
             <p className="mt-5 text-lg font-semibold text-foreground">
@@ -146,7 +146,7 @@ export function InstalledAppsSection() {
                     <div
                       className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${app.gradient} shadow-lg shadow-purple-500/20`}
                     >
-                      <Icon className="h-7 w-7 text-foreground" />
+                      <Icon className="h-7 w-7 text-white" />
                     </div>
 
                     <Badge className="rounded-full border border-purple-400/30 bg-purple-500/10 px-3 py-1 text-xs text-purple-300">
@@ -213,7 +213,7 @@ export function InstalledAppsSection() {
           </AlertDialogHeader>
 
           <AlertDialogFooter>
-            <AlertDialogCancel className="border-border bg-muted/50 text-white hover:bg-muted">
+            <AlertDialogCancel className="border-border bg-muted/50 text-foreground hover:bg-muted">
               Cancel
             </AlertDialogCancel>
 
