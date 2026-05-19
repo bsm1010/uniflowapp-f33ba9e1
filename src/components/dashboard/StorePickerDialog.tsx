@@ -56,13 +56,13 @@ export function StorePickerDialog() {
                 key={s.id}
                 onClick={() => pick(s)}
                 className={cn(
-                  "group relative rounded-2xl border bg-white p-5 text-left transition-all duration-200 text-gray-900",
-                  "hover:-translate-y-1 hover:shadow-xl hover:border-primary/50",
+                  "group relative rounded-2xl border bg-white dark:bg-zinc-950 p-5 text-left transition-all duration-200 text-gray-900 dark:text-white dark:border-white/10",
+                  "hover:-translate-y-1 hover:shadow-xl hover:border-primary/50 dark:hover:border-primary/60",
                   currentStore?.id === s.id && "ring-2 ring-primary",
                 )}
               >
                 <div className="flex items-start gap-3 mb-3">
-                  <div className="h-12 w-12 rounded-xl bg-gray-100 overflow-hidden flex items-center justify-center shrink-0">
+                  <div className="h-12 w-12 rounded-xl bg-gray-100 dark:bg-white/5 overflow-hidden flex items-center justify-center shrink-0">
                     {s.logo_url ? (
                       <img src={s.logo_url} alt="" className="h-full w-full object-cover" />
                     ) : (
@@ -71,17 +71,18 @@ export function StorePickerDialog() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="font-semibold truncate">{s.name}</div>
-                    <div className="text-xs text-gray-500 capitalize truncate">{s.category}</div>
+                    <div className="text-xs text-gray-500 dark:text-white/50 capitalize truncate">{s.category}</div>
                   </div>
                 </div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-1 text-gray-600">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 dark:bg-white/10 px-2 py-1 text-gray-600 dark:text-white/80">
                     <ShoppingBag className="h-3 w-3" />
                     {counts[s.id] ?? 0} orders
                   </span>
-                  <span className="text-gray-400">{s.currency}</span>
+                  <span className="text-gray-400 dark:text-white/50">{s.currency}</span>
                 </div>
               </button>
+
             ))}
 
             <button
