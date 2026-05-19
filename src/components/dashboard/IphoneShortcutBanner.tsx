@@ -154,7 +154,9 @@ export function IphoneShortcutBanner() {
               }}
             >
               <img
-                src="/images/iphone-mockup.png"
+                src="/images/iphone-mockup.webp"
+                width={180}
+                height={300}
                 alt="Fennecly on iPhone"
                 loading="eager"
                 decoding="async"
