@@ -88,24 +88,6 @@ function Index() {
 
       <Hero />
 
-      {/* IMAGE SHOWCASE SECTION */}
-      <section className="relative overflow-hidden py-24">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="relative">
-            {/* Purple glow behind card */}
-            <div className="absolute inset-0 rounded-[40px] bg-purple-600/20 blur-3xl" />
-
-            {/* Big image card - no text, no buttons */}
-            <div className="relative overflow-hidden rounded-[40px] border border-purple-500/20 bg-black/40 p-8 backdrop-blur-xl shadow-2xl shadow-purple-900/30">
-              <img
-                src={flowImage}
-                alt="Fennecly platform"
-                className="w-full object-contain"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
 
       <Suspense fallback={<SectionFallback />}>
         <div className="cv-auto">
