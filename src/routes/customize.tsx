@@ -119,6 +119,7 @@ function defaults(userId: string): StoreSettings {
   return {
     user_id: userId,
     store_id: null,
+    is_active: true,
     sections: [],
     slug: `store-${userId.slice(0, 8)}`,
     store_name: "My Store",
