@@ -12,7 +12,7 @@ import { useCurrentStore } from "@/hooks/use-current-store";
 import { useSubscription } from "@/hooks/use-subscription";
 import { ExpiredOverlay } from "@/components/dashboard/ExpiredOverlay";
 import { PageHeader, EmptyState } from "@/components/dashboard/PageHeader";
-import { ProductFormDialog, type Product } from "@/components/dashboard/ProductFormDialog";
+import { ProductFormDialog, type Product, type ProductVariant } from "@/components/dashboard/ProductFormDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
