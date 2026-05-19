@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Bell, Share, Plus } from "lucide-react";
 
@@ -9,8 +9,16 @@ export function IphoneShortcutBanner() {
   const [dismissed, setDismissed] = useState(
     () => localStorage.getItem("iphone-banner-v2-dismissed") === "true"
   );
+  const [isMobile, setIsMobile] = useState(false);
 
-  if (dismissed) return null;
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  if (!isMobile || dismissed) return null;
 
   const handleDismiss = () => {
     localStorage.setItem("iphone-banner-v2-dismissed", "true");
@@ -89,7 +97,7 @@ export function IphoneShortcutBanner() {
               ))}
             </div>
 
-            <a
+            
               href={GUIDE_URL}
               target="_blank"
               rel="noopener noreferrer"
@@ -122,7 +130,6 @@ export function IphoneShortcutBanner() {
                   className="block rounded-xl"
                   loading="eager"
                   decoding="async"
-                  fetchPriority="high"
                 />
                 <div className="absolute left-2 top-2 h-4 w-4 rounded-tl-md border-l-2 border-t-2 border-violet-400/50" />
                 <div className="absolute right-2 top-2 h-4 w-4 rounded-tr-md border-r-2 border-t-2 border-violet-400/50" />
@@ -134,7 +141,7 @@ export function IphoneShortcutBanner() {
               </p>
             </div>
 
-            {/* Floating iPhone mockup — overflows card top and bottom */}
+            {/* Floating iPhone mockup */}
             <motion.div
               animate={{ y: [0, -14, 0] }}
               transition={{
@@ -160,7 +167,6 @@ export function IphoneShortcutBanner() {
                 alt="Fennecly on iPhone"
                 loading="eager"
                 decoding="async"
-                fetchPriority="high"
                 style={{
                   height: 300,
                   width: "auto",
@@ -171,7 +177,6 @@ export function IphoneShortcutBanner() {
               />
             </motion.div>
 
-            {/* Spacer so the floating phone doesn't collapse layout */}
             <div style={{ width: 160 }} />
           </div>
 
