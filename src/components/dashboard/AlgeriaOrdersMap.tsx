@@ -106,12 +106,12 @@ export function AlgeriaOrdersMap() {
       setLoading(true);
       const { data } = await supabase
         .from("orders")
-        .select("shipping_wilaya")
+        .select("shipping_postal_code")
         .eq("store_id", currentStore.id);
 
       const map: Record<string, number> = {};
       for (const row of data ?? []) {
-        const w = row.shipping_wilaya;
+        const w = row.shipping_postal_code;
         if (w) map[w] = (map[w] ?? 0) + 1;
       }
       setOrdersByWilaya(map);
