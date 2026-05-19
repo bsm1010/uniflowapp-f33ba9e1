@@ -2223,6 +2223,7 @@ export type Database = {
           hero_image_url: string | null
           hero_layout: string
           hero_subheading: string
+          is_active: boolean
           logo_url: string | null
           nav_links: Json
           primary_color: string
@@ -2269,6 +2270,7 @@ export type Database = {
           hero_image_url?: string | null
           hero_layout?: string
           hero_subheading?: string
+          is_active?: boolean
           logo_url?: string | null
           nav_links?: Json
           primary_color?: string
@@ -2315,6 +2317,7 @@ export type Database = {
           hero_image_url?: string | null
           hero_layout?: string
           hero_subheading?: string
+          is_active?: boolean
           logo_url?: string | null
           nav_links?: Json
           primary_color?: string
