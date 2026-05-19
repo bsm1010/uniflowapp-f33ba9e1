@@ -189,7 +189,8 @@ export function Pricing() {
         {/* 4 main plans */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {tiers.filter((tier) => tier.key !== "trial").map((tier, i) => {
-            const features = t(`pricing.${tier.key}.f`, { returnObjects: true }) as string[];
+            const featuresRaw = t(`pricing.${tier.key}.f`, { returnObjects: true, defaultValue: [] });
+            const features: string[] = Array.isArray(featuresRaw) ? featuresRaw as string[] : [];
             return (
               <motion.div
                 key={tier.key}
