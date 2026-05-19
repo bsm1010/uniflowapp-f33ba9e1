@@ -10,13 +10,13 @@ const DISMISS_KEY = "fennecly_windows_banner_dismissed_v1";
 
 export function WindowsAppBanner() {
   const [visible, setVisible] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(false);
+  const [isIphone, setIsIphone] = useState(false);
 
   useEffect(() => {
-    const checkDesktop = () => setIsDesktop(window.innerWidth >= 768);
-    checkDesktop();
-    window.addEventListener("resize", checkDesktop);
-    return () => window.removeEventListener("resize", checkDesktop);
+    const checkIphone = () => {
+      setIsIphone(/iPhone/i.test(navigator.userAgent));
+    };
+    checkIphone();
   }, []);
 
   useEffect(() => {
@@ -28,7 +28,7 @@ export function WindowsAppBanner() {
     setVisible(false);
   };
 
-  if (!isDesktop) return null;
+  if (isIphone) return null;
 
   return (
     <AnimatePresence>
