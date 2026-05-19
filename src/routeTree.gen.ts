@@ -13,6 +13,7 @@ import { Route as ThemesRouteImport } from './routes/themes'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as IphoneGuideRouteImport } from './routes/iphone-guide'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CustomizeRouteImport } from './routes/customize'
@@ -105,6 +106,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IphoneGuideRoute = IphoneGuideRouteImport.update({
+  id: '/iphone-guide',
+  path: '/iphone-guide',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
@@ -499,6 +505,7 @@ export interface FileRoutesByFullPath {
   '/customize': typeof CustomizeRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
+  '/iphone-guide': typeof IphoneGuideRoute
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
@@ -577,6 +584,7 @@ export interface FileRoutesByTo {
   '/ai-agent': typeof AiAgentRoute
   '/customize': typeof CustomizeRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/iphone-guide': typeof IphoneGuideRoute
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
@@ -656,6 +664,7 @@ export interface FileRoutesById {
   '/customize': typeof CustomizeRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
+  '/iphone-guide': typeof IphoneGuideRoute
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
@@ -737,6 +746,7 @@ export interface FileRouteTypes {
     | '/customize'
     | '/dashboard'
     | '/forgot-password'
+    | '/iphone-guide'
     | '/login'
     | '/reset-password'
     | '/signup'
@@ -815,6 +825,7 @@ export interface FileRouteTypes {
     | '/ai-agent'
     | '/customize'
     | '/forgot-password'
+    | '/iphone-guide'
     | '/login'
     | '/reset-password'
     | '/signup'
@@ -893,6 +904,7 @@ export interface FileRouteTypes {
     | '/customize'
     | '/dashboard'
     | '/forgot-password'
+    | '/iphone-guide'
     | '/login'
     | '/reset-password'
     | '/signup'
@@ -973,6 +985,7 @@ export interface RootRouteChildren {
   CustomizeRoute: typeof CustomizeRoute
   DashboardRoute: typeof DashboardRouteWithChildren
   ForgotPasswordRoute: typeof ForgotPasswordRoute
+  IphoneGuideRoute: typeof IphoneGuideRoute
   LoginRoute: typeof LoginRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
@@ -1022,6 +1035,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/iphone-guide': {
+      id: '/iphone-guide'
+      path: '/iphone-guide'
+      fullPath: '/iphone-guide'
+      preLoaderRoute: typeof IphoneGuideRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forgot-password': {
@@ -1702,6 +1722,7 @@ const rootRouteChildren: RootRouteChildren = {
   CustomizeRoute: CustomizeRoute,
   DashboardRoute: DashboardRouteWithChildren,
   ForgotPasswordRoute: ForgotPasswordRoute,
+  IphoneGuideRoute: IphoneGuideRoute,
   LoginRoute: LoginRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
