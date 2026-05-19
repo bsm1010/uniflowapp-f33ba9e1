@@ -37,10 +37,10 @@ export type AppDef = {
   rating: number;
   reviewCount: number;
   features: string[];
-  screenshots: string[]; // gradient classes used as visual placeholders
+  screenshots: string[];
   plans: AppPlan[];
   changelog: { version: string; date: string; notes: string[] }[];
-  route?: string; // route to open the working app (if any)
+  route?: string;
 };
 
 const defaultPlans: AppPlan[] = [
@@ -419,10 +419,94 @@ export const APPS: AppDef[] = [
     changelog: defaultChangelog,
     route: "/dashboard/apps/currency-converter",
   },
+  {
+    key: "whatsapp-notifications",
+    name: "WhatsApp Order Notifications",
+    description: "Automatically send order updates to customers via WhatsApp.",
+    longDescription:
+      "Send instant WhatsApp messages to customers when their order is placed, confirmed, shipped, or delivered. The #1 tool for Algerian merchants who rely on WhatsApp for customer communication.",
+    icon: MessageSquare,
+    category: "Algeria",
+    gradient: "from-green-500/20 to-emerald-500/20",
+    developer: "Fennecly",
+    rating: 4.9,
+    reviewCount: 1820,
+    features: [
+      "Auto send on order placed, confirmed, shipped, delivered",
+      "Customizable message templates",
+      "Customer name & order details in message",
+      "Supports all Algerian wilayas",
+      "WhatsApp Business API ready",
+    ],
+    screenshots: [
+      "from-green-500 to-emerald-500",
+      "from-emerald-500 to-teal-500",
+      "from-lime-500 to-green-500",
+    ],
+    plans: defaultPlans,
+    changelog: defaultChangelog,
+    route: "/dashboard/apps/whatsapp-notifications",
+  },
+  {
+    key: "fake-order-detector",
+    name: "Fake Order Detector",
+    description: "Automatically flag suspicious orders before you ship.",
+    longDescription:
+      "Reduce wasted shipping costs with smart fake order detection. Analyzes phone numbers, wilaya patterns, order frequency, and customer history to flag risky orders before you process them.",
+    icon: ShieldAlert,
+    category: "Algeria",
+    gradient: "from-rose-500/20 to-red-500/20",
+    developer: "Fennecly",
+    rating: 4.8,
+    reviewCount: 2340,
+    features: [
+      "Phone number risk scoring",
+      "Duplicate order detection",
+      "Suspicious wilaya pattern alerts",
+      "Blacklist repeat fake customers",
+      "Risk score on every order",
+    ],
+    screenshots: [
+      "from-rose-500 to-red-500",
+      "from-red-500 to-orange-500",
+      "from-rose-500 to-pink-500",
+    ],
+    plans: defaultPlans,
+    changelog: defaultChangelog,
+    route: "/dashboard/apps/fake-order-detector",
+  },
+  {
+    key: "cod-manager",
+    name: "COD Manager",
+    description: "Track cash on delivery payments, collections and reconciliation.",
+    longDescription:
+      "The essential tool for Algerian merchants using Cash on Delivery. Track which orders are paid, pending, or failed. Reconcile with your delivery company reports and know exactly how much cash is in transit at any time.",
+    icon: Wallet,
+    category: "Algeria",
+    gradient: "from-amber-500/20 to-yellow-500/20",
+    developer: "Fennecly",
+    rating: 4.9,
+    reviewCount: 1654,
+    features: [
+      "COD payment status tracking",
+      "Cash in transit dashboard",
+      "Delivery company reconciliation",
+      "Daily & weekly cash reports",
+      "Export to Excel",
+    ],
+    screenshots: [
+      "from-amber-500 to-yellow-500",
+      "from-yellow-500 to-orange-500",
+      "from-orange-500 to-amber-500",
+    ],
+    plans: defaultPlans,
+    changelog: defaultChangelog,
+    route: "/dashboard/apps/cod-manager",
+  },
 ];
 
 export const APPS_BY_KEY: Record<string, AppDef> = Object.fromEntries(
   APPS.map((a) => [a.key, a]),
 );
 
-export const APP_CATEGORIES = ["All", "Marketing", "AI", "Sales", "Growth", "Analytics"] as const;
+export const APP_CATEGORIES = ["All", "Marketing", "AI", "Sales", "Growth", "Analytics", "Algeria"] as const;
