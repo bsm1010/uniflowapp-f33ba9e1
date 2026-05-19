@@ -16,10 +16,17 @@ export function useBuiltinAppEdits() {
 
   const load = async () => {
     setLoading(true);
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("builtin_app_edits")
       .select("*")
       .order("app_key");
+
+    if (error) {
+      console.error("Failed to load builtin_app_edits:", error.message);
+      setLoading(false);
+      return;
+    }
+
     const map: Record<string, BuiltinAppEdit> = {};
     for (const row of data ?? []) {
       map[row.app_key] = {
@@ -39,19 +46,30 @@ export function useBuiltinAppEdits() {
   }, []);
 
   const save = async (edit: BuiltinAppEdit) => {
-    const { error } = await supabase.from("builtin_app_edits").upsert(
-      {
-        app_key: edit.app_key,
-        name: edit.name,
-        description: edit.description,
-        long_description: edit.long_description,
-        screenshots: edit.screenshots,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: "app_key" },
-    );
-    if (error) throw error;
+    const payload = {
+      app_key: edit.app_key,
+      name: edit.name,
+      description: edit.description,
+      long_description: edit.long_description,
+      screenshots: edit.screenshots ?? [],
+      updated_at: new Date().toISOString(),
+    };
+
+    console.log("Saving payload:", payload);
+
+    const { data, error } = await supabase
+      .from("builtin_app_edits")
+      .upsert(payload, { onConflict: "app_key" })
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Save error:", error.message, error.details, error.hint);
+      throw error;
+    }
+
     setEdits((prev) => ({ ...prev, [edit.app_key]: edit }));
+    return data;
   };
 
   const remove = async (appKey: string) => {
