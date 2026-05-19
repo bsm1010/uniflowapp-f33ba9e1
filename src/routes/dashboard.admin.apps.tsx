@@ -61,7 +61,7 @@ function AdminAppsPage() {
 }
 
 function AdminAppsShell() {
-  const { edits, loading, save, remove, reload } = useBuiltinAppEdits();
+  const { edits, loading, save, remove } = useBuiltinAppEdits();
 
   if (loading) {
     return (
@@ -77,7 +77,6 @@ function AdminAppsShell() {
         title="Built-in Apps"
         description="Edit names, descriptions, and screenshots of built-in apps. Changes apply immediately across the app store."
       />
-
       <div className="grid gap-6">
         {APPS.map((app) => (
           <AppEditor
@@ -116,26 +115,23 @@ function AppEditor({
   const fileRefs = useRef<(HTMLInputElement | null)[]>([]);
   const { user } = useAuth();
 
-  const hasChanges =
-    name !== (edit?.name ?? app.name) ||
-    description !== (edit?.description ?? app.description) ||
-    longDescription !== (edit?.long_description ?? app.longDescription ?? "") ||
-    JSON.stringify(screenshots) !== JSON.stringify(edit?.screenshots ?? []);
+  // Always enabled as long as there's a name
+  const canSave = name.trim().length > 0 && !saving;
 
   const handleSave = async () => {
     setSaving(true);
     try {
       await onSave({
         app_key: app.key,
-        name: name !== app.name ? name : null,
-        description: description !== app.description ? description : null,
-        long_description:
-          longDescription !== (app.longDescription ?? app.description) ? longDescription : null,
-        screenshots,
+        name: name.trim() || app.name,
+        description: description.trim() || app.description,
+        long_description: longDescription.trim() || app.longDescription || app.description,
+        screenshots: screenshots.filter((s) => s.trim() !== ""),
       });
       toast.success(`"${name}" saved`);
-    } catch {
-      toast.error("Failed to save");
+    } catch (err: any) {
+      console.error(err);
+      toast.error("Failed to save: " + (err?.message ?? "unknown error"));
     }
     setSaving(false);
   };
@@ -181,7 +177,6 @@ function AppEditor({
   const addScreenshot = () => setScreenshots((prev) => [...prev, ""]);
   const removeScreenshot = (idx: number) =>
     setScreenshots((prev) => prev.filter((_, i) => i !== idx));
-
   const updateScreenshotUrl = (idx: number, url: string) =>
     setScreenshots((prev) => {
       const next = [...prev];
@@ -224,7 +219,11 @@ function AppEditor({
 
         <div className="space-y-1.5">
           <Label>Long Description</Label>
-          <Textarea value={longDescription} onChange={(e) => setLongDescription(e.target.value)} rows={3} />
+          <Textarea
+            value={longDescription}
+            onChange={(e) => setLongDescription(e.target.value)}
+            rows={3}
+          />
         </div>
 
         <div className="space-y-2">
@@ -269,7 +268,9 @@ function AppEditor({
                   </Button>
                 </div>
                 <input
-                  ref={(el) => { fileRefs.current[idx] = el; }}
+                  ref={(el) => {
+                    fileRefs.current[idx] = el;
+                  }}
                   type="file"
                   accept="image/*"
                   className="hidden"
@@ -298,7 +299,7 @@ function AppEditor({
         </div>
 
         <div className="flex items-center gap-2 pt-2">
-          <Button onClick={handleSave} disabled={!hasChanges || saving} size="sm">
+          <Button onClick={handleSave} disabled={!canSave} size="sm">
             {saving ? (
               <Loader2 className="h-4 w-4 animate-spin mr-1" />
             ) : (
@@ -313,9 +314,7 @@ function AppEditor({
               onClick={handleRemove}
               disabled={removing}
             >
-              {removing ? (
-                <Loader2 className="h-4 w-4 animate-spin mr-1" />
-              ) : null}
+              {removing && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
               Reset to default
             </Button>
           )}
