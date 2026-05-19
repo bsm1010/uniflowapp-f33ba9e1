@@ -10,6 +10,14 @@ const DISMISS_KEY = "fennecly_windows_banner_dismissed_v1";
 
 export function WindowsAppBanner() {
   const [visible, setVisible] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const checkDesktop = () => setIsDesktop(window.innerWidth >= 768);
+    checkDesktop();
+    window.addEventListener("resize", checkDesktop);
+    return () => window.removeEventListener("resize", checkDesktop);
+  }, []);
 
   useEffect(() => {
     setVisible(localStorage.getItem(DISMISS_KEY) !== "1");
@@ -19,6 +27,8 @@ export function WindowsAppBanner() {
     localStorage.setItem(DISMISS_KEY, "1");
     setVisible(false);
   };
+
+  if (!isDesktop) return null;
 
   return (
     <AnimatePresence>
@@ -38,7 +48,6 @@ export function WindowsAppBanner() {
           >
             <X className="h-4 w-4" />
           </button>
-
           <div className="relative flex flex-col md:flex-row md:items-center gap-4 md:gap-6">
             <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#0078D4] to-[#50E6FF] shadow-lg shadow-blue-500/30">
               <WindowsLogo className="h-7 w-7 text-white" />
