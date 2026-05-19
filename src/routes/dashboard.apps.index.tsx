@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { lazy, Suspense, useMemo, useState } from "react";
-import { Check, Loader2, Search, Star, LayoutGrid, Zap } from "lucide-react";
+import { Check, Code2, Loader2, Search, Star, LayoutGrid, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -85,15 +85,26 @@ function AppsPage() {
 
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex flex-col gap-1.5">
-          <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            <LayoutGrid className="h-3.5 w-3.5" />
-            App Store
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-col gap-1.5">
+            <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <LayoutGrid className="h-3.5 w-3.5" />
+              App Store
+            </div>
+            <h1 className="text-3xl font-bold tracking-tight">Apps</h1>
+            <p className="text-muted-foreground">
+              Extend your store with built-in apps.
+            </p>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">Apps</h1>
-          <p className="text-muted-foreground">
-            Extend your store with built-in apps.
-          </p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate({ to: "/dashboard/developer" })}
+            className="mt-1 shrink-0 gap-1.5"
+          >
+            <Code2 className="h-4 w-4" />
+            Developer
+          </Button>
         </div>
 
         {/* Search + Tabs */}
