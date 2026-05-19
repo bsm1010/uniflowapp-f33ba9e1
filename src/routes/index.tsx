@@ -4,7 +4,7 @@ import { lazy, Suspense } from "react";
 import { Navbar } from "@/components/landing/Navbar";
 import { Hero } from "@/components/landing/Hero";
 
-import flowImage from "@/assets/fennecly-flow.png";
+
 
 const DashboardTools = lazy(() =>
   import("@/components/landing/DashboardTools").then((m) => ({
