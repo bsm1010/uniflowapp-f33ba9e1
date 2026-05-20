@@ -73,6 +73,7 @@ import { Route as DashboardAppsAdGeneratorRouteImport } from './routes/dashboard
 import { Route as DashboardAppsAbandonedCartRouteImport } from './routes/dashboard.apps.abandoned-cart'
 import { Route as DashboardAdminPaymentsRouteImport } from './routes/dashboard.admin.payments'
 import { Route as DashboardAdminMarketplaceRouteImport } from './routes/dashboard.admin.marketplace'
+import { Route as DashboardAdminAppsRouteImport } from './routes/dashboard.admin.apps'
 import { Route as ApiDbTableIdRouteImport } from './routes/api.db.$tableId'
 import { Route as SSlugPProductIdRouteImport } from './routes/s.$slug.p.$productId'
 import { Route as SSlugCheckoutSuccessRouteImport } from './routes/s.$slug.checkout.success'
@@ -422,6 +423,11 @@ const DashboardAdminMarketplaceRoute =
     path: '/admin/marketplace',
     getParentRoute: () => DashboardRoute,
   } as any)
+const DashboardAdminAppsRoute = DashboardAdminAppsRouteImport.update({
+  id: '/admin/apps',
+  path: '/admin/apps',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const ApiDbTableIdRoute = ApiDbTableIdRouteImport.update({
   id: '/api/db/$tableId',
   path: '/api/db/$tableId',
@@ -541,6 +547,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/voice-generator': typeof DashboardVoiceGeneratorRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/db/$tableId': typeof ApiDbTableIdRouteWithChildren
+  '/dashboard/admin/apps': typeof DashboardAdminAppsRoute
   '/dashboard/admin/marketplace': typeof DashboardAdminMarketplaceRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
   '/dashboard/apps/abandoned-cart': typeof DashboardAppsAbandonedCartRoute
@@ -619,6 +626,7 @@ export interface FileRoutesByTo {
   '/dashboard/voice-generator': typeof DashboardVoiceGeneratorRoute
   '/dashboard': typeof DashboardIndexRoute
   '/api/db/$tableId': typeof ApiDbTableIdRouteWithChildren
+  '/dashboard/admin/apps': typeof DashboardAdminAppsRoute
   '/dashboard/admin/marketplace': typeof DashboardAdminMarketplaceRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
   '/dashboard/apps/abandoned-cart': typeof DashboardAppsAbandonedCartRoute
@@ -700,6 +708,7 @@ export interface FileRoutesById {
   '/dashboard/voice-generator': typeof DashboardVoiceGeneratorRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/db/$tableId': typeof ApiDbTableIdRouteWithChildren
+  '/dashboard/admin/apps': typeof DashboardAdminAppsRoute
   '/dashboard/admin/marketplace': typeof DashboardAdminMarketplaceRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
   '/dashboard/apps/abandoned-cart': typeof DashboardAppsAbandonedCartRoute
@@ -782,6 +791,7 @@ export interface FileRouteTypes {
     | '/dashboard/voice-generator'
     | '/dashboard/'
     | '/api/db/$tableId'
+    | '/dashboard/admin/apps'
     | '/dashboard/admin/marketplace'
     | '/dashboard/admin/payments'
     | '/dashboard/apps/abandoned-cart'
@@ -860,6 +870,7 @@ export interface FileRouteTypes {
     | '/dashboard/voice-generator'
     | '/dashboard'
     | '/api/db/$tableId'
+    | '/dashboard/admin/apps'
     | '/dashboard/admin/marketplace'
     | '/dashboard/admin/payments'
     | '/dashboard/apps/abandoned-cart'
@@ -940,6 +951,7 @@ export interface FileRouteTypes {
     | '/dashboard/voice-generator'
     | '/dashboard/'
     | '/api/db/$tableId'
+    | '/dashboard/admin/apps'
     | '/dashboard/admin/marketplace'
     | '/dashboard/admin/payments'
     | '/dashboard/apps/abandoned-cart'
@@ -1457,6 +1469,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAdminMarketplaceRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/admin/apps': {
+      id: '/dashboard/admin/apps'
+      path: '/admin/apps'
+      fullPath: '/dashboard/admin/apps'
+      preLoaderRoute: typeof DashboardAdminAppsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/api/db/$tableId': {
       id: '/api/db/$tableId'
       path: '/api/db/$tableId'
@@ -1647,6 +1666,7 @@ interface DashboardRouteChildren {
   DashboardUpgradeRoute: typeof DashboardUpgradeRoute
   DashboardVoiceGeneratorRoute: typeof DashboardVoiceGeneratorRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardAdminAppsRoute: typeof DashboardAdminAppsRoute
   DashboardAdminMarketplaceRoute: typeof DashboardAdminMarketplaceRoute
   DashboardAdminPaymentsRoute: typeof DashboardAdminPaymentsRoute
   DashboardOrdersOrderIdTrackingRoute: typeof DashboardOrdersOrderIdTrackingRoute
@@ -1683,6 +1703,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardUpgradeRoute: DashboardUpgradeRoute,
   DashboardVoiceGeneratorRoute: DashboardVoiceGeneratorRoute,
   DashboardIndexRoute: DashboardIndexRoute,
+  DashboardAdminAppsRoute: DashboardAdminAppsRoute,
   DashboardAdminMarketplaceRoute: DashboardAdminMarketplaceRoute,
   DashboardAdminPaymentsRoute: DashboardAdminPaymentsRoute,
   DashboardOrdersOrderIdTrackingRoute: DashboardOrdersOrderIdTrackingRoute,
@@ -1747,3 +1768,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
