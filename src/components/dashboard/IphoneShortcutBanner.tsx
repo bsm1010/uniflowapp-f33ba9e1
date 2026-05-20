@@ -50,6 +50,8 @@ export function IphoneShortcutBanner() {
         </button>
 
         <div className="relative flex items-stretch">
+
+          {/* LEFT: Text content */}
           <div className="flex-1 p-6 pr-4">
             <div
               className="mb-4 inline-flex items-center gap-2 rounded-full px-3 py-1"
@@ -92,7 +94,7 @@ export function IphoneShortcutBanner() {
               ))}
             </div>
 
-            <a
+            
               href={GUIDE_URL}
               target="_blank"
               rel="noopener noreferrer"
@@ -102,31 +104,65 @@ export function IphoneShortcutBanner() {
             </a>
           </div>
 
+          {/* RIGHT: QR + floating iPhone mockup */}
           <div
-            className="hidden sm:flex shrink-0 items-center gap-4 pl-5 pr-6 py-5 relative"
+            className="flex shrink-0 items-center gap-4 pl-5 pr-6 py-5 relative"
             style={{ borderLeft: "1px solid rgba(255,255,255,0.06)" }}
           >
+            {/* QR Code */}
             <div className="flex flex-col items-center gap-2 z-10">
               <div
                 className="relative rounded-2xl p-2.5"
                 style={{
                   background: "rgba(139,92,246,0.08)",
                   border: "1px solid rgba(139,92,246,0.25)",
-                  boxShadow: "0 8px 24px rgba(139,92,246,0.15)",
+                  boxShadow: "0 0 40px rgba(139,92,246,0.15)",
                 }}
               >
                 <img
                   src={QR_URL}
-                  alt="Scan to open iPhone install guide"
-                  width={120}
-                  height={120}
-                  className="rounded-lg"
-                  loading="lazy"
+                  alt="Scan to open Fennecly iPhone install guide"
+                  width={130}
+                  height={130}
+                  className="block rounded-xl"
+                  loading="eager"
+                  decoding="async"
                 />
+                <div className="absolute left-2 top-2 h-4 w-4 rounded-tl-md border-l-2 border-t-2 border-violet-400/50" />
+                <div className="absolute right-2 top-2 h-4 w-4 rounded-tr-md border-r-2 border-t-2 border-violet-400/50" />
+                <div className="absolute bottom-2 left-2 h-4 w-4 rounded-bl-md border-b-2 border-l-2 border-violet-400/50" />
+                <div className="absolute bottom-2 right-2 h-4 w-4 rounded-br-md border-b-2 border-r-2 border-violet-400/50" />
               </div>
-              <span className="text-[10px] uppercase tracking-widest text-white/40">Scan with iPhone</span>
+              <p className="text-center text-[11px] font-medium text-white/30 leading-tight">
+                Scan with iPhone<br />camera app
+              </p>
             </div>
+
+            {/* Floating iPhone mockup */}
+            <motion.div
+              animate={{ y: [0, -14, 0] }}
+              transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+              className="relative z-20"
+              style={{ pointerEvents: "none" }}
+            >
+              <img
+                src="/images/iphone-mockup.webp"
+                width={180}
+                height={300}
+                alt="Fennecly on iPhone"
+                loading="eager"
+                decoding="async"
+                style={{
+                  height: 300,
+                  width: "auto",
+                  objectFit: "contain",
+                  transform: "rotate(3deg)",
+                  filter: "drop-shadow(0 24px 48px rgba(139,92,246,0.45))",
+                }}
+              />
+            </motion.div>
           </div>
+
         </div>
       </motion.div>
     </AnimatePresence>
