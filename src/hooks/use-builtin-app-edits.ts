@@ -45,7 +45,7 @@ export function useBuiltinAppEdits() {
     load();
   }, []);
 
-  const save = async (edit: BuiltinAppEdit) => {
+  const save = async (edit: BuiltinAppEdit): Promise<void> => {
     const payload = {
       app_key: edit.app_key,
       name: edit.name,
@@ -55,13 +55,9 @@ export function useBuiltinAppEdits() {
       updated_at: new Date().toISOString(),
     };
 
-    console.log("Saving payload:", payload);
-
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("builtin_app_edits")
-      .upsert(payload, { onConflict: "app_key" })
-      .select()
-      .single();
+      .upsert(payload, { onConflict: "app_key" });
 
     if (error) {
       console.error("Save error:", error.message, error.details, error.hint);
@@ -69,7 +65,6 @@ export function useBuiltinAppEdits() {
     }
 
     setEdits((prev) => ({ ...prev, [edit.app_key]: edit }));
-    return data;
   };
 
   const remove = async (appKey: string) => {

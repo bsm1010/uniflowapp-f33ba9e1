@@ -7,7 +7,7 @@ const QR_URL = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${
 
 export function IphoneShortcutBanner() {
   const [dismissed, setDismissed] = useState(
-    () => localStorage.getItem("iphone-banner-v2-dismissed") === "true"
+    () => typeof window !== "undefined" && localStorage.getItem("iphone-banner-v2-dismissed") === "true"
   );
   const [isMobile, setIsMobile] = useState(false);
 
@@ -92,7 +92,7 @@ export function IphoneShortcutBanner() {
               ))}
             </div>
 
-            
+            <a
               href={GUIDE_URL}
               target="_blank"
               rel="noopener noreferrer"
@@ -112,4 +112,23 @@ export function IphoneShortcutBanner() {
                 style={{
                   background: "rgba(139,92,246,0.08)",
                   border: "1px solid rgba(139,92,246,0.25)",
-                  boxShadow: "0
+                  boxShadow: "0 8px 24px rgba(139,92,246,0.15)",
+                }}
+              >
+                <img
+                  src={QR_URL}
+                  alt="Scan to open iPhone install guide"
+                  width={120}
+                  height={120}
+                  className="rounded-lg"
+                  loading="lazy"
+                />
+              </div>
+              <span className="text-[10px] uppercase tracking-widest text-white/40">Scan with iPhone</span>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}

@@ -420,10 +420,41 @@ export type Database = {
         }
         Relationships: []
       }
+      builtin_app_edits: {
+        Row: {
+          app_key: string
+          created_at: string
+          description: string | null
+          long_description: string | null
+          name: string | null
+          screenshots: string[]
+          updated_at: string
+        }
+        Insert: {
+          app_key: string
+          created_at?: string
+          description?: string | null
+          long_description?: string | null
+          name?: string | null
+          screenshots?: string[]
+          updated_at?: string
+        }
+        Update: {
+          app_key?: string
+          created_at?: string
+          description?: string | null
+          long_description?: string | null
+          name?: string | null
+          screenshots?: string[]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       category_images: {
         Row: {
           category_name: string
           created_at: string
+          description: string | null
           id: string
           image_url: string
           store_id: string | null
@@ -433,6 +464,7 @@ export type Database = {
         Insert: {
           category_name: string
           created_at?: string
+          description?: string | null
           id?: string
           image_url: string
           store_id?: string | null
@@ -442,6 +474,7 @@ export type Database = {
         Update: {
           category_name?: string
           created_at?: string
+          description?: string | null
           id?: string
           image_url?: string
           store_id?: string | null
