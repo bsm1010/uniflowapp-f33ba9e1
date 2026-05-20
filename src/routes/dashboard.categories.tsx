@@ -103,7 +103,7 @@ function CategoriesPage() {
     }
     const imageMap = new Map<string, { image_url: string; description?: string }>();
     (iRes.data ?? []).forEach((r) =>
-      imageMap.set(r.category_name, { image_url: r.image_url, description: r.description })
+      imageMap.set(r.category_name, { image_url: r.image_url, description: r.description ?? undefined })
     );
 
     const map = new Map<string, number>();
