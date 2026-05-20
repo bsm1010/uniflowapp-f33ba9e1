@@ -94,7 +94,7 @@ export function IphoneShortcutBanner() {
               ))}
             </div>
 
-            
+            <a
               href={GUIDE_URL}
               target="_blank"
               rel="noopener noreferrer"
