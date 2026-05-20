@@ -106,13 +106,22 @@ export function AlgeriaOrdersMap() {
       setLoading(true);
       const { data } = await supabase
         .from("orders")
-        .select("shipping_postal_code")
+        .select("shipping_city, shipping_postal_code")
         .eq("store_id", currentStore.id);
+
+      const norm = (s: string) =>
+        s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/['`’\s-]/g, "");
+      const byName = new Map(WILAYAS.map((w) => [norm(w.name), w.name]));
+      const byCode = new Map(WILAYAS.map((w) => [w.code, w.name]));
 
       const map: Record<string, number> = {};
       for (const row of data ?? []) {
-        const w = row.shipping_postal_code;
-        if (w) map[w] = (map[w] ?? 0) + 1;
+        const city = (row.shipping_city ?? "").toString().trim();
+        const postal = (row.shipping_postal_code ?? "").toString().trim();
+        let name: string | undefined;
+        if (city) name = byName.get(norm(city));
+        if (!name && postal) name = byCode.get(postal.slice(0, 2));
+        if (name) map[name] = (map[name] ?? 0) + 1;
       }
       setOrdersByWilaya(map);
       setTotalOrders(Object.values(map).reduce((a, b) => a + b, 0));
