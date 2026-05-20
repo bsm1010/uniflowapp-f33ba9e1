@@ -454,6 +454,7 @@ export type Database = {
         Row: {
           category_name: string
           created_at: string
+          description: string | null
           id: string
           image_url: string
           store_id: string | null
@@ -463,6 +464,7 @@ export type Database = {
         Insert: {
           category_name: string
           created_at?: string
+          description?: string | null
           id?: string
           image_url: string
           store_id?: string | null
@@ -472,6 +474,7 @@ export type Database = {
         Update: {
           category_name?: string
           created_at?: string
+          description?: string | null
           id?: string
           image_url?: string
           store_id?: string | null
