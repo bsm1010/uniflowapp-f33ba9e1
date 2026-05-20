@@ -9,16 +9,16 @@ export function IphoneShortcutBanner() {
   const [dismissed, setDismissed] = useState(
     () => typeof window !== "undefined" && localStorage.getItem("iphone-banner-v2-dismissed") === "true"
   );
-  const [isMobile, setIsMobile] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
+    const check = () => setIsDesktop(window.innerWidth >= 1024);
     check();
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  if (!isMobile || dismissed) return null;
+  if (!isDesktop || dismissed) return null;
 
   const handleDismiss = () => {
     localStorage.setItem("iphone-banner-v2-dismissed", "true");
