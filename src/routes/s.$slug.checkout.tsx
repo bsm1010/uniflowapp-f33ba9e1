@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { ArrowLeft, CheckCircle2, Loader2 } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Home, Loader2, MapPin, Package, Truck } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
@@ -32,7 +32,7 @@ type Company = { id: string; name: string };
 
 export const Route = createFileRoute("/s/$slug/checkout")({
   component: CheckoutPage,
-  head: () => ({ meta: [{ title: "Checkout — Storely" }] }),
+  head: () => ({ meta: [{ title: "Checkout" }] }),
 });
 
 const dzdFormatter = new Intl.NumberFormat("en-US", {
@@ -41,7 +41,6 @@ const dzdFormatter = new Intl.NumberFormat("en-US", {
 });
 const formatDZD = (n: number) => `${dzdFormatter.format(n)} DZD`;
 
-/** Smoothly animates a number from its previous value to the target. */
 function useAnimatedNumber(value: number, duration = 400) {
   const [display, setDisplay] = useState(value);
   const fromRef = useRef(value);
@@ -68,7 +67,6 @@ function useAnimatedNumber(value: number, duration = 400) {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       fromRef.current = display;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, duration]);
 
   return display;
@@ -83,7 +81,6 @@ function CheckoutPage() {
   const [successOrderId, setSuccessOrderId] = useState<string | null>(null);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [companyId, setCompanyId] = useState<string>("");
-  // Tariffs keyed by `${companyId}:${wilaya}:${city}:${type}` -> price
   const [tariffs, setTariffs] = useState<Record<string, number>>({});
   const [fetchingPrice, setFetchingPrice] = useState(false);
   const cart = useCart(slug);
@@ -98,7 +95,6 @@ function CheckoutPage() {
     notes: "",
   });
 
-  // Load store + enabled companies + all tariffs
   useEffect(() => {
     let active = true;
     (async () => {
@@ -145,21 +141,13 @@ function CheckoutPage() {
       }
       setLoading(false);
     })();
-    return () => {
-      active = false;
-    };
+    return () => { active = false; };
   }, [slug]);
 
   const update = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
 
-  // Refresh the specific tariff for selected wilaya + city + type + company
-  const refreshTariff = async (
-    wilaya: string,
-    city: string,
-    type: DeliveryType,
-    compId: string,
-  ) => {
+  const refreshTariff = async (wilaya: string, city: string, type: DeliveryType, compId: string) => {
     if (!wilaya || !city || !settings?.user_id || !compId) return;
     setFetchingPrice(true);
     try {
@@ -184,7 +172,6 @@ function CheckoutPage() {
     }
   };
 
-  // Prefetch BOTH delivery types so we can compare prices and suggest the cheaper one.
   const refreshBothTariffs = (wilaya: string, city: string, compId: string) => {
     if (!wilaya || !city || !compId) return;
     void refreshTariff(wilaya, city, "domicile", compId);
@@ -192,7 +179,6 @@ function CheckoutPage() {
   };
 
   const onWilayaChange = (wilaya: string) => {
-    // Auto-select first city so price loads immediately for a snappier UX.
     const cities = getCitiesForWilaya(wilaya);
     const city = cities[0] ?? "";
     setForm((f) => ({ ...f, wilaya, city }));
@@ -223,7 +209,6 @@ function CheckoutPage() {
   const tariffAvailable = tariffs[tariffEntryKey] != null;
   const deliveryPrice = tariffAvailable ? tariffs[tariffEntryKey] : 0;
 
-  // Compare the two delivery types for the current wilaya/city/company
   const domicilePrice = form.wilaya && form.city
     ? tariffs[tariffKey(companyId, form.wilaya, form.city, "domicile")]
     : undefined;
@@ -244,25 +229,13 @@ function CheckoutPage() {
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     if (!settings) return;
-    if (cart.items.length === 0) {
-      toast.error(tr("storefront.checkout.errEmpty"));
-      return;
-    }
-    if (
-      !form.name.trim() ||
-      !form.email.trim() ||
-      !form.address.trim() ||
-      !form.city.trim() ||
-      !form.wilaya.trim()
-    ) {
-      toast.error(tr("storefront.checkout.errFields"));
-      return;
+    if (cart.items.length === 0) { toast.error(tr("storefront.checkout.errEmpty")); return; }
+    if (!form.name.trim() || !form.email.trim() || !form.address.trim() || !form.city.trim() || !form.wilaya.trim()) {
+      toast.error(tr("storefront.checkout.errFields")); return;
     }
     if (form.wilaya && form.city && !tariffAvailable) {
-      toast.error("Delivery not available for this selection");
-      return;
+      toast.error(tr("storefront.cod.errCity")); return;
     }
-
     setSubmitting(true);
     try {
       const result = await createOrder({
@@ -285,7 +258,6 @@ function CheckoutPage() {
           })),
         },
       });
-
       cart.clear();
       setSuccessOrderId(result.orderId);
     } catch (err: unknown) {
@@ -298,59 +270,73 @@ function CheckoutPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
       </div>
     );
   }
   if (!settings) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center">
         <p>{tr("storefront.notFound")}</p>
       </div>
     );
   }
 
   const t = getStoreTokens(settings);
-  const radius =
-    settings.theme === "minimal" ? 0 : settings.theme === "grid" ? 8 : 16;
+  const r = t.buttonRadius;
 
   const inputStyle: React.CSSProperties = {
-    backgroundColor: t.bg,
+    backgroundColor: t.isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.03)",
     color: t.fg,
-    border: `1px solid ${t.border}`,
-    borderRadius: radius / 2,
+    border: `1.5px solid ${t.border}`,
+    borderRadius: r,
+    fontFamily: t.fontFamily,
+    transition: "border-color 0.2s",
+    width: "100%",
+    padding: "10px 14px",
+    fontSize: 14,
+    outline: "none",
   };
 
   const selectedCompanyName = companies.find((c) => c.id === companyId)?.name;
 
   return (
     <StorefrontShell settings={settings}>
+      {/* Success dialog */}
       <Dialog open={!!successOrderId} onOpenChange={(open) => !open && setSuccessOrderId(null)}>
         <DialogContent>
-          <div className="flex items-start gap-3">
+          <div className="flex items-start gap-4">
             <div
-              className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
-              style={{ backgroundColor: t.primary + "1f", color: t.primary }}
+              className="mt-0.5 inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full"
+              style={{ backgroundColor: t.primary + "22", color: t.primary }}
             >
-              <CheckCircle2 className="h-5 w-5" />
+              <CheckCircle2 className="h-6 w-6" />
             </div>
             <div className="space-y-2">
-              <DialogTitle>{tr("storefront.success.title")}</DialogTitle>
+              <DialogTitle className="text-lg">{tr("storefront.success.title")}</DialogTitle>
               <DialogDescription>{tr("storefront.success.subtitle")}</DialogDescription>
               {successOrderId && (
-                <div className="inline-block rounded-md border bg-muted/40 px-3 py-2 text-xs font-mono">
+                <div
+                  className="inline-block px-3 py-2 text-xs font-mono mt-1"
+                  style={{
+                    backgroundColor: t.primary + "12",
+                    color: t.primary,
+                    borderRadius: r,
+                    border: `1px solid ${t.primary}30`,
+                  }}
+                >
                   {tr("storefront.success.orderNo", { id: successOrderId.slice(0, 8).toUpperCase() })}
                 </div>
               )}
             </div>
           </div>
-          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end mt-2">
             <Link
               to="/s/$slug"
               params={{ slug }}
-              className="inline-flex h-10 items-center justify-center px-4 text-sm font-medium transition-opacity hover:opacity-90"
-              style={{ backgroundColor: t.surface, color: t.fg, border: `1px solid ${t.border}`, borderRadius: radius / 2 }}
+              className="inline-flex h-10 items-center justify-center px-5 text-sm font-medium transition-opacity hover:opacity-80"
+              style={{ backgroundColor: t.surface, color: t.fg, border: `1px solid ${t.border}`, borderRadius: r }}
             >
               {tr("storefront.success.continue")}
             </Link>
@@ -359,8 +345,8 @@ function CheckoutPage() {
                 to="/s/$slug/track"
                 params={{ slug }}
                 search={{ order: successOrderId }}
-                className="inline-flex h-10 items-center justify-center px-4 text-sm font-medium transition-opacity hover:opacity-90"
-                style={{ backgroundColor: t.primary, color: t.onPrimary, borderRadius: radius / 2 }}
+                className="inline-flex h-10 items-center justify-center px-5 text-sm font-medium transition-opacity hover:opacity-90"
+                style={{ backgroundColor: t.primary, color: t.onPrimary, borderRadius: r }}
               >
                 {tr("storefront.success.track")}
               </Link>
@@ -368,299 +354,353 @@ function CheckoutPage() {
           </div>
         </DialogContent>
       </Dialog>
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-        <Link
-          to="/s/$slug/cart"
-          params={{ slug }}
-          className="inline-flex items-center gap-1.5 text-sm hover:opacity-70"
-          style={{ color: t.muted }}
-        >
-          <ArrowLeft className="h-4 w-4" /> {tr("storefront.checkout.back")}
-        </Link>
 
-        <h1 className="mt-6 text-3xl md:text-4xl font-bold tracking-tight">
-          {tr("storefront.checkout.title")}
-        </h1>
+      <div
+        className="min-h-screen"
+        style={{ backgroundColor: t.bg, fontFamily: t.fontFamily }}
+      >
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
 
-        {cart.items.length === 0 ? (
-          <div
-            className="mt-8 p-12 text-center"
-            style={{
-              borderRadius: radius,
-              border: `1px solid ${t.border}`,
-              backgroundColor: t.surface,
-            }}
+          {/* Back link */}
+          <Link
+            to="/s/$slug/cart"
+            params={{ slug }}
+            className="inline-flex items-center gap-1.5 text-sm font-medium hover:opacity-70 transition-opacity mb-8"
+            style={{ color: t.muted }}
           >
-            <p>{tr("storefront.checkout.empty")}</p>
-            <Link
-              to="/s/$slug"
-              params={{ slug }}
-              className="inline-flex items-center justify-center mt-4 px-5 py-2 text-sm font-medium transition-opacity hover:opacity-90"
-              style={{
-                backgroundColor: t.primary,
-                color: t.onPrimary,
-                borderRadius: radius / 2,
-              }}
+            <ArrowLeft className="h-4 w-4" />
+            {tr("storefront.checkout.back")}
+          </Link>
+
+          {/* Page title */}
+          <div className="mb-8">
+            <h1
+              className="text-3xl md:text-4xl font-bold tracking-tight"
+              style={{ color: t.fg, fontFamily: t.fontHeading }}
             >
-              {tr("storefront.checkout.browse")}
-            </Link>
+              {tr("storefront.checkout.title")}
+            </h1>
+            <p className="mt-1 text-sm" style={{ color: t.muted }}>
+              {tr("storefront.cod.subtitle")}
+            </p>
           </div>
-        ) : (
-          <form
-            onSubmit={submit}
-            className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]"
-          >
-            <div
-              className="p-6"
-              style={{
-                border: `1px solid ${t.border}`,
-                backgroundColor: t.surface,
-                borderRadius: radius,
-              }}
-            >
-              <h2 className="font-semibold">{tr("storefront.checkout.section")}</h2>
-              <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                <Field label={tr("storefront.checkout.fullName")} full>
-                  <input
-                    required
-                    value={form.name}
-                    onChange={(e) => update("name", e.target.value)}
-                    className="w-full px-3 py-2.5 text-sm outline-none focus:ring-2"
-                    style={{ ...inputStyle, ['--tw-ring-color' as string]: t.primary }}
-                  />
-                </Field>
-                <Field label={tr("storefront.checkout.email")} full>
-                  <input
-                    required
-                    type="email"
-                    value={form.email}
-                    onChange={(e) => update("email", e.target.value)}
-                    className="w-full px-3 py-2.5 text-sm outline-none focus:ring-2"
-                    style={inputStyle}
-                  />
-                </Field>
-                <Field label={tr("storefront.checkout.address")} full>
-                  <input
-                    required
-                    value={form.address}
-                    onChange={(e) => update("address", e.target.value)}
-                    className="w-full px-3 py-2.5 text-sm outline-none focus:ring-2"
-                    style={inputStyle}
-                    placeholder={tr("storefront.checkout.addressPh")}
-                  />
-                </Field>
-                <Field label="Wilaya">
-                  <select
-                    required
-                    value={form.wilaya}
-                    onChange={(e) => onWilayaChange(e.target.value)}
-                    className="w-full px-3 py-2.5 pr-9 text-sm outline-none focus:ring-2 appearance-none transition-colors"
-                    style={inputStyle}
-                  >
-                    <option value="">— Select wilaya —</option>
-                    {ALGERIA_GEO.map(({ wilaya, code }) => (
-                      <option key={wilaya} value={wilaya}>
-                        {String(code).padStart(2, "0")} — {wilaya}
-                      </option>
-                    ))}
-                  </select>
-                </Field>
-                <Field label="City / Commune">
-                  <select
-                    required
-                    value={form.city}
-                    onChange={(e) => onCityChange(e.target.value)}
-                    disabled={!form.wilaya}
-                    className="w-full px-3 py-2.5 pr-9 text-sm outline-none focus:ring-2 appearance-none transition-colors disabled:opacity-50"
-                    style={inputStyle}
-                  >
-                    <option value="">
-                      {form.wilaya ? "— Select city —" : "Select wilaya first"}
-                    </option>
-                    {getCitiesForWilaya(form.wilaya).map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
-                </Field>
-                <Field label="Delivery type" full>
-                  <div className="grid grid-cols-2 gap-2">
-                    {(["domicile", "stopdesk"] as const).map((type) => {
-                      const active = form.deliveryType === type;
-                      const price = type === "domicile" ? domicilePrice : stopdeskPrice;
-                      return (
-                        <button
-                          type="button"
-                          key={type}
-                          onClick={() => onDeliveryTypeChange(type)}
-                          className="px-3 py-2.5 text-sm font-medium transition-all flex flex-col items-center gap-0.5"
-                          style={{
-                            border: `1px solid ${active ? t.primary : t.border}`,
-                            backgroundColor: active ? t.primary : t.bg,
-                            color: active ? t.onPrimary : t.fg,
-                            borderRadius: radius / 2,
-                          }}
-                        >
-                          <span>{type === "domicile" ? "Home delivery" : "Stop desk"}</span>
-                          {typeof price === "number" && (
-                            <span className="text-[11px] opacity-80 tabular-nums">
-                              {formatDZD(price)}
-                            </span>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  {stopdeskCheaper && (
-                    <button
-                      type="button"
-                      onClick={() => onDeliveryTypeChange("stopdesk")}
-                      className="mt-2 w-full text-left text-xs px-3 py-2 rounded-md animate-fade-in transition-opacity hover:opacity-80"
-                      style={{
-                        backgroundColor: `${t.primary}15`,
-                        color: t.primary,
-                        border: `1px dashed ${t.primary}`,
-                        borderRadius: radius / 2,
-                      }}
-                    >
-                      💡 Stop desk is cheaper — save {formatDZD(stopdeskSavings)}. Tap to switch.
-                    </button>
-                  )}
-                </Field>
-                {companies.length > 0 && (
-                  <Field label="Delivery company" full>
-                    <select
-                      value={companyId}
-                      onChange={(e) => onCompanyChange(e.target.value)}
-                      className="w-full px-3 py-2.5 pr-9 text-sm outline-none focus:ring-2 appearance-none transition-colors"
-                      style={inputStyle}
-                    >
-                      {companies.map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.name}
-                        </option>
-                      ))}
-                    </select>
-                  </Field>
-                )}
-                <Field label={tr("storefront.checkout.notes")} full muted={t.muted}>
-                  <textarea
-                    value={form.notes}
-                    onChange={(e) => update("notes", e.target.value)}
-                    rows={3}
-                    className="w-full px-3 py-2.5 text-sm outline-none focus:ring-2 resize-none"
-                    style={inputStyle}
-                    placeholder={tr("storefront.checkout.notesPh")}
-                  />
-                </Field>
-              </div>
-            </div>
 
+          {cart.items.length === 0 ? (
             <div
-              className="p-6 h-fit lg:sticky lg:top-24"
-              style={{
-                border: `1px solid ${t.border}`,
-                backgroundColor: t.surface,
-                borderRadius: radius,
-              }}
+              className="p-16 text-center"
+              style={{ borderRadius: r * 2, border: `1px solid ${t.border}`, backgroundColor: t.surface }}
             >
-              <h2 className="font-semibold">{tr("storefront.checkout.summary")}</h2>
-              <div className="mt-4 space-y-3 max-h-64 overflow-y-auto">
-                {cart.items.map((item) => (
-                  <div
-                    key={item.productId}
-                    className="flex items-center gap-3 text-sm"
-                  >
-                    <div
-                      className="h-12 w-12 shrink-0 overflow-hidden"
-                      style={{
-                        borderRadius: radius / 3,
-                        backgroundColor: t.bg,
-                      }}
-                    >
-                      {item.image && (
-                        <img
-                          src={item.image}
-                          alt=""
-                          className="h-full w-full object-cover"
-                        />
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium truncate">{item.name}</div>
-                      <div className="text-xs" style={{ color: t.muted }}>
-                        {tr("storefront.checkout.qty", { n: item.quantity })}
-                      </div>
-                    </div>
-                    <div className="font-medium">
-                      {formatDZD(item.price * item.quantity)}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div
-                className="mt-4 pt-4 space-y-2 text-sm"
-                style={{ borderTop: `1px solid ${t.border}` }}
+              <Package className="h-12 w-12 mx-auto mb-4" style={{ color: t.muted }} />
+              <p className="font-medium mb-4" style={{ color: t.fg }}>{tr("storefront.checkout.empty")}</p>
+              <Link
+                to="/s/$slug"
+                params={{ slug }}
+                className="inline-flex items-center justify-center px-6 py-2.5 text-sm font-medium transition-opacity hover:opacity-90"
+                style={{ backgroundColor: t.primary, color: t.onPrimary, borderRadius: r }}
               >
-                <div className="flex justify-between">
-                  <span style={{ color: t.muted }}>{tr("storefront.checkout.subtotal")}</span>
-                  <span className="tabular-nums">{formatDZD(cart.subtotal)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span style={{ color: t.muted }}>
-                    {tr("storefront.checkout.shipping")}
-                    {form.wilaya ? ` · ${form.wilaya}` : ""}
-                    {form.city ? ` · ${form.city}` : ""}
-                    {form.deliveryType === "stopdesk" ? " · Stop desk" : " · Domicile"}
-                    {selectedCompanyName ? ` · ${selectedCompanyName}` : ""}
-                  </span>
-                  <span className="tabular-nums inline-flex items-center gap-1.5 transition-opacity" style={{ opacity: fetchingPrice ? 0.55 : 1 }}>
-                    {fetchingPrice && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-                    {!form.wilaya || !form.city
-                      ? "— Select location"
-                      : tariffAvailable
-                        ? formatDZD(animatedDelivery)
-                        : "Not available"}
-                  </span>
-                </div>
-                {form.wilaya && form.city && !tariffAvailable && !fetchingPrice && (
-                  <p className="text-xs" style={{ color: "#dc2626" }}>
-                    Delivery not available for this city / type. Try another option.
-                  </p>
-                )}
-                <div
-                  className="flex justify-between text-base font-semibold pt-2"
-                  style={{ borderTop: `1px solid ${t.border}` }}
-                >
-                  <span>{tr("storefront.checkout.total")}</span>
-                  <span key={total} className="tabular-nums animate-[scale-in_0.2s_ease-out]">
-                    {formatDZD(animatedTotal)}
-                  </span>
-                </div>
-              </div>
-              <button
-                type="submit"
-                disabled={submitting}
-                className="mt-6 inline-flex items-center justify-center w-full px-6 h-12 text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50"
+                {tr("storefront.checkout.browse")}
+              </Link>
+            </div>
+          ) : (
+            <form onSubmit={submit} className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
+
+              {/* LEFT: Form */}
+              <div
+                className="p-6 md:p-8"
                 style={{
-                  backgroundColor: t.primary,
-                  color: t.onPrimary,
-                  borderRadius: radius / 2,
+                  border: `1px solid ${t.border}`,
+                  backgroundColor: t.surface,
+                  borderRadius: r * 2,
                 }}
               >
-                {submitting ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  tr("storefront.checkout.place", { amount: formatDZD(animatedTotal) })
-                )}
-              </button>
-              <p className="mt-3 text-xs text-center" style={{ color: t.muted }}>
-                {tr("storefront.checkout.demo")}
-              </p>
-            </div>
-          </form>
-        )}
+                {/* Section header */}
+                <div className="flex items-center gap-2 mb-6">
+                  <div
+                    className="h-8 w-8 rounded-full flex items-center justify-center text-sm font-bold"
+                    style={{ backgroundColor: t.primary, color: t.onPrimary }}
+                  >
+                    1
+                  </div>
+                  <h2 className="font-semibold text-base" style={{ color: t.fg }}>
+                    {tr("storefront.checkout.section")}
+                  </h2>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {/* Full name */}
+                  <Field label={tr("storefront.checkout.fullName")} full>
+                    <input
+                      required
+                      value={form.name}
+                      onChange={(e) => update("name", e.target.value)}
+                      style={inputStyle}
+                      placeholder="Ahmed Benali"
+                    />
+                  </Field>
+
+                  {/* Email */}
+                  <Field label={tr("storefront.checkout.email")} full>
+                    <input
+                      required
+                      type="email"
+                      value={form.email}
+                      onChange={(e) => update("email", e.target.value)}
+                      style={inputStyle}
+                      placeholder="ahmed@example.com"
+                    />
+                  </Field>
+
+                  {/* Address */}
+                  <Field label={tr("storefront.checkout.address")} full>
+                    <input
+                      required
+                      value={form.address}
+                      onChange={(e) => update("address", e.target.value)}
+                      style={inputStyle}
+                      placeholder={tr("storefront.checkout.addressPh")}
+                    />
+                  </Field>
+
+                  {/* Wilaya */}
+                  <Field label={tr("storefront.cod.wilaya")}>
+                    <div className="relative">
+                      <select
+                        required
+                        value={form.wilaya}
+                        onChange={(e) => onWilayaChange(e.target.value)}
+                        style={{ ...inputStyle, paddingRight: 36, appearance: "none" }}
+                      >
+                        <option value="">{tr("storefront.cod.selectWilaya")}</option>
+                        {ALGERIA_GEO.map(({ wilaya, code }) => (
+                          <option key={wilaya} value={wilaya}>
+                            {String(code).padStart(2, "0")} — {wilaya}
+                          </option>
+                        ))}
+                      </select>
+                      <MapPin className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none" style={{ color: t.muted }} />
+                    </div>
+                  </Field>
+
+                  {/* City */}
+                  <Field label={tr("storefront.cod.city")}>
+                    <div className="relative">
+                      <select
+                        required
+                        value={form.city}
+                        onChange={(e) => onCityChange(e.target.value)}
+                        disabled={!form.wilaya}
+                        style={{ ...inputStyle, paddingRight: 36, appearance: "none", opacity: form.wilaya ? 1 : 0.5 }}
+                      >
+                        <option value="">
+                          {form.wilaya ? tr("storefront.cod.selectCity") : tr("storefront.cod.pickWilayaFirst")}
+                        </option>
+                        {getCitiesForWilaya(form.wilaya).map((c) => (
+                          <option key={c} value={c}>{c}</option>
+                        ))}
+                      </select>
+                      <MapPin className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none" style={{ color: t.muted }} />
+                    </div>
+                  </Field>
+
+                  {/* Delivery type */}
+                  <Field label={tr("storefront.checkout.deliveryType") ?? "Type de livraison"} full>
+                    <div className="grid grid-cols-2 gap-3">
+                      {(["domicile", "stopdesk"] as const).map((type) => {
+                        const active = form.deliveryType === type;
+                        const price = type === "domicile" ? domicilePrice : stopdeskPrice;
+                        const Icon = type === "domicile" ? Home : Truck;
+                        return (
+                          <button
+                            type="button"
+                            key={type}
+                            onClick={() => onDeliveryTypeChange(type)}
+                            className="flex flex-col items-center gap-1.5 py-3 px-4 text-sm font-medium transition-all"
+                            style={{
+                              border: `2px solid ${active ? t.primary : t.border}`,
+                              backgroundColor: active ? t.primary + "15" : t.isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.02)",
+                              color: active ? t.primary : t.fg,
+                              borderRadius: r,
+                            }}
+                          >
+                            <Icon className="h-5 w-5" />
+                            <span>{type === "domicile" ? tr("storefront.checkout.deliveryHome") ?? "Domicile" : tr("storefront.checkout.deliveryStopdesk") ?? "Stop desk"}</span>
+                            {typeof price === "number" && (
+                              <span className="text-[11px] font-normal opacity-70 tabular-nums">
+                                {formatDZD(price)}
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {stopdeskCheaper && (
+                      <button
+                        type="button"
+                        onClick={() => onDeliveryTypeChange("stopdesk")}
+                        className="mt-3 w-full text-left text-xs px-4 py-2.5 font-medium transition-opacity hover:opacity-80"
+                        style={{
+                          backgroundColor: `${t.primary}12`,
+                          color: t.primary,
+                          border: `1px dashed ${t.primary}60`,
+                          borderRadius: r,
+                        }}
+                      >
+                        💡 {tr("storefront.checkout.deliveryStopdesk") ?? "Stop desk"} — économisez {formatDZD(stopdeskSavings)}
+                      </button>
+                    )}
+                  </Field>
+
+                  {/* Delivery company */}
+                  {companies.length > 0 && (
+                    <Field label={tr("storefront.checkout.deliveryCompany") ?? "Transporteur"} full>
+                      <select
+                        value={companyId}
+                        onChange={(e) => onCompanyChange(e.target.value)}
+                        style={{ ...inputStyle, paddingRight: 36, appearance: "none" }}
+                      >
+                        {companies.map((c) => (
+                          <option key={c.id} value={c.id}>{c.name}</option>
+                        ))}
+                      </select>
+                    </Field>
+                  )}
+
+                  {/* Notes */}
+                  <Field label={tr("storefront.checkout.notes")} full>
+                    <textarea
+                      value={form.notes}
+                      onChange={(e) => update("notes", e.target.value)}
+                      rows={3}
+                      style={{ ...inputStyle, resize: "none" }}
+                      placeholder={tr("storefront.checkout.notesPh")}
+                    />
+                  </Field>
+                </div>
+              </div>
+
+              {/* RIGHT: Order summary */}
+              <div className="lg:sticky lg:top-24 h-fit space-y-4">
+                <div
+                  className="p-6"
+                  style={{
+                    border: `1px solid ${t.border}`,
+                    backgroundColor: t.surface,
+                    borderRadius: r * 2,
+                  }}
+                >
+                  {/* Section header */}
+                  <div className="flex items-center gap-2 mb-5">
+                    <div
+                      className="h-8 w-8 rounded-full flex items-center justify-center text-sm font-bold"
+                      style={{ backgroundColor: t.primary, color: t.onPrimary }}
+                    >
+                      2
+                    </div>
+                    <h2 className="font-semibold text-base" style={{ color: t.fg }}>
+                      {tr("storefront.checkout.summary")}
+                    </h2>
+                  </div>
+
+                  {/* Cart items */}
+                  <div className="space-y-3 max-h-56 overflow-y-auto">
+                    {cart.items.map((item) => (
+                      <div key={item.productId} className="flex items-center gap-3 text-sm">
+                        <div
+                          className="h-14 w-14 shrink-0 overflow-hidden"
+                          style={{ borderRadius: r, backgroundColor: t.isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)" }}
+                        >
+                          {item.image && (
+                            <img src={item.image} alt="" className="h-full w-full object-cover" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium truncate" style={{ color: t.fg }}>{item.name}</div>
+                          <div className="text-xs mt-0.5" style={{ color: t.muted }}>
+                            {tr("storefront.checkout.qty", { n: item.quantity })}
+                          </div>
+                        </div>
+                        <div className="font-semibold tabular-nums" style={{ color: t.fg }}>
+                          {formatDZD(item.price * item.quantity)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Totals */}
+                  <div
+                    className="mt-5 pt-4 space-y-2.5 text-sm"
+                    style={{ borderTop: `1px solid ${t.border}` }}
+                  >
+                    <div className="flex justify-between">
+                      <span style={{ color: t.muted }}>{tr("storefront.checkout.subtotal")}</span>
+                      <span className="tabular-nums font-medium" style={{ color: t.fg }}>{formatDZD(cart.subtotal)}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span style={{ color: t.muted }}>
+                        {tr("storefront.checkout.shipping")}
+                        {form.wilaya ? ` · ${form.wilaya}` : ""}
+                        {form.city ? ` · ${form.city}` : ""}
+                        {selectedCompanyName ? ` · ${selectedCompanyName}` : ""}
+                      </span>
+                      <span
+                        className="tabular-nums inline-flex items-center gap-1.5 font-medium transition-opacity"
+                        style={{ color: t.fg, opacity: fetchingPrice ? 0.5 : 1 }}
+                      >
+                        {fetchingPrice && <Loader2 className="h-3 w-3 animate-spin" />}
+                        {!form.wilaya || !form.city
+                          ? <span style={{ color: t.muted }}>—</span>
+                          : tariffAvailable
+                            ? formatDZD(animatedDelivery)
+                            : <span style={{ color: "#ef4444" }}>Non disponible</span>}
+                      </span>
+                    </div>
+                    {form.wilaya && form.city && !tariffAvailable && !fetchingPrice && (
+                      <p className="text-xs px-3 py-2 rounded-lg" style={{ backgroundColor: "#ef444415", color: "#ef4444", borderRadius: r }}>
+                        Livraison non disponible pour cette sélection.
+                      </p>
+                    )}
+                    <div
+                      className="flex justify-between text-base font-bold pt-3"
+                      style={{ borderTop: `1px solid ${t.border}`, color: t.fg }}
+                    >
+                      <span>{tr("storefront.checkout.total")}</span>
+                      <span className="tabular-nums" style={{ color: t.primary }}>
+                        {formatDZD(animatedTotal)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Submit button */}
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="mt-6 w-full h-13 flex items-center justify-center gap-2 text-sm font-semibold transition-all hover:opacity-90 disabled:opacity-50"
+                    style={{
+                      backgroundColor: t.primary,
+                      color: t.onPrimary,
+                      borderRadius: r,
+                      height: 52,
+                      fontSize: 15,
+                    }}
+                  >
+                    {submitting ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      <>
+                        <CheckCircle2 className="h-5 w-5" />
+                        {tr("storefront.checkout.place", { amount: formatDZD(animatedTotal) })}
+                      </>
+                    )}
+                  </button>
+
+                  <p className="mt-3 text-xs text-center" style={{ color: t.muted }}>
+                    {tr("storefront.checkout.demo")}
+                  </p>
+                </div>
+              </div>
+            </form>
+          )}
+        </div>
       </div>
     </StorefrontShell>
   );
@@ -678,7 +718,9 @@ function Field({
 }) {
   return (
     <label className={`block ${full ? "sm:col-span-2" : ""}`}>
-      <span className="block text-xs font-medium mb-1.5">{label}</span>
+      <span className="block text-xs font-semibold mb-1.5 uppercase tracking-wide" style={{ opacity: 0.6 }}>
+        {label}
+      </span>
       {children}
     </label>
   );
