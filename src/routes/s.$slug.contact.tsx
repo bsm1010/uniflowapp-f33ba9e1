@@ -67,8 +67,6 @@ function ContactPage() {
       cancelled = true;
     };
   }, [settings.slug]);
-  const [submitting, setSubmitting] = useState(false);
-  const [sent, setSent] = useState(false);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
