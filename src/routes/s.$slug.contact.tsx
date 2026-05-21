@@ -144,6 +144,7 @@ function ContactPage() {
                     value={contactPhone}
                     t={t}
                   />
+                )}
 
                 {settings.contact_address && (
                   <DetailRow
