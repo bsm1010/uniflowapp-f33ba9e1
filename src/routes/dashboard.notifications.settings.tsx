@@ -21,8 +21,8 @@ export const Route = createFileRoute("/dashboard/notifications/settings")({
   component: NotificationsSettings,
   head: () => ({
     meta: [
-      { title: "Notification Settings — Fenncly" },
-      { name: "description", content: "Choose which Fenncly push notifications to receive." },
+      { title: "Notification Settings — Fennecly" },
+      { name: "description", content: "Choose which Fennecly push notifications to receive." },
     ],
   }),
 });
@@ -45,7 +45,7 @@ const DEFAULT_PREFS: Prefs = {
   sound_enabled: true,
 };
 
-const TELEGRAM_BOT_USERNAME = "YourBotUsername"; // 🔁 Replace with your bot's @username
+const TELEGRAM_BOT_USERNAME = "FenneclyBOT";
 
 function NotificationsSettings() {
   const { currentStore } = useCurrentStore();
@@ -75,7 +75,6 @@ function NotificationsSettings() {
     loadStatus().then((s) => setSubCount(s.subscriptionCount));
   }, [loadPrefs, loadStatus, status]);
 
-  // Check if Telegram is already connected
   useEffect(() => {
     if (!currentStore?.id) return;
     supabase
@@ -110,7 +109,7 @@ function NotificationsSettings() {
     setSaving(true);
     try {
       await savePrefs({ data: next });
-    } catch (e) {
+    } catch {
       toast.error("Could not save preference");
       setPrefs(prefs);
     } finally {
@@ -146,7 +145,7 @@ function NotificationsSettings() {
     }
   };
 
-  const items: Array<{ key: keyof Prefs; label: string; description: string; icon?: React.ReactNode }> = [
+  const items: Array<{ key: keyof Prefs; label: string; description: string }> = [
     { key: "new_order", label: "New orders", description: "🛍️ When a new order is placed" },
     { key: "low_stock", label: "Low stock alerts", description: "⚠️ When a product is running low" },
     { key: "order_status", label: "Order status changes", description: "📦 When an order moves through fulfillment" },
@@ -163,7 +162,7 @@ function NotificationsSettings() {
         </p>
       </div>
 
-      {/* ── Telegram Card ── */}
+      {/* Telegram Card */}
       <Card>
         <CardHeader>
           <div className="flex items-start justify-between gap-3">
@@ -195,26 +194,23 @@ function NotificationsSettings() {
             )}
           </div>
         </CardHeader>
-        {telegramConnected && (
-          <CardContent>
+        <CardContent>
+          {telegramConnected ? (
             <div className="flex items-center gap-2 text-sm text-green-500">
               <CheckCircle2 className="h-4 w-4" />
               Connected — new orders will be sent to your Telegram.
             </div>
-          </CardContent>
-        )}
-        {!telegramConnected && (
-          <CardContent>
+          ) : (
             <ol className="text-xs text-muted-foreground space-y-1 list-decimal list-inside">
               <li>Click <strong>Connect Telegram</strong> above</li>
               <li>Telegram opens — press <strong>Start</strong> in the bot chat</li>
               <li>Come back here — status updates automatically</li>
             </ol>
-          </CardContent>
-        )}
+          )}
+        </CardContent>
       </Card>
 
-      {/* ── Push notifications card ── */}
+      {/* Push notifications Card */}
       <Card>
         <CardHeader>
           <div className="flex items-start justify-between gap-3">
@@ -253,7 +249,7 @@ function NotificationsSettings() {
             <div className="flex items-start gap-2 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
               <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
               <div>
-                Notifications are blocked at the browser level. On iPhone: Settings → Notifications → Fenncly →
+                Notifications are blocked at the browser level. On iPhone: Settings → Notifications → Fennecly →
                 Allow Notifications.
               </div>
             </div>
@@ -270,7 +266,7 @@ function NotificationsSettings() {
         </CardContent>
       </Card>
 
-      {/* ── Preferences card ── */}
+      {/* Preferences Card */}
       <Card>
         <CardHeader>
           <CardTitle>What to notify me about</CardTitle>
@@ -299,7 +295,7 @@ function NotificationsSettings() {
                 <Volume2 className="h-4 w-4" /> Custom sound
               </Label>
               <p className="text-xs text-muted-foreground">
-                Plays the Fenncly chime when this tab is open. iOS uses the system sound on the lock screen.
+                Plays the Fennecly chime when this tab is open. iOS uses the system sound on the lock screen.
               </p>
             </div>
             <Switch
