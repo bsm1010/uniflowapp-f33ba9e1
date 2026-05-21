@@ -42,7 +42,7 @@ export const generateAIReply = createServerFn({ method: "POST" })
     // Fetch store settings
     const { data: storeSettings } = await supabase
       .from("store_settings")
-      .select("store_name, currency, contact_phone")
+      .select("store_name, currency")
       .eq("user_id", userId)
       .maybeSingle();
 
