@@ -1,0 +1,81 @@
+import { createServerFileRoute } from "@tanstack/start/server";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!, // needs service role to update stores
+);
+
+const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
+
+export const ServerRoute = createServerFileRoute(
+  "/api/public/hooks/telegram",
+).methods({
+  // Telegram calls this endpoint whenever a user messages the bot
+  POST: async ({ request }) => {
+    try {
+      const body = await request.json();
+      const message = body?.message;
+
+      if (!message) {
+        return new Response("ok", { status: 200 });
+      }
+
+      const text: string = message?.text ?? "";
+      const chatId: string = String(message.chat.id);
+
+      // Handle /start STORE_ID command
+      if (text.startsWith("/start")) {
+        const parts = text.split(" ");
+        const storeId = parts[1]; // the store ID passed in the deep link
+
+        if (!storeId) {
+          await sendMessage(
+            chatId,
+            "👋 Welcome to Fennecly!\n\nTo connect your store, go to your dashboard → Settings → Connect Telegram.",
+          );
+          return new Response("ok", { status: 200 });
+        }
+
+        // Save chat_id to the store
+        const { error } = await supabase
+          .from("stores")
+          .update({ telegram_chat_id: chatId })
+          .eq("id", storeId);
+
+        if (error) {
+          console.error("Failed to save telegram_chat_id:", error);
+          await sendMessage(
+            chatId,
+            "❌ Failed to connect your store. Please try again from your dashboard.",
+          );
+          return new Response("ok", { status: 200 });
+        }
+
+        await sendMessage(
+          chatId,
+          "✅ Your store is now connected to Telegram!\n\nYou'll receive instant notifications here whenever you get a new order. 🛒",
+        );
+      }
+
+      return new Response("ok", { status: 200 });
+    } catch (err) {
+      console.error("Telegram webhook error:", err);
+      return new Response("error", { status: 500 });
+    }
+  },
+
+  // Telegram verification challenge
+  GET: async () => {
+    return new Response("Telegram webhook active", { status: 200 });
+  },
+});
+
+// Helper to send a Telegram message
+async function sendMessage(chatId: string, text: string) {
+  await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML" }),
+  });
+}
