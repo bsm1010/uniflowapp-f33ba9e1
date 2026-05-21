@@ -44,25 +44,32 @@ function ContactEditor() {
 
   const load = useCallback(async () => {
     if (!user) return;
-    const { data, error } = await supabase
-      .from("store_settings")
-      .select("*")
-      .eq("user_id", user.id)
-      .maybeSingle();
-    if (error) {
-      toast.error(error.message);
+    const [settingsRes, contactRes] = await Promise.all([
+      supabase
+        .from("store_settings")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle(),
+      supabase
+        .from("store_contact_info")
+        .select("contact_email, contact_phone")
+        .eq("user_id", user.id)
+        .maybeSingle(),
+    ]);
+    if (settingsRes.error) {
+      toast.error(settingsRes.error.message);
       return;
     }
-    if (data) {
-      const s = data as unknown as StoreSettings;
+    if (settingsRes.data) {
+      const s = settingsRes.data as unknown as StoreSettings;
       setSettings(s);
-      setEmail(s.contact_email ?? "");
-      setPhone(s.contact_phone ?? "");
       setAddress(s.contact_address ?? "");
       setMapUrl(s.contact_map_url ?? "");
       setIntro(s.contact_intro ?? "Have a question? We'd love to hear from you.");
       setFormEnabled(s.contact_form_enabled ?? true);
     }
+    setEmail(contactRes.data?.contact_email ?? "");
+    setPhone(contactRes.data?.contact_phone ?? "");
   }, [user]);
 
   useEffect(() => {
@@ -74,20 +81,31 @@ function ContactEditor() {
   const save = async () => {
     if (!user) return;
     setSaving(true);
-    const { error } = await supabase
-      .from("store_settings")
-      .update({
-        contact_email: email.trim(),
-        contact_phone: phone.trim(),
-        contact_address: address.trim(),
-        contact_map_url: mapUrl.trim(),
-        contact_intro: intro.trim() || "Have a question? We'd love to hear from you.",
-        contact_form_enabled: formEnabled,
-      })
-      .eq("user_id", user.id);
+    const [settingsRes, contactRes] = await Promise.all([
+      supabase
+        .from("store_settings")
+        .update({
+          contact_address: address.trim(),
+          contact_map_url: mapUrl.trim(),
+          contact_intro: intro.trim() || "Have a question? We'd love to hear from you.",
+          contact_form_enabled: formEnabled,
+        })
+        .eq("user_id", user.id),
+      supabase
+        .from("store_contact_info")
+        .upsert(
+          {
+            user_id: user.id,
+            contact_email: email.trim(),
+            contact_phone: phone.trim(),
+          },
+          { onConflict: "user_id" },
+        ),
+    ]);
     setSaving(false);
-    if (error) {
-      toast.error(error.message);
+    const err = settingsRes.error || contactRes.error;
+    if (err) {
+      toast.error(err.message);
       return;
     }
     toast.success("Contact page saved");
