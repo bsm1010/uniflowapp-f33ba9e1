@@ -1,5 +1,5 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Loader2, Mail, MapPin, Map as MapIcon, Phone, Send } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -50,6 +50,23 @@ function ContactPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [contactInfo, setContactInfo] = useState<{ contact_email: string; contact_phone: string } | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    supabase
+      .rpc("get_store_contact_info", { _slug: settings.slug })
+      .then(({ data }) => {
+        if (cancelled) return;
+        const row = Array.isArray(data) ? data[0] : data;
+        if (row) setContactInfo({ contact_email: row.contact_email ?? "", contact_phone: row.contact_phone ?? "" });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [settings.slug]);
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
 
