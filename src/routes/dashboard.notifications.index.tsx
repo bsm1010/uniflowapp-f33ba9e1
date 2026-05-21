@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Loader2, Bell, CheckCheck, Trash2, Inbox } from "lucide-react";
+import { Loader2, Bell, CheckCheck, Trash2, Inbox, Settings } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, EmptyState } from "@/components/dashboard/PageHeader";
@@ -26,6 +26,7 @@ export const Route = createFileRoute("/dashboard/notifications/")({
 
 function NotificationsPage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [items, setItems] = useState<Notification[] | null>(null);
   const [filter, setFilter] = useState<"all" | "unread">("all");
 
@@ -97,12 +98,23 @@ function NotificationsPage() {
             </TabsTrigger>
           </TabsList>
         </Tabs>
-        {unread > 0 && (
-          <Button variant="outline" size="sm" onClick={markAllRead}>
-            <CheckCheck className="h-4 w-4 mr-1" />
-            Mark all read
+
+        <div className="flex items-center gap-2">
+          {unread > 0 && (
+            <Button variant="outline" size="sm" onClick={markAllRead}>
+              <CheckCheck className="h-4 w-4 mr-1" />
+              Mark all read
+            </Button>
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate({ to: "/dashboard/notifications/settings" })}
+          >
+            <Settings className="h-4 w-4 mr-1" />
+            Settings
           </Button>
-        )}
+        </div>
       </div>
 
       {items === null ? (
