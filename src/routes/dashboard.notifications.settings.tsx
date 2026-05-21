@@ -101,7 +101,9 @@ function NotificationsSettings() {
     }
   };
 
-  const telegramLink = `https://t.me/${TELEGRAM_BOT_USERNAME}?start=${currentStore?.id}`;
+  const telegramLink = currentStore?.id
+    ? `https://t.me/${TELEGRAM_BOT_USERNAME}?start=${currentStore.id.replace(/-/g, "_")}`
+    : null;
 
   const togglePref = async (key: keyof Prefs, value: boolean) => {
     const next = { ...prefs, [key]: value };
@@ -185,7 +187,10 @@ function NotificationsSettings() {
               <Button
                 size="sm"
                 className="bg-[#229ED9] hover:bg-[#1a8bbf] text-white"
-                onClick={() => window.open(telegramLink, "_blank")}
+                onClick={() => {
+                  if (!telegramLink) { toast.error("Store not loaded yet."); return; }
+                  window.open(telegramLink, "_blank");
+                }}
                 disabled={!currentStore?.id}
               >
                 <ExternalLink className="h-4 w-4 mr-1.5" />
