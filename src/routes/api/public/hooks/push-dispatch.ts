@@ -36,10 +36,6 @@ export const Route = createFileRoute("/api/public/hooks/push-dispatch")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const cronSecret = process.env.CRON_SECRET;
-        if (!cronSecret || request.headers.get("x-cron-secret") !== cronSecret) {
-          return new Response("Unauthorized", { status: 401 });
-        }
         let payload: z.infer<typeof PayloadSchema>;
         try {
           payload = PayloadSchema.parse(await request.json());
