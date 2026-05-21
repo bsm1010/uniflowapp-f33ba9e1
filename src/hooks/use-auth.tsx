@@ -41,8 +41,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signOut = async () => {
+    try {
+      sessionStorage.removeItem("fennecly_store_picked");
+    } catch {
+      // ignore
+    }
     await supabase.auth.signOut();
   };
+
 
   return (
     <AuthContext.Provider value={{ user, session, loading, signOut }}>
