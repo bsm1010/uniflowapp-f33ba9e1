@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!, // needs service role to update stores
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
 );
 
 const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
@@ -11,7 +11,6 @@ const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
 export const ServerRoute = createServerFileRoute(
   "/api/public/hooks/telegram",
 ).methods({
-  // Telegram calls this endpoint whenever a user messages the bot
   POST: async ({ request }) => {
     try {
       const body = await request.json();
@@ -24,20 +23,18 @@ export const ServerRoute = createServerFileRoute(
       const text: string = message?.text ?? "";
       const chatId: string = String(message.chat.id);
 
-      // Handle /start STORE_ID command
       if (text.startsWith("/start")) {
         const parts = text.split(" ");
-        const storeId = parts[1]; // the store ID passed in the deep link
+        const storeId = parts[1]?.replace(/_/g, "-");
 
         if (!storeId) {
           await sendMessage(
             chatId,
-            "👋 Welcome to Fennecly!\n\nTo connect your store, go to your dashboard → Settings → Connect Telegram.",
+            "👋 Welcome to Fennecly!\n\nTo connect your store, go to your dashboard → Notifications → Settings → Connect Telegram.",
           );
           return new Response("ok", { status: 200 });
         }
 
-        // Save chat_id to the store
         const { error } = await supabase
           .from("stores")
           .update({ telegram_chat_id: chatId })
@@ -65,13 +62,11 @@ export const ServerRoute = createServerFileRoute(
     }
   },
 
-  // Telegram verification challenge
   GET: async () => {
     return new Response("Telegram webhook active", { status: 200 });
   },
 });
 
-// Helper to send a Telegram message
 async function sendMessage(chatId: string, text: string) {
   await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
     method: "POST",
