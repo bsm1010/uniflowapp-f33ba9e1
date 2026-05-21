@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Bell, BellOff, Check, AlertTriangle, Smartphone, Volume2 } from "lucide-react";
+import { Bell, BellOff, Check, AlertTriangle, Smartphone, Volume2, Send, ExternalLink, CheckCircle2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,7 @@ import {
   getPushStatus,
 } from "@/lib/push/push.functions";
 import { useCurrentStore } from "@/hooks/use-current-store";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/dashboard/notifications/settings")({
   component: NotificationsSettings,
@@ -44,6 +45,8 @@ const DEFAULT_PREFS: Prefs = {
   sound_enabled: true,
 };
 
+const TELEGRAM_BOT_USERNAME = "YourBotUsername"; // 🔁 Replace with your bot's @username
+
 function NotificationsSettings() {
   const { currentStore } = useCurrentStore();
   const { status, enable, disable, refresh } = usePushSubscription(currentStore?.id ?? null);
@@ -51,6 +54,7 @@ function NotificationsSettings() {
   const [subCount, setSubCount] = useState(0);
   const [saving, setSaving] = useState(false);
   const [testing, setTesting] = useState(false);
+  const [telegramConnected, setTelegramConnected] = useState(false);
 
   const loadPrefs = useServerFn(getNotificationPreferences);
   const savePrefs = useServerFn(saveNotificationPreferences);
@@ -70,6 +74,35 @@ function NotificationsSettings() {
     );
     loadStatus().then((s) => setSubCount(s.subscriptionCount));
   }, [loadPrefs, loadStatus, status]);
+
+  // Check if Telegram is already connected
+  useEffect(() => {
+    if (!currentStore?.id) return;
+    supabase
+      .from("stores")
+      .select("telegram_chat_id")
+      .eq("id", currentStore.id)
+      .single()
+      .then(({ data }) => {
+        setTelegramConnected(!!data?.telegram_chat_id);
+      });
+  }, [currentStore?.id]);
+
+  const handleDisconnectTelegram = async () => {
+    if (!currentStore?.id) return;
+    const { error } = await supabase
+      .from("stores")
+      .update({ telegram_chat_id: null })
+      .eq("id", currentStore.id);
+    if (!error) {
+      setTelegramConnected(false);
+      toast.success("Telegram disconnected");
+    } else {
+      toast.error("Failed to disconnect");
+    }
+  };
+
+  const telegramLink = `https://t.me/${TELEGRAM_BOT_USERNAME}?start=${currentStore?.id}`;
 
   const togglePref = async (key: keyof Prefs, value: boolean) => {
     const next = { ...prefs, [key]: value };
@@ -130,6 +163,58 @@ function NotificationsSettings() {
         </p>
       </div>
 
+      {/* ── Telegram Card ── */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Send className="h-5 w-5 text-[#229ED9]" />
+                Telegram notifications
+              </CardTitle>
+              <CardDescription className="mt-1">
+                {telegramConnected
+                  ? "Your store is connected. You'll receive order alerts on Telegram."
+                  : "Get instant order notifications in your Telegram app."}
+              </CardDescription>
+            </div>
+            {telegramConnected ? (
+              <Button variant="outline" size="sm" onClick={handleDisconnectTelegram}>
+                Disconnect
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                className="bg-[#229ED9] hover:bg-[#1a8bbf] text-white"
+                onClick={() => window.open(telegramLink, "_blank")}
+                disabled={!currentStore?.id}
+              >
+                <ExternalLink className="h-4 w-4 mr-1.5" />
+                Connect Telegram
+              </Button>
+            )}
+          </div>
+        </CardHeader>
+        {telegramConnected && (
+          <CardContent>
+            <div className="flex items-center gap-2 text-sm text-green-500">
+              <CheckCircle2 className="h-4 w-4" />
+              Connected — new orders will be sent to your Telegram.
+            </div>
+          </CardContent>
+        )}
+        {!telegramConnected && (
+          <CardContent>
+            <ol className="text-xs text-muted-foreground space-y-1 list-decimal list-inside">
+              <li>Click <strong>Connect Telegram</strong> above</li>
+              <li>Telegram opens — press <strong>Start</strong> in the bot chat</li>
+              <li>Come back here — status updates automatically</li>
+            </ol>
+          </CardContent>
+        )}
+      </Card>
+
+      {/* ── Push notifications card ── */}
       <Card>
         <CardHeader>
           <div className="flex items-start justify-between gap-3">
@@ -185,6 +270,7 @@ function NotificationsSettings() {
         </CardContent>
       </Card>
 
+      {/* ── Preferences card ── */}
       <Card>
         <CardHeader>
           <CardTitle>What to notify me about</CardTitle>
