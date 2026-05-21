@@ -2158,6 +2158,30 @@ export type Database = {
           },
         ]
       }
+      store_contact_info: {
+        Row: {
+          contact_email: string
+          contact_phone: string
+          created_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          contact_email?: string
+          contact_phone?: string
+          created_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          contact_email?: string
+          contact_phone?: string
+          created_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       store_delivery_companies: {
         Row: {
           api_key: string
@@ -2240,11 +2264,9 @@ export type Database = {
           button_labels: Json
           button_style: string
           contact_address: string
-          contact_email: string
           contact_form_enabled: boolean
           contact_intro: string
           contact_map_url: string
-          contact_phone: string
           created_at: string
           currency: string
           font_family: string
@@ -2287,11 +2309,9 @@ export type Database = {
           button_labels?: Json
           button_style?: string
           contact_address?: string
-          contact_email?: string
           contact_form_enabled?: boolean
           contact_intro?: string
           contact_map_url?: string
-          contact_phone?: string
           created_at?: string
           currency?: string
           font_family?: string
@@ -2334,11 +2354,9 @@ export type Database = {
           button_labels?: Json
           button_style?: string
           contact_address?: string
-          contact_email?: string
           contact_form_enabled?: boolean
           contact_intro?: string
           contact_map_url?: string
-          contact_phone?: string
           created_at?: string
           currency?: string
           font_family?: string
@@ -2566,6 +2584,13 @@ export type Database = {
         Returns: number
       }
       generate_referral_code: { Args: never; Returns: string }
+      get_store_contact_info: {
+        Args: { _slug: string }
+        Returns: {
+          contact_email: string
+          contact_phone: string
+        }[]
+      }
       grant_credits: {
         Args: {
           _amount: number

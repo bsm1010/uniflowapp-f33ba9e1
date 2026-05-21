@@ -1,5 +1,5 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Loader2, Mail, MapPin, Map as MapIcon, Phone, Send } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -52,6 +52,21 @@ function ContactPage() {
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
+  const [contactInfo, setContactInfo] = useState<{ contact_email: string; contact_phone: string } | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    supabase
+      .rpc("get_store_contact_info", { _slug: settings.slug })
+      .then(({ data }) => {
+        if (cancelled) return;
+        const row = Array.isArray(data) ? data[0] : data;
+        if (row) setContactInfo({ contact_email: row.contact_email ?? "", contact_phone: row.contact_phone ?? "" });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [settings.slug]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,8 +98,9 @@ function ContactPage() {
     toast.success(tr("storefront.contact.successToast"));
   };
 
-  const hasAnyDetail =
-    settings.contact_email || settings.contact_phone || settings.contact_address;
+  const contactEmail = contactInfo?.contact_email ?? "";
+  const contactPhone = contactInfo?.contact_phone ?? "";
+  const hasAnyDetail = contactEmail || contactPhone || settings.contact_address;
 
   return (
     <StorefrontShell settings={settings}>
@@ -111,24 +127,25 @@ function ContactPage() {
           <div className="space-y-6">
             {hasAnyDetail ? (
               <div className="space-y-4">
-                {settings.contact_email && (
+                {contactEmail && (
                   <DetailRow
                     icon={<Mail className="h-4 w-4" />}
                     label={tr("storefront.contact.email")}
-                    href={`mailto:${settings.contact_email}`}
-                    value={settings.contact_email}
+                    href={`mailto:${contactEmail}`}
+                    value={contactEmail}
                     t={t}
                   />
                 )}
-                {settings.contact_phone && (
+                {contactPhone && (
                   <DetailRow
                     icon={<Phone className="h-4 w-4" />}
                     label={tr("storefront.contact.phone")}
-                    href={`tel:${settings.contact_phone.replace(/\s+/g, "")}`}
-                    value={settings.contact_phone}
+                    href={`tel:${contactPhone.replace(/\s+/g, "")}`}
+                    value={contactPhone}
                     t={t}
                   />
                 )}
+
                 {settings.contact_address && (
                   <DetailRow
                     icon={<MapPin className="h-4 w-4" />}
