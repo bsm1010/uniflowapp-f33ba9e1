@@ -92,11 +92,7 @@ function OrdersPage() {
     if (!user) return;
     const { data: sessionData } = await supabase.auth.getSession();
     const accessToken = sessionData.session?.access_token;
-    if (!accessToken) {
-      toast.error("Please sign in again.");
-      return;
-    }
-    // Resolve ZRExpress company id.
+    if (!accessToken) { toast.error("Please sign in again."); return; }
     const { data: companies } = await supabase
       .from("delivery_companies")
       .select("id, name")
@@ -104,19 +100,12 @@ function OrdersPage() {
     const zr = (companies ?? []).find((c) =>
       /zr\s*[-_]?\s*express|zrexpress/i.test(c.name),
     );
-    if (!zr) {
-      toast.error("ZRExpress is not available.");
-      return;
-    }
+    if (!zr) { toast.error("ZRExpress is not available."); return; }
     setImportingZR(true);
     try {
       const res = await importZRFn({ data: { accessToken, companyId: zr.id } });
-      if (res.ok) {
-        toast.success(res.message);
-        loadOrders();
-      } else {
-        toast.error(res.message);
-      }
+      if (res.ok) { toast.success(res.message); loadOrders(); }
+      else toast.error(res.message);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Import failed.");
     } finally {
@@ -127,27 +116,18 @@ function OrdersPage() {
   const sendToProvider = async (orderId: string) => {
     const { data: sessionData } = await supabase.auth.getSession();
     const accessToken = sessionData.session?.access_token;
-    if (!accessToken) {
-      toast.error("Please sign in again.");
-      return;
-    }
+    if (!accessToken) { toast.error("Please sign in again."); return; }
     setPushingId(orderId);
     try {
       const res = await pushFn({ data: { accessToken, orderId } });
-      if (res.ok) {
-        toast.success(res.message);
-        loadOrders();
-      } else {
-        toast.error(res.message);
-        loadOrders();
-      }
+      if (res.ok) { toast.success(res.message); loadOrders(); }
+      else { toast.error(res.message); loadOrders(); }
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to send to delivery provider.");
     } finally {
       setPushingId(null);
     }
   };
-
 
   const loadOrders = async () => {
     if (!user) return;
@@ -183,20 +163,10 @@ function OrdersPage() {
     loadOrders();
     const channel = supabase
       .channel(`orders-${user.id}`)
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "orders", filter: `store_owner_id=eq.${user.id}` },
-        () => loadOrders(),
-      )
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "order_items" },
-        () => loadOrders(),
-      )
+      .on("postgres_changes", { event: "*", schema: "public", table: "orders", filter: `store_owner_id=eq.${user.id}` }, () => loadOrders())
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "order_items" }, () => loadOrders())
       .subscribe();
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return () => { supabase.removeChannel(channel); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id, currentStore?.id]);
 
@@ -204,13 +174,8 @@ function OrdersPage() {
     const prev = orders;
     setOrders((cur) => (cur ? cur.map((o) => (o.id === orderId ? { ...o, status } : o)) : cur));
     const { error } = await supabase.from("orders").update({ status }).eq("id", orderId);
-    if (error) {
-      setOrders(prev);
-      toast.error("Failed to update status");
-      return;
-    }
+    if (error) { setOrders(prev); toast.error("Failed to update status"); return; }
     toast.success(`Order marked as ${STATUS_VARIANT[status].label}`);
-
     const smsStatuses = ["confirmed", "shipped", "delivered", "cancelled"] as const;
     if ((smsStatuses as readonly string[]).includes(status)) {
       try {
@@ -218,9 +183,7 @@ function OrdersPage() {
         const accessToken = sessionData.session?.access_token;
         if (!accessToken) return;
         await sendOrderStatusSms({ data: { orderId, status, accessToken } });
-      } catch (e) {
-        console.error(e);
-      }
+      } catch (e) { console.error(e); }
     }
   };
 
@@ -243,8 +206,7 @@ function OrdersPage() {
   const toggle = (id: string) => {
     setSelectedIds((cur) => {
       const next = new Set(cur);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (next.has(id)) next.delete(id); else next.add(id);
       return next;
     });
   };
@@ -260,19 +222,17 @@ function OrdersPage() {
     const ids = Array.from(selectedIds);
     if (!ids.length) return;
     const { error } = await supabase.from("orders").update({ status }).in("id", ids);
-    if (error) {
-      toast.error("Bulk update failed");
-      return;
-    }
+    if (error) { toast.error("Bulk update failed"); return; }
     toast.success(`${ids.length} orders → ${STATUS_VARIANT[status].label}`);
     setOrders((cur) => cur?.map((o) => (selectedIds.has(o.id) ? { ...o, status } : o)) ?? null);
     setSelectedIds(new Set());
   };
 
   const exportCsv = () => {
-    const ids = Array.from(selectedIds);
-    if (!ids.length) return;
-    const rows = (orders ?? []).filter((o) => selectedIds.has(o.id));
+    const rows = selectedIds.size > 0
+      ? filtered.filter((o) => selectedIds.has(o.id))
+      : filtered;
+    if (!rows.length) return;
     const headers = ["ID", "Customer", "Phone", "Wilaya", "City", "Status", "Total", "Date"];
     const csvRows = rows.map((o) =>
       [
@@ -300,9 +260,10 @@ function OrdersPage() {
   };
 
   const printLabels = () => {
-    const ids = Array.from(selectedIds);
-    if (!ids.length) return;
-    const rows = (orders ?? []).filter((o) => selectedIds.has(o.id));
+    const rows = selectedIds.size > 0
+      ? filtered.filter((o) => selectedIds.has(o.id))
+      : filtered;
+    if (!rows.length) return;
     const win = window.open("", "_blank");
     if (!win) return;
     const esc = (s: unknown) =>
@@ -321,20 +282,18 @@ function OrdersPage() {
         .row{margin:4px 0;font-size:14px}
         .id{font-family:monospace;font-size:12px;color:#666}
       </style></head><body>
-      ${rows
-        .map((o) => {
-          const its = items[o.id] ?? [];
-          return `<div class="label">
-            <h2>${esc(o.customer_name)}</h2>
-            <div class="id">#${esc(o.id.slice(0, 8).toUpperCase())}</div>
-            <div class="row"><strong>Phone:</strong> ${esc(o.shipping_address)}</div>
-            <div class="row"><strong>Wilaya:</strong> ${esc(o.shipping_postal_code)}</div>
-            <div class="row"><strong>City:</strong> ${esc(o.shipping_city)}</div>
-            <div class="row"><strong>Items:</strong> ${its.map((i) => `${esc(i.product_name)} ×${esc(i.quantity)}`).join(", ")}</div>
-            <div class="row"><strong>Total:</strong> ${esc(Number(o.total).toFixed(2))} DA</div>
-          </div>`;
-        })
-        .join("")}
+      ${rows.map((o) => {
+        const its = items[o.id] ?? [];
+        return `<div class="label">
+          <h2>${esc(o.customer_name)}</h2>
+          <div class="id">#${esc(o.id.slice(0, 8).toUpperCase())}</div>
+          <div class="row"><strong>Phone:</strong> ${esc(o.shipping_address)}</div>
+          <div class="row"><strong>Wilaya:</strong> ${esc(o.shipping_postal_code)}</div>
+          <div class="row"><strong>City:</strong> ${esc(o.shipping_city)}</div>
+          <div class="row"><strong>Items:</strong> ${its.map((i) => `${esc(i.product_name)} ×${esc(i.quantity)}`).join(", ")}</div>
+          <div class="row"><strong>Total:</strong> ${esc(Number(o.total).toFixed(2))} DA</div>
+        </div>`;
+      }).join("")}
       </body></html>`;
     win.document.write(html);
     win.document.close();
@@ -359,14 +318,8 @@ function OrdersPage() {
             disabled={importingZR}
             className="gap-1.5"
           >
-            {importingZR ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <RefreshCw className="h-4 w-4" />
-            )}
-            {orders && orders.some((o) => o.source === "zrexpress")
-              ? "Sync ZRExpress orders"
-              : "Import ZRExpress orders"}
+            {importingZR ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+            {orders && orders.some((o) => o.source === "zrexpress") ? "Sync ZRExpress orders" : "Import ZRExpress orders"}
           </Button>
         </div>
       </div>
@@ -384,7 +337,8 @@ function OrdersPage() {
       ) : (
         <Card className="border-border/60 shadow-soft">
           <CardContent className="p-0">
-            <div className="p-4 border-b border-border/60 flex items-center gap-3">
+            {/* ── Toolbar ── */}
+            <div className="p-4 border-b border-border/60 flex flex-wrap items-center gap-3">
               <div className="relative flex-1 max-w-sm">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -397,7 +351,28 @@ function OrdersPage() {
               <div className="text-xs text-muted-foreground">
                 {filtered.length} of {orders.length}
               </div>
+              <div className="flex items-center gap-2 ml-auto">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={exportCsv}
+                  disabled={filtered.length === 0}
+                >
+                  <Download className="h-4 w-4 mr-1.5" />
+                  {selectedIds.size > 0 ? `Export ${selectedIds.size} selected` : "Export CSV"}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={printLabels}
+                  disabled={filtered.length === 0}
+                >
+                  <Printer className="h-4 w-4 mr-1.5" />
+                  {selectedIds.size > 0 ? `Print ${selectedIds.size} labels` : "Print Labels"}
+                </Button>
+              </div>
             </div>
+
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
@@ -427,10 +402,7 @@ function OrdersPage() {
                     return (
                       <TableRow key={o.id} data-state={selectedIds.has(o.id) ? "selected" : undefined}>
                         <TableCell>
-                          <Checkbox
-                            checked={selectedIds.has(o.id)}
-                            onCheckedChange={() => toggle(o.id)}
-                          />
+                          <Checkbox checked={selectedIds.has(o.id)} onCheckedChange={() => toggle(o.id)} />
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
@@ -442,10 +414,7 @@ function OrdersPage() {
                               {o.customer_name}
                             </Link>
                             {o.source === "zrexpress" && (
-                              <Badge
-                                variant="outline"
-                                className="bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30 text-[10px] px-1.5 py-0"
-                              >
+                              <Badge variant="outline" className="bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30 text-[10px] px-1.5 py-0">
                                 ZRExpress
                               </Badge>
                             )}
@@ -459,10 +428,7 @@ function OrdersPage() {
                           </Link>
                         </TableCell>
                         <TableCell>
-                          <a
-                            href={`tel:${o.shipping_address}`}
-                            className="inline-flex items-center gap-1.5 text-sm hover:text-primary"
-                          >
+                          <a href={`tel:${o.shipping_address}`} className="inline-flex items-center gap-1.5 text-sm hover:text-primary">
                             <Phone className="h-3.5 w-3.5 text-muted-foreground" />
                             {o.shipping_address}
                           </a>
@@ -494,8 +460,7 @@ function OrdersPage() {
                               <div className="min-w-0">
                                 <div className="text-sm font-medium line-clamp-1">{firstItem.product_name}</div>
                                 <div className="text-xs text-muted-foreground">
-                                  Qty {firstItem.quantity}
-                                  {extraCount > 0 && ` + ${extraCount} more`}
+                                  Qty {firstItem.quantity}{extraCount > 0 && ` + ${extraCount} more`}
                                 </div>
                               </div>
                             </div>
@@ -512,20 +477,14 @@ function OrdersPage() {
                             </SelectTrigger>
                             <SelectContent align="end">
                               {STATUS_FLOW.map((s) => (
-                                <SelectItem key={s} value={s}>
-                                  {STATUS_VARIANT[s].label}
-                                </SelectItem>
+                                <SelectItem key={s} value={s}>{STATUS_VARIANT[s].label}</SelectItem>
                               ))}
                               <SelectItem value="cancelled">Cancelled</SelectItem>
                             </SelectContent>
                           </Select>
                         </TableCell>
                         <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
-                          {new Date(o.created_at).toLocaleDateString(undefined, {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                          })}
+                          {new Date(o.created_at).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })}
                         </TableCell>
                         <TableCell className="text-right font-semibold whitespace-nowrap">
                           {Number(o.total).toFixed(2)} DA
@@ -533,36 +492,22 @@ function OrdersPage() {
                         <TableCell className="text-right whitespace-nowrap">
                           {(() => {
                             const ship = shipments[o.id];
-                            const hasTracking =
-                              ship && ship.tracking_number && ship.tracking_number.trim() !== "";
+                            const hasTracking = ship && ship.tracking_number && ship.tracking_number.trim() !== "";
                             const hasError = ship && ship.last_error;
                             if (hasTracking) {
                               return (
                                 <div className="inline-flex flex-col items-end gap-0.5">
                                   <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
-                                    <CheckCircle2 className="h-3.5 w-3.5" />
-                                    {ship.status}
+                                    <CheckCircle2 className="h-3.5 w-3.5" />{ship.status}
                                   </span>
-                                  <span className="text-[11px] font-mono text-muted-foreground">
-                                    {ship.tracking_number}
-                                  </span>
+                                  <span className="text-[11px] font-mono text-muted-foreground">{ship.tracking_number}</span>
                                 </div>
                               );
                             }
                             return (
                               <div className="inline-flex flex-col items-end gap-1">
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => sendToProvider(o.id)}
-                                  disabled={pushingId === o.id}
-                                  className="h-8"
-                                >
-                                  {pushingId === o.id ? (
-                                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                  ) : (
-                                    <Send className="h-3.5 w-3.5" />
-                                  )}
+                                <Button size="sm" variant="outline" onClick={() => sendToProvider(o.id)} disabled={pushingId === o.id} className="h-8">
+                                  {pushingId === o.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
                                   Send to ZRExpress
                                 </Button>
                                 {hasError && (
@@ -574,16 +519,13 @@ function OrdersPage() {
                                           <span className="truncate">{ship.last_error}</span>
                                         </span>
                                       </TooltipTrigger>
-                                      <TooltipContent className="max-w-sm">
-                                        {ship.last_error}
-                                      </TooltipContent>
+                                      <TooltipContent className="max-w-sm">{ship.last_error}</TooltipContent>
                                     </Tooltip>
                                   </TooltipProvider>
                                 )}
                               </div>
                             );
                           })()}
-
                         </TableCell>
                       </TableRow>
                     );
@@ -604,19 +546,11 @@ function OrdersPage() {
             </SelectTrigger>
             <SelectContent>
               {STATUS_FLOW.map((s) => (
-                <SelectItem key={s} value={s}>
-                  {STATUS_VARIANT[s].label}
-                </SelectItem>
+                <SelectItem key={s} value={s}>{STATUS_VARIANT[s].label}</SelectItem>
               ))}
               <SelectItem value="cancelled">Cancelled</SelectItem>
             </SelectContent>
           </Select>
-          <Button size="sm" variant="outline" onClick={exportCsv}>
-            <Download className="h-4 w-4 mr-1" /> CSV
-          </Button>
-          <Button size="sm" variant="outline" onClick={printLabels}>
-            <Printer className="h-4 w-4 mr-1" /> Labels
-          </Button>
           <Button size="sm" variant="ghost" onClick={() => setSelectedIds(new Set())}>
             <X className="h-4 w-4" />
           </Button>
