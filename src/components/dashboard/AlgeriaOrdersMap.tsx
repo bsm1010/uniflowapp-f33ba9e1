@@ -12,7 +12,7 @@ const normalize = (value: string) =>
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[’'`]/g, "")
+    .replace(/[''`]/g, "")
     .replace(/[^a-z0-9]/g, "");
 
 const codeToName = new Map(ALGERIA_GEO.map((w) => [String(w.code).padStart(2, "0"), w.wilaya]));
@@ -23,8 +23,8 @@ for (const entry of ALGERIA_GEO) {
 }
 cityToName.set("alger", "Algiers");
 cityToName.set("algiers", "Algiers");
-cityToName.set("msila", "M’Sila");
-cityToName.set("m sila", "M’Sila");
+cityToName.set("msila", "M'Sila");
+cityToName.set("m sila", "M'Sila");
 
 function resolveWilaya(city?: string | null, postal?: string | null) {
   const byCity = city ? cityToName.get(normalize(city)) : null;
@@ -38,7 +38,7 @@ function heatColor(count: number, max: number) {
   if (!count) return "color-mix(in oklch, var(--muted) 62%, var(--background))";
   const t = count / Math.max(max, 1);
   if (t < 0.25) return "oklch(0.82 0.12 170)";
-  if (t < 0.5) return "oklch(0.74 0.16 145)";
+  if (t < 0.5)  return "oklch(0.74 0.16 145)";
   if (t < 0.75) return "oklch(0.66 0.19 80)";
   return "oklch(0.58 0.22 35)";
 }
@@ -77,11 +77,18 @@ export function AlgeriaOrdersMap() {
     };
 
     void load();
+
+    // ── Live updates: re-fetch on any INSERT ──────────────────────────────────
     const channel = supabase
       .channel(`algeria-map-orders-${currentStore.id}`)
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "orders", filter: `store_id=eq.${currentStore.id}` },
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "orders",
+          filter: `store_id=eq.${currentStore.id}`,
+        },
         () => void load(),
       )
       .subscribe();
@@ -93,11 +100,15 @@ export function AlgeriaOrdersMap() {
   }, [currentStore?.id]);
 
   const max = Math.max(1, ...Object.values(ordersByWilaya));
-  const totalOrders = Object.values(ordersByWilaya).reduce((sum, count) => sum + count, 0);
+  const totalOrders = Object.values(ordersByWilaya).reduce((sum, c) => sum + c, 0);
+
   const topWilayas = useMemo(
     () =>
-      ALGERIA_WILAYA_SHAPES.map((shape) => ({ ...shape, count: ordersByWilaya[shape.name] ?? 0 }))
-        .filter((shape) => shape.count > 0)
+      ALGERIA_WILAYA_SHAPES.map((shape) => ({
+        ...shape,
+        count: ordersByWilaya[shape.name] ?? 0,
+      }))
+        .filter((s) => s.count > 0)
         .sort((a, b) => b.count - a.count)
         .slice(0, 5),
     [ordersByWilaya],
@@ -105,6 +116,7 @@ export function AlgeriaOrdersMap() {
 
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-card shadow-soft">
+      {/* ── Header ── */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 px-6 py-5">
         <div>
           <h3 className="text-lg font-semibold tracking-tight">Orders by Wilaya</h3>
@@ -120,9 +132,12 @@ export function AlgeriaOrdersMap() {
       </div>
 
       <div className="grid gap-0 lg:grid-cols-[minmax(0,1fr)_280px]">
+        {/* ── Map ── */}
         <div className="relative min-h-[460px] bg-muted/20 p-4 md:p-6">
           {loading ? (
-            <div className="flex h-[460px] items-center justify-center text-sm text-muted-foreground">Loading map…</div>
+            <div className="flex h-[460px] items-center justify-center text-sm text-muted-foreground">
+              Loading map…
+            </div>
           ) : (
             <div className="relative mx-auto max-w-4xl">
               <svg
@@ -136,10 +151,12 @@ export function AlgeriaOrdersMap() {
                     <feDropShadow dx="0" dy="8" stdDeviation="10" floodColor="currentColor" floodOpacity="0.12" />
                   </filter>
                 </defs>
+
                 <g filter="url(#wilayaShadow)">
                   {ALGERIA_WILAYA_SHAPES.map((shape, index) => {
                     const count = ordersByWilaya[shape.name] ?? 0;
                     const isSelected = selected === shape.name;
+
                     return (
                       <motion.path
                         key={`${shape.code}-${shape.name}`}
@@ -148,14 +165,20 @@ export function AlgeriaOrdersMap() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.006, duration: 0.25 }}
                         fill={heatColor(count, max)}
-                        stroke={isSelected ? "var(--foreground)" : "var(--card)"}
-                        strokeWidth={isSelected ? 4 : 1.4}
+                        // ── FIX: always-visible border that works in light + dark ──
+                        stroke={isSelected ? "var(--foreground)" : "rgba(100,100,100,0.45)"}
+                        strokeWidth={isSelected ? 2.5 : 0.8}
                         className="cursor-pointer transition-[filter,opacity] hover:brightness-105"
                         onClick={() => setSelected((cur) => (cur === shape.name ? null : shape.name))}
                         onMouseMove={(event) => {
                           const rect = event.currentTarget.ownerSVGElement?.getBoundingClientRect();
                           if (!rect) return;
-                          setTooltip({ name: shape.name, count, x: event.clientX - rect.left, y: event.clientY - rect.top });
+                          setTooltip({
+                            name: shape.name,
+                            count,
+                            x: event.clientX - rect.left,
+                            y: event.clientY - rect.top,
+                          });
                         }}
                         onMouseLeave={() => setTooltip(null)}
                       />
@@ -164,6 +187,7 @@ export function AlgeriaOrdersMap() {
                 </g>
               </svg>
 
+              {/* ── Tooltip ── */}
               <AnimatePresence>
                 {tooltip && (
                   <motion.div
@@ -171,10 +195,15 @@ export function AlgeriaOrdersMap() {
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.96, y: 4 }}
                     className="pointer-events-none absolute z-10 rounded-lg border border-border bg-popover px-3 py-2 text-sm shadow-lg"
-                    style={{ left: Math.min(tooltip.x + 14, 760), top: Math.max(tooltip.y - 48, 8) }}
+                    style={{
+                      left: Math.min(tooltip.x + 14, 760),
+                      top: Math.max(tooltip.y - 48, 8),
+                    }}
                   >
                     <div className="font-semibold text-popover-foreground">{tooltip.name}</div>
-                    <div className="text-xs text-muted-foreground">{tooltip.count} {tooltip.count === 1 ? "order" : "orders"}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {tooltip.count} {tooltip.count === 1 ? "order" : "orders"}
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -182,28 +211,40 @@ export function AlgeriaOrdersMap() {
           )}
         </div>
 
+        {/* ── Sidebar ── */}
         <aside className="border-t border-border/60 p-5 lg:border-l lg:border-t-0">
           <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Top Wilayas</h4>
+
           <div className="mt-4 space-y-3">
-            {topWilayas.length ? topWilayas.map((wilaya, index) => (
-              <button
-                key={wilaya.name}
-                type="button"
-                onClick={() => setSelected(wilaya.name)}
-                className="w-full rounded-lg border border-border bg-background p-3 text-left transition-colors hover:bg-accent"
-              >
-                <div className="flex items-center justify-between gap-3 text-sm">
-                  <span className="font-medium">{index + 1}. {wilaya.name}</span>
-                  <span className="font-bold text-foreground">{wilaya.count}</span>
-                </div>
-                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted">
-                  <div className="h-full rounded-full bg-primary" style={{ width: `${(wilaya.count / max) * 100}%` }} />
-                </div>
-              </button>
-            )) : (
-              <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">No orders have a recognized wilaya yet.</p>
+            {topWilayas.length ? (
+              topWilayas.map((wilaya, index) => (
+                <button
+                  key={wilaya.name}
+                  type="button"
+                  onClick={() => setSelected(wilaya.name)}
+                  className="w-full rounded-lg border border-border bg-background p-3 text-left transition-colors hover:bg-accent"
+                >
+                  <div className="flex items-center justify-between gap-3 text-sm">
+                    <span className="font-medium">
+                      {index + 1}. {wilaya.name}
+                    </span>
+                    <span className="font-bold text-foreground">{wilaya.count}</span>
+                  </div>
+                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="h-full rounded-full bg-primary"
+                      style={{ width: `${(wilaya.count / max) * 100}%` }}
+                    />
+                  </div>
+                </button>
+              ))
+            ) : (
+              <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
+                No orders have a recognized wilaya yet.
+              </p>
             )}
           </div>
+
           {selected && (
             <div className="mt-4 rounded-lg bg-accent p-3 text-sm">
               <span className="font-semibold">{selected}</span>
