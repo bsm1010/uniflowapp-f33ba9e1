@@ -25,37 +25,18 @@ interface Notification {
 
 // ── Derive a navigation link from notification content ───────────
 function resolveLink(n: Notification): string | null {
-  // If the notification already has a link field, use it
   if (n.link) return n.link;
 
   const msg = (n.message ?? "").toLowerCase();
   const title = (n.title ?? "").toLowerCase();
 
-  // Order notifications → extract order id and go to orders page
-  const orderMatch = n.message?.match(/#([A-Z0-9]{6,})/);
-  if (orderMatch || msg.includes("order") || title.includes("order")) {
-    return "/orders";
-  }
-
-  // Customer notifications
-  if (msg.includes("customer") || title.includes("customer")) {
-    return "/customers";
-  }
-
-  // Shipment notifications
-  if (msg.includes("shipment") || msg.includes("shipping") || title.includes("shipment")) {
-    return "/shipments";
-  }
-
-  // Product / stock notifications
-  if (msg.includes("product") || msg.includes("stock") || title.includes("stock")) {
-    return "/products";
-  }
-
-  // Payment notifications
-  if (msg.includes("payment") || title.includes("payment")) {
-    return "/payments";
-  }
+  if (msg.includes("order") || title.includes("order")) return "/dashboard/orders";
+  if (msg.includes("customer") || title.includes("customer")) return "/dashboard/customers";
+  if (msg.includes("shipment") || msg.includes("shipping") || title.includes("shipment")) return "/dashboard/shipments";
+  if (msg.includes("stock alert") || title.includes("stock alert")) return "/dashboard/stock-alerts";
+  if (msg.includes("product") || msg.includes("stock") || title.includes("stock")) return "/dashboard/products";
+  if (msg.includes("payment") || title.includes("payment")) return "/dashboard/payments";
+  if (msg.includes("return") || title.includes("return")) return "/dashboard/returns";
 
   return null;
 }
@@ -89,8 +70,7 @@ function playRing() {
 async function sendBrowserNotification(title: string, body: string, type: string) {
   if (!("Notification" in window)) return;
   if (Notification.permission === "granted") {
-    const icon =
-      type === "success" ? "✅" : type === "error" ? "❌" : "🔔";
+    const icon = type === "success" ? "✅" : type === "error" ? "❌" : "🔔";
     new Notification(`${icon} ${title}`, {
       body,
       icon: "https://gyfcaoscsjazazhfozig.supabase.co/storage/v1/object/public/store-assets/email/fennecly-logo-white.png",
@@ -132,7 +112,6 @@ export function NotificationsBell() {
     setItems(data ?? []);
   };
 
-  // Ask for permission after 3 seconds if not yet decided
   useEffect(() => {
     if (permission === "default") {
       const timer = setTimeout(() => setShowPermissionBanner(true), 3000);
@@ -167,11 +146,9 @@ export function NotificationsBell() {
           sendBrowserNotification(n.title, n.message, n.type);
 
           const fn =
-            n.type === "success"
-              ? toast.success
-              : n.type === "error"
-                ? toast.error
-                : toast.info;
+            n.type === "success" ? toast.success
+            : n.type === "error" ? toast.error
+            : toast.info;
           fn(n.title, { description: n.message });
         },
       )
@@ -195,7 +172,6 @@ export function NotificationsBell() {
     await supabase.from("notifications").update({ read: true }).eq("id", id);
   };
 
-  // ── Click a notification: mark read + navigate ───────────────
   const handleClick = async (n: Notification) => {
     await markRead(n.id);
     const link = resolveLink(n);
@@ -298,7 +274,6 @@ export function NotificationsBell() {
             </div>
           </div>
 
-          {/* Permission denied warning */}
           {permission === "denied" && (
             <div className="px-4 py-2 bg-amber-50 dark:bg-amber-950/30 border-b border-amber-200 dark:border-amber-800">
               <p className="text-xs text-amber-700 dark:text-amber-400">
@@ -321,20 +296,16 @@ export function NotificationsBell() {
                     <li
                       key={n.id}
                       className={`px-4 py-3 transition-colors ${
-                        link
-                          ? "cursor-pointer hover:bg-muted/50"
-                          : "cursor-default hover:bg-muted/30"
+                        link ? "cursor-pointer hover:bg-muted/50" : "cursor-default hover:bg-muted/30"
                       } ${!n.read ? "bg-primary/5" : ""}`}
                       onClick={() => handleClick(n)}
                     >
                       <div className="flex items-start gap-2">
                         <span
                           className={`mt-1.5 size-2 rounded-full shrink-0 ${
-                            n.type === "success"
-                              ? "bg-green-500"
-                              : n.type === "error"
-                                ? "bg-destructive"
-                                : "bg-primary"
+                            n.type === "success" ? "bg-green-500"
+                            : n.type === "error" ? "bg-destructive"
+                            : "bg-primary"
                           } ${n.read ? "opacity-30" : ""}`}
                         />
                         <div className="flex-1 min-w-0">
@@ -342,18 +313,14 @@ export function NotificationsBell() {
                             <p className="text-sm font-medium truncate">{n.title}</p>
                             <div className="flex items-center gap-1 shrink-0">
                               {link && (
-                                <span className="text-[10px] text-primary font-medium">
-                                  →
-                                </span>
+                                <span className="text-[10px] text-primary font-medium">→</span>
                               )}
                               {n.read && (
                                 <Check className="h-3 w-3 text-muted-foreground" />
                               )}
                             </div>
                           </div>
-                          <p className="text-xs text-muted-foreground mt-0.5">
-                            {n.message}
-                          </p>
+                          <p className="text-xs text-muted-foreground mt-0.5">{n.message}</p>
                           <p className="text-[10px] text-muted-foreground mt-1">
                             {new Date(n.created_at).toLocaleString()}
                           </p>
