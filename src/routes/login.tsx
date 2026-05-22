@@ -60,7 +60,7 @@ function LoginPage() {
       setFormError(error.message);
       return;
     }
-    navigate({ to: "/dashboard" });
+    navigate({ to: "/select-store" });
   };
 
   return (
