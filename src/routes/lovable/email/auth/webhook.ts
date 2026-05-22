@@ -139,6 +139,7 @@ export const Route = createFileRoute("/lovable/email/auth/webhook")({
           confirmationUrl: payload.data.url,
           token: payload.data.token,
           email: payload.data.email,
+          oldEmail: payload.data.old_email,
           newEmail: payload.data.new_email,
         }
 
