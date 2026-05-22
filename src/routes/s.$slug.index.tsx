@@ -160,11 +160,20 @@ function StorefrontHome() {
   const labels = getButtonLabels(settings);
   const titles = getSectionTitles(settings);
   const template = settings.theme;
+  const heroLayout = settings.hero_layout;
+  const isBold = template === "bold";
+  const isMinimal = template === "minimal";
+  const isGrid = template === "grid";
   const currency = settings.currency || "USD";
 
   const featured = products.slice(0, 8);
 
-  const gridClass = "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-7";
+  const gridClass =
+  template === "grid"
+    ? "grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4"
+    : template === "minimal"
+      ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10"
+      : "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8";
 
   const handleQuickAdd = (p: Product) => {
     cart.add({
@@ -198,7 +207,15 @@ function StorefrontHome() {
                 <Grid3X3 className="h-3 w-3" />
                 {tr("storefront.home.browse", { defaultValue: "Browse" })}
               </div>
-              <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">
+              <h2
+  className={`tracking-tight ${
+    isMinimal
+      ? "text-4xl md:text-5xl font-light"
+      : isBold
+        ? "text-3xl md:text-5xl font-black uppercase"
+        : "text-3xl md:text-4xl font-extrabold"
+  }`}
+>
                 {titles.categories}
               </h2>
               <p className="mt-2 text-base" style={{ color: t.muted }}>
@@ -365,6 +382,15 @@ function StorefrontHome() {
 
   return (
     <StorefrontShell settings={settings}>
+  <div
+    className={
+      isBold
+        ? "bg-black text-white"
+        : isMinimal
+          ? "bg-white"
+          : "bg-background"
+    }
+  >
       {sectionOrder.map((key) => sectionRenderers[key]())}
 
       {/* All products */}
@@ -475,20 +501,24 @@ function StorefrontHome() {
         ) : (
           <div className={`grid ${gridClass}`}>
             {filtered.map((p) => (
-              <ProductCard
-                key={p.id}
-                product={p}
-                slug={slug}
-                tokens={t}
-                template={template}
-                currency={currency}
-                addLabel={labels.add_to_cart}
-                onAdd={handleQuickAdd}
-              />
+       <ProductCard
+  key={p.id}
+  product={p}
+  slug={slug}
+  tokens={t}
+  template={template}
+  currency={currency}
+  addLabel={labels.add_to_cart}
+  onAdd={handleQuickAdd}
+  compact={template === "grid"}
+  minimal={template === "minimal"}
+  bold={template === "bold"}
+/>
             ))}
           </div>
         )}
       </section>
+    </div>
     </StorefrontShell>
   );
 }
