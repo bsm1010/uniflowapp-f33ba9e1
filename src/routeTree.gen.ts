@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ThemesRouteImport } from './routes/themes'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as SelectStoreRouteImport } from './routes/select-store'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IphoneGuideRouteImport } from './routes/iphone-guide'
@@ -50,6 +51,7 @@ import { Route as DashboardAnalyticsRouteImport } from './routes/dashboard.analy
 import { Route as DashboardAiAgentRouteImport } from './routes/dashboard.ai-agent'
 import { Route as DashboardAboutRouteImport } from './routes/dashboard.about'
 import { Route as SSlugIndexRouteImport } from './routes/s.$slug.index'
+import { Route as DashboardNotificationsIndexRouteImport } from './routes/dashboard.notifications.index'
 import { Route as DashboardAppsIndexRouteImport } from './routes/dashboard.apps.index'
 import { Route as SSlugTrackRouteImport } from './routes/s.$slug.track'
 import { Route as SSlugContactRouteImport } from './routes/s.$slug.contact'
@@ -97,6 +99,11 @@ const ThemesRoute = ThemesRouteImport.update({
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SelectStoreRoute = SelectStoreRouteImport.update({
+  id: '/select-store',
+  path: '/select-store',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -295,6 +302,12 @@ const SSlugIndexRoute = SSlugIndexRouteImport.update({
   path: '/s/$slug/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardNotificationsIndexRoute =
+  DashboardNotificationsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => DashboardNotificationsRoute,
+  } as any)
 const DashboardAppsIndexRoute = DashboardAppsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -514,6 +527,7 @@ export interface FileRoutesByFullPath {
   '/iphone-guide': typeof IphoneGuideRoute
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/select-store': typeof SelectStoreRoute
   '/signup': typeof SignupRoute
   '/themes': typeof ThemesRoute
   '/dashboard/about': typeof DashboardAboutRoute
@@ -571,6 +585,7 @@ export interface FileRoutesByFullPath {
   '/s/$slug/contact': typeof SSlugContactRoute
   '/s/$slug/track': typeof SSlugTrackRoute
   '/dashboard/apps/': typeof DashboardAppsIndexRoute
+  '/dashboard/notifications/': typeof DashboardNotificationsIndexRoute
   '/s/$slug/': typeof SSlugIndexRoute
   '/api/db/$tableId/$recordId': typeof ApiDbTableIdRecordIdRoute
   '/api/public/hooks/instagram': typeof ApiPublicHooksInstagramRoute
@@ -594,6 +609,7 @@ export interface FileRoutesByTo {
   '/iphone-guide': typeof IphoneGuideRoute
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/select-store': typeof SelectStoreRoute
   '/signup': typeof SignupRoute
   '/themes': typeof ThemesRoute
   '/dashboard/about': typeof DashboardAboutRoute
@@ -609,7 +625,6 @@ export interface FileRoutesByTo {
   '/dashboard/developer': typeof DashboardDeveloperRoute
   '/dashboard/domains': typeof DashboardDomainsRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
-  '/dashboard/notifications': typeof DashboardNotificationsRouteWithChildren
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/referrals': typeof DashboardReferralsRoute
@@ -650,6 +665,7 @@ export interface FileRoutesByTo {
   '/s/$slug/contact': typeof SSlugContactRoute
   '/s/$slug/track': typeof SSlugTrackRoute
   '/dashboard/apps': typeof DashboardAppsIndexRoute
+  '/dashboard/notifications': typeof DashboardNotificationsIndexRoute
   '/s/$slug': typeof SSlugIndexRoute
   '/api/db/$tableId/$recordId': typeof ApiDbTableIdRecordIdRoute
   '/api/public/hooks/instagram': typeof ApiPublicHooksInstagramRoute
@@ -675,6 +691,7 @@ export interface FileRoutesById {
   '/iphone-guide': typeof IphoneGuideRoute
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/select-store': typeof SelectStoreRoute
   '/signup': typeof SignupRoute
   '/themes': typeof ThemesRoute
   '/dashboard/about': typeof DashboardAboutRoute
@@ -732,6 +749,7 @@ export interface FileRoutesById {
   '/s/$slug/contact': typeof SSlugContactRoute
   '/s/$slug/track': typeof SSlugTrackRoute
   '/dashboard/apps/': typeof DashboardAppsIndexRoute
+  '/dashboard/notifications/': typeof DashboardNotificationsIndexRoute
   '/s/$slug/': typeof SSlugIndexRoute
   '/api/db/$tableId/$recordId': typeof ApiDbTableIdRecordIdRoute
   '/api/public/hooks/instagram': typeof ApiPublicHooksInstagramRoute
@@ -758,6 +776,7 @@ export interface FileRouteTypes {
     | '/iphone-guide'
     | '/login'
     | '/reset-password'
+    | '/select-store'
     | '/signup'
     | '/themes'
     | '/dashboard/about'
@@ -815,6 +834,7 @@ export interface FileRouteTypes {
     | '/s/$slug/contact'
     | '/s/$slug/track'
     | '/dashboard/apps/'
+    | '/dashboard/notifications/'
     | '/s/$slug/'
     | '/api/db/$tableId/$recordId'
     | '/api/public/hooks/instagram'
@@ -838,6 +858,7 @@ export interface FileRouteTypes {
     | '/iphone-guide'
     | '/login'
     | '/reset-password'
+    | '/select-store'
     | '/signup'
     | '/themes'
     | '/dashboard/about'
@@ -853,7 +874,6 @@ export interface FileRouteTypes {
     | '/dashboard/developer'
     | '/dashboard/domains'
     | '/dashboard/landing-generator'
-    | '/dashboard/notifications'
     | '/dashboard/orders'
     | '/dashboard/products'
     | '/dashboard/referrals'
@@ -894,6 +914,7 @@ export interface FileRouteTypes {
     | '/s/$slug/contact'
     | '/s/$slug/track'
     | '/dashboard/apps'
+    | '/dashboard/notifications'
     | '/s/$slug'
     | '/api/db/$tableId/$recordId'
     | '/api/public/hooks/instagram'
@@ -918,6 +939,7 @@ export interface FileRouteTypes {
     | '/iphone-guide'
     | '/login'
     | '/reset-password'
+    | '/select-store'
     | '/signup'
     | '/themes'
     | '/dashboard/about'
@@ -975,6 +997,7 @@ export interface FileRouteTypes {
     | '/s/$slug/contact'
     | '/s/$slug/track'
     | '/dashboard/apps/'
+    | '/dashboard/notifications/'
     | '/s/$slug/'
     | '/api/db/$tableId/$recordId'
     | '/api/public/hooks/instagram'
@@ -1000,6 +1023,7 @@ export interface RootRouteChildren {
   IphoneGuideRoute: typeof IphoneGuideRoute
   LoginRoute: typeof LoginRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SelectStoreRoute: typeof SelectStoreRoute
   SignupRoute: typeof SignupRoute
   ThemesRoute: typeof ThemesRoute
   ApiDbTableIdRoute: typeof ApiDbTableIdRouteWithChildren
@@ -1033,6 +1057,13 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/select-store': {
+      id: '/select-store'
+      path: '/select-store'
+      fullPath: '/select-store'
+      preLoaderRoute: typeof SelectStoreRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -1307,6 +1338,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/s/$slug/'
       preLoaderRoute: typeof SSlugIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/notifications/': {
+      id: '/dashboard/notifications/'
+      path: '/'
+      fullPath: '/dashboard/notifications/'
+      preLoaderRoute: typeof DashboardNotificationsIndexRouteImport
+      parentRoute: typeof DashboardNotificationsRoute
     }
     '/dashboard/apps/': {
       id: '/dashboard/apps/'
@@ -1623,11 +1661,13 @@ const DashboardAppsRouteWithChildren = DashboardAppsRoute._addFileChildren(
 
 interface DashboardNotificationsRouteChildren {
   DashboardNotificationsSettingsRoute: typeof DashboardNotificationsSettingsRoute
+  DashboardNotificationsIndexRoute: typeof DashboardNotificationsIndexRoute
 }
 
 const DashboardNotificationsRouteChildren: DashboardNotificationsRouteChildren =
   {
     DashboardNotificationsSettingsRoute: DashboardNotificationsSettingsRoute,
+    DashboardNotificationsIndexRoute: DashboardNotificationsIndexRoute,
   }
 
 const DashboardNotificationsRouteWithChildren =
@@ -1746,6 +1786,7 @@ const rootRouteChildren: RootRouteChildren = {
   IphoneGuideRoute: IphoneGuideRoute,
   LoginRoute: LoginRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SelectStoreRoute: SelectStoreRoute,
   SignupRoute: SignupRoute,
   ThemesRoute: ThemesRoute,
   ApiDbTableIdRoute: ApiDbTableIdRouteWithChildren,
@@ -1768,3 +1809,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
