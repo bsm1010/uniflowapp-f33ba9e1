@@ -209,25 +209,33 @@ function DashboardHome() {
       label: t("dashboard.home.stats.products"),
       value: counts.products.toString(),
       icon: Package,
-      accent: "from-violet-500/15 to-violet-500/5",
+      accent: "from-violet-500/40 to-violet-500/15",
+      iconColor: "text-violet-600 dark:text-violet-400",
+      borderColor: "border-violet-500/30",
     },
     {
       label: t("dashboard.home.stats.orders"),
       value: counts.orders.toString(),
       icon: ShoppingBag,
-      accent: "from-fuchsia-500/15 to-fuchsia-500/5",
+      accent: "from-fuchsia-500/40 to-fuchsia-500/15",
+      iconColor: "text-fuchsia-600 dark:text-fuchsia-400",
+      borderColor: "border-fuchsia-500/30",
     },
     {
       label: t("dashboard.home.stats.revenue"),
       value: `$${counts.revenue.toFixed(2)}`,
       icon: DollarSign,
-      accent: "from-emerald-500/15 to-emerald-500/5",
+      accent: "from-emerald-500/40 to-emerald-500/15",
+      iconColor: "text-emerald-600 dark:text-emerald-400",
+      borderColor: "border-emerald-500/30",
     },
     {
       label: t("dashboard.home.stats.customers"),
       value: counts.customers.toString(),
       icon: Users,
-      accent: "from-sky-500/15 to-sky-500/5",
+      accent: "from-sky-500/40 to-sky-500/15",
+      iconColor: "text-sky-600 dark:text-sky-400",
+      borderColor: "border-sky-500/30",
     },
   ];
 
@@ -282,7 +290,7 @@ function DashboardHome() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.05 * i }}
           >
-            <Card className="relative overflow-hidden border-border/60 shadow-soft hover:shadow-glow/20 transition-shadow">
+            <Card className={`relative overflow-hidden ${s.borderColor} shadow-soft hover:shadow-glow/20 transition-shadow`}>
               <div
                 className={`absolute inset-0 bg-gradient-to-br ${s.accent} pointer-events-none`}
               />
@@ -292,7 +300,7 @@ function DashboardHome() {
                     {s.label}
                   </span>
                   <div className="h-9 w-9 rounded-xl bg-background/80 backdrop-blur flex items-center justify-center border border-border/60">
-                    <s.icon className="h-4 w-4 text-foreground" />
+                    <s.icon className={`h-4 w-4 ${s.iconColor}`} />
                   </div>
                 </div>
                 <div className="mt-4">
