@@ -1,1 +1,5 @@
 project_id = "gyfcaoscsjazazhfozig"
+
+[auth.hook.send_email]
+enabled = true
+uri = "https://gyfcaoscsjazazhfozig.supabase.co/functions/v1/send-confirmation-email"
