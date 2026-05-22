@@ -19,7 +19,6 @@ import {
 import { useCart } from "@/hooks/use-cart";
 import { fetchSettings, getCachedSettings, setCachedSettings } from "@/lib/storefrontCache";
 
-
 type Product = Pick<
   Tables<"products">,
   "id" | "name" | "price" | "images" | "category" | "stock"
@@ -33,8 +32,40 @@ export const Route = createFileRoute("/s/$slug/")({
   }),
 });
 
-
 type SortKey = "newest" | "price-asc" | "price-desc" | "name";
+
+// ── TikTok Pixel injection ────────────────────────────────────────
+function TikTokPixel({ pixelId }: { pixelId: string }) {
+  useEffect(() => {
+    if (!pixelId) return;
+    // Avoid duplicate injection
+    if (document.getElementById("tt-pixel")) return;
+
+    const script = document.createElement("script");
+    script.id = "tt-pixel";
+    script.innerHTML = `
+      !function (w, d, t) {
+        w.TiktokAnalyticsObject=t;
+        var ttq=w[t]=w[t]||[];
+        ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"];
+        ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};
+        for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);
+        ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e};
+        ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{};ttq._i[e]=[];ttq._i[e]._u=i;ttq._t=ttq._t||{};ttq._t[e]=+new Date;ttq._o=ttq._o||{};ttq._o[e]=n||{};var o=document.createElement("script");o.type="text/javascript";o.async=!0;o.src=i+"?sdkid="+e+"&lib="+t;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};
+        ttq.load('${pixelId}');
+        ttq.page();
+      }(window, document, 'ttq');
+    `;
+    document.head.appendChild(script);
+
+    return () => {
+      const el = document.getElementById("tt-pixel");
+      if (el) el.remove();
+    };
+  }, [pixelId]);
+
+  return null;
+}
 
 function StorefrontHome() {
   const { slug } = Route.useParams();
@@ -45,9 +76,9 @@ function StorefrontHome() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(!initialSettings);
   const [notFound, setNotFound] = useState(false);
+  const [tiktokPixelId, setTiktokPixelId] = useState<string>("");
   const cart = useCart(slug);
 
-  // Browsing state
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const [sort, setSort] = useState<SortKey>("newest");
@@ -65,6 +96,8 @@ function StorefrontHome() {
       }
       setSettings(s);
       setCachedSettings(slug, s);
+
+      // Fetch products
       const { data: p } = await supabase
         .from("products")
         .select("id,name,price,images,category,stock")
@@ -72,6 +105,17 @@ function StorefrontHome() {
         .order("created_at", { ascending: false });
       if (!active) return;
       setProducts(p ?? []);
+
+      // ── Fetch TikTok Pixel ID from stores table ──
+      const { data: storeRow } = await supabase
+        .from("stores")
+        .select("tiktok_pixel_id")
+        .eq("slug", slug)
+        .maybeSingle();
+      if (active && storeRow?.tiktok_pixel_id) {
+        setTiktokPixelId(storeRow.tiktok_pixel_id);
+      }
+
       setLoading(false);
 
       channel = supabase
@@ -160,20 +204,17 @@ function StorefrontHome() {
   const labels = getButtonLabels(settings);
   const titles = getSectionTitles(settings);
   const template = settings.theme;
-  const heroLayout = settings.hero_layout;
   const isBold = template === "bold";
   const isMinimal = template === "minimal";
-  const isGrid = template === "grid";
   const currency = settings.currency || "USD";
-
   const featured = products.slice(0, 8);
 
   const gridClass =
-  template === "grid"
-    ? "grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4"
-    : template === "minimal"
-      ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10"
-      : "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8";
+    template === "grid"
+      ? "grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4"
+      : template === "minimal"
+        ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10"
+        : "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8";
 
   const handleQuickAdd = (p: Product) => {
     cart.add({
@@ -208,14 +249,14 @@ function StorefrontHome() {
                 {tr("storefront.home.browse", { defaultValue: "Browse" })}
               </div>
               <h2
-  className={`tracking-tight ${
-    isMinimal
-      ? "text-4xl md:text-5xl font-light"
-      : isBold
-        ? "text-3xl md:text-5xl font-black uppercase"
-        : "text-3xl md:text-4xl font-extrabold"
-  }`}
->
+                className={`tracking-tight ${
+                  isMinimal
+                    ? "text-4xl md:text-5xl font-light"
+                    : isBold
+                      ? "text-3xl md:text-5xl font-black uppercase"
+                      : "text-3xl md:text-4xl font-extrabold"
+                }`}
+              >
                 {titles.categories}
               </h2>
               <p className="mt-2 text-base" style={{ color: t.muted }}>
@@ -243,11 +284,7 @@ function StorefrontHome() {
                 >
                   {productInCat?.images[0] && (
                     <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-500">
-                      <img
-                        src={productInCat.images[0]}
-                        alt=""
-                        className="h-full w-full object-cover"
-                      />
+                      <img src={productInCat.images[0]} alt="" className="h-full w-full object-cover" />
                     </div>
                   )}
                   <span className="relative text-base font-bold">{c}</span>
@@ -323,7 +360,6 @@ function StorefrontHome() {
             backgroundColor: t.isDark ? "rgba(255,255,255,0.02)" : "rgba(15,23,42,0.02)",
           }}
         >
-          {/* Decorative */}
           <div
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] opacity-[0.06] pointer-events-none rounded-full"
             style={{ background: `radial-gradient(circle, ${t.primary}, transparent 70%)` }}
@@ -382,68 +418,83 @@ function StorefrontHome() {
 
   return (
     <StorefrontShell settings={settings}>
-  <div
-    className={
-      isBold
-        ? "bg-black text-white"
-        : isMinimal
-          ? "bg-white"
-          : "bg-background"
-    }
-  >
-      {sectionOrder.map((key) => sectionRenderers[key]())}
+      {/* ── TikTok Pixel (injected if seller has set a pixel ID) ── */}
+      {tiktokPixelId && <TikTokPixel pixelId={tiktokPixelId} />}
 
-      {/* All products */}
-      <section
-        id="shop"
-        className="px-5 sm:px-8 py-16 md:py-24 max-w-7xl mx-auto w-full"
+      <div
+        className={
+          isBold ? "bg-black text-white" : isMinimal ? "bg-white" : "bg-background"
+        }
       >
-        <div className="flex flex-col gap-8 mb-10">
-          <div>
-            <div
-              className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] mb-3 px-3 py-1.5 rounded-full"
-              style={{ backgroundColor: t.primary + "12", color: t.primary }}
-            >
-              <ShoppingBag className="h-3 w-3" />
-              {tr("storefront.home.collection", { defaultValue: "Collection" })}
-            </div>
-            <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">
-              {tr("storefront.home.allProducts")}
-            </h2>
-            <p className="mt-2 text-base" style={{ color: t.muted }}>
-              {tr("storefront.home.items", { count: filtered.length })}
-              {activeCategory !== "All" && tr("storefront.home.inCategory", { category: activeCategory })}
-            </p>
-          </div>
+        {sectionOrder.map((key) => sectionRenderers[key]())}
 
-          <div className="flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
-            {settings.show_search && (
+        {/* All products */}
+        <section
+          id="shop"
+          className="px-5 sm:px-8 py-16 md:py-24 max-w-7xl mx-auto w-full"
+        >
+          <div className="flex flex-col gap-8 mb-10">
+            <div>
               <div
-                className="relative flex-1 max-w-md group"
-                style={{
-                  border: `2px solid ${t.border}`,
-                  borderRadius: t.radius.md + 4,
-                  backgroundColor: t.surface,
-                }}
+                className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] mb-3 px-3 py-1.5 rounded-full"
+                style={{ backgroundColor: t.primary + "12", color: t.primary }}
               >
-                <Search
-                  className="absolute left-4 top-1/2 -translate-y-1/2 h-[18px] w-[18px]"
-                  style={{ color: t.muted }}
-                />
-                <input
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder={labels.search_placeholder}
-                  className="w-full bg-transparent pl-12 pr-4 py-3.5 text-sm outline-none"
-                  style={{ color: t.fg }}
-                />
+                <ShoppingBag className="h-3 w-3" />
+                {tr("storefront.home.collection", { defaultValue: "Collection" })}
               </div>
-            )}
-            <div className="flex items-center gap-3 flex-wrap">
-              {categories.length > 1 && (
+              <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">
+                {tr("storefront.home.allProducts")}
+              </h2>
+              <p className="mt-2 text-base" style={{ color: t.muted }}>
+                {tr("storefront.home.items", { count: filtered.length })}
+                {activeCategory !== "All" && tr("storefront.home.inCategory", { category: activeCategory })}
+              </p>
+            </div>
+
+            <div className="flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
+              {settings.show_search && (
+                <div
+                  className="relative flex-1 max-w-md group"
+                  style={{
+                    border: `2px solid ${t.border}`,
+                    borderRadius: t.radius.md + 4,
+                    backgroundColor: t.surface,
+                  }}
+                >
+                  <Search
+                    className="absolute left-4 top-1/2 -translate-y-1/2 h-[18px] w-[18px]"
+                    style={{ color: t.muted }}
+                  />
+                  <input
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder={labels.search_placeholder}
+                    className="w-full bg-transparent pl-12 pr-4 py-3.5 text-sm outline-none"
+                    style={{ color: t.fg }}
+                  />
+                </div>
+              )}
+              <div className="flex items-center gap-3 flex-wrap">
+                {categories.length > 1 && (
+                  <select
+                    value={activeCategory}
+                    onChange={(e) => setActiveCategory(e.target.value)}
+                    className="text-sm px-4 py-3 outline-none cursor-pointer font-medium"
+                    style={{
+                      border: `2px solid ${t.border}`,
+                      borderRadius: t.radius.md + 4,
+                      backgroundColor: t.surface,
+                      color: t.fg,
+                    }}
+                  >
+                    {categories.map((c) => (
+                      <option key={c} value={c} style={{ backgroundColor: t.bg }}>{c}</option>
+                    ))}
+                  </select>
+                )}
                 <select
-                  value={activeCategory}
-                  onChange={(e) => setActiveCategory(e.target.value)}
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value as SortKey)}
                   className="text-sm px-4 py-3 outline-none cursor-pointer font-medium"
                   style={{
                     border: `2px solid ${t.border}`,
@@ -452,73 +503,55 @@ function StorefrontHome() {
                     color: t.fg,
                   }}
                 >
-                  {categories.map((c) => (
-                    <option key={c} value={c} style={{ backgroundColor: t.bg }}>
-                      {c}
-                    </option>
-                  ))}
+                  <option value="newest" style={{ backgroundColor: t.bg }}>{tr("storefront.home.sort.newest")}</option>
+                  <option value="price-asc" style={{ backgroundColor: t.bg }}>{tr("storefront.home.sort.priceAsc")}</option>
+                  <option value="price-desc" style={{ backgroundColor: t.bg }}>{tr("storefront.home.sort.priceDesc")}</option>
+                  <option value="name" style={{ backgroundColor: t.bg }}>{tr("storefront.home.sort.name")}</option>
                 </select>
-              )}
-              <select
-                value={sort}
-                onChange={(e) => setSort(e.target.value as SortKey)}
-                className="text-sm px-4 py-3 outline-none cursor-pointer font-medium"
-                style={{
-                  border: `2px solid ${t.border}`,
-                  borderRadius: t.radius.md + 4,
-                  backgroundColor: t.surface,
-                  color: t.fg,
-                }}
-              >
-                <option value="newest" style={{ backgroundColor: t.bg }}>{tr("storefront.home.sort.newest")}</option>
-                <option value="price-asc" style={{ backgroundColor: t.bg }}>{tr("storefront.home.sort.priceAsc")}</option>
-                <option value="price-desc" style={{ backgroundColor: t.bg }}>{tr("storefront.home.sort.priceDesc")}</option>
-                <option value="name" style={{ backgroundColor: t.bg }}>{tr("storefront.home.sort.name")}</option>
-              </select>
+              </div>
             </div>
           </div>
-        </div>
 
-        {filtered.length === 0 ? (
-          <div
-            className="p-20 text-center"
-            style={{
-              borderRadius: t.radius.lg + 4,
-              border: `2px solid ${t.border}`,
-              backgroundColor: t.surface,
-            }}
-          >
-            <ShoppingBag className="h-12 w-12 mx-auto opacity-30" style={{ color: t.muted }} />
-            <p className="mt-5 text-lg font-semibold">
-              {products.length === 0 ? tr("storefront.home.noProducts") : tr("storefront.home.noMatches")}
-            </p>
-            <p className="mt-2 text-sm" style={{ color: t.muted }}>
-              {products.length === 0
-                ? tr("storefront.home.noProductsDesc")
-                : tr("storefront.home.noMatchesDesc")}
-            </p>
-          </div>
-        ) : (
-          <div className={`grid ${gridClass}`}>
-            {filtered.map((p) => (
-       <ProductCard
-  key={p.id}
-  product={p}
-  slug={slug}
-  tokens={t}
-  template={template}
-  currency={currency}
-  addLabel={labels.add_to_cart}
-  onAdd={handleQuickAdd}
-  compact={template === "grid"}
-  minimal={template === "minimal"}
-  bold={template === "bold"}
-/>
-            ))}
-          </div>
-        )}
-      </section>
-    </div>
+          {filtered.length === 0 ? (
+            <div
+              className="p-20 text-center"
+              style={{
+                borderRadius: t.radius.lg + 4,
+                border: `2px solid ${t.border}`,
+                backgroundColor: t.surface,
+              }}
+            >
+              <ShoppingBag className="h-12 w-12 mx-auto opacity-30" style={{ color: t.muted }} />
+              <p className="mt-5 text-lg font-semibold">
+                {products.length === 0 ? tr("storefront.home.noProducts") : tr("storefront.home.noMatches")}
+              </p>
+              <p className="mt-2 text-sm" style={{ color: t.muted }}>
+                {products.length === 0
+                  ? tr("storefront.home.noProductsDesc")
+                  : tr("storefront.home.noMatchesDesc")}
+              </p>
+            </div>
+          ) : (
+            <div className={`grid ${gridClass}`}>
+              {filtered.map((p) => (
+                <ProductCard
+                  key={p.id}
+                  product={p}
+                  slug={slug}
+                  tokens={t}
+                  template={template}
+                  currency={currency}
+                  addLabel={labels.add_to_cart}
+                  onAdd={handleQuickAdd}
+                  compact={template === "grid"}
+                  minimal={template === "minimal"}
+                  bold={template === "bold"}
+                />
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
     </StorefrontShell>
   );
 }
