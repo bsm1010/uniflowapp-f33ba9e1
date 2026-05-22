@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Bell, Check, CheckCheck, Inbox, BellOff } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,44 @@ interface Notification {
   type: string;
   read: boolean;
   created_at: string;
+  link?: string | null;
+}
+
+// ── Derive a navigation link from notification content ───────────
+function resolveLink(n: Notification): string | null {
+  // If the notification already has a link field, use it
+  if (n.link) return n.link;
+
+  const msg = (n.message ?? "").toLowerCase();
+  const title = (n.title ?? "").toLowerCase();
+
+  // Order notifications → extract order id and go to orders page
+  const orderMatch = n.message?.match(/#([A-Z0-9]{6,})/);
+  if (orderMatch || msg.includes("order") || title.includes("order")) {
+    return "/orders";
+  }
+
+  // Customer notifications
+  if (msg.includes("customer") || title.includes("customer")) {
+    return "/customers";
+  }
+
+  // Shipment notifications
+  if (msg.includes("shipment") || msg.includes("shipping") || title.includes("shipment")) {
+    return "/shipments";
+  }
+
+  // Product / stock notifications
+  if (msg.includes("product") || msg.includes("stock") || title.includes("stock")) {
+    return "/products";
+  }
+
+  // Payment notifications
+  if (msg.includes("payment") || title.includes("payment")) {
+    return "/payments";
+  }
+
+  return null;
 }
 
 // ── Play ring sound ──────────────────────────────────────────────
@@ -51,11 +90,7 @@ async function sendBrowserNotification(title: string, body: string, type: string
   if (!("Notification" in window)) return;
   if (Notification.permission === "granted") {
     const icon =
-      type === "success"
-        ? "✅"
-        : type === "error"
-          ? "❌"
-          : "🔔";
+      type === "success" ? "✅" : type === "error" ? "❌" : "🔔";
     new Notification(`${icon} ${title}`, {
       body,
       icon: "https://gyfcaoscsjazazhfozig.supabase.co/storage/v1/object/public/store-assets/email/fennecly-logo-white.png",
@@ -69,13 +104,13 @@ async function requestPermission() {
   if (!("Notification" in window)) return "denied";
   if (Notification.permission === "granted") return "granted";
   if (Notification.permission === "denied") return "denied";
-  const result = await Notification.requestPermission();
-  return result;
+  return await Notification.requestPermission();
 }
 
 // ── Component ────────────────────────────────────────────────────
 export function NotificationsBell() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [items, setItems] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
   const [permission, setPermission] = useState<NotificationPermission>(
@@ -100,9 +135,7 @@ export function NotificationsBell() {
   // Ask for permission after 3 seconds if not yet decided
   useEffect(() => {
     if (permission === "default") {
-      const timer = setTimeout(() => {
-        setShowPermissionBanner(true);
-      }, 3000);
+      const timer = setTimeout(() => setShowPermissionBanner(true), 3000);
       return () => clearTimeout(timer);
     }
   }, [permission]);
@@ -124,20 +157,15 @@ export function NotificationsBell() {
         (payload) => {
           const n = payload.new as Notification;
           setItems((prev) => [n, ...prev]);
-
-          // Play ring sound
           playRing();
 
-          // Animate bell
           if (bellRef.current) {
             bellRef.current.classList.add("animate-bounce");
             setTimeout(() => bellRef.current?.classList.remove("animate-bounce"), 1000);
           }
 
-          // Show browser notification
           sendBrowserNotification(n.title, n.message, n.type);
 
-          // Show toast
           const fn =
             n.type === "success"
               ? toast.success
@@ -149,9 +177,7 @@ export function NotificationsBell() {
       )
       .subscribe();
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return () => { supabase.removeChannel(channel); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
@@ -165,19 +191,25 @@ export function NotificationsBell() {
   };
 
   const markRead = async (id: string) => {
-    setItems((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
-    );
+    setItems((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
     await supabase.from("notifications").update({ read: true }).eq("id", id);
+  };
+
+  // ── Click a notification: mark read + navigate ───────────────
+  const handleClick = async (n: Notification) => {
+    await markRead(n.id);
+    const link = resolveLink(n);
+    if (link) {
+      setOpen(false);
+      navigate({ to: link });
+    }
   };
 
   const handleAllowNotifications = async () => {
     const result = await requestPermission();
     setPermission(result as NotificationPermission);
     setShowPermissionBanner(false);
-    if (result === "granted") {
-      toast.success("Notifications enabled! 🔔");
-    }
+    if (result === "granted") toast.success("Notifications enabled! 🔔");
   };
 
   return (
@@ -279,49 +311,57 @@ export function NotificationsBell() {
             {items.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-10 text-center">
                 <Inbox className="h-8 w-8 text-muted-foreground mb-2" />
-                <p className="text-sm text-muted-foreground">
-                  No notifications yet
-                </p>
+                <p className="text-sm text-muted-foreground">No notifications yet</p>
               </div>
             ) : (
               <ul className="divide-y">
-                {items.map((n) => (
-                  <li
-                    key={n.id}
-                    className={`px-4 py-3 hover:bg-muted/50 cursor-pointer transition-colors ${
-                      !n.read ? "bg-primary/5" : ""
-                    }`}
-                    onClick={() => markRead(n.id)}
-                  >
-                    <div className="flex items-start gap-2">
-                      <span
-                        className={`mt-1.5 size-2 rounded-full shrink-0 ${
-                          n.type === "success"
-                            ? "bg-green-500"
-                            : n.type === "error"
-                              ? "bg-destructive"
-                              : "bg-primary"
-                        } ${n.read ? "opacity-30" : ""}`}
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-2">
-                          <p className="text-sm font-medium truncate">
-                            {n.title}
+                {items.map((n) => {
+                  const link = resolveLink(n);
+                  return (
+                    <li
+                      key={n.id}
+                      className={`px-4 py-3 transition-colors ${
+                        link
+                          ? "cursor-pointer hover:bg-muted/50"
+                          : "cursor-default hover:bg-muted/30"
+                      } ${!n.read ? "bg-primary/5" : ""}`}
+                      onClick={() => handleClick(n)}
+                    >
+                      <div className="flex items-start gap-2">
+                        <span
+                          className={`mt-1.5 size-2 rounded-full shrink-0 ${
+                            n.type === "success"
+                              ? "bg-green-500"
+                              : n.type === "error"
+                                ? "bg-destructive"
+                                : "bg-primary"
+                          } ${n.read ? "opacity-30" : ""}`}
+                        />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2">
+                            <p className="text-sm font-medium truncate">{n.title}</p>
+                            <div className="flex items-center gap-1 shrink-0">
+                              {link && (
+                                <span className="text-[10px] text-primary font-medium">
+                                  →
+                                </span>
+                              )}
+                              {n.read && (
+                                <Check className="h-3 w-3 text-muted-foreground" />
+                              )}
+                            </div>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            {n.message}
                           </p>
-                          {n.read && (
-                            <Check className="h-3 w-3 text-muted-foreground shrink-0" />
-                          )}
+                          <p className="text-[10px] text-muted-foreground mt-1">
+                            {new Date(n.created_at).toLocaleString()}
+                          </p>
                         </div>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          {n.message}
-                        </p>
-                        <p className="text-[10px] text-muted-foreground mt-1">
-                          {new Date(n.created_at).toLocaleString()}
-                        </p>
                       </div>
-                    </div>
-                  </li>
-                ))}
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </ScrollArea>
