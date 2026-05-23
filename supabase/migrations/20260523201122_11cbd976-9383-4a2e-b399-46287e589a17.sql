@@ -1,0 +1,1 @@
+ALTER TABLE public.stores ADD COLUMN IF NOT EXISTS tiktok_pixel_id text;

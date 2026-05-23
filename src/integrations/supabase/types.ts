@@ -2413,6 +2413,7 @@ export type Database = {
           owner_id: string
           slug: string | null
           telegram_chat_id: string | null
+          tiktok_pixel_id: string | null
           updated_at: string
         }
         Insert: {
@@ -2428,6 +2429,7 @@ export type Database = {
           owner_id: string
           slug?: string | null
           telegram_chat_id?: string | null
+          tiktok_pixel_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -2443,6 +2445,7 @@ export type Database = {
           owner_id?: string
           slug?: string | null
           telegram_chat_id?: string | null
+          tiktok_pixel_id?: string | null
           updated_at?: string
         }
         Relationships: []
