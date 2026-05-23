@@ -543,9 +543,6 @@ function StorefrontHome() {
                   currency={currency}
                   addLabel={labels.add_to_cart}
                   onAdd={handleQuickAdd}
-                  compact={template === "grid"}
-                  minimal={template === "minimal"}
-                  bold={template === "bold"}
                 />
               ))}
             </div>
