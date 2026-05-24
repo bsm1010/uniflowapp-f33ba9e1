@@ -121,9 +121,16 @@ function DashboardLayout() {
     boolean | null
   >(null);
 
-  const selectedStore = localStorage.getItem("selectedStore");
+  const [selectedStore, setSelectedStore] = useState<string | null>(null);
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      setSelectedStore(localStorage.getItem("selectedStore"));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
     if (!loading && !user) {
       navigate({ to: "/login" });
       return;
