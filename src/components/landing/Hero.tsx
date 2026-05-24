@@ -3,6 +3,8 @@ import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
+import heroScene from "@/assets/hero-scene.gif";
+
 
 export function Hero() {
   const { t } = useTranslation();
@@ -66,8 +68,23 @@ export function Hero() {
             </Link>
           </Button>
         </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="mt-12 flex justify-center"
+        >
+          <img
+            src={heroScene}
+            alt=""
+            aria-hidden
+            className="w-full max-w-3xl h-auto select-none pointer-events-none mix-blend-multiply dark:mix-blend-screen dark:invert"
+            draggable={false}
+          />
+        </motion.div>
 
       </div>
+
     </section>
   );
 }
