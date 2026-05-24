@@ -122,10 +122,12 @@ function DashboardLayout() {
   >(null);
 
   const [selectedStore, setSelectedStore] = useState<string | null>(null);
+  const [storeHydrated, setStoreHydrated] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       setSelectedStore(localStorage.getItem("selectedStore"));
+      setStoreHydrated(true);
     }
   }, []);
 
@@ -136,10 +138,10 @@ function DashboardLayout() {
       return;
     }
 
-    if (!loading && user && !selectedStore) {
+    if (!loading && user && storeHydrated && !selectedStore) {
       navigate({ to: "/select-store" });
     }
-  }, [loading, user, selectedStore, navigate]);
+  }, [loading, user, selectedStore, storeHydrated, navigate]);
 
   useEffect(() => {
     registerServiceWorker();
