@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
-import heroScene from "@/assets/hero-scene.gif";
+import heroScene from "@/assets/Scene.gif";
 
 
 export function Hero() {
