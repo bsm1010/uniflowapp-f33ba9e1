@@ -20,6 +20,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CustomizeRouteImport } from './routes/customize'
 import { Route as AiAgentRouteImport } from './routes/ai-agent'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as DashboardVoiceGeneratorRouteImport } from './routes/dashboard.voice-generator'
 import { Route as DashboardUpgradeRouteImport } from './routes/dashboard.upgrade'
 import { Route as DashboardThemesRouteImport } from './routes/dashboard.themes'
@@ -144,6 +145,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardVoiceGeneratorRoute = DashboardVoiceGeneratorRouteImport.update({
   id: '/voice-generator',
@@ -553,6 +559,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/themes': typeof DashboardThemesRoute
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
   '/dashboard/voice-generator': typeof DashboardVoiceGeneratorRoute
+  '/dashboard/': typeof DashboardIndexRoute
   '/api/db/$tableId': typeof ApiDbTableIdRouteWithChildren
   '/dashboard/admin/apps': typeof DashboardAdminAppsRoute
   '/dashboard/admin/marketplace': typeof DashboardAdminMarketplaceRoute
@@ -598,7 +605,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ai-agent': typeof AiAgentRoute
   '/customize': typeof CustomizeRoute
-  '/dashboard': typeof DashboardRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
   '/iphone-guide': typeof IphoneGuideRoute
   '/login': typeof LoginRoute
@@ -633,6 +639,7 @@ export interface FileRoutesByTo {
   '/dashboard/themes': typeof DashboardThemesRoute
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
   '/dashboard/voice-generator': typeof DashboardVoiceGeneratorRoute
+  '/dashboard': typeof DashboardIndexRoute
   '/api/db/$tableId': typeof ApiDbTableIdRouteWithChildren
   '/dashboard/admin/apps': typeof DashboardAdminAppsRoute
   '/dashboard/admin/marketplace': typeof DashboardAdminMarketplaceRoute
@@ -716,6 +723,7 @@ export interface FileRoutesById {
   '/dashboard/themes': typeof DashboardThemesRoute
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
   '/dashboard/voice-generator': typeof DashboardVoiceGeneratorRoute
+  '/dashboard/': typeof DashboardIndexRoute
   '/api/db/$tableId': typeof ApiDbTableIdRouteWithChildren
   '/dashboard/admin/apps': typeof DashboardAdminAppsRoute
   '/dashboard/admin/marketplace': typeof DashboardAdminMarketplaceRoute
@@ -800,6 +808,7 @@ export interface FileRouteTypes {
     | '/dashboard/themes'
     | '/dashboard/upgrade'
     | '/dashboard/voice-generator'
+    | '/dashboard/'
     | '/api/db/$tableId'
     | '/dashboard/admin/apps'
     | '/dashboard/admin/marketplace'
@@ -845,7 +854,6 @@ export interface FileRouteTypes {
     | '/'
     | '/ai-agent'
     | '/customize'
-    | '/dashboard'
     | '/forgot-password'
     | '/iphone-guide'
     | '/login'
@@ -880,6 +888,7 @@ export interface FileRouteTypes {
     | '/dashboard/themes'
     | '/dashboard/upgrade'
     | '/dashboard/voice-generator'
+    | '/dashboard'
     | '/api/db/$tableId'
     | '/dashboard/admin/apps'
     | '/dashboard/admin/marketplace'
@@ -962,6 +971,7 @@ export interface FileRouteTypes {
     | '/dashboard/themes'
     | '/dashboard/upgrade'
     | '/dashboard/voice-generator'
+    | '/dashboard/'
     | '/api/db/$tableId'
     | '/dashboard/admin/apps'
     | '/dashboard/admin/marketplace'
@@ -1111,6 +1121,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof DashboardRoute
     }
     '/dashboard/voice-generator': {
       id: '/dashboard/voice-generator'
@@ -1688,6 +1705,7 @@ interface DashboardRouteChildren {
   DashboardThemesRoute: typeof DashboardThemesRoute
   DashboardUpgradeRoute: typeof DashboardUpgradeRoute
   DashboardVoiceGeneratorRoute: typeof DashboardVoiceGeneratorRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
   DashboardAdminAppsRoute: typeof DashboardAdminAppsRoute
   DashboardAdminMarketplaceRoute: typeof DashboardAdminMarketplaceRoute
   DashboardAdminPaymentsRoute: typeof DashboardAdminPaymentsRoute
@@ -1724,6 +1742,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardThemesRoute: DashboardThemesRoute,
   DashboardUpgradeRoute: DashboardUpgradeRoute,
   DashboardVoiceGeneratorRoute: DashboardVoiceGeneratorRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
   DashboardAdminAppsRoute: DashboardAdminAppsRoute,
   DashboardAdminMarketplaceRoute: DashboardAdminMarketplaceRoute,
   DashboardAdminPaymentsRoute: DashboardAdminPaymentsRoute,
