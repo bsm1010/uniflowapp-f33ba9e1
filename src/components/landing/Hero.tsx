@@ -3,8 +3,8 @@ import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
-import heroScene from "@/assets/Scene.gif";
-
+import Lottie from "lottie-react";
+import heroScene from "@/assets/Scene_clean.json";
 
 export function Hero() {
   const { t } = useTranslation();
@@ -20,7 +20,6 @@ export function Hero() {
         aria-hidden
         className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-background pointer-events-none"
       />
-
       <div className="relative mx-auto max-w-6xl px-4 text-center">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -31,7 +30,6 @@ export function Hero() {
           <Sparkles className="h-3.5 w-3.5 text-primary" />
           {t("hero.badge")}
         </motion.div>
-
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -41,7 +39,6 @@ export function Hero() {
           {t("hero.titleA")}{" "}
           <span className="text-gradient-brand">{t("hero.titleB")}</span>
         </motion.h1>
-
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -50,7 +47,6 @@ export function Hero() {
         >
           {t("hero.subtitle")}
         </motion.p>
-
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -74,17 +70,14 @@ export function Hero() {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="mt-12 flex justify-center"
         >
-          <img
-            src={heroScene}
-            alt=""
+          <Lottie
+            animationData={heroScene}
+            loop
             aria-hidden
-            className="w-full max-w-3xl h-auto select-none pointer-events-none mix-blend-multiply dark:mix-blend-screen dark:invert"
-            draggable={false}
+            className="w-full max-w-3xl select-none pointer-events-none mix-blend-multiply dark:mix-blend-screen"
           />
         </motion.div>
-
       </div>
-
     </section>
   );
 }
