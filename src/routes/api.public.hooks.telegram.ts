@@ -1,16 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
+import { createHash } from "crypto";
 
 export const Route = createFileRoute("/api/public/hooks/telegram")({
   server: {
     handlers: {
       POST: async ({ request }) => {
         try {
-          const expectedSecret = process.env.TELEGRAM_WEBHOOK_SECRET;
-          if (!expectedSecret) {
+          const rawSecret = process.env.TELEGRAM_WEBHOOK_SECRET;
+          if (!rawSecret) {
             console.error("TELEGRAM_WEBHOOK_SECRET not configured");
             return new Response("Server misconfigured", { status: 500 });
           }
+          const expectedSecret = createHash("sha256")
+            .update(rawSecret)
+            .digest("hex");
           const providedSecret = request.headers.get(
             "x-telegram-bot-api-secret-token",
           );
