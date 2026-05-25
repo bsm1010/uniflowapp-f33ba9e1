@@ -1,35 +1,51 @@
-import Lottie from "lottie-react";
+import Lottie, { type LottieRefCurrentProps } from "lottie-react";
 import { useState, useEffect, useRef } from "react";
 
 export function LottieStrip() {
   const [animationData, setAnimationData] = useState<object | null>(null);
+  const [visible, setVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const lottieRef = useRef<LottieRefCurrentProps>(null);
 
   useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) {
+        const inView = entries[0].isIntersecting;
+        setVisible(inView);
+        if (inView && !animationData) {
           import("@/assets/orbit.json").then((data) => {
             setAnimationData(data.default);
           });
-          observer.disconnect();
         }
       },
-      { rootMargin: "200px" }
+      { rootMargin: "200px", threshold: 0.01 },
     );
-
-    if (ref.current) observer.observe(ref.current);
+    observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [animationData]);
+
+  // Pause animation when off-screen to save CPU
+  useEffect(() => {
+    if (!lottieRef.current) return;
+    if (visible) lottieRef.current.play();
+    else lottieRef.current.pause();
+  }, [visible, animationData]);
 
   return (
-    <div ref={ref} className="w-full overflow-hidden">
+    <div ref={ref} className="w-full overflow-hidden contain-paint" style={{ minHeight: 200 }}>
       {animationData && (
         <Lottie
+          lottieRef={lottieRef}
           animationData={animationData}
-          loop={true}
+          loop
+          autoplay={false}
           className="w-full"
-          rendererSettings={{ preserveAspectRatio: "xMidYMid slice" }}
+          rendererSettings={{
+            preserveAspectRatio: "xMidYMid slice",
+            progressiveLoad: true,
+          }}
         />
       )}
     </div>
