@@ -85,6 +85,7 @@ import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/em
 import { Route as DashboardOrdersOrderIdTrackingRouteImport } from './routes/dashboard.orders_.$orderId.tracking'
 import { Route as DashboardAppsMAppIdRouteImport } from './routes/dashboard.apps.m.$appId'
 import { Route as DashboardAppsListingAppKeyRouteImport } from './routes/dashboard.apps.listing.$appKey'
+import { Route as ApiPublicHooksTelegramRouteImport } from './routes/api.public.hooks.telegram'
 import { Route as ApiPublicHooksSyncTariffsRouteImport } from './routes/api.public.hooks.sync-tariffs'
 import { Route as ApiPublicHooksSyncShipmentStatusesRouteImport } from './routes/api/public/hooks/sync-shipment-statuses'
 import { Route as ApiPublicHooksPushDispatchRouteImport } from './routes/api/public/hooks/push-dispatch'
@@ -489,6 +490,11 @@ const DashboardAppsListingAppKeyRoute =
     path: '/listing/$appKey',
     getParentRoute: () => DashboardAppsRoute,
   } as any)
+const ApiPublicHooksTelegramRoute = ApiPublicHooksTelegramRouteImport.update({
+  id: '/api/public/hooks/telegram',
+  path: '/api/public/hooks/telegram',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksSyncTariffsRoute =
   ApiPublicHooksSyncTariffsRouteImport.update({
     id: '/api/public/hooks/sync-tariffs',
@@ -592,6 +598,7 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/push-dispatch': typeof ApiPublicHooksPushDispatchRoute
   '/api/public/hooks/sync-shipment-statuses': typeof ApiPublicHooksSyncShipmentStatusesRoute
   '/api/public/hooks/sync-tariffs': typeof ApiPublicHooksSyncTariffsRoute
+  '/api/public/hooks/telegram': typeof ApiPublicHooksTelegramRoute
   '/dashboard/apps/listing/$appKey': typeof DashboardAppsListingAppKeyRoute
   '/dashboard/apps/m/$appId': typeof DashboardAppsMAppIdRoute
   '/dashboard/orders/$orderId/tracking': typeof DashboardOrdersOrderIdTrackingRoute
@@ -672,6 +679,7 @@ export interface FileRoutesByTo {
   '/api/public/hooks/push-dispatch': typeof ApiPublicHooksPushDispatchRoute
   '/api/public/hooks/sync-shipment-statuses': typeof ApiPublicHooksSyncShipmentStatusesRoute
   '/api/public/hooks/sync-tariffs': typeof ApiPublicHooksSyncTariffsRoute
+  '/api/public/hooks/telegram': typeof ApiPublicHooksTelegramRoute
   '/dashboard/apps/listing/$appKey': typeof DashboardAppsListingAppKeyRoute
   '/dashboard/apps/m/$appId': typeof DashboardAppsMAppIdRoute
   '/dashboard/orders/$orderId/tracking': typeof DashboardOrdersOrderIdTrackingRoute
@@ -756,6 +764,7 @@ export interface FileRoutesById {
   '/api/public/hooks/push-dispatch': typeof ApiPublicHooksPushDispatchRoute
   '/api/public/hooks/sync-shipment-statuses': typeof ApiPublicHooksSyncShipmentStatusesRoute
   '/api/public/hooks/sync-tariffs': typeof ApiPublicHooksSyncTariffsRoute
+  '/api/public/hooks/telegram': typeof ApiPublicHooksTelegramRoute
   '/dashboard/apps/listing/$appKey': typeof DashboardAppsListingAppKeyRoute
   '/dashboard/apps/m/$appId': typeof DashboardAppsMAppIdRoute
   '/dashboard/orders_/$orderId/tracking': typeof DashboardOrdersOrderIdTrackingRoute
@@ -841,6 +850,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/push-dispatch'
     | '/api/public/hooks/sync-shipment-statuses'
     | '/api/public/hooks/sync-tariffs'
+    | '/api/public/hooks/telegram'
     | '/dashboard/apps/listing/$appKey'
     | '/dashboard/apps/m/$appId'
     | '/dashboard/orders/$orderId/tracking'
@@ -921,6 +931,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/push-dispatch'
     | '/api/public/hooks/sync-shipment-statuses'
     | '/api/public/hooks/sync-tariffs'
+    | '/api/public/hooks/telegram'
     | '/dashboard/apps/listing/$appKey'
     | '/dashboard/apps/m/$appId'
     | '/dashboard/orders/$orderId/tracking'
@@ -1004,6 +1015,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/push-dispatch'
     | '/api/public/hooks/sync-shipment-statuses'
     | '/api/public/hooks/sync-tariffs'
+    | '/api/public/hooks/telegram'
     | '/dashboard/apps/listing/$appKey'
     | '/dashboard/apps/m/$appId'
     | '/dashboard/orders_/$orderId/tracking'
@@ -1037,6 +1049,7 @@ export interface RootRouteChildren {
   ApiPublicHooksPushDispatchRoute: typeof ApiPublicHooksPushDispatchRoute
   ApiPublicHooksSyncShipmentStatusesRoute: typeof ApiPublicHooksSyncShipmentStatusesRoute
   ApiPublicHooksSyncTariffsRoute: typeof ApiPublicHooksSyncTariffsRoute
+  ApiPublicHooksTelegramRoute: typeof ApiPublicHooksTelegramRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -1577,6 +1590,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAppsListingAppKeyRouteImport
       parentRoute: typeof DashboardAppsRoute
     }
+    '/api/public/hooks/telegram': {
+      id: '/api/public/hooks/telegram'
+      path: '/api/public/hooks/telegram'
+      fullPath: '/api/public/hooks/telegram'
+      preLoaderRoute: typeof ApiPublicHooksTelegramRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/sync-tariffs': {
       id: '/api/public/hooks/sync-tariffs'
       path: '/api/public/hooks/sync-tariffs'
@@ -1801,6 +1821,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHooksSyncShipmentStatusesRoute:
     ApiPublicHooksSyncShipmentStatusesRoute,
   ApiPublicHooksSyncTariffsRoute: ApiPublicHooksSyncTariffsRoute,
+  ApiPublicHooksTelegramRoute: ApiPublicHooksTelegramRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
