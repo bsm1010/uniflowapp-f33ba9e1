@@ -1,5 +1,5 @@
 import Lottie from "lottie-react";
-import animationData from "/orbit.json";
+import animationData from "@/assets/orbit.json";
 
 export function LottieStrip() {
   return (
