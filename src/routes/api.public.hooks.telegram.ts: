@@ -13,6 +13,19 @@ export const ServerRoute = createServerFileRoute(
 ).methods({
   POST: async ({ request }) => {
     try {
+      // Verify Telegram webhook secret token to prevent forged requests
+      const expectedSecret = process.env.TELEGRAM_WEBHOOK_SECRET;
+      if (!expectedSecret) {
+        console.error("TELEGRAM_WEBHOOK_SECRET not configured");
+        return new Response("Server misconfigured", { status: 500 });
+      }
+      const providedSecret = request.headers.get(
+        "x-telegram-bot-api-secret-token",
+      );
+      if (providedSecret !== expectedSecret) {
+        return new Response("Unauthorized", { status: 401 });
+      }
+
       const body = await request.json();
       const message = body?.message;
 
