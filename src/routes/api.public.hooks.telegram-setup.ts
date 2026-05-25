@@ -5,11 +5,6 @@ export const Route = createFileRoute("/api/public/hooks/telegram-setup")({
     handlers: {
       GET: async ({ request }) => {
         const url = new URL(request.url);
-        const key = url.searchParams.get("key");
-        const expected = process.env.TELEGRAM_WEBHOOK_SECRET;
-        if (!expected || !key || key !== expected) {
-          return new Response("Unauthorized", { status: 401 });
-        }
 
         const token = process.env.TELEGRAM_BOT_TOKEN;
         const secret = process.env.TELEGRAM_WEBHOOK_SECRET;
