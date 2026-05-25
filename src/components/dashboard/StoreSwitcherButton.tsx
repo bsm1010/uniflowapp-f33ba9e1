@@ -1,16 +1,18 @@
+import { useNavigate } from "@tanstack/react-router";
 import { ChevronsUpDown, Store as StoreIcon } from "lucide-react";
 import { useCurrentStore } from "@/hooks/use-current-store";
 
 export function StoreSwitcherButton() {
-  const { currentStore, openPicker, stores } = useCurrentStore();
+  const { currentStore, stores } = useCurrentStore();
+  const navigate = useNavigate();
 
   if (stores.length === 0) return null;
 
   return (
     <button
-      onClick={openPicker}
+      onClick={() => navigate({ to: "/select-store" })}
       className="flex items-center gap-2 rounded-lg border bg-card px-3 py-2 hover:bg-accent transition-colors min-w-0 max-w-[220px]"
-      title="Switch store"
+      title="Switch or create store"
     >
       <div className="h-7 w-7 rounded-md bg-muted overflow-hidden flex items-center justify-center shrink-0">
         {currentStore?.logo_url ? (
