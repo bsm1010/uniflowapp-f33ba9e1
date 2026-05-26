@@ -2,13 +2,15 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import { z } from "zod";
 import { motion } from "framer-motion";
-import { Loader2, User, Mail, Lock, Eye, EyeOff, Check, X } from "lucide-react";
+import { Loader2, User, Mail, Lock, Eye, EyeOff, Check, X, Phone, MapPin, Building2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ALGERIA_GEO, getCitiesForWilaya, isValidAlgerianPhone } from "@/lib/algeriaWilayas";
 
 export const Route = createFileRoute("/signup")({
   component: SignUpPage,
@@ -49,6 +51,9 @@ function SignUpPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
+  const [wilaya, setWilaya] = useState("");
+  const [city, setCity] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState<string | null>(null);
@@ -56,11 +61,15 @@ function SignUpPage() {
   const [loading, setLoading] = useState(false);
 
   const pwStrength = password ? getPasswordStrength(password) : null;
+  const cities = wilaya ? getCitiesForWilaya(wilaya) : [];
 
   const schema = z.object({
     name: z.string().trim().min(1, t("auth.signup.errName")).max(80, t("auth.signup.errNameLong")),
     email: z.string().trim().email(t("auth.login.errEmail")).max(255),
     password: z.string().min(8, t("auth.signup.errPasswordShort")).max(72),
+    phone: z.string().refine((v) => !v || isValidAlgerianPhone(v), "Numéro de téléphone algérien invalide"),
+    wilaya: z.string().min(1, "Veuillez sélectionner une wilaya"),
+    city: z.string().min(1, "Veuillez sélectionner une commune"),
   });
 
   const requirements = [
@@ -75,7 +84,7 @@ function SignUpPage() {
     setFormError(null);
     setSuccess(null);
 
-    const parsed = schema.safeParse({ name, email, password });
+    const parsed = schema.safeParse({ name, email, password, phone, wilaya, city });
     if (!parsed.success) {
       const fieldErrors: Record<string, string> = {};
       for (const issue of parsed.error.issues) {
@@ -94,7 +103,13 @@ function SignUpPage() {
       password: parsed.data.password,
       options: {
         emailRedirectTo: `${window.location.origin}/dashboard`,
-        data: { name: parsed.data.name, ...(refCode ? { referral_code: refCode } : {}) },
+        data: {
+          name: parsed.data.name,
+          phone: parsed.data.phone,
+          wilaya: parsed.data.wilaya,
+          city: parsed.data.city,
+          ...(refCode ? { referral_code: refCode } : {}),
+        },
       },
     });
     setLoading(false);
@@ -233,6 +248,81 @@ function SignUpPage() {
           )}
         </motion.div>
 
+        <motion.div custom={3} variants={fieldVariants} initial="hidden" animate="visible" className="space-y-1.5">
+          <Label htmlFor="phone">{t("auth.signup.phone", "Téléphone")}</Label>
+          <div className="relative">
+            <Phone className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              id="phone"
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="+213 5XX XX XX XX"
+              autoComplete="tel"
+              disabled={loading}
+              className="pl-9"
+            />
+          </div>
+          {errors.phone && (
+            <motion.p initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} className="text-xs text-destructive">
+              {errors.phone}
+            </motion.p>
+          )}
+        </motion.div>
+
+        <motion.div custom={4} variants={fieldVariants} initial="hidden" animate="visible" className="space-y-1.5">
+          <Label>Wilaya</Label>
+          <Select
+            value={wilaya}
+            onValueChange={(v) => {
+              setWilaya(v);
+              setCity("");
+            }}
+            disabled={loading}
+          >
+            <SelectTrigger className="h-10">
+              <div className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
+                <SelectValue placeholder="Sélectionnez votre wilaya" />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              {ALGERIA_GEO.map(({ wilaya: w, code }) => (
+                <SelectItem key={w} value={w}>
+                  {String(code).padStart(2, "0")} — {w}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.wilaya && (
+            <motion.p initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} className="text-xs text-destructive">
+              {errors.wilaya}
+            </motion.p>
+          )}
+        </motion.div>
+
+        <motion.div custom={5} variants={fieldVariants} initial="hidden" animate="visible" className="space-y-1.5">
+          <Label>Commune</Label>
+          <Select value={city} onValueChange={setCity} disabled={loading || !wilaya}>
+            <SelectTrigger className="h-10">
+              <div className="flex items-center gap-2">
+                <Building2 className="h-4 w-4 text-muted-foreground shrink-0" />
+                <SelectValue placeholder={wilaya ? "Sélectionnez votre commune" : "Choisissez d'abord une wilaya"} />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              {cities.map((c) => (
+                <SelectItem key={c} value={c}>{c}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.city && (
+            <motion.p initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} className="text-xs text-destructive">
+              {errors.city}
+            </motion.p>
+          )}
+        </motion.div>
+
         {formError && (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -255,7 +345,7 @@ function SignUpPage() {
         )}
 
         <motion.div
-          custom={3}
+          custom={6}
           variants={fieldVariants}
           initial="hidden"
           animate="visible"
