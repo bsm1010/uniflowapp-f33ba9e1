@@ -13,9 +13,15 @@ export const Route = createFileRoute("/api/seed-delivery-companies")({
       GET: async () => {
         try {
           for (const company of COMPANIES) {
+            const { data: existing } = await supabaseAdmin
+              .from("delivery_companies")
+              .select("id")
+              .eq("name", company.name)
+              .maybeSingle();
+            if (existing) continue;
             const { error } = await supabaseAdmin
               .from("delivery_companies")
-              .upsert(company, { onConflict: "name", ignoreDuplicates: true });
+              .insert(company);
             if (error) {
               return new Response(JSON.stringify({ ok: false, error: error.message }), {
                 status: 500,
