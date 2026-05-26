@@ -2413,6 +2413,8 @@ export type Database = {
           owner_id: string
           slug: string | null
           telegram_chat_id: string | null
+          telegram_link_token: string | null
+          telegram_link_token_expires_at: string | null
           tiktok_pixel_id: string | null
           updated_at: string
         }
@@ -2429,6 +2431,8 @@ export type Database = {
           owner_id: string
           slug?: string | null
           telegram_chat_id?: string | null
+          telegram_link_token?: string | null
+          telegram_link_token_expires_at?: string | null
           tiktok_pixel_id?: string | null
           updated_at?: string
         }
@@ -2445,6 +2449,8 @@ export type Database = {
           owner_id?: string
           slug?: string | null
           telegram_chat_id?: string | null
+          telegram_link_token?: string | null
+          telegram_link_token_expires_at?: string | null
           tiktok_pixel_id?: string | null
           updated_at?: string
         }
