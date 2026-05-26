@@ -36,25 +36,57 @@ export const Route = createFileRoute("/api/public/hooks/telegram")({
           const chatId: string = String(message.chat.id);
 
           if (text.startsWith("/start")) {
-            const parts = text.split(" ");
-            const storeId = parts[1]?.replace(/_/g, "-");
+            const parts = text.trim().split(/\s+/);
+            const linkToken = parts[1];
 
-            if (!storeId) {
+            if (!linkToken) {
               await sendMessage(
                 TELEGRAM_TOKEN,
                 chatId,
-                "👋 Welcome to Fennecly!\n\nTo connect your store, go to your dashboard → Notifications → Settings → Connect Telegram.",
+                "👋 Welcome to Fennecly!\n\nTo connect your store, open your dashboard → Notifications → Settings → Connect Telegram.",
               );
               return new Response("ok", { status: 200 });
             }
 
-            const { error } = await supabase
+            // Look up store by single-use link token (must be unexpired)
+            const { data: store, error: lookupErr } = await supabase
               .from("stores")
-              .update({ telegram_chat_id: chatId })
-              .eq("id", storeId);
+              .select("id, telegram_link_token_expires_at")
+              .eq("telegram_link_token", linkToken)
+              .maybeSingle();
 
-            if (error) {
-              console.error("Failed to save telegram_chat_id:", error);
+            if (lookupErr || !store) {
+              await sendMessage(
+                TELEGRAM_TOKEN,
+                chatId,
+                "❌ This connection link is invalid or has already been used. Please generate a new one from your dashboard.",
+              );
+              return new Response("ok", { status: 200 });
+            }
+
+            const expiresAt = store.telegram_link_token_expires_at
+              ? new Date(store.telegram_link_token_expires_at as string).getTime()
+              : 0;
+            if (!expiresAt || expiresAt < Date.now()) {
+              await sendMessage(
+                TELEGRAM_TOKEN,
+                chatId,
+                "❌ This connection link has expired. Please generate a new one from your dashboard.",
+              );
+              return new Response("ok", { status: 200 });
+            }
+
+            const { error: updErr } = await supabase
+              .from("stores")
+              .update({
+                telegram_chat_id: chatId,
+                telegram_link_token: null,
+                telegram_link_token_expires_at: null,
+              })
+              .eq("id", store.id);
+
+            if (updErr) {
+              console.error("Failed to save telegram_chat_id:", updErr);
               await sendMessage(
                 TELEGRAM_TOKEN,
                 chatId,

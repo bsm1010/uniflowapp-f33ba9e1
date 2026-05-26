@@ -1606,33 +1606,6 @@ export type Database = {
           },
         ]
       }
-      payment_auto_verify_settings: {
-        Row: {
-          id: string
-          user_id: string
-          enabled: boolean
-          pattern: string
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          enabled?: boolean
-          pattern?: string
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          enabled?: boolean
-          pattern?: string
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
       payment_submissions: {
         Row: {
           amount: number
@@ -2440,6 +2413,8 @@ export type Database = {
           owner_id: string
           slug: string | null
           telegram_chat_id: string | null
+          telegram_link_token: string | null
+          telegram_link_token_expires_at: string | null
           tiktok_pixel_id: string | null
           updated_at: string
         }
@@ -2456,6 +2431,8 @@ export type Database = {
           owner_id: string
           slug?: string | null
           telegram_chat_id?: string | null
+          telegram_link_token?: string | null
+          telegram_link_token_expires_at?: string | null
           tiktok_pixel_id?: string | null
           updated_at?: string
         }
@@ -2472,6 +2449,8 @@ export type Database = {
           owner_id?: string
           slug?: string | null
           telegram_chat_id?: string | null
+          telegram_link_token?: string | null
+          telegram_link_token_expires_at?: string | null
           tiktok_pixel_id?: string | null
           updated_at?: string
         }

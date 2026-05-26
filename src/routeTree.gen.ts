@@ -50,7 +50,6 @@ import { Route as DashboardAppsRouteImport } from './routes/dashboard.apps'
 import { Route as DashboardAnalyticsRouteImport } from './routes/dashboard.analytics'
 import { Route as DashboardAiAgentRouteImport } from './routes/dashboard.ai-agent'
 import { Route as DashboardAboutRouteImport } from './routes/dashboard.about'
-import { Route as ApiSeedDeliveryCompaniesRouteImport } from './routes/api.seed-delivery-companies'
 import { Route as SSlugIndexRouteImport } from './routes/s.$slug.index'
 import { Route as DashboardNotificationsIndexRouteImport } from './routes/dashboard.notifications.index'
 import { Route as DashboardAppsIndexRouteImport } from './routes/dashboard.apps.index'
@@ -300,12 +299,6 @@ const DashboardAboutRoute = DashboardAboutRouteImport.update({
   path: '/about',
   getParentRoute: () => DashboardRoute,
 } as any)
-const ApiSeedDeliveryCompaniesRoute =
-  ApiSeedDeliveryCompaniesRouteImport.update({
-    id: '/api/seed-delivery-companies',
-    path: '/api/seed-delivery-companies',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const SSlugIndexRoute = SSlugIndexRouteImport.update({
   id: '/s/$slug/',
   path: '/s/$slug/',
@@ -550,7 +543,6 @@ export interface FileRoutesByFullPath {
   '/select-store': typeof SelectStoreRoute
   '/signup': typeof SignupRoute
   '/themes': typeof ThemesRoute
-  '/api/seed-delivery-companies': typeof ApiSeedDeliveryCompaniesRoute
   '/dashboard/about': typeof DashboardAboutRoute
   '/dashboard/ai-agent': typeof DashboardAiAgentRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
@@ -635,7 +627,6 @@ export interface FileRoutesByTo {
   '/select-store': typeof SelectStoreRoute
   '/signup': typeof SignupRoute
   '/themes': typeof ThemesRoute
-  '/api/seed-delivery-companies': typeof ApiSeedDeliveryCompaniesRoute
   '/dashboard/about': typeof DashboardAboutRoute
   '/dashboard/ai-agent': typeof DashboardAiAgentRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
@@ -720,7 +711,6 @@ export interface FileRoutesById {
   '/select-store': typeof SelectStoreRoute
   '/signup': typeof SignupRoute
   '/themes': typeof ThemesRoute
-  '/api/seed-delivery-companies': typeof ApiSeedDeliveryCompaniesRoute
   '/dashboard/about': typeof DashboardAboutRoute
   '/dashboard/ai-agent': typeof DashboardAiAgentRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
@@ -808,7 +798,6 @@ export interface FileRouteTypes {
     | '/select-store'
     | '/signup'
     | '/themes'
-    | '/api/seed-delivery-companies'
     | '/dashboard/about'
     | '/dashboard/ai-agent'
     | '/dashboard/analytics'
@@ -893,7 +882,6 @@ export interface FileRouteTypes {
     | '/select-store'
     | '/signup'
     | '/themes'
-    | '/api/seed-delivery-companies'
     | '/dashboard/about'
     | '/dashboard/ai-agent'
     | '/dashboard/analytics'
@@ -977,7 +965,6 @@ export interface FileRouteTypes {
     | '/select-store'
     | '/signup'
     | '/themes'
-    | '/api/seed-delivery-companies'
     | '/dashboard/about'
     | '/dashboard/ai-agent'
     | '/dashboard/analytics'
@@ -1064,7 +1051,6 @@ export interface RootRouteChildren {
   SelectStoreRoute: typeof SelectStoreRoute
   SignupRoute: typeof SignupRoute
   ThemesRoute: typeof ThemesRoute
-  ApiSeedDeliveryCompaniesRoute: typeof ApiSeedDeliveryCompaniesRoute
   ApiDbTableIdRoute: typeof ApiDbTableIdRouteWithChildren
   SSlugAboutRoute: typeof SSlugAboutRoute
   SSlugCartRoute: typeof SSlugCartRoute
@@ -1372,13 +1358,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/about'
       preLoaderRoute: typeof DashboardAboutRouteImport
       parentRoute: typeof DashboardRoute
-    }
-    '/api/seed-delivery-companies': {
-      id: '/api/seed-delivery-companies'
-      path: '/api/seed-delivery-companies'
-      fullPath: '/api/seed-delivery-companies'
-      preLoaderRoute: typeof ApiSeedDeliveryCompaniesRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/s/$slug/': {
       id: '/s/$slug/'
@@ -1851,7 +1830,6 @@ const rootRouteChildren: RootRouteChildren = {
   SelectStoreRoute: SelectStoreRoute,
   SignupRoute: SignupRoute,
   ThemesRoute: ThemesRoute,
-  ApiSeedDeliveryCompaniesRoute: ApiSeedDeliveryCompaniesRoute,
   ApiDbTableIdRoute: ApiDbTableIdRouteWithChildren,
   SSlugAboutRoute: SSlugAboutRoute,
   SSlugCartRoute: SSlugCartRoute,
