@@ -2,9 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const COMPANIES = [
-  { name: "Maystro Delivery", api_key: "", is_active: true },
-  { name: "Sherpa", api_key: "", is_active: true },
-  { name: "Eco Courier", api_key: "", is_active: true },
+  { name: "Maystro Delivery", is_active: true },
+  { name: "Sherpa", is_active: true },
+  { name: "Eco Courier", is_active: true },
 ];
 
 export const Route = createFileRoute("/api/seed-delivery-companies")({
