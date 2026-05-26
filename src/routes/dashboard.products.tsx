@@ -39,7 +39,7 @@ export const Route = createFileRoute("/dashboard/products")({
 });
 
 function formatPrice(n: number) {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
+  return `${Math.round(n).toLocaleString("fr-DZ")} DA`;
 }
 
 type SortField = "price" | "stock" | "sales_count";

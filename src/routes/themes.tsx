@@ -184,7 +184,7 @@ function ThemePreview({ preset, onBack }: { preset: ThemePreset; onBack: () => v
   const layoutProps: LayoutProps = {
     products,
     tokens,
-    currency: "USD",
+    currency: "DZD",
     brandName: preset.brandName,
     heroHeading: preset.heroHeading,
     heroSubheading: preset.heroSubheading,

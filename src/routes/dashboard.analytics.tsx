@@ -13,7 +13,7 @@ function AnalyticsPage() {
   const stats = [
     { label: "Sessions (7d)", value: "0", gradient: "from-violet-500 to-fuchsia-500" },
     { label: "Conversion rate", value: "0.0%", gradient: "from-emerald-500 to-teal-500" },
-    { label: "Avg. order value", value: "$0.00", gradient: "from-amber-500 to-orange-500" },
+    { label: "Avg. order value", value: "0 DA", gradient: "from-amber-500 to-orange-500" },
   ];
   return (
     <div className="max-w-7xl mx-auto">

@@ -40,9 +40,9 @@ function getPasswordStrength(pw: string): { score: number; label: string; color:
   if (/[A-Z]/.test(pw)) score++;
   if (/[0-9]/.test(pw)) score++;
   if (/[^A-Za-z0-9]/.test(pw)) score++;
-  if (score <= 1) return { score, label: "Faible", color: "bg-red-500" };
-  if (score <= 3) return { score, label: "Moyen", color: "bg-amber-500" };
-  return { score, label: "Fort", color: "bg-emerald-500" };
+  if (score <= 1) return { score, label: "Weak", color: "bg-red-500" };
+  if (score <= 3) return { score, label: "Medium", color: "bg-amber-500" };
+  return { score, label: "Strong", color: "bg-emerald-500" };
 }
 
 function SignUpPage() {

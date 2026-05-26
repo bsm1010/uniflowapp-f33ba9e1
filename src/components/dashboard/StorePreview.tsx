@@ -24,7 +24,7 @@ export function StorePreview({ settings, products = [] }: Props) {
   const labels = getButtonLabels(settings);
   const titles = getSectionTitles(settings);
   const socials = getFooterSocials(settings);
-  const currency = settings.currency || "USD";
+  const currency = settings.currency || "DZD";
   const template = settings.theme;
 
   const sample = products.length

@@ -68,7 +68,7 @@ export function StorefrontShell({ settings, children }: Props) {
           color: t.onPrimary,
         }}
       >
-        ✨ {tr("storefront.nav.announcement", { defaultValue: "Free shipping on orders over $50" })}
+        ✨ {tr("storefront.nav.announcement", { defaultValue: "Free shipping on orders over 5 000 DA" })}
       </div>
 
       {/* Sticky navbar */}

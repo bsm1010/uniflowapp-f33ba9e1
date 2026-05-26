@@ -452,7 +452,7 @@ function StatCard({
 }) {
   const animated = useCountUp(rawValue, 1400, delay);
   const display = isRevenue
-    ? `$${animated.toLocaleString()}`
+    ? `${animated.toLocaleString()} DA`
     : animated.toLocaleString();
 
   return (

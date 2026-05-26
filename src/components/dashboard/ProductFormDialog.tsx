@@ -263,11 +263,11 @@ export function ProductFormDialog({ open, onOpenChange, product, onSaved }: Prop
           {/* Price, Sale Price, Stock */}
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="space-y-2">
-              <Label htmlFor="price">Price (USD)</Label>
+              <Label htmlFor="price">Price (DA)</Label>
               <Input id="price" type="number" step="0.01" min="0" value={price} onChange={(e) => setPrice(e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="sale_price">Sale Price (USD)</Label>
+              <Label htmlFor="sale_price">Sale Price (DA)</Label>
               <Input id="sale_price" type="number" step="0.01" min="0" value={salePrice} onChange={(e) => setSalePrice(e.target.value)} placeholder="Optional" />
             </div>
             <div className="space-y-2">

@@ -32,8 +32,8 @@ const ALL = ["USD", "EUR", "GBP", "DZD", "MAD", "TND", "AED", "SAR", "JPY", "CAD
 
 function CurrencyPage() {
   const { user } = useAuth();
-  const [base, setBase] = useState("USD");
-  const [enabled, setEnabled] = useState<string[]>(["USD"]);
+  const [base, setBase] = useState("DZD");
+  const [enabled, setEnabled] = useState<string[]>(["DZD"]);
   const [rates, setRates] = useState<Record<string, number>>({});
   const [auto, setAuto] = useState(true);
   const [saving, setSaving] = useState(false);

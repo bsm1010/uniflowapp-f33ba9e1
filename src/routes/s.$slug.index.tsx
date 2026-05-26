@@ -213,7 +213,7 @@ function StorefrontHome() {
   const template = settings.theme;
   const isBold = template === "bold";
   const isMinimal = template === "minimal";
-  const currency = settings.currency || "USD";
+  const currency = settings.currency || "DZD";
   const featured = products.slice(0, 8);
 
   const gridClass =

@@ -16,7 +16,7 @@ export function ProductPagePreview({ settings, products = [] }: Props) {
   const t = getStoreTokens(settings);
   const navLinks = getNavLinks(settings);
   const labels = getButtonLabels(settings);
-  const currency = settings.currency || "USD";
+  const currency = settings.currency || "DZD";
 
   const product = products[0] ?? {
     name: "Sample Product",

@@ -168,7 +168,7 @@ function defaults(userId: string): StoreSettings {
     footer_about: "A small shop with a big heart. Quality products, delivered with care.",
     footer_socials: { instagram: "", facebook: "", twitter: "", tiktok: "" },
     footer_copyright: "",
-    currency: "USD",
+    currency: "DZD",
     about_title: "About us",
     about_content: "Welcome to our store. We are passionate about offering quality products and a delightful shopping experience. Thanks for stopping by!",
     about_image_url: null,
@@ -801,7 +801,7 @@ function CustomizeEditor() {
                 <div className="space-y-2">
                   <Label>Currency</Label>
                   <select
-                    value={settings.currency || "USD"}
+                    value={settings.currency || "DZD"}
                     onChange={(e) => update("currency", e.target.value)}
                     className="w-full h-9 rounded-md border border-border bg-background px-3 text-sm"
                   >

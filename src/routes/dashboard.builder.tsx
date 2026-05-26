@@ -68,7 +68,7 @@ function BuilderRoute() {
         setStore({
           slug: data.slug,
           brandName: data.store_name,
-          currency: data.currency ?? "USD",
+          currency: data.currency ?? "DZD",
         });
         const raw = Array.isArray(data.sections) ? (data.sections as unknown as SectionInstance[]) : [];
         setSections(raw);
@@ -218,7 +218,7 @@ function BuilderRoute() {
   const blockContext: BlockContext = useMemo(
     () => ({
       storeSlug: store?.slug ?? "",
-      currency: store?.currency ?? "USD",
+      currency: store?.currency ?? "DZD",
       brandName: store?.brandName ?? "Store",
       isPreview: true,
     }),
