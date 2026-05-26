@@ -1,8 +1,11 @@
 import { YalidineService, type ApiKeyValidationResult } from "./YalidineService";
 import { ZRExpressService } from "./ZRExpressService";
+import { MaystroService } from "./MaystroService";
+import { SherpaService } from "./SherpaService";
+import { EcoCourierService } from "./EcoCourierService";
 import { normalizeProviderKey } from "../registry";
 
-export { YalidineService, ZRExpressService };
+export { YalidineService, ZRExpressService, MaystroService, SherpaService, EcoCourierService };
 export type { ApiKeyValidationResult };
 
 /**
@@ -21,6 +24,14 @@ export async function validateApiKeyForCompany(
     case "zr_express":
     case "zrexpress":
       return ZRExpressService.validateApiKey(apiKey, apiSecret);
+    case "maystro":
+    case "maystro_delivery":
+      return MaystroService.validateApiKey(apiKey, apiSecret);
+    case "sherpa":
+      return SherpaService.validateApiKey(apiKey, apiSecret);
+    case "eco_courier":
+    case "eco_courier_dz":
+      return EcoCourierService.validateApiKey(apiKey, apiSecret);
     default:
       return { success: false, message: `No service registered for ${companyName}.` };
   }

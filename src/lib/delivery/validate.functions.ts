@@ -3,6 +3,9 @@ import { z } from "zod";
 import { createAuthenticatedDeliveryClient } from "./authenticated-client";
 import { ZRExpressAdapter } from "./adapters/ZRExpressAdapter";
 import { YalidineAdapter } from "./adapters/YalidineAdapter";
+import { MaystroAdapter } from "./adapters/MaystroAdapter";
+import { SherpaAdapter } from "./adapters/SherpaAdapter";
+import { EcoCourierAdapter } from "./adapters/EcoCourierAdapter";
 import { normalizeProviderKey } from "./registry";
 
 const InputSchema = z.object({
@@ -67,6 +70,15 @@ export const validateAndActivateDeliveryCompany = createServerFn({ method: "POST
         validation = await adapter.validateCredentials();
       } else if (provider === "yalidine") {
         const adapter = new YalidineAdapter({ apiKey, apiSecret });
+        validation = await adapter.validateCredentials();
+      } else if (provider === "maystro" || provider === "maystro_delivery") {
+        const adapter = new MaystroAdapter({ apiKey, apiSecret });
+        validation = await adapter.validateCredentials();
+      } else if (provider === "sherpa") {
+        const adapter = new SherpaAdapter({ apiKey, apiSecret });
+        validation = await adapter.validateCredentials();
+      } else if (provider === "eco_courier" || provider === "eco_courier_dz") {
+        const adapter = new EcoCourierAdapter({ apiKey, apiSecret });
         validation = await adapter.validateCredentials();
       } else {
         // Unknown provider — trust the credentials so other carriers still work.

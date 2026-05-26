@@ -1,6 +1,9 @@
 import type { DeliveryAdapter, DeliveryCredentials } from "./types";
 import { YalidineAdapter } from "./adapters/YalidineAdapter";
 import { ZRExpressAdapter } from "./adapters/ZRExpressAdapter";
+import { MaystroAdapter } from "./adapters/MaystroAdapter";
+import { SherpaAdapter } from "./adapters/SherpaAdapter";
+import { EcoCourierAdapter } from "./adapters/EcoCourierAdapter";
 
 /**
  * Factory map of provider key → adapter constructor.
@@ -15,6 +18,11 @@ const ADAPTER_REGISTRY: Record<string, AdapterCtor> = {
   yalidine: YalidineAdapter,
   zr_express: ZRExpressAdapter,
   zrexpress: ZRExpressAdapter, // alias tolerant of stored variants
+  maystro: MaystroAdapter,
+  maystro_delivery: MaystroAdapter,
+  sherpa: SherpaAdapter,
+  eco_courier: EcoCourierAdapter,
+  eco_courier_dz: EcoCourierAdapter,
 };
 
 export function normalizeProviderKey(name: string): string {
