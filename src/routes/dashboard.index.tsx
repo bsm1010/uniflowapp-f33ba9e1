@@ -1,5 +1,5 @@
 import { IphoneShortcutBanner } from "@/components/dashboard/IphoneShortcutBanner";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
@@ -16,6 +16,7 @@ import {
   Clock,
   AlertTriangle,
   CheckCircle2,
+  Store,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useCurrentStore } from "@/hooks/use-current-store";
@@ -24,6 +25,7 @@ import { useCountUp } from "@/hooks/use-count-up";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Card, CardContent } from "@/components/ui/card";
 import { InstalledAppsSection } from "@/components/dashboard/InstalledAppsSection";
 import { WindowsAppBanner } from "@/components/dashboard/WindowsAppBanner";
@@ -40,6 +42,7 @@ function DashboardHome() {
   const { currentStore } = useCurrentStore();
   const { t } = useTranslation();
   const { status, daysRemaining, hadPaidSubscription } = useSubscription();
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [hasPendingPayment, setHasPendingPayment] = useState(false);
   const [counts, setCounts] = useState({
@@ -284,27 +287,43 @@ function DashboardHome() {
         hasPendingPayment={hasPendingPayment}
       />
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((s, i) => (
-          <motion.div
-            key={s.label}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.05 * i }}
-          >
-            <StatCard
-              label={s.label}
-              rawValue={s.raw}
-              isRevenue={s.isRevenue}
-              icon={s.icon}
-              accent={s.accent}
-              iconColor={s.iconColor}
-              borderColor={s.borderColor}
-              delay={i * 120}
-            />
-          </motion.div>
-        ))}
-      </div>
+      {counts.products === 0 && counts.orders === 0 ? (
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="mt-8"
+        >
+          <EmptyState
+            icon={Store}
+            title="Welcome to your dashboard"
+            description="Your store stats will show up here once you add products and start getting orders."
+            action={{ label: "Add your first product", onClick: () => navigate({ to: "/dashboard/products" }) }}
+          />
+        </motion.div>
+      ) : (
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {stats.map((s, i) => (
+            <motion.div
+              key={s.label}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.05 * i }}
+            >
+              <StatCard
+                label={s.label}
+                rawValue={s.raw}
+                isRevenue={s.isRevenue}
+                icon={s.icon}
+                accent={s.accent}
+                iconColor={s.iconColor}
+                borderColor={s.borderColor}
+                delay={i * 120}
+              />
+            </motion.div>
+          ))}
+        </div>
+      )}
 
       <motion.div
         initial={{ opacity: 0, y: 12 }}

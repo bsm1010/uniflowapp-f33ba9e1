@@ -72,7 +72,7 @@ function ProductsPage() {
       .eq("store_id", currentStore.id)
       .order("created_at", { ascending: false });
     setLoading(false);
-    if (error) { toast.error(error.message); return; }
+    if (error) { toast.error("Failed to load products. Please try again."); return; }
     setProducts(
       (data ?? []).map((p) => ({
         ...p,
@@ -133,14 +133,14 @@ function ProductsPage() {
     setBulkDeleting(true);
     const { error } = await supabase.from("products").delete().in("id", Array.from(selected));
     setBulkDeleting(false);
-    if (error) { toast.error(error.message); return; }
+    if (error) { toast.error("Failed to delete products. Please try again."); return; }
     toast.success(`${selected.size} product(s) deleted`);
     load();
   };
 
   const bulkSetStatus = async (status: "draft" | "published") => {
     const { error } = await supabase.from("products").update({ status }).in("id", Array.from(selected));
-    if (error) { toast.error(error.message); return; }
+    if (error) { toast.error("Failed to update products. Please try again."); return; }
     toast.success(`${selected.size} product(s) set to ${status}`);
     load();
   };
@@ -148,7 +148,7 @@ function ProductsPage() {
   const confirmDelete = async () => {
     if (!deleting) return;
     const { error } = await supabase.from("products").delete().eq("id", deleting.id);
-    if (error) { toast.error(error.message); return; }
+    if (error) { toast.error("Failed to delete product. Please try again."); return; }
     toast.success("Product deleted");
     setDeleting(null);
     load();

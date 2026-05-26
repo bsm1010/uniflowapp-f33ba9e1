@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Loader2,
@@ -79,6 +79,7 @@ function OrdersPage() {
   const { currentStore } = useCurrentStore();
   const pushFn = useServerFn(pushOrderToProvider);
   const importZRFn = useServerFn(importZRExpressOrders);
+  const navigate = useNavigate();
   const [orders, setOrders] = useState<Order[] | null>(null);
   const [items, setItems] = useState<Record<string, OrderItem[]>>({});
   const [shipments, setShipments] = useState<Record<string, Shipment>>({});
@@ -332,7 +333,8 @@ function OrdersPage() {
         <EmptyState
           icon={ShoppingBag}
           title="No orders yet"
-          description="Once customers buy, their orders show up here."
+          description="When a customer places an order, it will appear here. Share your store link to start selling."
+          action={{ label: "View your store", onClick: () => navigate({ to: "/dashboard/store" }) }}
         />
       ) : (
         <Card className="border-border/60 shadow-soft">

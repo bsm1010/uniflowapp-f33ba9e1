@@ -12,6 +12,7 @@ import {
   Loader2,
   Clock,
 } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -148,7 +149,7 @@ function EmailMarketingApp() {
     });
     setSaving(false);
     if (error) {
-      toast.error(error.message);
+      toast.error("Failed to create campaign. Please try again.");
       return;
     }
     setSubject("");
@@ -171,7 +172,7 @@ function EmailMarketingApp() {
       toast.success(`Sent ${res.sent} • Failed ${res.failed}`);
       refresh();
     } catch (e: any) {
-      toast.error(e?.message ?? "Failed to send");
+      toast.error("Failed to send campaign. Please try again.");
       refresh();
     } finally {
       setSendingId(null);
@@ -184,7 +185,7 @@ function EmailMarketingApp() {
       .delete()
       .eq("id", id);
     if (error) {
-      toast.error(error.message);
+      toast.error("Failed to delete campaign. Please try again.");
       return;
     }
     toast.success("Campaign deleted");
@@ -325,10 +326,12 @@ function EmailMarketingApp() {
           {loading ? (
             <p className="text-sm text-muted-foreground">Loading…</p>
           ) : campaigns.length === 0 ? (
-            <div className="text-center py-10 text-muted-foreground">
-              <Mail className="h-10 w-10 mx-auto mb-2 opacity-50" />
-              <p className="text-sm">No campaigns yet. Compose one above.</p>
-            </div>
+            <EmptyState
+              icon={Mail}
+              title="No campaigns yet"
+              description="Create your first email campaign to reach your customers."
+              action={{ label: "Create campaign", onClick: () => { document.getElementById("subject")?.scrollIntoView({ behavior: "smooth" }); document.getElementById("subject")?.focus(); } }}
+            />
           ) : (
             <div className="space-y-3">
               {campaigns.map((c) => (

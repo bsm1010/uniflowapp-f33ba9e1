@@ -53,7 +53,11 @@ function SettingsPage() {
   // Payments (UI-only preferences, persisted in localStorage for now)
   const [paymentsEnabled, setPaymentsEnabled] = useState(false);
   const [currency, setCurrency] = useState("DZD");
+  const [payoutEmail, setPayoutEmail] = useState("");
 
+  // Danger zone
+  const [deleteConfirm, setDeleteConfirm] = useState("");
+  const [deleting, setDeleting] = useState(false);
 
 
   useEffect(() => {
