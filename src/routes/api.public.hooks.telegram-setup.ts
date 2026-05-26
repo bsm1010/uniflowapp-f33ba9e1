@@ -5,6 +5,13 @@ export const Route = createFileRoute("/api/public/hooks/telegram-setup")({
   server: {
     handlers: {
       GET: async ({ request }) => {
+        // Require operator secret to prevent unauthenticated webhook re-registration
+        const setupSecret = process.env.CRON_SECRET;
+        const provided = request.headers.get("x-setup-secret");
+        if (!setupSecret || provided !== setupSecret) {
+          return new Response("Unauthorized", { status: 401 });
+        }
+
         const url = new URL(request.url);
 
         const token = process.env.TELEGRAM_BOT_TOKEN;
@@ -16,8 +23,6 @@ export const Route = createFileRoute("/api/public/hooks/telegram-setup")({
           );
         }
 
-        // Telegram only accepts [A-Za-z0-9_-]{1,256} in secret_token.
-        // Hash to hex so any user-provided secret works.
         const secret = createHash("sha256").update(rawSecret).digest("hex");
 
         const webhookUrl = `${url.origin}/api/public/hooks/telegram`;
