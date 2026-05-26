@@ -87,10 +87,10 @@ function Index() {
           <DashboardTools />
         </div>
         <div className="cv-auto">
-          <OutboundLottie />
+          <WindowsDownload />
         </div>
         <div className="cv-auto">
-          <WindowsDownload />
+          <OutboundLottie />
         </div>
         <div className="cv-auto">
           <Features />
