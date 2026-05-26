@@ -32,6 +32,11 @@ const CTA = lazy(() =>
     default: m.CTA,
   })),
 );
+const OutboundLottie = lazy(() =>
+  import("@/components/landing/OutboundLottie").then((m) => ({
+    default: m.OutboundLottie,
+  })),
+);
 const WindowsDownload = lazy(() =>
   import("@/components/landing/WindowsDownload").then((m) => ({
     default: m.WindowsDownload,
@@ -80,6 +85,9 @@ function Index() {
       <Suspense fallback={<SectionFallback />}>
         <div className="cv-auto">
           <DashboardTools />
+        </div>
+        <div className="cv-auto">
+          <OutboundLottie />
         </div>
         <div className="cv-auto">
           <WindowsDownload />
