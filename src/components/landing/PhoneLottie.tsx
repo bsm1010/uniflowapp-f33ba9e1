@@ -40,7 +40,7 @@ export function PhoneLottie() {
           animationData={animationData}
           loop
           autoplay={false}
-          className="w-full max-w-sm mx-auto"
+          className="w-full max-w-lg mx-auto"
           rendererSettings={{
             preserveAspectRatio: "xMidYMid slice",
             progressiveLoad: true,
