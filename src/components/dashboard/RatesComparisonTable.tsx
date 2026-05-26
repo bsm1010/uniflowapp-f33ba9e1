@@ -1,11 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Loader2, MapPin, Search, DollarSign } from "lucide-react";
+import { Loader2, Search, DollarSign } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import type { StoreCompanyView } from "@/lib/delivery/store-companies.functions";
 
 type TariffRow = {
   company_id: string;
@@ -23,7 +22,7 @@ type WilayaComparison = {
 export function RatesComparisonTable({
   connectedCompanies,
 }: {
-  connectedCompanies: (StoreCompanyView & { name: string })[];
+  connectedCompanies: { companyId: string; name: string; enabled: boolean }[];
 }) {
   const { user } = useAuth();
   const [tariffs, setTariffs] = useState<TariffRow[]>([]);
@@ -38,7 +37,7 @@ export function RatesComparisonTable({
     let cancelled = false;
     (async () => {
       setLoading(true);
-      const companyIds = connectedCompanies.map((c) => c.company_id);
+      const companyIds = connectedCompanies.map((c) => c.companyId);
       const { data } = await supabase
         .from("delivery_tariffs")
         .select("company_id, wilaya, delivery_type, price")
@@ -47,7 +46,7 @@ export function RatesComparisonTable({
       if (!cancelled) {
         const mapped = (data ?? []).map((r) => ({
           ...r,
-          company_name: connectedCompanies.find((c) => c.company_id === r.company_id)?.name ?? "Unknown",
+          company_name: connectedCompanies.find((c) => c.companyId === r.company_id)?.name ?? "Unknown",
         })) as TariffRow[];
         setTariffs(mapped);
         setLoading(false);
