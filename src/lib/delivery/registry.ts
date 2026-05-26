@@ -4,6 +4,10 @@ import { ZRExpressAdapter } from "./adapters/ZRExpressAdapter";
 import { MaystroAdapter } from "./adapters/MaystroAdapter";
 import { SherpaAdapter } from "./adapters/SherpaAdapter";
 import { EcoCourierAdapter } from "./adapters/EcoCourierAdapter";
+import { AndersonAdapter } from "./adapters/AndersonAdapter";
+import { GuepexAdapter } from "./adapters/GuepexAdapter";
+import { DHDAdapter } from "./adapters/DHDAdapter";
+import { ChronorexAdapter } from "./adapters/ChronorexAdapter";
 
 /**
  * Factory map of provider key → adapter constructor.
@@ -23,6 +27,13 @@ const ADAPTER_REGISTRY: Record<string, AdapterCtor> = {
   sherpa: SherpaAdapter,
   eco_courier: EcoCourierAdapter,
   eco_courier_dz: EcoCourierAdapter,
+  anderson: AndersonAdapter,
+  anderson_ecommerce: AndersonAdapter,
+  guepex: GuepexAdapter,
+  dhd: DHDAdapter,
+  dhd_livraison: DHDAdapter,
+  chronorex: ChronorexAdapter,
+  chronorex_express: ChronorexAdapter,
 };
 
 export function normalizeProviderKey(name: string): string {

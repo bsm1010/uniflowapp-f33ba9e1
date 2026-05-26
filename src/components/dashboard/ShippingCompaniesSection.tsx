@@ -23,6 +23,10 @@ import yalidineLogo from "@/assets/yalidine-logo.png";
 import maystroLogo from "@/assets/maystro-logo.svg";
 import sherpaLogo from "@/assets/sherpa-logo.svg";
 import ecoCourierLogo from "@/assets/ecocourier-logo.svg";
+import andersonLogo from "@/assets/anderson-logo.svg";
+import guepexLogo from "@/assets/guepex-logo.svg";
+import dhdLogo from "@/assets/dhd-logo.svg";
+import chronorexLogo from "@/assets/chronorex-logo.svg";
 import { ZRExpressRatesPreview } from "@/components/dashboard/ZRExpressRatesPreview";
 
 function isZRExpress(name: string): boolean {
@@ -42,6 +46,13 @@ const COMPANY_LOGOS: Record<string, string> = {
   sherpa: sherpaLogo,
   eco_courier: ecoCourierLogo,
   eco_courier_dz: ecoCourierLogo,
+  anderson: andersonLogo,
+  anderson_ecommerce: andersonLogo,
+  guepex: guepexLogo,
+  dhd: dhdLogo,
+  dhd_livraison: dhdLogo,
+  chronorex: chronorexLogo,
+  chronorex_express: chronorexLogo,
 };
 
 function getCompanyLogo(name: string): string | undefined {

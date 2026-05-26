@@ -6,6 +6,10 @@ import { YalidineAdapter } from "./adapters/YalidineAdapter";
 import { MaystroAdapter } from "./adapters/MaystroAdapter";
 import { SherpaAdapter } from "./adapters/SherpaAdapter";
 import { EcoCourierAdapter } from "./adapters/EcoCourierAdapter";
+import { AndersonAdapter } from "./adapters/AndersonAdapter";
+import { GuepexAdapter } from "./adapters/GuepexAdapter";
+import { DHDAdapter } from "./adapters/DHDAdapter";
+import { ChronorexAdapter } from "./adapters/ChronorexAdapter";
 import { normalizeProviderKey } from "./registry";
 
 const InputSchema = z.object({
@@ -79,6 +83,18 @@ export const validateAndActivateDeliveryCompany = createServerFn({ method: "POST
         validation = await adapter.validateCredentials();
       } else if (provider === "eco_courier" || provider === "eco_courier_dz") {
         const adapter = new EcoCourierAdapter({ apiKey, apiSecret });
+        validation = await adapter.validateCredentials();
+      } else if (provider === "anderson" || provider === "anderson_ecommerce") {
+        const adapter = new AndersonAdapter({ apiKey, apiSecret });
+        validation = await adapter.validateCredentials();
+      } else if (provider === "guepex") {
+        const adapter = new GuepexAdapter({ apiKey, apiSecret });
+        validation = await adapter.validateCredentials();
+      } else if (provider === "dhd" || provider === "dhd_livraison") {
+        const adapter = new DHDAdapter({ apiKey, apiSecret });
+        validation = await adapter.validateCredentials();
+      } else if (provider === "chronorex" || provider === "chronorex_express") {
+        const adapter = new ChronorexAdapter({ apiKey, apiSecret });
         validation = await adapter.validateCredentials();
       } else {
         // Unknown provider — trust the credentials so other carriers still work.
