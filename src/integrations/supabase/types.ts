@@ -1606,33 +1606,6 @@ export type Database = {
           },
         ]
       }
-      payment_auto_verify_settings: {
-        Row: {
-          id: string
-          user_id: string
-          enabled: boolean
-          pattern: string
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          enabled?: boolean
-          pattern?: string
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          enabled?: boolean
-          pattern?: string
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
       payment_submissions: {
         Row: {
           amount: number
