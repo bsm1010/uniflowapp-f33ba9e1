@@ -31,7 +31,6 @@ import {
   Bell,
   Store as StoreIcon,
   Code2,
-  Check,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import fennecyIcon from "@/assets/fennecly-icon.webp";
@@ -55,6 +54,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { Switch } from "@/components/ui/switch";
 
 type NavItem = {
   title: string;
@@ -95,11 +95,10 @@ export function DashboardSidebar() {
     document.documentElement.setAttribute("data-sidebar-purple", String(enabled));
   }, []);
 
-  const togglePurple = () => {
-    const next = !purpleSidebar;
-    setPurpleSidebar(next);
-    document.documentElement.setAttribute("data-sidebar-purple", String(next));
-    localStorage.setItem("sidebar-purple", String(next));
+  const togglePurple = (checked: boolean) => {
+    setPurpleSidebar(checked);
+    document.documentElement.setAttribute("data-sidebar-purple", String(checked));
+    localStorage.setItem("sidebar-purple", String(checked));
   };
 
   const groups: NavGroup[] = [
@@ -250,11 +249,26 @@ export function DashboardSidebar() {
             </div>
           )}
         </Link>
+        {!collapsed && (
+          <div className="flex items-center justify-between px-2 py-1.5 mt-1 rounded-lg bg-sidebar-accent/30">
+            <div className="flex items-center gap-2">
+              <span className="relative flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-purple-500 to-indigo-600 text-white">
+                <Palette className="h-3 w-3" />
+              </span>
+              <span className="text-xs font-medium text-sidebar-foreground/80">Purple sidebar</span>
+            </div>
+            <Switch
+              checked={purpleSidebar}
+              onCheckedChange={togglePurple}
+              className="h-5 w-9"
+            />
+          </div>
+        )}
       </SidebarHeader>
       <SidebarContent className="px-1.5 py-2">
         {groups.map((group) => (
           <SidebarGroup key={group.label}>
-            <SidebarGroupLabel className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70 px-2">
+            <SidebarGroupLabel className="text-[10px] font-semibold uppercase tracking-wider text-sidebar-foreground/70 px-2">
               {group.label}
             </SidebarGroupLabel>
             <SidebarGroupContent>
@@ -269,7 +283,7 @@ export function DashboardSidebar() {
               <CollapsibleTrigger asChild>
                 <SidebarGroupLabel
                   asChild
-                  className="cursor-pointer hover:bg-sidebar-accent/40 rounded-md transition-colors text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70"
+                  className="cursor-pointer hover:bg-sidebar-accent/40 rounded-md transition-colors text-[10px] font-semibold uppercase tracking-wider text-sidebar-foreground/70"
                 >
                   <button className="w-full flex items-center justify-between px-2">
                     <span>{t("dashboard.groupApps")}</span>
@@ -314,7 +328,7 @@ export function DashboardSidebar() {
 
         {isAdmin && (
           <SidebarGroup>
-            <SidebarGroupLabel className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70 px-2">
+            <SidebarGroupLabel className="text-[10px] font-semibold uppercase tracking-wider text-sidebar-foreground/70 px-2">
               {t("dashboard.groupAdmin")}
             </SidebarGroupLabel>
             <SidebarGroupContent>
@@ -383,27 +397,6 @@ export function DashboardSidebar() {
             </SidebarGroupContent>
           </SidebarGroup>
         )}
-        <div className="mt-auto px-2 pb-3 pt-2 border-t border-sidebar-border/50">
-          <button
-            onClick={togglePurple}
-            className={`flex items-center gap-2 w-full rounded-lg px-3 py-2 text-xs transition-all duration-200 ${
-              purpleSidebar
-                ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                : "hover:bg-sidebar-accent/50 text-sidebar-foreground/70"
-            }`}
-          >
-            <span className="relative flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-purple-500 to-indigo-600 text-white">
-              {purpleSidebar ? (
-                <Check className="h-3 w-3" />
-              ) : (
-                <Palette className="h-3 w-3" />
-              )}
-            </span>
-            <span className={collapsed ? "hidden" : ""}>
-              {purpleSidebar ? "Purple sidebar" : "Purple sidebar"}
-            </span>
-          </button>
-        </div>
       </SidebarContent>
     </Sidebar>
   );
