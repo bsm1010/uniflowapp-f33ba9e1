@@ -30,6 +30,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { InstalledAppsSection } from "@/components/dashboard/InstalledAppsSection";
 import { StoreProgressCard } from "@/components/dashboard/StoreProgressCard";
 import { WindowsAppBanner } from "@/components/dashboard/WindowsAppBanner";
+import { GamificationHub } from "@/components/dashboard/core-loop/GamificationHub";
+import { useServerFn } from "@tanstack/react-start";
+import { getGamification, type GamificationData } from "@/lib/core-loop";
 
 export const Route = createFileRoute("/dashboard/")({
   component: DashboardHome,
@@ -62,6 +65,9 @@ function DashboardHome() {
     product_image: string | null;
     item_count: number;
   }>>([]);
+  const [gamiData, setGamiData] = useState<GamificationData | null>(null);
+  const [gamiLoading, setGamiLoading] = useState(true);
+  const callGami = useServerFn(getGamification);
 
   const loadDashboard = useCallback(() => {
     if (!user) return;
@@ -179,6 +185,19 @@ function DashboardHome() {
   useEffect(() => {
     loadDashboard();
   }, [loadDashboard]);
+
+  useEffect(() => {
+    const load = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) { setGamiLoading(false); return; }
+      try {
+        const result = await callGami({ data: { accessToken: session.access_token } });
+        setGamiData(result);
+      } catch { /* ignore */ }
+      setGamiLoading(false);
+    };
+    load();
+  }, [callGami]);
 
   useEffect(() => {
     if (!user) return;
@@ -333,6 +352,15 @@ function DashboardHome() {
         className="mt-8 max-w-sm"
       >
         <StoreProgressCard />
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.22 }}
+        className="mt-4 max-w-sm"
+      >
+        {gamiData && <GamificationHub data={gamiData} loading={gamiLoading} compact />}
       </motion.div>
 
       <motion.div

@@ -33,11 +33,13 @@ import { Route as DashboardShipmentsRouteImport } from './routes/dashboard.shipm
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
 import { Route as DashboardReturnsRouteImport } from './routes/dashboard.returns'
 import { Route as DashboardReferralsRouteImport } from './routes/dashboard.referrals'
+import { Route as DashboardQuestsRouteImport } from './routes/dashboard.quests'
 import { Route as DashboardProgressRouteImport } from './routes/dashboard.progress'
 import { Route as DashboardProductsRouteImport } from './routes/dashboard.products'
 import { Route as DashboardOrdersRouteImport } from './routes/dashboard.orders'
 import { Route as DashboardNotificationsRouteImport } from './routes/dashboard.notifications'
 import { Route as DashboardLandingGeneratorRouteImport } from './routes/dashboard.landing-generator'
+import { Route as DashboardGamificationRouteImport } from './routes/dashboard.gamification'
 import { Route as DashboardDomainsRouteImport } from './routes/dashboard.domains'
 import { Route as DashboardDeveloperRouteImport } from './routes/dashboard.developer'
 import { Route as DashboardDeliveryRouteImport } from './routes/dashboard.delivery'
@@ -50,6 +52,7 @@ import { Route as DashboardBuilderRouteImport } from './routes/dashboard.builder
 import { Route as DashboardAppsRouteImport } from './routes/dashboard.apps'
 import { Route as DashboardAnalyticsRouteImport } from './routes/dashboard.analytics'
 import { Route as DashboardAiAgentRouteImport } from './routes/dashboard.ai-agent'
+import { Route as DashboardAchievementsRouteImport } from './routes/dashboard.achievements'
 import { Route as DashboardAboutRouteImport } from './routes/dashboard.about'
 import { Route as SSlugIndexRouteImport } from './routes/s.$slug.index'
 import { Route as DashboardNotificationsIndexRouteImport } from './routes/dashboard.notifications.index'
@@ -216,6 +219,11 @@ const DashboardReferralsRoute = DashboardReferralsRouteImport.update({
   path: '/referrals',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardQuestsRoute = DashboardQuestsRouteImport.update({
+  id: '/quests',
+  path: '/quests',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardProgressRoute = DashboardProgressRouteImport.update({
   id: '/progress',
   path: '/progress',
@@ -242,6 +250,11 @@ const DashboardLandingGeneratorRoute =
     path: '/landing-generator',
     getParentRoute: () => DashboardRoute,
   } as any)
+const DashboardGamificationRoute = DashboardGamificationRouteImport.update({
+  id: '/gamification',
+  path: '/gamification',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardDomainsRoute = DashboardDomainsRouteImport.update({
   id: '/domains',
   path: '/domains',
@@ -300,6 +313,11 @@ const DashboardAnalyticsRoute = DashboardAnalyticsRouteImport.update({
 const DashboardAiAgentRoute = DashboardAiAgentRouteImport.update({
   id: '/ai-agent',
   path: '/ai-agent',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardAchievementsRoute = DashboardAchievementsRouteImport.update({
+  id: '/achievements',
+  path: '/achievements',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardAboutRoute = DashboardAboutRouteImport.update({
@@ -563,6 +581,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/themes': typeof ThemesRoute
   '/dashboard/about': typeof DashboardAboutRoute
+  '/dashboard/achievements': typeof DashboardAchievementsRoute
   '/dashboard/ai-agent': typeof DashboardAiAgentRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/apps': typeof DashboardAppsRouteWithChildren
@@ -575,11 +594,13 @@ export interface FileRoutesByFullPath {
   '/dashboard/delivery': typeof DashboardDeliveryRoute
   '/dashboard/developer': typeof DashboardDeveloperRoute
   '/dashboard/domains': typeof DashboardDomainsRoute
+  '/dashboard/gamification': typeof DashboardGamificationRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
   '/dashboard/notifications': typeof DashboardNotificationsRouteWithChildren
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/progress': typeof DashboardProgressRoute
+  '/dashboard/quests': typeof DashboardQuestsRoute
   '/dashboard/referrals': typeof DashboardReferralsRoute
   '/dashboard/returns': typeof DashboardReturnsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
@@ -650,6 +671,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/themes': typeof ThemesRoute
   '/dashboard/about': typeof DashboardAboutRoute
+  '/dashboard/achievements': typeof DashboardAchievementsRoute
   '/dashboard/ai-agent': typeof DashboardAiAgentRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/builder': typeof DashboardBuilderRoute
@@ -661,10 +683,12 @@ export interface FileRoutesByTo {
   '/dashboard/delivery': typeof DashboardDeliveryRoute
   '/dashboard/developer': typeof DashboardDeveloperRoute
   '/dashboard/domains': typeof DashboardDomainsRoute
+  '/dashboard/gamification': typeof DashboardGamificationRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/progress': typeof DashboardProgressRoute
+  '/dashboard/quests': typeof DashboardQuestsRoute
   '/dashboard/referrals': typeof DashboardReferralsRoute
   '/dashboard/returns': typeof DashboardReturnsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
@@ -737,6 +761,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/themes': typeof ThemesRoute
   '/dashboard/about': typeof DashboardAboutRoute
+  '/dashboard/achievements': typeof DashboardAchievementsRoute
   '/dashboard/ai-agent': typeof DashboardAiAgentRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/apps': typeof DashboardAppsRouteWithChildren
@@ -749,11 +774,13 @@ export interface FileRoutesById {
   '/dashboard/delivery': typeof DashboardDeliveryRoute
   '/dashboard/developer': typeof DashboardDeveloperRoute
   '/dashboard/domains': typeof DashboardDomainsRoute
+  '/dashboard/gamification': typeof DashboardGamificationRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
   '/dashboard/notifications': typeof DashboardNotificationsRouteWithChildren
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/progress': typeof DashboardProgressRoute
+  '/dashboard/quests': typeof DashboardQuestsRoute
   '/dashboard/referrals': typeof DashboardReferralsRoute
   '/dashboard/returns': typeof DashboardReturnsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
@@ -827,6 +854,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/themes'
     | '/dashboard/about'
+    | '/dashboard/achievements'
     | '/dashboard/ai-agent'
     | '/dashboard/analytics'
     | '/dashboard/apps'
@@ -839,11 +867,13 @@ export interface FileRouteTypes {
     | '/dashboard/delivery'
     | '/dashboard/developer'
     | '/dashboard/domains'
+    | '/dashboard/gamification'
     | '/dashboard/landing-generator'
     | '/dashboard/notifications'
     | '/dashboard/orders'
     | '/dashboard/products'
     | '/dashboard/progress'
+    | '/dashboard/quests'
     | '/dashboard/referrals'
     | '/dashboard/returns'
     | '/dashboard/settings'
@@ -914,6 +944,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/themes'
     | '/dashboard/about'
+    | '/dashboard/achievements'
     | '/dashboard/ai-agent'
     | '/dashboard/analytics'
     | '/dashboard/builder'
@@ -925,10 +956,12 @@ export interface FileRouteTypes {
     | '/dashboard/delivery'
     | '/dashboard/developer'
     | '/dashboard/domains'
+    | '/dashboard/gamification'
     | '/dashboard/landing-generator'
     | '/dashboard/orders'
     | '/dashboard/products'
     | '/dashboard/progress'
+    | '/dashboard/quests'
     | '/dashboard/referrals'
     | '/dashboard/returns'
     | '/dashboard/settings'
@@ -1000,6 +1033,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/themes'
     | '/dashboard/about'
+    | '/dashboard/achievements'
     | '/dashboard/ai-agent'
     | '/dashboard/analytics'
     | '/dashboard/apps'
@@ -1012,11 +1046,13 @@ export interface FileRouteTypes {
     | '/dashboard/delivery'
     | '/dashboard/developer'
     | '/dashboard/domains'
+    | '/dashboard/gamification'
     | '/dashboard/landing-generator'
     | '/dashboard/notifications'
     | '/dashboard/orders'
     | '/dashboard/products'
     | '/dashboard/progress'
+    | '/dashboard/quests'
     | '/dashboard/referrals'
     | '/dashboard/returns'
     | '/dashboard/settings'
@@ -1279,6 +1315,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardReferralsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/quests': {
+      id: '/dashboard/quests'
+      path: '/quests'
+      fullPath: '/dashboard/quests'
+      preLoaderRoute: typeof DashboardQuestsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/progress': {
       id: '/dashboard/progress'
       path: '/progress'
@@ -1312,6 +1355,13 @@ declare module '@tanstack/react-router' {
       path: '/landing-generator'
       fullPath: '/dashboard/landing-generator'
       preLoaderRoute: typeof DashboardLandingGeneratorRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/gamification': {
+      id: '/dashboard/gamification'
+      path: '/gamification'
+      fullPath: '/dashboard/gamification'
+      preLoaderRoute: typeof DashboardGamificationRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/domains': {
@@ -1396,6 +1446,13 @@ declare module '@tanstack/react-router' {
       path: '/ai-agent'
       fullPath: '/dashboard/ai-agent'
       preLoaderRoute: typeof DashboardAiAgentRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/achievements': {
+      id: '/dashboard/achievements'
+      path: '/achievements'
+      fullPath: '/dashboard/achievements'
+      preLoaderRoute: typeof DashboardAchievementsRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/about': {
@@ -1778,6 +1835,7 @@ const DashboardNotificationsRouteWithChildren =
 
 interface DashboardRouteChildren {
   DashboardAboutRoute: typeof DashboardAboutRoute
+  DashboardAchievementsRoute: typeof DashboardAchievementsRoute
   DashboardAiAgentRoute: typeof DashboardAiAgentRoute
   DashboardAnalyticsRoute: typeof DashboardAnalyticsRoute
   DashboardAppsRoute: typeof DashboardAppsRouteWithChildren
@@ -1790,11 +1848,13 @@ interface DashboardRouteChildren {
   DashboardDeliveryRoute: typeof DashboardDeliveryRoute
   DashboardDeveloperRoute: typeof DashboardDeveloperRoute
   DashboardDomainsRoute: typeof DashboardDomainsRoute
+  DashboardGamificationRoute: typeof DashboardGamificationRoute
   DashboardLandingGeneratorRoute: typeof DashboardLandingGeneratorRoute
   DashboardNotificationsRoute: typeof DashboardNotificationsRouteWithChildren
   DashboardOrdersRoute: typeof DashboardOrdersRoute
   DashboardProductsRoute: typeof DashboardProductsRoute
   DashboardProgressRoute: typeof DashboardProgressRoute
+  DashboardQuestsRoute: typeof DashboardQuestsRoute
   DashboardReferralsRoute: typeof DashboardReferralsRoute
   DashboardReturnsRoute: typeof DashboardReturnsRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
@@ -1816,6 +1876,7 @@ interface DashboardRouteChildren {
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAboutRoute: DashboardAboutRoute,
+  DashboardAchievementsRoute: DashboardAchievementsRoute,
   DashboardAiAgentRoute: DashboardAiAgentRoute,
   DashboardAnalyticsRoute: DashboardAnalyticsRoute,
   DashboardAppsRoute: DashboardAppsRouteWithChildren,
@@ -1828,11 +1889,13 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardDeliveryRoute: DashboardDeliveryRoute,
   DashboardDeveloperRoute: DashboardDeveloperRoute,
   DashboardDomainsRoute: DashboardDomainsRoute,
+  DashboardGamificationRoute: DashboardGamificationRoute,
   DashboardLandingGeneratorRoute: DashboardLandingGeneratorRoute,
   DashboardNotificationsRoute: DashboardNotificationsRouteWithChildren,
   DashboardOrdersRoute: DashboardOrdersRoute,
   DashboardProductsRoute: DashboardProductsRoute,
   DashboardProgressRoute: DashboardProgressRoute,
+  DashboardQuestsRoute: DashboardQuestsRoute,
   DashboardReferralsRoute: DashboardReferralsRoute,
   DashboardReturnsRoute: DashboardReturnsRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
