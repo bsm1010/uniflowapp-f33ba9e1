@@ -83,11 +83,11 @@ function RootShell({ children }: { children: React.ReactNode }) {
         <HeadContent />
         <style
           dangerouslySetInnerHTML={{
-            __html: `
+              __html: `
               #app-boot-loader{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#fff;z-index:9999;transition:opacity .25s ease}
               #app-boot-loader.dark{background:#0b0a14}
-              #app-boot-loader img{height:56px;width:auto;animation:fennecly-pulse 1.4s ease-in-out infinite}
-              #app-boot-loader.dark img{filter:brightness(0) invert(1)}
+              #app-boot-loader .logo{height:56px;width:180px;-webkit-mask:url(${fennecyLogo}) center/contain no-repeat;mask:url(${fennecyLogo}) center/contain no-repeat;background:oklch(0.47 0.27 295);animation:fennecly-pulse 1.4s ease-in-out infinite}
+              #app-boot-loader.dark .logo{background:#fff}
               @keyframes fennecly-pulse{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:1;transform:scale(1.04)}}
               .app-booted #app-boot-loader{opacity:0;pointer-events:none}
             `,
@@ -104,7 +104,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
               : ""
           }
         >
-          <img src={fennecyLogo} alt="Fennecly" fetchPriority="high" />
+          <div className="logo" role="img" aria-label="Fennecly" />
         </div>
         {children}
         <Scripts />
