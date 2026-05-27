@@ -227,18 +227,23 @@ export function DashboardSidebar() {
     >
       <SidebarHeader className="bg-transparent">
         <Link to="/dashboard" className="flex items-center gap-2.5 px-2 py-2.5 group">
-          <div className="relative h-10 w-10 shrink-0 flex items-center justify-center">
-            <img
-              src={fennecyIcon}
-              alt="Fennecly"
-              width={40}
-              height={40}
-              loading="eager"
-              fetchPriority="high"
-              decoding="async"
-              className="h-10 w-10 object-contain transition-transform group-hover:scale-105 dark:brightness-0 dark:invert sidebar-purple:brightness-0 sidebar-purple:invert"
-            />
-          </div>
+          <div
+            role="img"
+            aria-label="Fennecly"
+            className={cn(
+              "h-10 w-10 shrink-0 bg-primary dark:bg-white transition-transform group-hover:scale-105",
+            )}
+            style={{
+              WebkitMaskImage: `url(${fennecyIcon})`,
+              maskImage: `url(${fennecyIcon})`,
+              WebkitMaskRepeat: "no-repeat",
+              maskRepeat: "no-repeat",
+              WebkitMaskPosition: "center",
+              maskPosition: "center",
+              WebkitMaskSize: "contain",
+              maskSize: "contain",
+            }}
+          />
           {!collapsed && (
             <div className="flex flex-col leading-tight">
               <span className="font-display font-bold text-lg bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
