@@ -63,7 +63,7 @@ function AnalyticsPage() {
       const deliveredOrders = orders.filter((o) => o.status?.toLowerCase() === "delivered").length;
       const pendingOrders = orders.filter((o) => o.status?.toLowerCase() === "pending").length;
       const avgOrderValue = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0;
-      const uniqueCustomers = new Set(orders.map((o) => o.customer_email ?? o.id)).size;
+      const uniqueCustomers = new Set((customersRes.data ?? []).map((o) => o.customer_email ?? "")).size;
       const revenue7d = (recentRes.data ?? []).reduce((s, o) => s + (Number(o.total) || 0), 0);
       const orders7d = (recentRes.data ?? []).length;
 
