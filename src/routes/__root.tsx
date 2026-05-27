@@ -50,8 +50,8 @@ export const Route = createRootRoute({
       { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "Fennecly" },
       { name: "twitter:description", content: "Fennecly is a simple, powerful app that lets you build and launch your own online store in minutes—no coding needed. Design, customize, and start selling—all in" },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/FhcV6bRv25eUX8Qg7W7DIEWJK802/social-images/social-1776923031256-df.webp" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/FhcV6bRv25eUX8Qg7W7DIEWJK802/social-images/social-1776923031256-df.webp" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/FhcV6bRv25eUX8Qg7W7DIEWJK802/social-images/social-1779851845531-KDF.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/FhcV6bRv25eUX8Qg7W7DIEWJK802/social-images/social-1779851845531-KDF.webp" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
