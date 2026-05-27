@@ -45,7 +45,7 @@ function AnalyticsPage() {
         supabase
           .from("products")
           .select("id", { count: "exact", head: true })
-          .eq("store_owner_id", user.id),
+          .eq("user_id", user.id),
         supabase
           .from("orders")
           .select("customer_email")
