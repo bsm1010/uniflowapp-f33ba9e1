@@ -81,6 +81,7 @@ export class ChronorexAdapter extends BaseDeliveryAdapter {
     }
     const data = await this.request<{
       statut?: string;
+      status?: string;
       lastUpdate?: string;
       historique?: Array<{ statut: string; date: string; lieu?: string }>;
     }>(`${CHRONOREX_BASE_URL}/commandes/${encodeURIComponent(trackingNumber)}`, {
