@@ -90,6 +90,21 @@ function ProductsPage() {
 
   useEffect(() => { load(); }, [load]);
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ig = params.get("instagram");
+    if (ig === "connected") {
+      toast.success("Instagram account connected! You can now import photos.");
+      window.history.replaceState({}, "", window.location.pathname);
+    } else if (ig === "error" || ig === "token_error") {
+      toast.error("Failed to connect Instagram. Please try again.");
+      window.history.replaceState({}, "", window.location.pathname);
+    } else if (ig === "missing_config") {
+      toast.error("Instagram is not configured. Contact the store owner.");
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, []);
+
   const handleSort = (field: SortField) => {
     if (sortField === field) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
     else { setSortField(field); setSortDir("asc"); }

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Instagram, Loader2, Check, Image as ImageIcon, AlertCircle, LogIn } from "lucide-react";
+import { Instagram, Loader2, Check, Image as ImageIcon, AlertCircle, LogIn, ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -27,9 +26,11 @@ export function InstagramMediaPicker({ onSelect, onClose }: Props) {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [connecting, setConnecting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const checkConnection = async () => {
     setLoading(true);
+    setError(null);
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) { setLoading(false); return; }
 
@@ -53,28 +54,36 @@ export function InstagramMediaPicker({ onSelect, onClose }: Props) {
         headers: { Authorization: `Bearer ${token}` },
       });
       const result = await res.json();
-      if (result.error) { toast.error(result.error); return; }
+      if (result.error) { setError(result.error); return; }
       setMedia(result.data.filter((m: InstagramMedia) => m.media_type === "IMAGE" || m.thumbnail_url));
     } catch {
-      toast.error("Failed to load Instagram media");
+      setError("Failed to load Instagram media");
     }
   };
 
   useEffect(() => { checkConnection(); }, []);
 
   const initiateOAuth = async () => {
+    setError(null);
+
     if (!INSTAGRAM_CLIENT_ID) {
-      toast.error("Instagram client ID not configured. Set VITE_INSTAGRAM_CLIENT_ID in your .env");
+      setError("Instagram API not configured. The store owner needs to set VITE_INSTAGRAM_CLIENT_ID in their environment variables.");
       return;
     }
+
     setConnecting(true);
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session) { toast.error("Please sign in first"); setConnecting(false); return; }
+    if (!session) { setError("Please sign in first"); setConnecting(false); return; }
 
-    const state = btoa(session.access_token);
-    const redirectUri = `${window.location.origin}/api/auth/instagram/callback`;
-    const oauthUrl = `https://api.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${redirectUri}&scope=user_profile,user_media&response_type=code&state=${state}`;
-    window.location.href = oauthUrl;
+    try {
+      const state = encodeURIComponent(session.access_token);
+      const redirectUri = `${window.location.origin}/api/auth/instagram/callback`;
+      const oauthUrl = `https://api.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${redirectUri}&scope=user_profile,user_media&response_type=code&state=${state}`;
+      window.location.href = oauthUrl;
+    } catch (e) {
+      setError("Failed to start Instagram authentication. Please try again.");
+      setConnecting(false);
+    }
   };
 
   const toggleSelected = (id: string) => {
@@ -96,6 +105,19 @@ export function InstagramMediaPicker({ onSelect, onClose }: Props) {
 
   return (
     <div className="space-y-4">
+      {error && (
+        <div className="flex items-start gap-2 rounded-lg border border-amber-500/30 bg-amber-500/5 p-3">
+          <AlertCircle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
+          <div className="text-xs text-amber-700">
+            <p className="font-medium mb-1">Instagram not configured</p>
+            <p>To enable Instagram photo import, create an app at developers.facebook.com and add the App ID to your environment as <code className="bg-amber-500/10 px-1 rounded">VITE_INSTAGRAM_CLIENT_ID</code>.</p>
+            <a href="https://developers.facebook.com" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 mt-1.5 text-amber-600 hover:text-amber-700 underline font-medium">
+              Open Meta Developer Console <ExternalLink className="h-3 w-3" />
+            </a>
+          </div>
+        </div>
+      )}
+
       {loading ? (
         <div className="flex items-center justify-center py-12">
           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />

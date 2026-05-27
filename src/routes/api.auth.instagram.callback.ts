@@ -29,12 +29,7 @@ export const Route = createFileRoute("/api/auth/instagram/callback")({
           return redirect("/dashboard/products?instagram=missing_config");
         }
 
-        let accessToken: string;
-        try {
-          accessToken = atob(state);
-        } catch {
-          return redirect("/dashboard/products?instagram=error");
-        }
+        const accessToken = decodeURIComponent(state);
 
         const userClient = createClient(SUPABASE_URL, SUPABASE_ANON, {
           global: { headers: { Authorization: `Bearer ${accessToken}` } },
