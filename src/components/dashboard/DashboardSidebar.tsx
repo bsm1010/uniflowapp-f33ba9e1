@@ -31,6 +31,7 @@ import {
   Bell,
   Store as StoreIcon,
   Code2,
+  Check,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import fennecyIcon from "@/assets/fennecly-icon.webp";
@@ -84,6 +85,22 @@ export function DashboardSidebar() {
   useEffect(() => {
     if (anyAppActive) setAppsOpen(true);
   }, [anyAppActive]);
+
+  const [purpleSidebar, setPurpleSidebar] = useState(false);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("sidebar-purple");
+    const enabled = stored === "true";
+    setPurpleSidebar(enabled);
+    document.documentElement.setAttribute("data-sidebar-purple", String(enabled));
+  }, []);
+
+  const togglePurple = () => {
+    const next = !purpleSidebar;
+    setPurpleSidebar(next);
+    document.documentElement.setAttribute("data-sidebar-purple", String(next));
+    localStorage.setItem("sidebar-purple", String(next));
+  };
 
   const groups: NavGroup[] = [
     {
@@ -366,6 +383,27 @@ export function DashboardSidebar() {
             </SidebarGroupContent>
           </SidebarGroup>
         )}
+        <div className="mt-auto px-2 pb-3 pt-2 border-t border-sidebar-border/50">
+          <button
+            onClick={togglePurple}
+            className={`flex items-center gap-2 w-full rounded-lg px-3 py-2 text-xs transition-all duration-200 ${
+              purpleSidebar
+                ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                : "hover:bg-sidebar-accent/50 text-sidebar-foreground/70"
+            }`}
+          >
+            <span className="relative flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-purple-500 to-indigo-600 text-white">
+              {purpleSidebar ? (
+                <Check className="h-3 w-3" />
+              ) : (
+                <Palette className="h-3 w-3" />
+              )}
+            </span>
+            <span className={collapsed ? "hidden" : ""}>
+              {purpleSidebar ? "Purple sidebar" : "Purple sidebar"}
+            </span>
+          </button>
+        </div>
       </SidebarContent>
     </Sidebar>
   );
