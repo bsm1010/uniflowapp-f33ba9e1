@@ -31,6 +31,7 @@ import {
   Bell,
   Store as StoreIcon,
   Code2,
+  Trophy,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import fennecyIcon from "@/assets/fennecly-icon.webp";
