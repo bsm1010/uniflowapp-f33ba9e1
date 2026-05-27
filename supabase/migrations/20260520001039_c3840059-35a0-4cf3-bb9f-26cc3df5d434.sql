@@ -1,0 +1,1 @@
+ALTER TABLE public.category_images ADD COLUMN IF NOT EXISTS description TEXT;

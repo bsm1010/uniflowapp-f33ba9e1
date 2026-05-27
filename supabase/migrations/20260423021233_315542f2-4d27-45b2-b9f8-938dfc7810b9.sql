@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Anyone can update chatbot convo" ON public.chatbot_conversations;
