@@ -334,7 +334,7 @@ function OrdersPage() {
           icon={ShoppingBag}
           title="No orders yet"
           description="When a customer places an order, it will appear here. Share your store link to start selling."
-          action={{ label: "View your store", onClick: () => navigate({ to: "/dashboard/store" }) }}
+          action={<Button onClick={() => navigate({ to: "/dashboard/store" })}>View your store</Button>}
         />
       ) : (
         <Card className="border-border/60 shadow-soft">
