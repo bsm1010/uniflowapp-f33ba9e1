@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "./LanguageSwitcher";
-import fennecyLogo from "@/assets/fennecly-logo.webp";
+import { FennecyLogo } from "@/components/ui/fennecy-logo";
 
 function DarkModeToggle() {
   const [isDark, setIsDark] = useState(false);
