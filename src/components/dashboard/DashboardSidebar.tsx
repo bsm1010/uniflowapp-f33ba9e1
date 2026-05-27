@@ -235,7 +235,7 @@ export function DashboardSidebar() {
               loading="eager"
               fetchPriority="high"
               decoding="async"
-              className="h-10 w-10 object-contain transition-transform group-hover:scale-105 dark:brightness-0 dark:invert"
+              className="h-10 w-10 object-contain transition-transform group-hover:scale-105 dark:brightness-0 dark:invert sidebar-purple:brightness-0 sidebar-purple:invert"
             />
           </div>
           {!collapsed && (
