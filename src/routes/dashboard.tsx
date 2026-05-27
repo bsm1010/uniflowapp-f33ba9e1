@@ -32,6 +32,12 @@ const HelpChatbot = lazy(() =>
   })),
 );
 
+const AICopilot = lazy(() =>
+  import("@/components/dashboard/AICopilot").then((m) => ({
+    default: m.AICopilot,
+  })),
+);
+
 export const Route = createFileRoute("/dashboard")({
   component: DashboardLayout,
   head: () => ({
@@ -121,18 +127,27 @@ function DashboardLayout() {
     boolean | null
   >(null);
 
-  const selectedStore = localStorage.getItem("selectedStore");
+  const [selectedStore, setSelectedStore] = useState<string | null>(null);
+  const [storeHydrated, setStoreHydrated] = useState(false);
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      setSelectedStore(localStorage.getItem("selectedStore"));
+      setStoreHydrated(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
     if (!loading && !user) {
       navigate({ to: "/login" });
       return;
     }
 
-    if (!loading && user && !selectedStore) {
+    if (!loading && user && storeHydrated && !selectedStore) {
       navigate({ to: "/select-store" });
     }
-  }, [loading, user, selectedStore, navigate]);
+  }, [loading, user, selectedStore, storeHydrated, navigate]);
 
   useEffect(() => {
     registerServiceWorker();
@@ -216,6 +231,7 @@ function DashboardLayout() {
             <WelcomeDialog userId={user.id} />
             <OnboardingTour userId={user.id} />
             <HelpChatbot />
+            <AICopilot />
           </Suspense>
         </SidebarProvider>
       </CurrentStoreProvider>

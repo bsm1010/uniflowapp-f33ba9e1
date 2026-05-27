@@ -71,6 +71,7 @@ export function StoreProgressCard() {
           )}
         </div>
 
+        {/* Progress bar */}
         <div className="h-2 rounded-full bg-white/15 overflow-hidden">
           <motion.div
             initial={{ width: 0 }}
@@ -81,7 +82,7 @@ export function StoreProgressCard() {
         </div>
 
         {allDone ? (
-          <p className="text-xs text-purple-200 text-center py-1">Everything is set up!</p>
+          <p className="text-xs text-purple-200 text-center py-1">Everything is set up! 🎉</p>
         ) : nextIncomplete ? (
           <>
             <div className="space-y-1.5">

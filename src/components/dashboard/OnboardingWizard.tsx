@@ -14,7 +14,7 @@ interface Props {
 }
 
 const CURRENCIES = [
-  { code: "USD", label: "US Dollar ($)" },
+  { code: "DZD", label: "Algerian Dinar (DA)" },
   { code: "EUR", label: "Euro (€)" },
   { code: "GBP", label: "British Pound (£)" },
   { code: "DZD", label: "Algerian Dinar (DA)" },
@@ -66,7 +66,7 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
   const [slugTouched, setSlugTouched] = useState(false);
   const [slugChecking, setSlugChecking] = useState(false);
   const [slugAvailable, setSlugAvailable] = useState<boolean | null>(null);
-  const [currency, setCurrency] = useState("USD");
+  const [currency, setCurrency] = useState("DZD");
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);

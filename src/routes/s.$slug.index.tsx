@@ -35,9 +35,16 @@ export const Route = createFileRoute("/s/$slug/")({
 type SortKey = "newest" | "price-asc" | "price-desc" | "name";
 
 // ── TikTok Pixel injection ────────────────────────────────────────
+const TIKTOK_PIXEL_ID_PATTERN = /^[A-Za-z0-9]{1,30}$/;
+
 function TikTokPixel({ pixelId }: { pixelId: string }) {
   useEffect(() => {
     if (!pixelId) return;
+    // Validate against strict allowlist to prevent script injection
+    if (!TIKTOK_PIXEL_ID_PATTERN.test(pixelId)) {
+      console.warn("Invalid TikTok pixel ID format; skipping injection.");
+      return;
+    }
     // Avoid duplicate injection
     if (document.getElementById("tt-pixel")) return;
 
@@ -206,7 +213,7 @@ function StorefrontHome() {
   const template = settings.theme;
   const isBold = template === "bold";
   const isMinimal = template === "minimal";
-  const currency = settings.currency || "USD";
+  const currency = settings.currency || "DZD";
   const featured = products.slice(0, 8);
 
   const gridClass =
@@ -543,9 +550,6 @@ function StorefrontHome() {
                   currency={currency}
                   addLabel={labels.add_to_cart}
                   onAdd={handleQuickAdd}
-                  compact={template === "grid"}
-                  minimal={template === "minimal"}
-                  bold={template === "bold"}
                 />
               ))}
             </div>

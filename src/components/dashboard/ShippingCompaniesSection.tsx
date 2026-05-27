@@ -20,6 +20,13 @@ import {
 import { syncDeliveryCompanyTariffs } from "@/lib/delivery/sync-tariffs.functions";
 import zrExpressLogo from "@/assets/zrexpress-logo.png";
 import yalidineLogo from "@/assets/yalidine-logo.png";
+import maystroLogo from "@/assets/maystro-logo.svg";
+import sherpaLogo from "@/assets/sherpa-logo.svg";
+import ecoCourierLogo from "@/assets/ecocourier-logo.svg";
+import andersonLogo from "@/assets/anderson-logo.svg";
+import guepexLogo from "@/assets/guepex-logo.svg";
+import dhdLogo from "@/assets/dhd-logo.svg";
+import chronorexLogo from "@/assets/chronorex-logo.svg";
 import { ZRExpressRatesPreview } from "@/components/dashboard/ZRExpressRatesPreview";
 
 function isZRExpress(name: string): boolean {
@@ -34,6 +41,18 @@ const COMPANY_LOGOS: Record<string, string> = {
   zr_express: zrExpressLogo,
   yalidine: yalidineLogo,
   yalidine_express: yalidineLogo,
+  maystro: maystroLogo,
+  maystro_delivery: maystroLogo,
+  sherpa: sherpaLogo,
+  eco_courier: ecoCourierLogo,
+  eco_courier_dz: ecoCourierLogo,
+  anderson: andersonLogo,
+  anderson_ecommerce: andersonLogo,
+  guepex: guepexLogo,
+  dhd: dhdLogo,
+  dhd_livraison: dhdLogo,
+  chronorex: chronorexLogo,
+  chronorex_express: chronorexLogo,
 };
 
 function getCompanyLogo(name: string): string | undefined {

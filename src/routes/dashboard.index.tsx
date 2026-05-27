@@ -1,5 +1,5 @@
 import { IphoneShortcutBanner } from "@/components/dashboard/IphoneShortcutBanner";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
@@ -16,17 +16,20 @@ import {
   Clock,
   AlertTriangle,
   CheckCircle2,
+  Store,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useCurrentStore } from "@/hooks/use-current-store";
 import { useSubscription } from "@/hooks/use-subscription";
+import { useCountUp } from "@/hooks/use-count-up";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Card, CardContent } from "@/components/ui/card";
 import { InstalledAppsSection } from "@/components/dashboard/InstalledAppsSection";
-import { WindowsAppBanner } from "@/components/dashboard/WindowsAppBanner";
 import { StoreProgressCard } from "@/components/dashboard/StoreProgressCard";
+import { WindowsAppBanner } from "@/components/dashboard/WindowsAppBanner";
 
 export const Route = createFileRoute("/dashboard/")({
   component: DashboardHome,
@@ -40,6 +43,7 @@ function DashboardHome() {
   const { currentStore } = useCurrentStore();
   const { t } = useTranslation();
   const { status, daysRemaining, hadPaidSubscription } = useSubscription();
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [hasPendingPayment, setHasPendingPayment] = useState(false);
   const [counts, setCounts] = useState({
@@ -208,7 +212,7 @@ function DashboardHome() {
   const stats = [
     {
       label: t("dashboard.home.stats.products"),
-      value: counts.products.toString(),
+      raw: counts.products,
       icon: Package,
       accent: "from-violet-500/40 to-violet-500/15",
       iconColor: "text-violet-600 dark:text-violet-400",
@@ -216,7 +220,7 @@ function DashboardHome() {
     },
     {
       label: t("dashboard.home.stats.orders"),
-      value: counts.orders.toString(),
+      raw: counts.orders,
       icon: ShoppingBag,
       accent: "from-fuchsia-500/40 to-fuchsia-500/15",
       iconColor: "text-fuchsia-600 dark:text-fuchsia-400",
@@ -224,7 +228,8 @@ function DashboardHome() {
     },
     {
       label: t("dashboard.home.stats.revenue"),
-      value: `$${counts.revenue.toFixed(2)}`,
+      raw: counts.revenue,
+      isRevenue: true,
       icon: DollarSign,
       accent: "from-emerald-500/40 to-emerald-500/15",
       iconColor: "text-emerald-600 dark:text-emerald-400",
@@ -232,7 +237,7 @@ function DashboardHome() {
     },
     {
       label: t("dashboard.home.stats.customers"),
-      value: counts.customers.toString(),
+      raw: counts.customers,
       icon: Users,
       accent: "from-sky-500/40 to-sky-500/15",
       iconColor: "text-sky-600 dark:text-sky-400",
@@ -283,37 +288,43 @@ function DashboardHome() {
         hasPendingPayment={hasPendingPayment}
       />
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((s, i) => (
-          <motion.div
-            key={s.label}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.05 * i }}
-          >
-            <Card className={`relative overflow-hidden ${s.borderColor} shadow-soft hover:shadow-glow/20 transition-shadow`}>
-              <div
-                className={`absolute inset-0 bg-gradient-to-br ${s.accent} pointer-events-none`}
+      {counts.products === 0 && counts.orders === 0 ? (
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="mt-8"
+        >
+          <EmptyState
+            icon={Store}
+            title="Welcome to your dashboard"
+            description="Your store stats will show up here once you add products and start getting orders."
+            action={{ label: "Add your first product", onClick: () => navigate({ to: "/dashboard/products" }) }}
+          />
+        </motion.div>
+      ) : (
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {stats.map((s, i) => (
+            <motion.div
+              key={s.label}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.05 * i }}
+            >
+              <StatCard
+                label={s.label}
+                rawValue={s.raw}
+                isRevenue={s.isRevenue}
+                icon={s.icon}
+                accent={s.accent}
+                iconColor={s.iconColor}
+                borderColor={s.borderColor}
+                delay={i * 120}
               />
-              <CardContent className="relative p-6">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground font-medium">
-                    {s.label}
-                  </span>
-                  <div className="h-9 w-9 rounded-xl bg-background/80 backdrop-blur flex items-center justify-center border border-border/60">
-                    <s.icon className={`h-4 w-4 ${s.iconColor}`} />
-                  </div>
-                </div>
-                <div className="mt-4">
-                  <div className="text-3xl font-bold font-display">
-                    {s.value}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
-      </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
 
       <motion.div
         initial={{ opacity: 0, y: 12 }}
@@ -446,6 +457,56 @@ function DashboardHome() {
 
       <InstalledAppsSection />
     </div>
+  );
+}
+
+function StatCard({
+  label,
+  rawValue,
+  isRevenue,
+  icon: Icon,
+  accent,
+  iconColor,
+  borderColor,
+  delay,
+}: {
+  label: string;
+  rawValue: number;
+  isRevenue?: boolean;
+  icon: React.ComponentType<{ className?: string }>;
+  accent: string;
+  iconColor: string;
+  borderColor: string;
+  delay: number;
+}) {
+  const animated = useCountUp(rawValue, 1400, delay);
+  const display = isRevenue
+    ? `${animated.toLocaleString()} DA`
+    : animated.toLocaleString();
+
+  return (
+    <Card
+      className={`relative overflow-hidden ${borderColor} shadow-soft hover:shadow-glow/20 transition-shadow`}
+    >
+      <div
+        className={`absolute inset-0 bg-gradient-to-br ${accent} pointer-events-none`}
+      />
+      <CardContent className="relative p-6">
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-muted-foreground font-medium">
+            {label}
+          </span>
+          <div className="h-9 w-9 rounded-xl bg-background/80 backdrop-blur flex items-center justify-center border border-border/60">
+            <Icon className={`h-4 w-4 ${iconColor}`} />
+          </div>
+        </div>
+        <div className="mt-4">
+          <div className="text-3xl font-bold font-display tabular-nums">
+            {display}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 

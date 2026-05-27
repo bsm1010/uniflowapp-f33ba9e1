@@ -1,7 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { BarChart3, TrendingUp } from "lucide-react";
+import { useEffect, useState } from "react";
+import { BarChart3, TrendingUp, ShoppingCart, DollarSign, Users, Package, Loader2 } from "lucide-react";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
+import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
+import { formatPrice } from "@/lib/formatPrice";
 import { AlgeriaOrdersMap } from "@/components/dashboard/AlgeriaOrdersMap";
 
 export const Route = createFileRoute("/dashboard/analytics")({
@@ -9,14 +13,97 @@ export const Route = createFileRoute("/dashboard/analytics")({
   head: () => ({ meta: [{ title: "Analytics — Fennecly" }] }),
 });
 
+type Stats = {
+  totalOrders: number;
+  totalRevenue: number;
+  totalProducts: number;
+  totalCustomers: number;
+  avgOrderValue: number;
+  conversionRate: string;
+  pendingOrders: number;
+  deliveredOrders: number;
+  revenue7d: number;
+  orders7d: number;
+};
+
 function AnalyticsPage() {
-  const stats = [
-    { label: "Sessions (7d)", value: "0", gradient: "from-violet-500 to-fuchsia-500" },
-    { label: "Conversion rate", value: "0.0%", gradient: "from-emerald-500 to-teal-500" },
-    { label: "Avg. order value", value: "$0.00", gradient: "from-amber-500 to-orange-500" },
+  const { user } = useAuth();
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      setLoading(true);
+      const sevenDaysAgo = new Date(Date.now() - 7 * 86400000).toISOString();
+
+      const [ordersRes, productsRes, customersRes, recentRes] = await Promise.all([
+        supabase
+          .from("orders")
+          .select("id, total, status, created_at")
+          .eq("store_owner_id", user.id),
+        supabase
+          .from("products")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", user.id),
+        supabase
+          .from("orders")
+          .select("customer_email")
+          .eq("store_owner_id", user.id),
+        supabase
+          .from("orders")
+          .select("id, total")
+          .eq("store_owner_id", user.id)
+          .gte("created_at", sevenDaysAgo),
+      ]);
+
+      const orders = ordersRes.data ?? [];
+      const totalOrders = orders.length;
+      const totalRevenue = orders.reduce((s, o) => s + (Number(o.total) || 0), 0);
+      const deliveredOrders = orders.filter((o) => o.status?.toLowerCase() === "delivered").length;
+      const pendingOrders = orders.filter((o) => o.status?.toLowerCase() === "pending").length;
+      const avgOrderValue = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0;
+      const uniqueCustomers = new Set((customersRes.data ?? []).map((o) => o.customer_email ?? "")).size;
+      const revenue7d = (recentRes.data ?? []).reduce((s, o) => s + (Number(o.total) || 0), 0);
+      const orders7d = (recentRes.data ?? []).length;
+
+      setStats({
+        totalOrders,
+        totalRevenue,
+        totalProducts: productsRes.count ?? 0,
+        totalCustomers: uniqueCustomers,
+        avgOrderValue,
+        conversionRate: orders7d > 0 ? `${Math.min(100, Math.round((deliveredOrders / Math.max(totalOrders, 1)) * 100))}%` : "0%",
+        pendingOrders,
+        deliveredOrders,
+        revenue7d,
+        orders7d,
+      });
+      setLoading(false);
+    })();
+  }, [user]);
+
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto flex items-center justify-center py-24">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  const statCards = [
+    { label: "Orders (total)", value: String(stats?.totalOrders ?? 0), gradient: "from-violet-500 to-fuchsia-500", icon: ShoppingCart },
+    { label: "Revenue", value: formatPrice(stats?.totalRevenue ?? 0), gradient: "from-emerald-500 to-teal-500", icon: DollarSign },
+    { label: "Avg. order value", value: formatPrice(stats?.avgOrderValue ?? 0), gradient: "from-amber-500 to-orange-500", icon: TrendingUp },
+    { label: "Customers", value: String(stats?.totalCustomers ?? 0), gradient: "from-cyan-500 to-blue-500", icon: Users },
+    { label: "Products", value: String(stats?.totalProducts ?? 0), gradient: "from-pink-500 to-rose-500", icon: Package },
+    { label: "Delivered", value: String(stats?.deliveredOrders ?? 0), gradient: "from-green-500 to-emerald-500", icon: BarChart3 },
+    { label: "Pending", value: String(stats?.pendingOrders ?? 0), gradient: "from-amber-500 to-yellow-500", icon: BarChart3 },
+    { label: "Revenue (7d)", value: formatPrice(stats?.revenue7d ?? 0), gradient: "from-sky-500 to-indigo-500", icon: TrendingUp },
   ];
+
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-7xl mx-auto space-y-6">
       <PageHeader
         eyebrow="Insights"
         title="Analytics"
@@ -24,39 +111,55 @@ function AnalyticsPage() {
         icon={BarChart3}
         gradient="from-emerald-500 via-teal-500 to-cyan-500"
       />
-      <div className="grid gap-4 md:grid-cols-3">
-        {stats.map((k) => (
+
+      <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
+        {statCards.map((k) => (
           <Card key={k.label} className="relative overflow-hidden border-border/60 shadow-soft">
             <div className={`absolute -top-12 -right-12 h-32 w-32 rounded-full blur-3xl opacity-25 bg-gradient-to-br ${k.gradient}`} />
-            <CardContent className="relative p-6">
+            <CardContent className="relative p-5">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">{k.label}</span>
-                <div className={`grid size-9 place-items-center rounded-xl text-white bg-gradient-to-br ${k.gradient}`}>
-                  <TrendingUp className="h-4 w-4" />
+                <span className="text-xs text-muted-foreground">{k.label}</span>
+                <div className={`grid size-8 place-items-center rounded-lg text-white bg-gradient-to-br ${k.gradient}`}>
+                  <k.icon className="h-3.5 w-3.5" />
                 </div>
               </div>
-              <div className="mt-3 text-3xl font-bold font-display">{k.value}</div>
+              <div className="mt-2 text-xl font-bold font-display">{k.value}</div>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      {/* Algeria Orders Map */}
-      <div className="mt-6">
+      <div className="grid gap-6 lg:grid-cols-2">
         <AlgeriaOrdersMap />
-      </div>
 
-      <Card className="mt-6 border-border/60 shadow-soft">
-        <CardContent className="p-6">
-          <h3 className="font-semibold">Traffic overview</h3>
-          <div className="mt-6 h-64 rounded-xl border border-dashed border-border bg-muted/30 flex items-center justify-center text-muted-foreground">
-            <div className="text-center">
-              <BarChart3 className="h-8 w-8 mx-auto opacity-60" />
-              <p className="mt-2 text-sm">Charts will appear once data flows in.</p>
+        <Card className="border-border/60 shadow-soft">
+          <CardContent className="p-5">
+            <h3 className="font-semibold text-sm">7-day snapshot</h3>
+            <div className="mt-3 grid grid-cols-2 gap-4">
+              <div className="rounded-lg bg-muted/30 p-4">
+                <p className="text-xs text-muted-foreground">Orders (7d)</p>
+                <p className="mt-1 text-2xl font-bold">{stats?.orders7d ?? 0}</p>
+              </div>
+              <div className="rounded-lg bg-muted/30 p-4">
+                <p className="text-xs text-muted-foreground">Revenue (7d)</p>
+                <p className="mt-1 text-2xl font-bold">{formatPrice(stats?.revenue7d ?? 0)}</p>
+              </div>
+              <div className="rounded-lg bg-muted/30 p-4">
+                <p className="text-xs text-muted-foreground">Delivery rate</p>
+                <p className="mt-1 text-2xl font-bold">{stats?.conversionRate ?? "0%"}</p>
+              </div>
+              <div className="rounded-lg bg-muted/30 p-4">
+                <p className="text-xs text-muted-foreground">Order/product ratio</p>
+                <p className="mt-1 text-2xl font-bold">
+                  {stats && stats.totalProducts > 0
+                    ? (stats.totalOrders / stats.totalProducts).toFixed(1)
+                    : "0"}
+                </p>
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

@@ -11,6 +11,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { ALGERIAN_WILAYAS } from "@/lib/algeriaWilayas";
 import { ShippingCompaniesSection } from "@/components/dashboard/ShippingCompaniesSection";
+import { RatesComparisonTable } from "@/components/dashboard/RatesComparisonTable";
+import { BulkPushSection } from "@/components/dashboard/BulkPushSection";
 import deliveryTruck from "@/assets/delivery-truck.webp";
 
 export const Route = createFileRoute("/dashboard/delivery")({
@@ -25,6 +27,26 @@ function DeliverySettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
+  const [connectedCarriers, setConnectedCarriers] = useState<{ companyId: string; name: string; enabled: boolean }[]>([]);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("store_delivery_companies")
+      .select("company_id, enabled, delivery_companies!inner(name)")
+      .eq("store_id", user.id)
+      .then(({ data }) => {
+        if (data) {
+          setConnectedCarriers(
+            data.map((r: any) => ({
+              companyId: r.company_id,
+              name: r.delivery_companies?.name ?? "Unknown",
+              enabled: r.enabled,
+            })),
+          );
+        }
+      });
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
@@ -182,6 +204,10 @@ function DeliverySettingsPage() {
       </section>
 
       <ShippingCompaniesSection />
+
+      <RatesComparisonTable connectedCompanies={connectedCarriers} />
+
+      <BulkPushSection carriers={connectedCarriers} />
 
       <Card className="overflow-hidden">
         <div className="flex flex-col gap-3 border-b bg-muted/30 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">

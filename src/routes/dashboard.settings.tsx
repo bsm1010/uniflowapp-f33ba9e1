@@ -52,12 +52,13 @@ function SettingsPage() {
 
   // Payments (UI-only preferences, persisted in localStorage for now)
   const [paymentsEnabled, setPaymentsEnabled] = useState(false);
-  const [currency, setCurrency] = useState("USD");
+  const [currency, setCurrency] = useState("DZD");
   const [payoutEmail, setPayoutEmail] = useState("");
 
-  // Account deletion
+  // Danger zone
   const [deleteConfirm, setDeleteConfirm] = useState("");
   const [deleting, setDeleting] = useState(false);
+
 
   useEffect(() => {
     if (!user) return;
@@ -89,7 +90,7 @@ function SettingsPage() {
       try {
         const p = JSON.parse(raw);
         setPaymentsEnabled(!!p.enabled);
-        setCurrency(p.currency ?? "USD");
+        setCurrency(p.currency ?? "DZD");
         setPayoutEmail(p.payoutEmail ?? "");
       } catch {
         // ignore
@@ -421,7 +422,7 @@ function SettingsPage() {
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value.toUpperCase())}
                 maxLength={3}
-                placeholder="USD"
+                placeholder="DZD"
               />
             </div>
             <div className="space-y-2">

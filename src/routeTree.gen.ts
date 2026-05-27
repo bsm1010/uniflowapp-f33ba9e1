@@ -33,6 +33,7 @@ import { Route as DashboardShipmentsRouteImport } from './routes/dashboard.shipm
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
 import { Route as DashboardReturnsRouteImport } from './routes/dashboard.returns'
 import { Route as DashboardReferralsRouteImport } from './routes/dashboard.referrals'
+import { Route as DashboardProgressRouteImport } from './routes/dashboard.progress'
 import { Route as DashboardProductsRouteImport } from './routes/dashboard.products'
 import { Route as DashboardOrdersRouteImport } from './routes/dashboard.orders'
 import { Route as DashboardNotificationsRouteImport } from './routes/dashboard.notifications'
@@ -85,11 +86,15 @@ import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/em
 import { Route as DashboardOrdersOrderIdTrackingRouteImport } from './routes/dashboard.orders_.$orderId.tracking'
 import { Route as DashboardAppsMAppIdRouteImport } from './routes/dashboard.apps.m.$appId'
 import { Route as DashboardAppsListingAppKeyRouteImport } from './routes/dashboard.apps.listing.$appKey'
+import { Route as ApiPublicHooksTelegramSetupRouteImport } from './routes/api.public.hooks.telegram-setup'
+import { Route as ApiPublicHooksTelegramRouteImport } from './routes/api.public.hooks.telegram'
 import { Route as ApiPublicHooksSyncTariffsRouteImport } from './routes/api.public.hooks.sync-tariffs'
 import { Route as ApiPublicHooksSyncShipmentStatusesRouteImport } from './routes/api/public/hooks/sync-shipment-statuses'
 import { Route as ApiPublicHooksPushDispatchRouteImport } from './routes/api/public/hooks/push-dispatch'
 import { Route as ApiPublicHooksInstagramRouteImport } from './routes/api.public.hooks.instagram'
 import { Route as ApiDbTableIdRecordIdRouteImport } from './routes/api.db.$tableId.$recordId'
+import { Route as ApiAuthInstagramMediaRouteImport } from './routes/api.auth.instagram.media'
+import { Route as ApiAuthInstagramCallbackRouteImport } from './routes/api.auth.instagram.callback'
 
 const ThemesRoute = ThemesRouteImport.update({
   id: '/themes',
@@ -209,6 +214,11 @@ const DashboardReturnsRoute = DashboardReturnsRouteImport.update({
 const DashboardReferralsRoute = DashboardReferralsRouteImport.update({
   id: '/referrals',
   path: '/referrals',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardProgressRoute = DashboardProgressRouteImport.update({
+  id: '/progress',
+  path: '/progress',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardProductsRoute = DashboardProductsRouteImport.update({
@@ -489,6 +499,17 @@ const DashboardAppsListingAppKeyRoute =
     path: '/listing/$appKey',
     getParentRoute: () => DashboardAppsRoute,
   } as any)
+const ApiPublicHooksTelegramSetupRoute =
+  ApiPublicHooksTelegramSetupRouteImport.update({
+    id: '/api/public/hooks/telegram-setup',
+    path: '/api/public/hooks/telegram-setup',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksTelegramRoute = ApiPublicHooksTelegramRouteImport.update({
+  id: '/api/public/hooks/telegram',
+  path: '/api/public/hooks/telegram',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksSyncTariffsRoute =
   ApiPublicHooksSyncTariffsRouteImport.update({
     id: '/api/public/hooks/sync-tariffs',
@@ -517,6 +538,17 @@ const ApiDbTableIdRecordIdRoute = ApiDbTableIdRecordIdRouteImport.update({
   path: '/$recordId',
   getParentRoute: () => ApiDbTableIdRoute,
 } as any)
+const ApiAuthInstagramMediaRoute = ApiAuthInstagramMediaRouteImport.update({
+  id: '/api/auth/instagram/media',
+  path: '/api/auth/instagram/media',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthInstagramCallbackRoute =
+  ApiAuthInstagramCallbackRouteImport.update({
+    id: '/api/auth/instagram/callback',
+    path: '/api/auth/instagram/callback',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -547,6 +579,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/notifications': typeof DashboardNotificationsRouteWithChildren
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
+  '/dashboard/progress': typeof DashboardProgressRoute
   '/dashboard/referrals': typeof DashboardReferralsRoute
   '/dashboard/returns': typeof DashboardReturnsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
@@ -587,11 +620,15 @@ export interface FileRoutesByFullPath {
   '/dashboard/apps/': typeof DashboardAppsIndexRoute
   '/dashboard/notifications/': typeof DashboardNotificationsIndexRoute
   '/s/$slug/': typeof SSlugIndexRoute
+  '/api/auth/instagram/callback': typeof ApiAuthInstagramCallbackRoute
+  '/api/auth/instagram/media': typeof ApiAuthInstagramMediaRoute
   '/api/db/$tableId/$recordId': typeof ApiDbTableIdRecordIdRoute
   '/api/public/hooks/instagram': typeof ApiPublicHooksInstagramRoute
   '/api/public/hooks/push-dispatch': typeof ApiPublicHooksPushDispatchRoute
   '/api/public/hooks/sync-shipment-statuses': typeof ApiPublicHooksSyncShipmentStatusesRoute
   '/api/public/hooks/sync-tariffs': typeof ApiPublicHooksSyncTariffsRoute
+  '/api/public/hooks/telegram': typeof ApiPublicHooksTelegramRoute
+  '/api/public/hooks/telegram-setup': typeof ApiPublicHooksTelegramSetupRoute
   '/dashboard/apps/listing/$appKey': typeof DashboardAppsListingAppKeyRoute
   '/dashboard/apps/m/$appId': typeof DashboardAppsMAppIdRoute
   '/dashboard/orders/$orderId/tracking': typeof DashboardOrdersOrderIdTrackingRoute
@@ -627,6 +664,7 @@ export interface FileRoutesByTo {
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
+  '/dashboard/progress': typeof DashboardProgressRoute
   '/dashboard/referrals': typeof DashboardReferralsRoute
   '/dashboard/returns': typeof DashboardReturnsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
@@ -667,11 +705,15 @@ export interface FileRoutesByTo {
   '/dashboard/apps': typeof DashboardAppsIndexRoute
   '/dashboard/notifications': typeof DashboardNotificationsIndexRoute
   '/s/$slug': typeof SSlugIndexRoute
+  '/api/auth/instagram/callback': typeof ApiAuthInstagramCallbackRoute
+  '/api/auth/instagram/media': typeof ApiAuthInstagramMediaRoute
   '/api/db/$tableId/$recordId': typeof ApiDbTableIdRecordIdRoute
   '/api/public/hooks/instagram': typeof ApiPublicHooksInstagramRoute
   '/api/public/hooks/push-dispatch': typeof ApiPublicHooksPushDispatchRoute
   '/api/public/hooks/sync-shipment-statuses': typeof ApiPublicHooksSyncShipmentStatusesRoute
   '/api/public/hooks/sync-tariffs': typeof ApiPublicHooksSyncTariffsRoute
+  '/api/public/hooks/telegram': typeof ApiPublicHooksTelegramRoute
+  '/api/public/hooks/telegram-setup': typeof ApiPublicHooksTelegramSetupRoute
   '/dashboard/apps/listing/$appKey': typeof DashboardAppsListingAppKeyRoute
   '/dashboard/apps/m/$appId': typeof DashboardAppsMAppIdRoute
   '/dashboard/orders/$orderId/tracking': typeof DashboardOrdersOrderIdTrackingRoute
@@ -711,6 +753,7 @@ export interface FileRoutesById {
   '/dashboard/notifications': typeof DashboardNotificationsRouteWithChildren
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
+  '/dashboard/progress': typeof DashboardProgressRoute
   '/dashboard/referrals': typeof DashboardReferralsRoute
   '/dashboard/returns': typeof DashboardReturnsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
@@ -751,11 +794,15 @@ export interface FileRoutesById {
   '/dashboard/apps/': typeof DashboardAppsIndexRoute
   '/dashboard/notifications/': typeof DashboardNotificationsIndexRoute
   '/s/$slug/': typeof SSlugIndexRoute
+  '/api/auth/instagram/callback': typeof ApiAuthInstagramCallbackRoute
+  '/api/auth/instagram/media': typeof ApiAuthInstagramMediaRoute
   '/api/db/$tableId/$recordId': typeof ApiDbTableIdRecordIdRoute
   '/api/public/hooks/instagram': typeof ApiPublicHooksInstagramRoute
   '/api/public/hooks/push-dispatch': typeof ApiPublicHooksPushDispatchRoute
   '/api/public/hooks/sync-shipment-statuses': typeof ApiPublicHooksSyncShipmentStatusesRoute
   '/api/public/hooks/sync-tariffs': typeof ApiPublicHooksSyncTariffsRoute
+  '/api/public/hooks/telegram': typeof ApiPublicHooksTelegramRoute
+  '/api/public/hooks/telegram-setup': typeof ApiPublicHooksTelegramSetupRoute
   '/dashboard/apps/listing/$appKey': typeof DashboardAppsListingAppKeyRoute
   '/dashboard/apps/m/$appId': typeof DashboardAppsMAppIdRoute
   '/dashboard/orders_/$orderId/tracking': typeof DashboardOrdersOrderIdTrackingRoute
@@ -796,6 +843,7 @@ export interface FileRouteTypes {
     | '/dashboard/notifications'
     | '/dashboard/orders'
     | '/dashboard/products'
+    | '/dashboard/progress'
     | '/dashboard/referrals'
     | '/dashboard/returns'
     | '/dashboard/settings'
@@ -836,11 +884,15 @@ export interface FileRouteTypes {
     | '/dashboard/apps/'
     | '/dashboard/notifications/'
     | '/s/$slug/'
+    | '/api/auth/instagram/callback'
+    | '/api/auth/instagram/media'
     | '/api/db/$tableId/$recordId'
     | '/api/public/hooks/instagram'
     | '/api/public/hooks/push-dispatch'
     | '/api/public/hooks/sync-shipment-statuses'
     | '/api/public/hooks/sync-tariffs'
+    | '/api/public/hooks/telegram'
+    | '/api/public/hooks/telegram-setup'
     | '/dashboard/apps/listing/$appKey'
     | '/dashboard/apps/m/$appId'
     | '/dashboard/orders/$orderId/tracking'
@@ -876,6 +928,7 @@ export interface FileRouteTypes {
     | '/dashboard/landing-generator'
     | '/dashboard/orders'
     | '/dashboard/products'
+    | '/dashboard/progress'
     | '/dashboard/referrals'
     | '/dashboard/returns'
     | '/dashboard/settings'
@@ -916,11 +969,15 @@ export interface FileRouteTypes {
     | '/dashboard/apps'
     | '/dashboard/notifications'
     | '/s/$slug'
+    | '/api/auth/instagram/callback'
+    | '/api/auth/instagram/media'
     | '/api/db/$tableId/$recordId'
     | '/api/public/hooks/instagram'
     | '/api/public/hooks/push-dispatch'
     | '/api/public/hooks/sync-shipment-statuses'
     | '/api/public/hooks/sync-tariffs'
+    | '/api/public/hooks/telegram'
+    | '/api/public/hooks/telegram-setup'
     | '/dashboard/apps/listing/$appKey'
     | '/dashboard/apps/m/$appId'
     | '/dashboard/orders/$orderId/tracking'
@@ -959,6 +1016,7 @@ export interface FileRouteTypes {
     | '/dashboard/notifications'
     | '/dashboard/orders'
     | '/dashboard/products'
+    | '/dashboard/progress'
     | '/dashboard/referrals'
     | '/dashboard/returns'
     | '/dashboard/settings'
@@ -999,11 +1057,15 @@ export interface FileRouteTypes {
     | '/dashboard/apps/'
     | '/dashboard/notifications/'
     | '/s/$slug/'
+    | '/api/auth/instagram/callback'
+    | '/api/auth/instagram/media'
     | '/api/db/$tableId/$recordId'
     | '/api/public/hooks/instagram'
     | '/api/public/hooks/push-dispatch'
     | '/api/public/hooks/sync-shipment-statuses'
     | '/api/public/hooks/sync-tariffs'
+    | '/api/public/hooks/telegram'
+    | '/api/public/hooks/telegram-setup'
     | '/dashboard/apps/listing/$appKey'
     | '/dashboard/apps/m/$appId'
     | '/dashboard/orders_/$orderId/tracking'
@@ -1033,10 +1095,14 @@ export interface RootRouteChildren {
   SSlugContactRoute: typeof SSlugContactRoute
   SSlugTrackRoute: typeof SSlugTrackRoute
   SSlugIndexRoute: typeof SSlugIndexRoute
+  ApiAuthInstagramCallbackRoute: typeof ApiAuthInstagramCallbackRoute
+  ApiAuthInstagramMediaRoute: typeof ApiAuthInstagramMediaRoute
   ApiPublicHooksInstagramRoute: typeof ApiPublicHooksInstagramRoute
   ApiPublicHooksPushDispatchRoute: typeof ApiPublicHooksPushDispatchRoute
   ApiPublicHooksSyncShipmentStatusesRoute: typeof ApiPublicHooksSyncShipmentStatusesRoute
   ApiPublicHooksSyncTariffsRoute: typeof ApiPublicHooksSyncTariffsRoute
+  ApiPublicHooksTelegramRoute: typeof ApiPublicHooksTelegramRoute
+  ApiPublicHooksTelegramSetupRoute: typeof ApiPublicHooksTelegramSetupRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -1211,6 +1277,13 @@ declare module '@tanstack/react-router' {
       path: '/referrals'
       fullPath: '/dashboard/referrals'
       preLoaderRoute: typeof DashboardReferralsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/progress': {
+      id: '/dashboard/progress'
+      path: '/progress'
+      fullPath: '/dashboard/progress'
+      preLoaderRoute: typeof DashboardProgressRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/products': {
@@ -1577,6 +1650,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAppsListingAppKeyRouteImport
       parentRoute: typeof DashboardAppsRoute
     }
+    '/api/public/hooks/telegram-setup': {
+      id: '/api/public/hooks/telegram-setup'
+      path: '/api/public/hooks/telegram-setup'
+      fullPath: '/api/public/hooks/telegram-setup'
+      preLoaderRoute: typeof ApiPublicHooksTelegramSetupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/telegram': {
+      id: '/api/public/hooks/telegram'
+      path: '/api/public/hooks/telegram'
+      fullPath: '/api/public/hooks/telegram'
+      preLoaderRoute: typeof ApiPublicHooksTelegramRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/sync-tariffs': {
       id: '/api/public/hooks/sync-tariffs'
       path: '/api/public/hooks/sync-tariffs'
@@ -1611,6 +1698,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/db/$tableId/$recordId'
       preLoaderRoute: typeof ApiDbTableIdRecordIdRouteImport
       parentRoute: typeof ApiDbTableIdRoute
+    }
+    '/api/auth/instagram/media': {
+      id: '/api/auth/instagram/media'
+      path: '/api/auth/instagram/media'
+      fullPath: '/api/auth/instagram/media'
+      preLoaderRoute: typeof ApiAuthInstagramMediaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/instagram/callback': {
+      id: '/api/auth/instagram/callback'
+      path: '/api/auth/instagram/callback'
+      fullPath: '/api/auth/instagram/callback'
+      preLoaderRoute: typeof ApiAuthInstagramCallbackRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -1693,6 +1794,7 @@ interface DashboardRouteChildren {
   DashboardNotificationsRoute: typeof DashboardNotificationsRouteWithChildren
   DashboardOrdersRoute: typeof DashboardOrdersRoute
   DashboardProductsRoute: typeof DashboardProductsRoute
+  DashboardProgressRoute: typeof DashboardProgressRoute
   DashboardReferralsRoute: typeof DashboardReferralsRoute
   DashboardReturnsRoute: typeof DashboardReturnsRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
@@ -1730,6 +1832,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardNotificationsRoute: DashboardNotificationsRouteWithChildren,
   DashboardOrdersRoute: DashboardOrdersRoute,
   DashboardProductsRoute: DashboardProductsRoute,
+  DashboardProgressRoute: DashboardProgressRoute,
   DashboardReferralsRoute: DashboardReferralsRoute,
   DashboardReturnsRoute: DashboardReturnsRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
@@ -1796,11 +1899,15 @@ const rootRouteChildren: RootRouteChildren = {
   SSlugContactRoute: SSlugContactRoute,
   SSlugTrackRoute: SSlugTrackRoute,
   SSlugIndexRoute: SSlugIndexRoute,
+  ApiAuthInstagramCallbackRoute: ApiAuthInstagramCallbackRoute,
+  ApiAuthInstagramMediaRoute: ApiAuthInstagramMediaRoute,
   ApiPublicHooksInstagramRoute: ApiPublicHooksInstagramRoute,
   ApiPublicHooksPushDispatchRoute: ApiPublicHooksPushDispatchRoute,
   ApiPublicHooksSyncShipmentStatusesRoute:
     ApiPublicHooksSyncShipmentStatusesRoute,
   ApiPublicHooksSyncTariffsRoute: ApiPublicHooksSyncTariffsRoute,
+  ApiPublicHooksTelegramRoute: ApiPublicHooksTelegramRoute,
+  ApiPublicHooksTelegramSetupRoute: ApiPublicHooksTelegramSetupRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
@@ -1809,3 +1916,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

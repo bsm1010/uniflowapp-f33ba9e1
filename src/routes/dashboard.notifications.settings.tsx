@@ -16,6 +16,7 @@ import {
 } from "@/lib/push/push.functions";
 import { useCurrentStore } from "@/hooks/use-current-store";
 import { supabase } from "@/integrations/supabase/client";
+import { createTelegramLinkToken } from "@/lib/telegram-link.functions";
 
 export const Route = createFileRoute("/dashboard/notifications/settings")({
   component: NotificationsSettings,
@@ -60,6 +61,8 @@ function NotificationsSettings() {
   const savePrefs = useServerFn(saveNotificationPreferences);
   const loadStatus = useServerFn(getPushStatus);
   const sendTest = useServerFn(sendTestPush);
+  const generateLinkToken = useServerFn(createTelegramLinkToken);
+  const [linking, setLinking] = useState(false);
 
   useEffect(() => {
     loadPrefs().then((p) =>
@@ -101,9 +104,23 @@ function NotificationsSettings() {
     }
   };
 
-  const telegramLink = currentStore?.id
-    ? `https://t.me/${TELEGRAM_BOT_USERNAME}?start=${currentStore.id.replace(/-/g, "_")}`
-    : null;
+  const handleConnectTelegram = async () => {
+    if (!currentStore?.id) {
+      toast.error("Store not loaded yet.");
+      return;
+    }
+    setLinking(true);
+    try {
+      const { token } = await generateLinkToken({ data: { storeId: currentStore.id } });
+      const url = `https://t.me/${TELEGRAM_BOT_USERNAME}?start=${token}`;
+      window.open(url, "_blank");
+      toast.success("Press Start in Telegram to finish linking (link valid 15 min).");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not create link");
+    } finally {
+      setLinking(false);
+    }
+  };
 
   const togglePref = async (key: keyof Prefs, value: boolean) => {
     const next = { ...prefs, [key]: value };
@@ -187,14 +204,11 @@ function NotificationsSettings() {
               <Button
                 size="sm"
                 className="bg-[#229ED9] hover:bg-[#1a8bbf] text-white"
-                onClick={() => {
-                  if (!telegramLink) { toast.error("Store not loaded yet."); return; }
-                  window.open(telegramLink, "_blank");
-                }}
-                disabled={!currentStore?.id}
+                onClick={handleConnectTelegram}
+                disabled={!currentStore?.id || linking}
               >
                 <ExternalLink className="h-4 w-4 mr-1.5" />
-                Connect Telegram
+                {linking ? "Preparing…" : "Connect Telegram"}
               </Button>
             )}
           </div>

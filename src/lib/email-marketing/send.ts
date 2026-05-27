@@ -7,6 +7,7 @@ const GATEWAY_URL = "https://connector-gateway.lovable.dev/resend";
 const SendSchema = z.object({
   campaignId: z.string().uuid(),
   accessToken: z.string().min(1),
+  testEmail: z.string().email().optional(),
 });
 
 export const sendCampaign = createServerFn({ method: "POST" })
@@ -25,7 +26,6 @@ export const sendCampaign = createServerFn({ method: "POST" })
     if (!SERVICE_KEY)
       throw new Error("SUPABASE_SERVICE_ROLE_KEY not configured — add it in Cloud settings");
 
-    // Verify the caller
     const userClient = createClient(SUPABASE_URL, SERVICE_KEY, {
       global: { headers: { Authorization: `Bearer ${data.accessToken}` } },
     });
@@ -37,7 +37,6 @@ export const sendCampaign = createServerFn({ method: "POST" })
 
     const admin = createClient(SUPABASE_URL, SERVICE_KEY);
 
-    // Load campaign owned by this user
     const { data: campaign, error: cErr } = await admin
       .from("email_campaigns")
       .select("*")
@@ -45,6 +44,31 @@ export const sendCampaign = createServerFn({ method: "POST" })
       .eq("user_id", user.id)
       .single();
     if (cErr || !campaign) throw new Error("Campaign not found");
+
+    // Test mode: send only to the given email, no credit deduction
+    if (data.testEmail) {
+      const htmlBody = buildHtml(campaign.message);
+      const res = await fetch(`${GATEWAY_URL}/emails`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "X-Connection-Api-Key": RESEND_API_KEY,
+        },
+        body: JSON.stringify({
+          from: "Your Store <onboarding@resend.dev>",
+          to: [data.testEmail],
+          subject: `[TEST] ${campaign.subject}`,
+          html: htmlBody,
+        }),
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`Resend ${res.status}: ${text}`);
+      }
+      return { sent: 1, failed: 0, total: 1, test: true };
+    }
+
     if (campaign.status === "sent" || campaign.status === "sending") {
       throw new Error("Campaign already processed");
     }
@@ -79,7 +103,6 @@ export const sendCampaign = createServerFn({ method: "POST" })
       throw new Error("No valid recipients found");
     }
 
-    // Credit cost: 1 credit per 10 recipients (rounded up), unlimited for business
     const creditsRequired = Math.max(1, Math.ceil(recipients.length / 10));
     const { data: profile } = await admin
       .from("profiles")
@@ -115,20 +138,12 @@ export const sendCampaign = createServerFn({ method: "POST" })
       .update({ status: "sending" })
       .eq("id", campaign.id);
 
-    const htmlBody = `<!doctype html><html><body style="font-family:Arial,sans-serif;background:#ffffff;padding:24px;color:#111;line-height:1.6;">
-      <div style="max-width:560px;margin:0 auto;">
-        ${campaign.message
-          .split("\n")
-          .map((p: string) => `<p style="margin:0 0 12px 0;">${escapeHtml(p)}</p>`)
-          .join("")}
-      </div>
-    </body></html>`;
+    const htmlBody = buildHtml(campaign.message);
 
     let sent = 0;
     let failed = 0;
     let firstError: string | null = null;
 
-    // Send one email per recipient (no CC/BCC leakage)
     for (const to of recipients) {
       try {
         const res = await fetch(`${GATEWAY_URL}/emails`, {
@@ -171,6 +186,17 @@ export const sendCampaign = createServerFn({ method: "POST" })
 
     return { sent, failed, total: recipients.length };
   });
+
+function buildHtml(message: string) {
+  return `<!doctype html><html><body style="font-family:Arial,sans-serif;background:#ffffff;padding:24px;color:#111;line-height:1.6;">
+    <div style="max-width:560px;margin:0 auto;">
+      ${message
+        .split("\n")
+        .map((p: string) => `<p style="margin:0 0 12px 0;">${escapeHtml(p)}</p>`)
+        .join("")}
+    </div>
+  </body></html>`;
+}
 
 function escapeHtml(s: string) {
   return s

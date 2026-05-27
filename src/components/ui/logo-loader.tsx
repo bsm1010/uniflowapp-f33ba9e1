@@ -1,4 +1,4 @@
-import fennecyLogo from "@/assets/fennecly-logo.webp";
+import { FennecyLogo } from "@/components/ui/fennecy-logo";
 
 interface LogoLoaderProps {
   fullScreen?: boolean;
@@ -16,14 +16,7 @@ export function LogoLoader({ fullScreen = true, className }: LogoLoaderProps) {
 
   return (
     <div className={`${wrapperClass} ${className ?? ""}`}>
-      <img
-        src={fennecyLogo}
-        alt="Fennecly"
-        width={180}
-        height={56}
-        className="h-14 w-auto object-contain dark:brightness-0 dark:invert animate-pulse"
-        decoding="async"
-      />
+      <FennecyLogo className="h-14 w-[180px] animate-pulse" />
     </div>
   );
 }

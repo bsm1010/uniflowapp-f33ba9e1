@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import fennecyIcon from "@/assets/fennecly-icon.webp";
+import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import { useInstalledApps } from "@/hooks/use-installed-apps";
 import { APPS_BY_KEY } from "@/lib/apps";
@@ -55,6 +56,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { Switch } from "@/components/ui/switch";
 
 type NavItem = {
   title: string;
@@ -86,6 +88,21 @@ export function DashboardSidebar() {
     if (anyAppActive) setAppsOpen(true);
   }, [anyAppActive]);
 
+  const [purpleSidebar, setPurpleSidebar] = useState(false);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("sidebar-purple");
+    const enabled = stored === "true";
+    setPurpleSidebar(enabled);
+    document.documentElement.setAttribute("data-sidebar-purple", String(enabled));
+  }, []);
+
+  const togglePurple = (checked: boolean) => {
+    setPurpleSidebar(checked);
+    document.documentElement.setAttribute("data-sidebar-purple", String(checked));
+    localStorage.setItem("sidebar-purple", String(checked));
+  };
+
   const groups: NavGroup[] = [
     {
       label: "Workspace",
@@ -94,7 +111,6 @@ export function DashboardSidebar() {
         { title: t("dashboard.nav.store"), url: "/dashboard/store", icon: Store, gradient: "from-indigo-500 to-blue-500" },
         { title: "Notifications", url: "/dashboard/notifications", icon: Bell, gradient: "from-violet-500 to-indigo-500" },
         { title: t("dashboard.nav.customize"), url: "/customize", icon: Palette, external: true, gradient: "from-teal-500 to-emerald-500", tourId: "customize" },
-        { title: "Progress", url: "/dashboard/progress", icon: Trophy, gradient: "from-purple-500 to-pink-500" },
       ],
     },
     {
@@ -141,6 +157,7 @@ export function DashboardSidebar() {
         { title: t("dashboard.nav.appStore"), url: "/dashboard/apps", icon: Blocks, gradient: "from-violet-500 to-purple-500" },
         { title: "Marketplace", url: "/dashboard/apps/marketplace", icon: StoreIcon, gradient: "from-purple-500 to-pink-500" },
         { title: "Developer", url: "/dashboard/developer", icon: Code2, gradient: "from-fuchsia-500 to-violet-500" },
+        { title: t("dashboard.nav.progress", "Progress"), url: "/dashboard/progress", icon: Trophy, gradient: "from-purple-500 to-pink-500" },
         { title: t("dashboard.nav.credits"), url: "/dashboard/credits", icon: Coins, gradient: "from-yellow-500 to-amber-500" },
         { title: t("dashboard.nav.referrals"), url: "/dashboard/referrals", icon: Gift, gradient: "from-rose-500 to-pink-500" },
         { title: "Store Settings", url: "/dashboard/store-settings", icon: StoreIcon, gradient: "from-emerald-500 to-teal-600" },
@@ -212,18 +229,23 @@ export function DashboardSidebar() {
     >
       <SidebarHeader className="bg-transparent">
         <Link to="/dashboard" className="flex items-center gap-2.5 px-2 py-2.5 group">
-          <div className="relative h-10 w-10 shrink-0 flex items-center justify-center">
-            <img
-              src={fennecyIcon}
-              alt="Fennecly"
-              width={40}
-              height={40}
-              loading="eager"
-              fetchPriority="high"
-              decoding="async"
-              className="h-10 w-10 object-contain transition-transform group-hover:scale-105 dark:brightness-0 dark:invert"
-            />
-          </div>
+          <div
+            role="img"
+            aria-label="Fennecly"
+            className={cn(
+              "h-10 w-10 shrink-0 bg-primary dark:bg-white transition-transform group-hover:scale-105",
+            )}
+            style={{
+              WebkitMaskImage: `url(${fennecyIcon})`,
+              maskImage: `url(${fennecyIcon})`,
+              WebkitMaskRepeat: "no-repeat",
+              maskRepeat: "no-repeat",
+              WebkitMaskPosition: "center",
+              maskPosition: "center",
+              WebkitMaskSize: "contain",
+              maskSize: "contain",
+            }}
+          />
           {!collapsed && (
             <div className="flex flex-col leading-tight">
               <span className="font-display font-bold text-lg bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
@@ -235,11 +257,26 @@ export function DashboardSidebar() {
             </div>
           )}
         </Link>
+        {!collapsed && (
+          <div className="flex items-center justify-between px-2 py-1.5 mt-1 rounded-lg bg-sidebar-accent/30">
+            <div className="flex items-center gap-2">
+              <span className="relative flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-purple-500 to-indigo-600 text-white">
+                <Palette className="h-3 w-3" />
+              </span>
+              <span className="text-xs font-medium text-sidebar-foreground/80">Purple sidebar</span>
+            </div>
+            <Switch
+              checked={purpleSidebar}
+              onCheckedChange={togglePurple}
+              className="h-5 w-9"
+            />
+          </div>
+        )}
       </SidebarHeader>
       <SidebarContent className="px-1.5 py-2">
         {groups.map((group) => (
           <SidebarGroup key={group.label}>
-            <SidebarGroupLabel className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70 px-2">
+            <SidebarGroupLabel className="text-[10px] font-semibold uppercase tracking-wider text-sidebar-foreground/70 px-2">
               {group.label}
             </SidebarGroupLabel>
             <SidebarGroupContent>
@@ -254,7 +291,7 @@ export function DashboardSidebar() {
               <CollapsibleTrigger asChild>
                 <SidebarGroupLabel
                   asChild
-                  className="cursor-pointer hover:bg-sidebar-accent/40 rounded-md transition-colors text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70"
+                  className="cursor-pointer hover:bg-sidebar-accent/40 rounded-md transition-colors text-[10px] font-semibold uppercase tracking-wider text-sidebar-foreground/70"
                 >
                   <button className="w-full flex items-center justify-between px-2">
                     <span>{t("dashboard.groupApps")}</span>
@@ -299,7 +336,7 @@ export function DashboardSidebar() {
 
         {isAdmin && (
           <SidebarGroup>
-            <SidebarGroupLabel className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70 px-2">
+            <SidebarGroupLabel className="text-[10px] font-semibold uppercase tracking-wider text-sidebar-foreground/70 px-2">
               {t("dashboard.groupAdmin")}
             </SidebarGroupLabel>
             <SidebarGroupContent>

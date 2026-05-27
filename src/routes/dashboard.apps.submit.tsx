@@ -291,7 +291,7 @@ function SubmitAppPage() {
 
           {!form.is_free && (
             <div className="space-y-2">
-              <Label htmlFor="price">Price (USD)</Label>
+              <Label htmlFor="price">Price (DA)</Label>
               <Input
                 id="price"
                 type="number"

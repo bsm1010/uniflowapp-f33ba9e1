@@ -46,7 +46,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useSubscription } from "@/hooks/use-subscription";
 import { ExpiredOverlay } from "@/components/dashboard/ExpiredOverlay";
-import { PageHeader, EmptyState } from "@/components/dashboard/PageHeader";
+import { PageHeader } from "@/components/dashboard/PageHeader";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -166,7 +167,7 @@ function DatabasePage() {
       .order("position", { ascending: true })
       .order("created_at", { ascending: true });
     if (error) {
-      toast.error(error.message);
+      toast.error("Failed to load tables. Please try again.");
       return;
     }
     setTables(data ?? []);
@@ -191,8 +192,8 @@ function DatabasePage() {
         .order("position", { ascending: true })
         .order("created_at", { ascending: true }),
     ]);
-    if (fe) toast.error(fe.message);
-    if (re) toast.error(re.message);
+    if (fe) toast.error("Failed to load table fields. Please try again.");
+    if (re) toast.error("Failed to load records. Please try again.");
     setFields((f ?? []) as DBField[]);
     setRecords((r ?? []) as DBRecord[]);
   }, []);
@@ -223,7 +224,7 @@ function DatabasePage() {
         .from("db_tables")
         .update({ name: name.trim(), description })
         .eq("id", editingTable.id);
-      if (error) return toast.error(error.message);
+      if (error) return toast.error("Failed to update table. Please try again.");
       toast.success("Table updated");
     } else {
       const { data, error } = await supabase
@@ -236,7 +237,7 @@ function DatabasePage() {
         })
         .select()
         .single();
-      if (error) return toast.error(error.message);
+      if (error) return toast.error("Failed to create table. Please try again.");
       toast.success("Table created");
       if (data) setActiveTableId(data.id);
     }
@@ -248,7 +249,7 @@ function DatabasePage() {
   async function deleteTable(id: string) {
     if (!confirm("Delete this table and all its data?")) return;
     const { error } = await supabase.from("db_tables").delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error("Failed to delete table. Please try again.");
     toast.success("Table deleted");
     if (activeTableId === id) setActiveTableId(null);
     await loadTables();
@@ -274,7 +275,7 @@ function DatabasePage() {
           options: input.options,
         })
         .eq("id", editingField.id);
-      if (error) return toast.error(error.message);
+      if (error) return toast.error("Failed to update field. Please try again.");
       toast.success("Field updated");
     } else {
       const { error } = await supabase.from("db_fields").insert({
@@ -285,7 +286,7 @@ function DatabasePage() {
         options: input.options,
         position: fields.length,
       });
-      if (error) return toast.error(error.message);
+      if (error) return toast.error("Failed to create field. Please try again.");
       toast.success("Field added");
     }
     setFieldDialogOpen(false);
@@ -296,7 +297,7 @@ function DatabasePage() {
   async function deleteField(id: string) {
     if (!confirm("Delete this field? Values will be removed from all records.")) return;
     const { error } = await supabase.from("db_fields").delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error("Failed to delete field. Please try again.");
     toast.success("Field deleted");
     if (activeTableId) await loadTableData(activeTableId);
   }
@@ -314,7 +315,7 @@ function DatabasePage() {
       })
       .select()
       .single();
-    if (error) return toast.error(error.message);
+    if (error) return toast.error("Failed to create record. Please try again.");
     await loadTableData(activeTableId);
     if (data) {
       runAutomations("record_created", {
@@ -338,7 +339,7 @@ function DatabasePage() {
       .update({ data: newData as never })
       .eq("id", recordId);
     if (error) {
-      toast.error(error.message);
+      toast.error("Failed to update record. Please try again.");
       return;
     }
     if (user && activeTableId) {
@@ -353,7 +354,7 @@ function DatabasePage() {
 
   async function deleteRecord(id: string) {
     const { error } = await supabase.from("db_records").delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error("Failed to delete record. Please try again.");
     if (activeTableId) await loadTableData(activeTableId);
   }
 
@@ -398,16 +399,13 @@ function DatabasePage() {
           icon={Database}
           title={t("dashboard.database.noTables")}
           description={t("dashboard.database.noTablesDesc")}
-          action={
-            <Button
-              onClick={() => {
-                setEditingTable(null);
-                setTableDialogOpen(true);
-              }}
-            >
-              <Plus className="h-4 w-4 mr-2" /> Create table
-            </Button>
-          }
+          action={{
+            label: "Create table",
+            onClick: () => {
+              setEditingTable(null);
+              setTableDialogOpen(true);
+            },
+          }}
         />
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-6">
@@ -880,6 +878,16 @@ function TableGrid({
           fields,
           view.filterSort ?? DEFAULT_FILTER_SORT,
         ) as DBRecord[];
+        if (fields.length > 0 && visibleRecords.length === 0) {
+          return (
+            <EmptyState
+              icon={Database}
+              title="No records in this table"
+              description="Add a record or import data to get started."
+              action={{ label: "Add record", onClick: onAddRecord }}
+            />
+          );
+        }
         return (
           <>
             {view.mode === "grid" && (

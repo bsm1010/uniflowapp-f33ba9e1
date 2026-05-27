@@ -11,7 +11,9 @@ import {
   AlertCircle,
   Loader2,
   Clock,
+  Eye,
 } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -75,6 +77,8 @@ function EmailMarketingApp() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
   const [sendingId, setSendingId] = useState<string | null>(null);
+  const [testSendingId, setTestSendingId] = useState<string | null>(null);
+  const [confirmSendId, setConfirmSendId] = useState<string | null>(null);
 
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
@@ -148,7 +152,7 @@ function EmailMarketingApp() {
     });
     setSaving(false);
     if (error) {
-      toast.error(error.message);
+      toast.error("Failed to create campaign. Please try again.");
       return;
     }
     setSubject("");
@@ -158,9 +162,27 @@ function EmailMarketingApp() {
     refresh();
   };
 
+  const recipientCountForCampaign = async (c: Campaign): Promise<number> => {
+    if (c.audience_type === "manual") return c.recipients.length;
+    return customerCount ?? 0;
+  };
+
   const send = async (id: string) => {
     setSendingId(id);
     try {
+      const campaign = campaigns.find((c) => c.id === id);
+      if (!campaign) throw new Error("Campaign not found");
+      if (!campaign.subject.trim() || !campaign.message.trim()) {
+        toast.error("Campaign must have a subject and message before sending");
+        setSendingId(null);
+        return;
+      }
+      const count = await recipientCountForCampaign(campaign);
+      if (count === 0) {
+        toast.error("No subscribers to send to");
+        setSendingId(null);
+        return;
+      }
       const {
         data: { session },
       } = await supabase.auth.getSession();
@@ -171,10 +193,47 @@ function EmailMarketingApp() {
       toast.success(`Sent ${res.sent} • Failed ${res.failed}`);
       refresh();
     } catch (e: any) {
-      toast.error(e?.message ?? "Failed to send");
+      const msg =
+        e?.message === "INSUFFICIENT_CREDITS"
+          ? "Not enough credits. Top up to send campaigns."
+          : e?.message ?? "Failed to send campaign. Please try again.";
+      toast.error(msg);
       refresh();
     } finally {
       setSendingId(null);
+    }
+  };
+
+  const testSend = async (id: string) => {
+    if (!user?.email) {
+      toast.error("Your account email is not available");
+      return;
+    }
+    setTestSendingId(id);
+    try {
+      const campaign = campaigns.find((c) => c.id === id);
+      if (!campaign) throw new Error("Campaign not found");
+      if (!campaign.subject.trim() || !campaign.message.trim()) {
+        toast.error("Campaign must have a subject and message before test send");
+        setTestSendingId(null);
+        return;
+      }
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) throw new Error("Not signed in");
+      const res = await sendCampaign({
+        data: {
+          campaignId: id,
+          accessToken: session.access_token,
+          testEmail: user.email,
+        },
+      });
+      toast.success("Test email sent to " + user.email);
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed to send test email");
+    } finally {
+      setTestSendingId(null);
     }
   };
 
@@ -184,7 +243,7 @@ function EmailMarketingApp() {
       .delete()
       .eq("id", id);
     if (error) {
-      toast.error(error.message);
+      toast.error("Failed to delete campaign. Please try again.");
       return;
     }
     toast.success("Campaign deleted");
@@ -325,10 +384,12 @@ function EmailMarketingApp() {
           {loading ? (
             <p className="text-sm text-muted-foreground">Loading…</p>
           ) : campaigns.length === 0 ? (
-            <div className="text-center py-10 text-muted-foreground">
-              <Mail className="h-10 w-10 mx-auto mb-2 opacity-50" />
-              <p className="text-sm">No campaigns yet. Compose one above.</p>
-            </div>
+            <EmptyState
+              icon={Mail}
+              title="No campaigns yet"
+              description="Create your first email campaign to reach your customers."
+              action={{ label: "Create campaign", onClick: () => { document.getElementById("subject")?.scrollIntoView({ behavior: "smooth" }); document.getElementById("subject")?.focus(); } }}
+            />
           ) : (
             <div className="space-y-3">
               {campaigns.map((c) => (
@@ -339,7 +400,9 @@ function EmailMarketingApp() {
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="font-medium truncate">{c.subject}</p>
-                      <StatusBadge status={c.status} />
+                      {c.status !== "sent" ? (
+                        <StatusBadge status={c.status} />
+                      ) : null}
                     </div>
                     <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
                       {c.message}
@@ -350,14 +413,14 @@ function EmailMarketingApp() {
                           ? "All customers"
                           : `${c.recipients.length} recipients`}
                       </span>
-                      {c.status === "sent" && (
-                        <span>
-                          ✓ {c.sent_count} sent
-                          {c.failed_count > 0
-                            ? ` • ${c.failed_count} failed`
-                            : ""}
-                        </span>
-                      )}
+                      {c.status === "sent" || c.status === "failed" ? (
+                        <SendStatsRow
+                          sent={c.sent_count}
+                          failed={c.failed_count}
+                          total={c.sent_count + c.failed_count || c.recipients.length}
+                          status={c.status}
+                        />
+                      ) : null}
                       {c.error && (
                         <span className="text-destructive truncate max-w-[300px]">
                           {c.error}
@@ -370,18 +433,60 @@ function EmailMarketingApp() {
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     {c.status === "draft" && (
-                      <Button
-                        size="sm"
-                        onClick={() => send(c.id)}
-                        disabled={sendingId === c.id}
-                      >
-                        {sendingId === c.id ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Send className="h-4 w-4" />
-                        )}
-                        Send
-                      </Button>
+                      <>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => testSend(c.id)}
+                          disabled={testSendingId === c.id || sendingId === c.id}
+                        >
+                          {testSendingId === c.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                          Test
+                        </Button>
+                        <AlertDialog
+                          open={confirmSendId === c.id}
+                          onOpenChange={(open) => {
+                            if (!open) setConfirmSendId(null);
+                          }}
+                        >
+                          <Button
+                            size="sm"
+                            onClick={() => setConfirmSendId(c.id)}
+                            disabled={sendingId === c.id || testSendingId === c.id}
+                          >
+                            {sendingId === c.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Send className="h-4 w-4" />
+                            )}
+                            Send
+                          </Button>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Send campaign to all subscribers?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This will send "{c.subject}" to all{" "}
+                                {c.audience_type === "manual"
+                                  ? `${c.recipients.length}`
+                                  : `${customerCount ?? "your"}`}{" "}
+                                recipients. Credits will be deducted. This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel onClick={() => setConfirmSendId(null)}>
+                                Cancel
+                              </AlertDialogCancel>
+                              <AlertDialogAction onClick={() => { setConfirmSendId(null); send(c.id); }}>
+                                Send to all
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </>
                     )}
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
@@ -412,6 +517,38 @@ function EmailMarketingApp() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+function SendStatsRow({
+  sent,
+  failed,
+  total,
+  status,
+}: {
+  sent: number;
+  failed: number;
+  total: number;
+  status: string;
+}) {
+  const pending = Math.max(0, total - sent - failed);
+  return (
+    <span className="inline-flex items-center gap-2 text-xs">
+      {status === "sent" ? (
+        <CheckCircle2 className="h-3 w-3 text-green-600" />
+      ) : (
+        <AlertCircle className="h-3 w-3 text-destructive" />
+      )}
+      <span className="text-green-600 font-medium">Sent: {sent}</span>
+      <span className="text-muted-foreground">|</span>
+      {failed > 0 && (
+        <>
+          <span className="text-destructive font-medium">Failed: {failed}</span>
+          <span className="text-muted-foreground">|</span>
+        </>
+      )}
+      <span className="text-muted-foreground">Pending: {pending}</span>
+    </span>
   );
 }
 

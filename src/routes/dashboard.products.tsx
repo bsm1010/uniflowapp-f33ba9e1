@@ -39,7 +39,7 @@ export const Route = createFileRoute("/dashboard/products")({
 });
 
 function formatPrice(n: number) {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
+  return `${Math.round(n).toLocaleString("fr-DZ")} DA`;
 }
 
 type SortField = "price" | "stock" | "sales_count";
@@ -72,7 +72,7 @@ function ProductsPage() {
       .eq("store_id", currentStore.id)
       .order("created_at", { ascending: false });
     setLoading(false);
-    if (error) { toast.error(error.message); return; }
+    if (error) { toast.error("Failed to load products. Please try again."); return; }
     setProducts(
       (data ?? []).map((p) => ({
         ...p,
@@ -89,6 +89,21 @@ function ProductsPage() {
   }, [user, currentStore?.id, storeLoading]);
 
   useEffect(() => { load(); }, [load]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ig = params.get("instagram");
+    if (ig === "connected") {
+      toast.success("Instagram account connected! You can now import photos.");
+      window.history.replaceState({}, "", window.location.pathname);
+    } else if (ig === "error" || ig === "token_error") {
+      toast.error("Failed to connect Instagram. Please try again.");
+      window.history.replaceState({}, "", window.location.pathname);
+    } else if (ig === "missing_config") {
+      toast.error("Instagram is not configured. Contact the store owner.");
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, []);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
@@ -133,14 +148,14 @@ function ProductsPage() {
     setBulkDeleting(true);
     const { error } = await supabase.from("products").delete().in("id", Array.from(selected));
     setBulkDeleting(false);
-    if (error) { toast.error(error.message); return; }
+    if (error) { toast.error("Failed to delete products. Please try again."); return; }
     toast.success(`${selected.size} product(s) deleted`);
     load();
   };
 
   const bulkSetStatus = async (status: "draft" | "published") => {
     const { error } = await supabase.from("products").update({ status }).in("id", Array.from(selected));
-    if (error) { toast.error(error.message); return; }
+    if (error) { toast.error("Failed to update products. Please try again."); return; }
     toast.success(`${selected.size} product(s) set to ${status}`);
     load();
   };
@@ -148,7 +163,7 @@ function ProductsPage() {
   const confirmDelete = async () => {
     if (!deleting) return;
     const { error } = await supabase.from("products").delete().eq("id", deleting.id);
-    if (error) { toast.error(error.message); return; }
+    if (error) { toast.error("Failed to delete product. Please try again."); return; }
     toast.success("Product deleted");
     setDeleting(null);
     load();

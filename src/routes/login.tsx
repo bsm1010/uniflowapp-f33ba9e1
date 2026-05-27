@@ -9,6 +9,7 @@ import { AuthLayout } from "@/components/auth/AuthLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SuccessAnimation } from "@/components/auth/SuccessAnimation";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
@@ -28,6 +29,7 @@ function LoginPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const schema = z.object({
     email: z.string().trim().email(t("auth.login.errEmail")).max(255),
@@ -60,7 +62,7 @@ function LoginPage() {
       setFormError(error.message);
       return;
     }
-    navigate({ to: "/select-store" });
+    setShowSuccess(true);
   };
 
   return (
@@ -137,6 +139,10 @@ function LoginPage() {
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("auth.login.submit")}
         </Button>
       </form>
+
+      {showSuccess && (
+        <SuccessAnimation onComplete={() => navigate({ to: "/select-store" })} />
+      )}
     </AuthLayout>
   );
 }
