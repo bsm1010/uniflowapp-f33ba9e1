@@ -1537,6 +1537,7 @@ export type Database = {
           created_at: string
           customer_email: string
           customer_name: string
+          customer_phone: string | null
           delivery_type: string
           id: string
           notes: string | null
@@ -1544,6 +1545,7 @@ export type Database = {
           shipping_city: string
           shipping_country: string
           shipping_postal_code: string
+          shipping_wilaya: string | null
           source: string
           status: string
           store_id: string | null
@@ -1558,6 +1560,7 @@ export type Database = {
           created_at?: string
           customer_email: string
           customer_name: string
+          customer_phone?: string | null
           delivery_type?: string
           id?: string
           notes?: string | null
@@ -1565,6 +1568,7 @@ export type Database = {
           shipping_city: string
           shipping_country: string
           shipping_postal_code: string
+          shipping_wilaya?: string | null
           source?: string
           status?: string
           store_id?: string | null
@@ -1579,6 +1583,7 @@ export type Database = {
           created_at?: string
           customer_email?: string
           customer_name?: string
+          customer_phone?: string | null
           delivery_type?: string
           id?: string
           notes?: string | null
@@ -1586,6 +1591,7 @@ export type Database = {
           shipping_city?: string
           shipping_country?: string
           shipping_postal_code?: string
+          shipping_wilaya?: string | null
           source?: string
           status?: string
           store_id?: string | null
@@ -1605,6 +1611,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      payment_auto_verify_settings: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          id: string
+          pattern: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          pattern?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          pattern?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       payment_submissions: {
         Row: {
