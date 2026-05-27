@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Share, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import fennecyIcon from "@/assets/fennecly-icon.webp";
+import { cn } from "@/lib/utils";
 
 const DISMISS_KEY = "fennecly:ios-install-dismissed-at";
 const DISMISS_DAYS = 7;
@@ -62,7 +63,21 @@ export function IOSInstallBanner() {
         className="md:hidden sticky top-0 z-40 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-md"
       >
         <div className="px-4 py-3 flex items-center gap-3">
-          <img src={fennecyIcon} alt="" className="h-9 w-9 rounded-lg bg-white/10 p-1" />
+          <div
+            role="img"
+            aria-label="Fennecly"
+            className={cn("h-9 w-9 rounded-lg bg-white/10 p-1 bg-white")}
+            style={{
+              WebkitMaskImage: `url(${fennecyIcon})`,
+              maskImage: `url(${fennecyIcon})`,
+              WebkitMaskRepeat: "no-repeat",
+              maskRepeat: "no-repeat",
+              WebkitMaskPosition: "center",
+              maskPosition: "center",
+              WebkitMaskSize: "contain",
+              maskSize: "contain",
+            }}
+          />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold leading-tight">
               Add Fenncly to your Home Screen
