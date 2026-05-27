@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Loader2, Upload, X, Mic, Plus } from "lucide-react";
+import { Loader2, Upload, X, Mic, Plus, ImageIcon } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
@@ -21,6 +21,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
+import { InstagramMediaPicker } from "@/components/dashboard/InstagramMediaPicker";
 import {
   Select,
   SelectContent,
@@ -99,6 +100,7 @@ export function ProductFormDialog({ open, onOpenChange, product, onSaved }: Prop
   const [variants, setVariants] = useState<ProductVariant[]>([]);
   const [images, setImages] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [instagramOpen, setInstagramOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [generatingVoice, setGeneratingVoice] = useState(false);
   const [voiceUrl, setVoiceUrl] = useState<string | null>(null);
@@ -192,6 +194,14 @@ export function ProductFormDialog({ open, onOpenChange, product, onSaved }: Prop
   };
 
   const removeImage = (url: string) => setImages((prev) => prev.filter((u) => u !== url));
+
+  const addInstagramPhotos = (urls: string[]) => {
+    const available = MAX_IMAGES - images.length;
+    const toAdd = urls.slice(0, available);
+    if (toAdd.length < urls.length) toast.error(`Only ${available} slot(s) left. Added ${toAdd.length}.`);
+    setImages((prev) => [...prev, ...toAdd]);
+    setInstagramOpen(false);
+  };
 
   const save = async () => {
     if (!user) return;
@@ -375,24 +385,44 @@ export function ProductFormDialog({ open, onOpenChange, product, onSaved }: Prop
           {/* Images */}
           <div className="space-y-2">
             <Label>Images</Label>
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-              {images.map((url) => (
-                <div key={url} className="relative aspect-square rounded-lg overflow-hidden border border-border bg-muted group">
-                  <img src={url} alt="Product" className="h-full w-full object-cover" />
-                  <button type="button" onClick={() => removeImage(url)} className="absolute top-1.5 right-1.5 h-6 w-6 rounded-full bg-background/90 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-soft" aria-label="Remove image">
-                    <X className="h-3.5 w-3.5" />
-                  </button>
+            {instagramOpen ? (
+              <div className="rounded-lg border border-border p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Import from Instagram</span>
+                  <Button type="button" variant="ghost" size="sm" onClick={() => setInstagramOpen(false)}>
+                    Back to upload
+                  </Button>
                 </div>
-              ))}
-              {images.length < MAX_IMAGES && (
-                <label className={`aspect-square rounded-lg border border-dashed border-border flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-primary hover:bg-accent/40 transition-colors text-muted-foreground text-xs ${uploading ? "opacity-50 pointer-events-none" : ""}`}>
-                  {uploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Upload className="h-5 w-5" />}
-                  <span>{uploading ? "Uploading…" : "Add image"}</span>
-                  <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => handleFiles(e.target.files)} />
-                </label>
-              )}
-            </div>
-            <p className="text-xs text-muted-foreground">Up to {MAX_IMAGES} images, max 5 MB each. PNG, JPG, or WEBP.</p>
+                <InstagramMediaPicker onSelect={addInstagramPhotos} onClose={() => setInstagramOpen(false)} />
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                  {images.map((url) => (
+                    <div key={url} className="relative aspect-square rounded-lg overflow-hidden border border-border bg-muted group">
+                      <img src={url} alt="Product" className="h-full w-full object-cover" />
+                      <button type="button" onClick={() => removeImage(url)} className="absolute top-1.5 right-1.5 h-6 w-6 rounded-full bg-background/90 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-soft" aria-label="Remove image">
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                  {images.length < MAX_IMAGES && (
+                    <label className={`aspect-square rounded-lg border border-dashed border-border flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-primary hover:bg-accent/40 transition-colors text-muted-foreground text-xs ${uploading ? "opacity-50 pointer-events-none" : ""}`}>
+                      {uploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Upload className="h-5 w-5" />}
+                      <span>{uploading ? "Uploading…" : "Add image"}</span>
+                      <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => handleFiles(e.target.files)} />
+                    </label>
+                  )}
+                </div>
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-muted-foreground">Up to {MAX_IMAGES} images, max 5 MB each. PNG, JPG, or WEBP.</p>
+                  <Button type="button" variant="outline" size="sm" onClick={() => setInstagramOpen(true)} className="gap-1.5">
+                    <ImageIcon className="h-3.5 w-3.5" />
+                    Instagram
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
