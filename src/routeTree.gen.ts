@@ -92,6 +92,8 @@ import { Route as ApiPublicHooksSyncShipmentStatusesRouteImport } from './routes
 import { Route as ApiPublicHooksPushDispatchRouteImport } from './routes/api/public/hooks/push-dispatch'
 import { Route as ApiPublicHooksInstagramRouteImport } from './routes/api.public.hooks.instagram'
 import { Route as ApiDbTableIdRecordIdRouteImport } from './routes/api.db.$tableId.$recordId'
+import { Route as ApiAuthInstagramMediaRouteImport } from './routes/api.auth.instagram.media'
+import { Route as ApiAuthInstagramCallbackRouteImport } from './routes/api.auth.instagram.callback'
 
 const ThemesRoute = ThemesRouteImport.update({
   id: '/themes',
@@ -530,6 +532,17 @@ const ApiDbTableIdRecordIdRoute = ApiDbTableIdRecordIdRouteImport.update({
   path: '/$recordId',
   getParentRoute: () => ApiDbTableIdRoute,
 } as any)
+const ApiAuthInstagramMediaRoute = ApiAuthInstagramMediaRouteImport.update({
+  id: '/api/auth/instagram/media',
+  path: '/api/auth/instagram/media',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthInstagramCallbackRoute =
+  ApiAuthInstagramCallbackRouteImport.update({
+    id: '/api/auth/instagram/callback',
+    path: '/api/auth/instagram/callback',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -600,6 +613,8 @@ export interface FileRoutesByFullPath {
   '/dashboard/apps/': typeof DashboardAppsIndexRoute
   '/dashboard/notifications/': typeof DashboardNotificationsIndexRoute
   '/s/$slug/': typeof SSlugIndexRoute
+  '/api/auth/instagram/callback': typeof ApiAuthInstagramCallbackRoute
+  '/api/auth/instagram/media': typeof ApiAuthInstagramMediaRoute
   '/api/db/$tableId/$recordId': typeof ApiDbTableIdRecordIdRoute
   '/api/public/hooks/instagram': typeof ApiPublicHooksInstagramRoute
   '/api/public/hooks/push-dispatch': typeof ApiPublicHooksPushDispatchRoute
@@ -682,6 +697,8 @@ export interface FileRoutesByTo {
   '/dashboard/apps': typeof DashboardAppsIndexRoute
   '/dashboard/notifications': typeof DashboardNotificationsIndexRoute
   '/s/$slug': typeof SSlugIndexRoute
+  '/api/auth/instagram/callback': typeof ApiAuthInstagramCallbackRoute
+  '/api/auth/instagram/media': typeof ApiAuthInstagramMediaRoute
   '/api/db/$tableId/$recordId': typeof ApiDbTableIdRecordIdRoute
   '/api/public/hooks/instagram': typeof ApiPublicHooksInstagramRoute
   '/api/public/hooks/push-dispatch': typeof ApiPublicHooksPushDispatchRoute
@@ -768,6 +785,8 @@ export interface FileRoutesById {
   '/dashboard/apps/': typeof DashboardAppsIndexRoute
   '/dashboard/notifications/': typeof DashboardNotificationsIndexRoute
   '/s/$slug/': typeof SSlugIndexRoute
+  '/api/auth/instagram/callback': typeof ApiAuthInstagramCallbackRoute
+  '/api/auth/instagram/media': typeof ApiAuthInstagramMediaRoute
   '/api/db/$tableId/$recordId': typeof ApiDbTableIdRecordIdRoute
   '/api/public/hooks/instagram': typeof ApiPublicHooksInstagramRoute
   '/api/public/hooks/push-dispatch': typeof ApiPublicHooksPushDispatchRoute
@@ -855,6 +874,8 @@ export interface FileRouteTypes {
     | '/dashboard/apps/'
     | '/dashboard/notifications/'
     | '/s/$slug/'
+    | '/api/auth/instagram/callback'
+    | '/api/auth/instagram/media'
     | '/api/db/$tableId/$recordId'
     | '/api/public/hooks/instagram'
     | '/api/public/hooks/push-dispatch'
@@ -937,6 +958,8 @@ export interface FileRouteTypes {
     | '/dashboard/apps'
     | '/dashboard/notifications'
     | '/s/$slug'
+    | '/api/auth/instagram/callback'
+    | '/api/auth/instagram/media'
     | '/api/db/$tableId/$recordId'
     | '/api/public/hooks/instagram'
     | '/api/public/hooks/push-dispatch'
@@ -1022,6 +1045,8 @@ export interface FileRouteTypes {
     | '/dashboard/apps/'
     | '/dashboard/notifications/'
     | '/s/$slug/'
+    | '/api/auth/instagram/callback'
+    | '/api/auth/instagram/media'
     | '/api/db/$tableId/$recordId'
     | '/api/public/hooks/instagram'
     | '/api/public/hooks/push-dispatch'
@@ -1058,6 +1083,8 @@ export interface RootRouteChildren {
   SSlugContactRoute: typeof SSlugContactRoute
   SSlugTrackRoute: typeof SSlugTrackRoute
   SSlugIndexRoute: typeof SSlugIndexRoute
+  ApiAuthInstagramCallbackRoute: typeof ApiAuthInstagramCallbackRoute
+  ApiAuthInstagramMediaRoute: typeof ApiAuthInstagramMediaRoute
   ApiPublicHooksInstagramRoute: typeof ApiPublicHooksInstagramRoute
   ApiPublicHooksPushDispatchRoute: typeof ApiPublicHooksPushDispatchRoute
   ApiPublicHooksSyncShipmentStatusesRoute: typeof ApiPublicHooksSyncShipmentStatusesRoute
@@ -1653,6 +1680,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiDbTableIdRecordIdRouteImport
       parentRoute: typeof ApiDbTableIdRoute
     }
+    '/api/auth/instagram/media': {
+      id: '/api/auth/instagram/media'
+      path: '/api/auth/instagram/media'
+      fullPath: '/api/auth/instagram/media'
+      preLoaderRoute: typeof ApiAuthInstagramMediaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/instagram/callback': {
+      id: '/api/auth/instagram/callback'
+      path: '/api/auth/instagram/callback'
+      fullPath: '/api/auth/instagram/callback'
+      preLoaderRoute: typeof ApiAuthInstagramCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -1837,6 +1878,8 @@ const rootRouteChildren: RootRouteChildren = {
   SSlugContactRoute: SSlugContactRoute,
   SSlugTrackRoute: SSlugTrackRoute,
   SSlugIndexRoute: SSlugIndexRoute,
+  ApiAuthInstagramCallbackRoute: ApiAuthInstagramCallbackRoute,
+  ApiAuthInstagramMediaRoute: ApiAuthInstagramMediaRoute,
   ApiPublicHooksInstagramRoute: ApiPublicHooksInstagramRoute,
   ApiPublicHooksPushDispatchRoute: ApiPublicHooksPushDispatchRoute,
   ApiPublicHooksSyncShipmentStatusesRoute:
