@@ -28,6 +28,7 @@ import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Card, CardContent } from "@/components/ui/card";
 import { InstalledAppsSection } from "@/components/dashboard/InstalledAppsSection";
+import { StoreProgressCard } from "@/components/dashboard/StoreProgressCard";
 import { WindowsAppBanner } from "@/components/dashboard/WindowsAppBanner";
 
 export const Route = createFileRoute("/dashboard/")({
@@ -324,6 +325,15 @@ function DashboardHome() {
           ))}
         </div>
       )}
+
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.2 }}
+        className="mt-8 max-w-sm"
+      >
+        <StoreProgressCard />
+      </motion.div>
 
       <motion.div
         initial={{ opacity: 0, y: 12 }}

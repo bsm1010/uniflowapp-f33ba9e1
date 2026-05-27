@@ -156,6 +156,7 @@ export function DashboardSidebar() {
         { title: t("dashboard.nav.appStore"), url: "/dashboard/apps", icon: Blocks, gradient: "from-violet-500 to-purple-500" },
         { title: "Marketplace", url: "/dashboard/apps/marketplace", icon: StoreIcon, gradient: "from-purple-500 to-pink-500" },
         { title: "Developer", url: "/dashboard/developer", icon: Code2, gradient: "from-fuchsia-500 to-violet-500" },
+        { title: t("dashboard.nav.progress", "Progress"), url: "/dashboard/progress", icon: Trophy, gradient: "from-purple-500 to-pink-500" },
         { title: t("dashboard.nav.credits"), url: "/dashboard/credits", icon: Coins, gradient: "from-yellow-500 to-amber-500" },
         { title: t("dashboard.nav.referrals"), url: "/dashboard/referrals", icon: Gift, gradient: "from-rose-500 to-pink-500" },
         { title: "Store Settings", url: "/dashboard/store-settings", icon: StoreIcon, gradient: "from-emerald-500 to-teal-600" },
