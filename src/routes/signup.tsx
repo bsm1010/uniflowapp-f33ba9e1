@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ALGERIA_GEO, getCitiesForWilaya, isValidAlgerianPhone } from "@/lib/algeriaWilayas";
+import { SuccessAnimation } from "@/components/auth/SuccessAnimation";
 
 export const Route = createFileRoute("/signup")({
   component: SignUpPage,
@@ -59,6 +60,8 @@ function SignUpPage() {
   const [formError, setFormError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [hasSession, setHasSession] = useState(false);
 
   const pwStrength = password ? getPasswordStrength(password) : null;
   const cities = wilaya ? getCitiesForWilaya(wilaya) : [];
@@ -119,11 +122,8 @@ function SignUpPage() {
       return;
     }
 
-    if (data.session) {
-      navigate({ to: "/dashboard" });
-    } else {
-      setSuccess(t("auth.signup.checkEmail"));
-    }
+    setHasSession(!!data.session);
+    setShowSuccess(true);
   };
 
   return (
@@ -361,6 +361,15 @@ function SignUpPage() {
           </Button>
         </motion.div>
       </form>
+
+      {showSuccess && (
+        <SuccessAnimation
+          onComplete={() => {
+            if (hasSession) navigate({ to: "/dashboard" });
+            else setSuccess(t("auth.signup.checkEmail"));
+          }}
+        />
+      )}
     </AuthLayout>
   );
 }
