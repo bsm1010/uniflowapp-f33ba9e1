@@ -81,6 +81,7 @@ export class DHDAdapter extends BaseDeliveryAdapter {
     }
     const data = await this.request<{
       statut?: string;
+      status?: string;
       lastUpdate?: string;
       history?: Array<{ status: string; date: string; location?: string }>;
     }>(`${DHD_BASE_URL}/shipments/${encodeURIComponent(trackingNumber)}`, {
