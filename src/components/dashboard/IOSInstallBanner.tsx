@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Share, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import fennecyIcon from "@/assets/fennecly-icon.webp";
+import { cn } from "@/lib/utils";
 
 const DISMISS_KEY = "fennecly:ios-install-dismissed-at";
 const DISMISS_DAYS = 7;
