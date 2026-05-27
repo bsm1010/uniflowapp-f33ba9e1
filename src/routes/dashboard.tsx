@@ -32,6 +32,12 @@ const HelpChatbot = lazy(() =>
   })),
 );
 
+const AICopilot = lazy(() =>
+  import("@/components/dashboard/AICopilot").then((m) => ({
+    default: m.AICopilot,
+  })),
+);
+
 export const Route = createFileRoute("/dashboard")({
   component: DashboardLayout,
   head: () => ({
@@ -225,6 +231,7 @@ function DashboardLayout() {
             <WelcomeDialog userId={user.id} />
             <OnboardingTour userId={user.id} />
             <HelpChatbot />
+            <AICopilot />
           </Suspense>
         </SidebarProvider>
       </CurrentStoreProvider>
