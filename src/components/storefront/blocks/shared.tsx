@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { Img } from "@/components/ui/Img";
 
 /** Standard section wrapper with semantic spacing & entrance animation. */
 export function Section({
@@ -89,11 +90,12 @@ export function BlockImage({
     );
   }
   return (
-    <img
+    <Img
       src={src}
       alt={alt}
-      loading="lazy"
-      className={cn(aspectClass, "w-full rounded-lg object-cover", className)}
+      width={800}
+      quality={80}
+      className={cn(aspectClass, "w-full rounded-lg", className)}
     />
   );
 }

@@ -3,6 +3,7 @@ import { ShoppingBag, Eye } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { StoreTokens } from "@/lib/storeTheme";
 import { formatPrice } from "@/lib/storeTheme";
+import { Img } from "@/components/ui/Img";
 
 export interface ProductCardData {
   id: string;
@@ -50,11 +51,12 @@ export function ProductCard({
         }}
       >
         {product.images[0] ? (
-          <img
+          <Img
             src={product.images[0]}
             alt={product.name}
-            loading="lazy"
-            className="h-full w-full object-cover transition-all duration-700 ease-out group-hover:scale-110"
+            width={400}
+            quality={80}
+            className="absolute inset-0 transition-all duration-700 ease-out group-hover:scale-110"
           />
         ) : (
           <div
@@ -67,13 +69,13 @@ export function ProductCard({
           </div>
         )}
 
-        {/* Second image on hover */}
         {product.images[1] && (
-          <img
+          <Img
             src={product.images[1]}
             alt=""
-            loading="lazy"
-            className="absolute inset-0 h-full w-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+            width={400}
+            quality={75}
+            className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
           />
         )}
 

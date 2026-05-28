@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
+import { Img } from "@/components/ui/Img";
 import {
   StorefrontShell,
   getStoreTokens,
@@ -141,10 +142,12 @@ function ProductPage() {
               }}
             >
               {product.images[activeImage] ? (
-                <img
+                <Img
                   src={product.images[activeImage]}
                   alt={product.name}
-                  className="h-full w-full object-cover"
+                  width={800}
+                  quality={85}
+                  className="h-full w-full"
                 />
               ) : (
                 <div
@@ -170,10 +173,12 @@ function ProductPage() {
                       opacity: i === activeImage ? 1 : 0.7,
                     }}
                   >
-                    <img
+                    <Img
                       src={img}
                       alt=""
-                      className="h-full w-full object-cover"
+                      width={150}
+                      quality={70}
+                      className="h-full w-full"
                     />
                   </button>
                 ))}

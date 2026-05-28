@@ -32,6 +32,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Img } from "@/components/ui/Img";
 
 import type { Tables } from "@/integrations/supabase/types";
 import { PageHeader, EmptyState } from "@/components/dashboard/PageHeader";
@@ -448,11 +449,12 @@ function OrdersPage() {
                           {firstItem ? (
                             <div className="flex items-center gap-2.5">
                               {firstItem.image_url ? (
-                                <img
+                                <Img
                                   src={firstItem.image_url}
                                   alt={firstItem.product_name}
-                                  className="h-10 w-10 rounded-md object-cover border border-border/60 shrink-0"
-                                  loading="lazy"
+                                  width={80}
+                                  quality={75}
+                                  className="h-10 w-10 rounded-md shrink-0"
                                 />
                               ) : (
                                 <div className="h-10 w-10 rounded-md bg-accent flex items-center justify-center shrink-0">

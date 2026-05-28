@@ -30,6 +30,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { InstalledAppsSection } from "@/components/dashboard/InstalledAppsSection";
 import { StoreProgressCard } from "@/components/dashboard/StoreProgressCard";
 import { WindowsAppBanner } from "@/components/dashboard/WindowsAppBanner";
+import { Img } from "@/components/ui/Img";
 import { GamificationHub } from "@/components/dashboard/core-loop/GamificationHub";
 import { useServerFn } from "@tanstack/react-start";
 import { getGamification, type GamificationData } from "@/lib/core-loop";
@@ -424,11 +425,12 @@ function DashboardHome() {
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       {o.product_image ? (
-                        <img
+                        <Img
                           src={o.product_image}
                           alt={o.product_name ?? ""}
-                          className="h-11 w-11 rounded-lg object-cover border border-border/60 shrink-0"
-                          loading="lazy"
+                          width={88}
+                          quality={75}
+                          className="h-11 w-11 rounded-lg shrink-0"
                         />
                       ) : (
                         <div className="h-11 w-11 rounded-lg bg-accent flex items-center justify-center shrink-0">
