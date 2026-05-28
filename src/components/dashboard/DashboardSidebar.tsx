@@ -121,6 +121,7 @@ export function DashboardSidebar() {
         { title: t("dashboard.nav.products"), url: "/dashboard/products", icon: Package, gradient: "from-emerald-500 to-teal-500", tourId: "products" },
         { title: t("dashboard.nav.categories"), url: "/dashboard/categories", icon: Tag, gradient: "from-amber-500 to-orange-500" },
         { title: t("dashboard.nav.themePresets"), url: "/dashboard/theme-presets", icon: Sparkles, gradient: "from-fuchsia-500 to-purple-500" },
+        { title: "Theme Manager", url: "/dashboard/theme-manager", icon: Palette, gradient: "from-violet-500 to-fuchsia-500" },
         { title: "Section Builder", url: "/dashboard/builder", icon: Layers, gradient: "from-violet-500 to-fuchsia-500" },
       ],
     },
