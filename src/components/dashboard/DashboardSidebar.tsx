@@ -36,7 +36,7 @@ import {
   Flame,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import fennecyIcon from "@/assets/fennecly-icon.webp";
+import { FennecyLogo } from "@/components/ui/fennecy-logo";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import { useInstalledApps } from "@/hooks/use-installed-apps";
@@ -240,33 +240,13 @@ export function DashboardSidebar() {
     >
       <SidebarHeader className="bg-transparent">
         <Link to="/dashboard" className="flex items-center gap-2.5 px-2 py-2.5 group">
-          <div
-            role="img"
-            aria-label="Fennecly"
+          <FennecyLogo
             className={cn(
-              "h-10 w-10 shrink-0 bg-primary dark:bg-white transition-transform group-hover:scale-105",
+              "h-10 w-10 shrink-0 transition-transform group-hover:scale-105 sidebar-purple:bg-white",
+              collapsed ? "" : "h-10 w-40",
             )}
-            style={{
-              WebkitMaskImage: `url(${fennecyIcon})`,
-              maskImage: `url(${fennecyIcon})`,
-              WebkitMaskRepeat: "no-repeat",
-              maskRepeat: "no-repeat",
-              WebkitMaskPosition: "center",
-              maskPosition: "center",
-              WebkitMaskSize: "contain",
-              maskSize: "contain",
-            }}
+            ariaLabel="Fennecly"
           />
-          {!collapsed && (
-            <div className="flex flex-col leading-tight">
-              <span className="font-display font-bold text-lg bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-                Fennecly
-              </span>
-              <span className="text-[10px] text-muted-foreground font-medium tracking-wide uppercase">
-                Dashboard
-              </span>
-            </div>
-          )}
         </Link>
         {!collapsed && (
           <div className="flex items-center justify-between px-2 py-1.5 mt-1 rounded-lg bg-sidebar-accent/30">
