@@ -2,6 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
 import { Navbar } from "@/components/landing/Navbar";
 import { Hero } from "@/components/landing/Hero";
+const AllTools = lazy(() =>
+  import("@/components/landing/AllTools").then((m) => ({
+    default: m.AllTools,
+  })),
+);
 const DashboardTools = lazy(() =>
   import("@/components/landing/DashboardTools").then((m) => ({
     default: m.DashboardTools,
@@ -83,6 +88,9 @@ function Index() {
       <Navbar />
       <Hero />
       <Suspense fallback={<SectionFallback />}>
+        <div className="cv-auto">
+          <AllTools />
+        </div>
         <div className="cv-auto">
           <DashboardTools />
         </div>
