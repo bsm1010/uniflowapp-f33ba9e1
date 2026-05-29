@@ -70,6 +70,42 @@ export type Database = {
           },
         ]
       }
+      achievements: {
+        Row: {
+          condition_type: string
+          condition_value: number
+          created_at: string
+          description: string | null
+          icon: string
+          id: string
+          key: string
+          title: string
+          xp_reward: number
+        }
+        Insert: {
+          condition_type: string
+          condition_value?: number
+          created_at?: string
+          description?: string | null
+          icon?: string
+          id?: string
+          key: string
+          title: string
+          xp_reward?: number
+        }
+        Update: {
+          condition_type?: string
+          condition_value?: number
+          created_at?: string
+          description?: string | null
+          icon?: string
+          id?: string
+          key?: string
+          title?: string
+          xp_reward?: number
+        }
+        Relationships: []
+      }
       activity_log: {
         Row: {
           action_type: string
@@ -1491,6 +1527,30 @@ export type Database = {
         }
         Relationships: []
       }
+      oauth_state_nonces: {
+        Row: {
+          created_at: string
+          expires_at: string
+          nonce: string
+          provider: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          nonce: string
+          provider: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          nonce?: string
+          provider?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           created_at: string
@@ -1982,6 +2042,42 @@ export type Database = {
         }
         Relationships: []
       }
+      quests: {
+        Row: {
+          created_at: string
+          description: string | null
+          icon: string
+          id: string
+          key: string
+          requirements: Json | null
+          title: string
+          type: string
+          xp_reward: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          icon?: string
+          id?: string
+          key: string
+          requirements?: Json | null
+          title: string
+          type: string
+          xp_reward: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          icon?: string
+          id?: string
+          key?: string
+          requirements?: Json | null
+          title?: string
+          type?: string
+          xp_reward?: number
+        }
+        Relationships: []
+      }
       referrals: {
         Row: {
           created_at: string
@@ -2306,6 +2402,7 @@ export type Database = {
           footer_about: string
           footer_copyright: string
           footer_socials: Json
+          footer_style: string
           hero_cta_label: string
           hero_heading: string
           hero_image_url: string | null
@@ -2314,6 +2411,7 @@ export type Database = {
           is_active: boolean
           logo_url: string | null
           nav_links: Json
+          navbar_style: string
           primary_color: string
           secondary_color: string
           section_order: string[]
@@ -2351,6 +2449,7 @@ export type Database = {
           footer_about?: string
           footer_copyright?: string
           footer_socials?: Json
+          footer_style?: string
           hero_cta_label?: string
           hero_heading?: string
           hero_image_url?: string | null
@@ -2359,6 +2458,7 @@ export type Database = {
           is_active?: boolean
           logo_url?: string | null
           nav_links?: Json
+          navbar_style?: string
           primary_color?: string
           secondary_color?: string
           section_order?: string[]
@@ -2396,6 +2496,7 @@ export type Database = {
           footer_about?: string
           footer_copyright?: string
           footer_socials?: Json
+          footer_style?: string
           hero_cta_label?: string
           hero_heading?: string
           hero_image_url?: string | null
@@ -2404,6 +2505,7 @@ export type Database = {
           is_active?: boolean
           logo_url?: string | null
           nav_links?: Json
+          navbar_style?: string
           primary_color?: string
           secondary_color?: string
           section_order?: string[]
@@ -2582,6 +2684,182 @@ export type Database = {
         }
         Relationships: []
       }
+      unlockables: {
+        Row: {
+          created_at: string
+          description: string | null
+          icon: string
+          id: string
+          key: string
+          name: string
+          requirement_type: string
+          requirement_value: number
+          reward_data: Json | null
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          icon?: string
+          id?: string
+          key: string
+          name: string
+          requirement_type: string
+          requirement_value?: number
+          reward_data?: Json | null
+          type: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          icon?: string
+          id?: string
+          key?: string
+          name?: string
+          requirement_type?: string
+          requirement_value?: number
+          reward_data?: Json | null
+          type?: string
+        }
+        Relationships: []
+      }
+      user_achievements: {
+        Row: {
+          achievement_id: string
+          earned_at: string
+          id: string
+          shared: boolean
+          user_id: string
+        }
+        Insert: {
+          achievement_id: string
+          earned_at?: string
+          id?: string
+          shared?: boolean
+          user_id: string
+        }
+        Update: {
+          achievement_id?: string
+          earned_at?: string
+          id?: string
+          shared?: boolean
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_achievements_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_gamification: {
+        Row: {
+          current_streak: number
+          id: string
+          last_active_date: string | null
+          level: number
+          longest_streak: number
+          updated_at: string
+          user_id: string
+          xp: number
+        }
+        Insert: {
+          current_streak?: number
+          id?: string
+          last_active_date?: string | null
+          level?: number
+          longest_streak?: number
+          updated_at?: string
+          user_id: string
+          xp?: number
+        }
+        Update: {
+          current_streak?: number
+          id?: string
+          last_active_date?: string | null
+          level?: number
+          longest_streak?: number
+          updated_at?: string
+          user_id?: string
+          xp?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_gamification_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_quests: {
+        Row: {
+          claimed: boolean
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+          id: string
+          period_start: string
+          progress: number
+          quest_id: string
+          target: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          claimed?: boolean
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          period_start?: string
+          progress?: number
+          quest_id: string
+          target?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          claimed?: boolean
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          period_start?: string
+          progress?: number
+          quest_id?: string
+          target?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_quests_quest_id_fkey"
+            columns: ["quest_id"]
+            isOneToOne: false
+            referencedRelation: "quests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_quests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -2603,6 +2881,80 @@ export type Database = {
         }
         Relationships: []
       }
+      user_unlocks: {
+        Row: {
+          equipped: boolean
+          id: string
+          unlockable_id: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          equipped?: boolean
+          id?: string
+          unlockable_id: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          equipped?: boolean
+          id?: string
+          unlockable_id?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_unlocks_unlockable_id_fkey"
+            columns: ["unlockable_id"]
+            isOneToOne: false
+            referencedRelation: "unlockables"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_unlocks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      xp_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          metadata: Json | null
+          user_id: string
+          xp_amount: number
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          user_id: string
+          xp_amount: number
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          user_id?: string
+          xp_amount?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "xp_events_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -2616,6 +2968,7 @@ export type Database = {
         Args: { _referee_id: string; _referrer_id: string }
         Returns: undefined
       }
+      calculate_level: { Args: { xp: number }; Returns: number }
       consume_credits: {
         Args: { _amount: number; _metadata?: Json; _reason: string }
         Returns: boolean
@@ -2636,6 +2989,7 @@ export type Database = {
           contact_phone: string
         }[]
       }
+      get_xp_for_level: { Args: { level: number }; Returns: number }
       grant_credits: {
         Args: {
           _amount: number
@@ -2668,6 +3022,10 @@ export type Database = {
           msg_id: number
           read_ct: number
         }[]
+      }
+      store_telegram_connected: {
+        Args: { _store_id: string }
+        Returns: boolean
       }
       user_owns_store: { Args: { _store_id: string }; Returns: boolean }
       validate_discount_code: {
