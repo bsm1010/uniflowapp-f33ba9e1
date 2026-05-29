@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /api/
+Disallow: /select-store
+Disallow: /customize
+
+Sitemap: https://fennecly.online/sitemap.xml
