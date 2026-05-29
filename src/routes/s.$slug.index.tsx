@@ -29,7 +29,7 @@ export const Route = createFileRoute("/s/$slug/")({
   loader: ({ params }) => fetchSettings(params.slug),
   head: ({ params, loaderData }) => {
     const storeName = loaderData?.store_name ?? params.slug;
-    const tagline = loaderData?.tagline ?? loaderData?.about_text ?? null;
+    const tagline = loaderData?.tagline ?? loaderData?.about_content ?? null;
     const description = tagline
       ? String(tagline).slice(0, 160)
       : `Shop ${storeName} online — discover products with fast checkout and delivery, powered by Fennecly.`;
