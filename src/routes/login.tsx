@@ -15,8 +15,12 @@ export const Route = createFileRoute("/login")({
   component: LoginPage,
   head: () => ({
     meta: [
-      { title: "Login — Storely" },
-      { name: "description", content: "Log in to your Storely account to manage your store." },
+      { title: "Log in — Fennecly" },
+      { name: "description", content: "Log in to your Fennecly account to manage your online store, track orders, update products, and run your business from one dashboard." },
+      { property: "og:title", content: "Log in — Fennecly" },
+      { property: "og:description", content: "Log in to your Fennecly account to manage products, orders, and your storefront." },
+    ],
+    links: [{ rel: "canonical", href: "https://fennecly.online/login" }],
     ],
   }),
 });
