@@ -283,7 +283,7 @@ function ProgressPage() {
                         </Button>
                       )}
                       {item.completed && (
-                        <Badge variant="ghost" className="text-[10px] text-emerald-500 h-5 shrink-0">Done</Badge>
+                        <Badge variant="outline" className="text-[10px] text-emerald-500 h-5 shrink-0">Done</Badge>
                       )}
                     </motion.div>
                   );
@@ -360,7 +360,7 @@ function ProgressPage() {
                             {m.label}
                           </p>
                           {isUnlocked && (
-                            <Badge variant="ghost" className="h-5 text-[10px] text-emerald-500 shrink-0">
+                            <Badge variant="outline" className="h-5 text-[10px] text-emerald-500 shrink-0">
                               <CheckCircle2 className="h-3 w-3 mr-0.5" /> Earned
                             </Badge>
                           )}
