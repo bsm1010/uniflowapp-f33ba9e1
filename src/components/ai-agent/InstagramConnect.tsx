@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Instagram, Link2, Link2Off, Loader2, CheckCircle2, AlertCircle, ExternalLink } from "lucide-react";
+import { Instagram, Link2, Link2Off, Loader2, CheckCircle2, AlertCircle, ExternalLink, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,15 +11,24 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
+const INSTAGRAM_CLIENT_ID = import.meta.env.VITE_INSTAGRAM_CLIENT_ID;
+
 export function InstagramConnect() {
   const { connection } = useAIAgent();
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const [connecting, setConnecting] = useState(false);
 
-  const handleConnect = () => {
-    // In production, this would redirect to Meta OAuth
-    // For now, show the setup flow
-    toast.info("Instagram OAuth requires Meta App credentials. Configure META_APP_ID and META_APP_SECRET in your environment.");
+  const handleConnect = async () => {
+    if (!INSTAGRAM_CLIENT_ID) {
+      toast.error("Instagram not configured. Set VITE_INSTAGRAM_CLIENT_ID in your environment variables.");
+      return;
+    }
+    setConnecting(true);
+    if (!session) { toast.error("Please sign in first"); setConnecting(false); return; }
+    const state = encodeURIComponent(session.access_token);
+    const redirectUri = `${window.location.origin}/api/auth/instagram/callback`;
+    const oauthUrl = `https://api.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${redirectUri}&scope=user_profile,user_media&response_type=code&state=${state}`;
+    window.location.href = oauthUrl;
   };
 
   const handleDisconnect = async () => {
@@ -90,9 +99,10 @@ export function InstagramConnect() {
                 </div>
                 <Button
                   onClick={handleConnect}
+                  disabled={connecting}
                   className="w-full h-12 gap-2 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 hover:from-yellow-500 hover:via-pink-600 hover:to-purple-700 text-white font-semibold shadow-lg"
                 >
-                  <Instagram className="h-5 w-5" />
+                  {connecting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Instagram className="h-5 w-5" />}
                   Connect Instagram Business
                 </Button>
                 <p className="text-xs text-center text-muted-foreground">
