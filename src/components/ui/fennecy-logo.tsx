@@ -1,9 +1,8 @@
-import fennecyLogo from "@/assets/fennecly-logo.webp";
+import fennecyLogo from "@/assets/fennecly-logo-original.png";
 import { cn } from "@/lib/utils";
 
 /**
- * Renders the Fennecly wordmark as a CSS-masked div so it can be tinted
- * to follow the theme: purple (primary) in light mode, white in dark mode.
+ * Renders the original Fennecly logo as an <img>, unmodified.
  */
 export function FennecyLogo({
   className,
@@ -13,20 +12,10 @@ export function FennecyLogo({
   ariaLabel?: string;
 }) {
   return (
-    <div
-      role="img"
-      aria-label={ariaLabel}
-      className={cn("bg-primary dark:bg-white", className)}
-      style={{
-        WebkitMaskImage: `url(${fennecyLogo})`,
-        maskImage: `url(${fennecyLogo})`,
-        WebkitMaskRepeat: "no-repeat",
-        maskRepeat: "no-repeat",
-        WebkitMaskPosition: "center",
-        maskPosition: "center",
-        WebkitMaskSize: "contain",
-        maskSize: "contain",
-      }}
+    <img
+      src={fennecyLogo}
+      alt={ariaLabel}
+      className={cn("object-contain", className)}
     />
   );
 }

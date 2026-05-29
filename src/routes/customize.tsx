@@ -132,6 +132,8 @@ function defaults(userId: string): StoreSettings {
     font_family: "Inter",
     button_style: "rounded",
     border_radius: "medium",
+    navbar_style: "classic",
+    footer_style: "simple",
     logo_url: null,
     hero_heading: "Welcome to our store",
     hero_subheading: "Discover products you'll love.",
