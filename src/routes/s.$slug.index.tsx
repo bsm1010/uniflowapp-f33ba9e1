@@ -27,9 +27,36 @@ type Product = Pick<
 export const Route = createFileRoute("/s/$slug/")({
   component: StorefrontHome,
   loader: ({ params }) => fetchSettings(params.slug),
-  head: ({ params }) => ({
-    meta: [{ title: `${params.slug} - Storely` }],
-  }),
+  head: ({ params, loaderData }) => {
+    const storeName = loaderData?.store_name ?? params.slug;
+    const tagline = loaderData?.tagline ?? loaderData?.about_text ?? null;
+    const description = tagline
+      ? String(tagline).slice(0, 160)
+      : `Shop ${storeName} online — discover products with fast checkout and delivery, powered by Fennecly.`;
+    const title = `${storeName} — Online store`;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "website" },
+        { property: "og:site_name", content: storeName },
+      ],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Store",
+            name: storeName,
+            description,
+            url: `https://fennecly.online/s/${params.slug}`,
+          }),
+        },
+      ],
+    };
+  },
 });
 
 type SortKey = "newest" | "price-asc" | "price-desc" | "name";
