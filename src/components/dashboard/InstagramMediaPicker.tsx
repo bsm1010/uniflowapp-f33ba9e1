@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Instagram, Loader2, Check, Image as ImageIcon, AlertCircle, LogIn, ExternalLink } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Instagram, Loader2, Check, Image as ImageIcon, AlertCircle, LogIn, ExternalLink, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -84,6 +84,23 @@ export function InstagramMediaPicker({ onSelect, onClose }: Props) {
       setError("Failed to start Instagram authentication. Please try again.");
       setConnecting(false);
     }
+  };
+
+  const DEMO_MEDIA: InstagramMedia[] = useMemo(() =>
+    Array.from({ length: 12 }, (_, i) => ({
+      id: `demo_${i + 1}`,
+      media_type: "IMAGE" as const,
+      media_url: `https://picsum.photos/seed/fennec-demo${i + 1}/400/400`,
+      thumbnail_url: `https://picsum.photos/seed/fennec-demo${i + 1}/200/200`,
+      caption: ["Product shot", "Lifestyle", "Detail view", "Packaging", "On model", "BTS", "Flat lay", "Group shot", "Feature close-up", "Outdoors", "Studio", "Angle"][i],
+      timestamp: new Date(Date.now() - i * 86400000).toISOString(),
+    })), []);
+
+  const startDemo = () => {
+    setError(null);
+    setMedia(DEMO_MEDIA);
+    setConnected(true);
+    setLoading(false);
   };
 
   const toggleSelected = (id: string) => {
@@ -185,6 +202,15 @@ export function InstagramMediaPicker({ onSelect, onClose }: Props) {
             {connecting ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}
             Connect Instagram
           </Button>
+          {!INSTAGRAM_CLIENT_ID && (
+            <>
+              <span className="text-xs text-muted-foreground">or</span>
+              <Button onClick={startDemo} variant="outline" className="gap-2">
+                <Sparkles className="h-4 w-4" />
+                Try Demo Mode
+              </Button>
+            </>
+          )}
         </div>
       )}
     </div>
