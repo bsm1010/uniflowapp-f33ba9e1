@@ -72,6 +72,28 @@ export const Route = createFileRoute("/")({
           "Manage your entire e-commerce business from a single, intuitive dashboard — products, orders, shipping, marketing, and more.",
       },
     ],
+    links: [{ rel: "canonical", href: "https://fennecly.online/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "Fennecly",
+          url: "https://fennecly.online",
+          logo: "https://fennecly.online/icons/icon-512.png",
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "Fennecly",
+          url: "https://fennecly.online",
+        }),
+      },
+    ],
   }),
 });
 function SectionFallback() {
