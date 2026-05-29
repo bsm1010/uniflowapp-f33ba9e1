@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-const INSTAGRAM_CLIENT_ID = import.meta.env.VITE_INSTAGRAM_CLIENT_ID;
+const INSTAGRAM_CLIENT_ID = import.meta.env.VITE_INSTAGRAM_CLIENT_ID || "1874901709839127";
 
 interface InstagramMedia {
   id: string;
@@ -78,7 +78,8 @@ export function InstagramMediaPicker({ onSelect, onClose }: Props) {
     try {
       const state = encodeURIComponent(session.access_token);
       const redirectUri = `${window.location.origin}/api/auth/instagram/callback`;
-      const oauthUrl = `https://www.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${redirectUri}&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_content_publish&response_type=code&state=${state}`;
+      const scope = "instagram_business_basic,instagram_business_content_publish";
+      const oauthUrl = `https://www.instagram.com/oauth/authorize?enable_fb_login=0&force_authentication=1&client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}&state=${state}`;
       window.location.href = oauthUrl;
     } catch (e) {
       setError("Failed to start Instagram authentication. Please try again.");
