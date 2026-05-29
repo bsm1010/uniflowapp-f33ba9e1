@@ -1,0 +1,11 @@
+# Fennecly
+
+> Fennecly is an all-in-one platform to design, customize, and launch an online store in minutes — manage products, orders, shipping, and marketing from a single dashboard.
+
+## Pages
+
+- [Home](/): Overview of Fennecly's features for building and running an online store.
+- [Themes](/themes): Browse storefront themes available on Fennecly.
+- [iPhone guide](/iphone-guide): Step-by-step guide for managing a Fennecly store on iPhone.
+- [Log in](/login): Sign in to a Fennecly account.
+- [Sign up](/signup): Create a new Fennecly account.
