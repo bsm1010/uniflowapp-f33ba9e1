@@ -19,8 +19,62 @@ type Product = Tables<"products">;
 
 export const Route = createFileRoute("/s/$slug/p/$productId")({
   component: ProductPage,
-  loader: ({ params }) => fetchSettings(params.slug),
-  head: () => ({ meta: [{ title: "Product — Storely" }] }),
+  loader: async ({ params }) => {
+    const settings = await fetchSettings(params.slug);
+    if (!settings) return { settings: null, product: null };
+    const { data: product } = await supabase
+      .from("products")
+      .select("id,name,description,price,images")
+      .eq("id", params.productId)
+      .eq("user_id", settings.user_id)
+      .maybeSingle();
+    return { settings, product };
+  },
+  head: ({ params, loaderData }) => {
+    const product = loaderData?.product;
+    const settings = loaderData?.settings;
+    const storeName = settings?.store_name ?? params.slug;
+    const title = product
+      ? `${product.name} — ${storeName}`
+      : `Product — ${storeName}`;
+    const description = product
+      ? (product.description?.slice(0, 160) ??
+        `${product.name} available at ${storeName}. Order online with fast checkout.`)
+      : `Browse products at ${storeName} on Fennecly.`;
+    const image = product?.images?.[0];
+    const meta: Array<Record<string, string>> = [
+      { title },
+      { name: "description", content: description },
+      { property: "og:title", content: title },
+      { property: "og:description", content: description },
+      { property: "og:type", content: "product" },
+    ];
+    if (image) {
+      meta.push({ property: "og:image", content: image });
+      meta.push({ name: "twitter:image", content: image });
+    }
+    const scripts = product
+      ? [
+          {
+            type: "application/ld+json",
+            children: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Product",
+              name: product.name,
+              description: product.description ?? undefined,
+              image: product.images ?? undefined,
+              offers: {
+                "@type": "Offer",
+                price: String(product.price),
+                priceCurrency: "DZD",
+                availability: "https://schema.org/InStock",
+              },
+            }),
+          },
+        ]
+      : undefined;
+    return { meta, scripts };
+  },
 });
 
 function ProductPage() {
