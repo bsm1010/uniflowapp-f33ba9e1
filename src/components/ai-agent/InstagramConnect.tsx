@@ -1,22 +1,20 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Instagram, Link2, Link2Off, Loader2, CheckCircle2, AlertCircle, ExternalLink, LogIn } from "lucide-react";
+import { Instagram, Link2Off, Loader2, CheckCircle2, ExternalLink, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useAIAgent } from "@/hooks/use-ai-agent";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 
 const INSTAGRAM_CLIENT_ID = import.meta.env.VITE_INSTAGRAM_CLIENT_ID;
 
 export function InstagramConnect() {
   const { connection } = useAIAgent();
-  const { user, session } = useAuth();
+  const { user } = useAuth();
   const [connecting, setConnecting] = useState(false);
+  const [demoMode, setDemoMode] = useState(false);
 
   const handleConnect = async () => {
     if (!INSTAGRAM_CLIENT_ID) {
@@ -24,6 +22,7 @@ export function InstagramConnect() {
       return;
     }
     setConnecting(true);
+    const { data: { session } } = await supabase.auth.getSession();
     if (!session) { toast.error("Please sign in first"); setConnecting(false); return; }
     const state = encodeURIComponent(session.access_token);
     const redirectUri = `${window.location.origin}/api/auth/instagram/callback`;
@@ -31,14 +30,19 @@ export function InstagramConnect() {
     window.location.href = oauthUrl;
   };
 
+  const startDemo = () => {
+    setDemoMode(true);
+  };
+
   const handleDisconnect = async () => {
+    if (demoMode) { setDemoMode(false); return; }
     if (!user) return;
     await supabase.from("instagram_connections").delete().eq("user_id", user.id);
     toast.success("Instagram disconnected");
     window.location.reload();
   };
 
-  const isConnected = connection?.status === "connected";
+  const isConnected = connection?.status === "connected" || demoMode;
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -59,11 +63,11 @@ export function InstagramConnect() {
               <div className="space-y-4">
                 <div className="flex items-center gap-4 p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
                   <div className="h-12 w-12 rounded-full bg-gradient-to-br from-yellow-400 via-pink-500 to-purple-600 flex items-center justify-center text-white font-bold">
-                    {connection.instagram_username?.[0]?.toUpperCase() || "I"}
+                    {(demoMode ? "D" : connection?.instagram_username?.[0])?.toUpperCase() || "I"}
                   </div>
                   <div className="flex-1">
-                    <p className="font-semibold">@{connection.instagram_username}</p>
-                    <p className="text-sm text-muted-foreground">{connection.page_name || "Instagram Business"}</p>
+                    <p className="font-semibold">@{demoMode ? "demo_store" : connection?.instagram_username}</p>
+                    <p className="text-sm text-muted-foreground">{demoMode ? "Instagram Business (Demo)" : (connection?.page_name || "Instagram Business")}</p>
                   </div>
                   <CheckCircle2 className="h-5 w-5 text-emerald-500" />
                 </div>
@@ -75,14 +79,12 @@ export function InstagramConnect() {
                   <div className="p-3 rounded-lg bg-muted/50">
                     <p className="text-muted-foreground">Last Synced</p>
                     <p className="font-medium">
-                      {connection.last_synced_at
-                        ? new Date(connection.last_synced_at).toLocaleDateString()
-                        : "Never"}
+                      {demoMode ? "Just now" : (connection?.last_synced_at ? new Date(connection.last_synced_at).toLocaleDateString() : "Never")}
                     </p>
                   </div>
                 </div>
                 <Button variant="outline" onClick={handleDisconnect} className="w-full gap-2 text-destructive border-destructive/30 hover:bg-destructive/5">
-                  <Link2Off className="h-4 w-4" /> Disconnect Instagram
+                  <Link2Off className="h-4 w-4" /> {demoMode ? "Exit Demo Mode" : "Disconnect Instagram"}
                 </Button>
               </div>
             ) : (
@@ -105,6 +107,18 @@ export function InstagramConnect() {
                   {connecting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Instagram className="h-5 w-5" />}
                   Connect Instagram Business
                 </Button>
+                {!INSTAGRAM_CLIENT_ID && (
+                  <>
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
+                      <div className="relative flex justify-center text-xs uppercase"><span className="bg-card px-2 text-muted-foreground">or</span></div>
+                    </div>
+                    <Button onClick={startDemo} variant="outline" className="w-full gap-2">
+                      <Sparkles className="h-4 w-4" />
+                      Try Demo Mode
+                    </Button>
+                  </>
+                )}
                 <p className="text-xs text-center text-muted-foreground">
                   We only request messaging permissions. Your data stays secure.
                 </p>
