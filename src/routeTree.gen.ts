@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ThemesRouteImport } from './routes/themes'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SelectStoreRouteImport } from './routes/select-store'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
@@ -103,6 +104,11 @@ import { Route as ApiAuthInstagramCallbackRouteImport } from './routes/api.auth.
 const ThemesRoute = ThemesRouteImport.update({
   id: '/themes',
   path: '/themes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SignupRoute = SignupRouteImport.update({
@@ -585,6 +591,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/select-store': typeof SelectStoreRoute
   '/signup': typeof SignupRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/themes': typeof ThemesRoute
   '/dashboard/about': typeof DashboardAboutRoute
   '/dashboard/achievements': typeof DashboardAchievementsRoute
@@ -676,6 +683,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/select-store': typeof SelectStoreRoute
   '/signup': typeof SignupRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/themes': typeof ThemesRoute
   '/dashboard/about': typeof DashboardAboutRoute
   '/dashboard/achievements': typeof DashboardAchievementsRoute
@@ -767,6 +775,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/select-store': typeof SelectStoreRoute
   '/signup': typeof SignupRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/themes': typeof ThemesRoute
   '/dashboard/about': typeof DashboardAboutRoute
   '/dashboard/achievements': typeof DashboardAchievementsRoute
@@ -861,6 +870,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/select-store'
     | '/signup'
+    | '/sitemap.xml'
     | '/themes'
     | '/dashboard/about'
     | '/dashboard/achievements'
@@ -952,6 +962,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/select-store'
     | '/signup'
+    | '/sitemap.xml'
     | '/themes'
     | '/dashboard/about'
     | '/dashboard/achievements'
@@ -1042,6 +1053,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/select-store'
     | '/signup'
+    | '/sitemap.xml'
     | '/themes'
     | '/dashboard/about'
     | '/dashboard/achievements'
@@ -1135,6 +1147,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   SelectStoreRoute: typeof SelectStoreRoute
   SignupRoute: typeof SignupRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ThemesRoute: typeof ThemesRoute
   ApiDbTableIdRoute: typeof ApiDbTableIdRouteWithChildren
   SSlugAboutRoute: typeof SSlugAboutRoute
@@ -1164,6 +1177,13 @@ declare module '@tanstack/react-router' {
       path: '/themes'
       fullPath: '/themes'
       preLoaderRoute: typeof ThemesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/signup': {
@@ -1975,6 +1995,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   SelectStoreRoute: SelectStoreRoute,
   SignupRoute: SignupRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   ThemesRoute: ThemesRoute,
   ApiDbTableIdRoute: ApiDbTableIdRouteWithChildren,
   SSlugAboutRoute: SSlugAboutRoute,
