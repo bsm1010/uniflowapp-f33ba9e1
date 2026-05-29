@@ -21,7 +21,6 @@ export const Route = createFileRoute("/login")({
       { property: "og:description", content: "Log in to your Fennecly account to manage products, orders, and your storefront." },
     ],
     links: [{ rel: "canonical", href: "https://fennecly.online/login" }],
-    ],
   }),
 });
 
