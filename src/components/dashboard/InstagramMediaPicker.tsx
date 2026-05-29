@@ -78,7 +78,7 @@ export function InstagramMediaPicker({ onSelect, onClose }: Props) {
     try {
       const state = encodeURIComponent(session.access_token);
       const redirectUri = `${window.location.origin}/api/auth/instagram/callback`;
-      const oauthUrl = `https://api.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${redirectUri}&scope=user_profile,user_media&response_type=code&state=${state}`;
+      const oauthUrl = `https://www.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${redirectUri}&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_content_publish&response_type=code&state=${state}`;
       window.location.href = oauthUrl;
     } catch (e) {
       setError("Failed to start Instagram authentication. Please try again.");
