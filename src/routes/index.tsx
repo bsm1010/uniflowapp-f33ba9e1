@@ -2,11 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
 import { Navbar } from "@/components/landing/Navbar";
 import { Hero } from "@/components/landing/Hero";
-const AllTools = lazy(() =>
-  import("@/components/landing/AllTools").then((m) => ({
-    default: m.AllTools,
-  })),
-);
 const DashboardTools = lazy(() =>
   import("@/components/landing/DashboardTools").then((m) => ({
     default: m.DashboardTools,
@@ -61,20 +56,20 @@ export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
     meta: [
-      { title: "Fennecly — Build Your Online Store" },
+      { title: "Fennecly — All the tools you need, in one place" },
       {
         name: "description",
         content:
-          "Launch your online store in minutes. Manage products, orders, and delivery all in one place. No coding needed.",
+          "All the tools you need to manage your entire e-commerce business from a single, intuitive dashboard.",
       },
       {
         property: "og:title",
-        content: "Fennecly — Build Your Online Store",
+        content: "Fennecly — All the tools you need, in one place",
       },
       {
         property: "og:description",
         content:
-          "The easiest way to sell online in Algeria. Launch your store in minutes.",
+          "Manage your entire e-commerce business from a single, intuitive dashboard — products, orders, shipping, marketing, and more.",
       },
     ],
   }),
@@ -88,9 +83,6 @@ function Index() {
       <Navbar />
       <Hero />
       <Suspense fallback={<SectionFallback />}>
-        <div className="cv-auto">
-          <AllTools />
-        </div>
         <div className="cv-auto">
           <DashboardTools />
         </div>
