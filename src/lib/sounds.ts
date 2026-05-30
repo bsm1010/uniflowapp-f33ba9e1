@@ -1,4 +1,4 @@
-type SoundName = "click" | "success" | "error" | "whoosh" | "pop" | "chime";
+type SoundName = "click" | "success" | "error" | "whoosh" | "pop" | "chime" | "ring";
 
 let enabled = typeof window !== "undefined" && localStorage.getItem("fennecly_sound") !== "off";
 let ctx: AudioContext | null = null;
@@ -54,6 +54,15 @@ function playMulti(tones: [number, number, number][], volume = 0.12) {
   });
 }
 
+let ringAudio: HTMLAudioElement | null = null;
+function getRingAudio() {
+  if (!ringAudio) {
+    ringAudio = new Audio("/cash-register.mp3");
+    ringAudio.volume = 0.6;
+  }
+  return ringAudio;
+}
+
 const sounds: Record<SoundName, () => void> = {
   click: () => playTone(1200, 0.05, "square", 0.04),
   pop: () => playTone(600, 0.08, "sine", 0.1),
@@ -61,6 +70,11 @@ const sounds: Record<SoundName, () => void> = {
   error: () => playMulti([[200, 0, 0.15], [150, 0.12, 0.2]], "sawtooth" as any, 0.1),
   whoosh: () => playSweep(800, 200, 0.25, 0.06),
   chime: () => playMulti([[880, 0, 0.3], [1100, 0.08, 0.3], [1320, 0.16, 0.4]], 0.1),
+  ring: () => {
+    const a = getRingAudio();
+    a.currentTime = 0;
+    a.play().catch(() => {});
+  },
 };
 
 export function playSound(name: SoundName) {

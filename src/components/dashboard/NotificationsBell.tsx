@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Bell, Check, CheckCheck, Inbox, BellOff } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
+import { playSound } from "@/lib/sounds";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -43,27 +44,7 @@ function resolveLink(n: Notification): string | null {
 
 // ── Play ring sound ──────────────────────────────────────────────
 function playRing() {
-  try {
-    const AudioCtx = (window as any).AudioContext ?? (window as any).webkitAudioContext;
-    if (!AudioCtx) return;
-    const ctx = new AudioCtx() as AudioContext;
-    const times = [0, 0.18, 0.36];
-    times.forEach((t) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(880, ctx.currentTime + t);
-      osc.frequency.exponentialRampToValueAtTime(660, ctx.currentTime + t + 0.12);
-      gain.gain.setValueAtTime(0.4, ctx.currentTime + t);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.15);
-      osc.start(ctx.currentTime + t);
-      osc.stop(ctx.currentTime + t + 0.15);
-    });
-  } catch (_e) {
-    // silently fail
-  }
+  playSound("ring");
 }
 
 // ── Request & send browser notification ─────────────────────────
