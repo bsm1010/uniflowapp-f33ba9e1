@@ -11,6 +11,7 @@ import { PaywallDialog } from "@/components/dashboard/PaywallDialog";
 import { CurrentStoreProvider } from "@/hooks/use-current-store";
 import { IOSInstallBanner } from "@/components/dashboard/IOSInstallBanner";
 import { registerServiceWorker } from "@/lib/pwa/register-sw";
+import { playSound } from "@/lib/sounds";
 
 const WelcomeDialog = lazy(() =>
   import("@/components/dashboard/WelcomeDialog").then((m) => ({
@@ -151,6 +152,16 @@ function DashboardLayout() {
 
   useEffect(() => {
     registerServiceWorker();
+  }, []);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      const el = (e.target as Element)?.closest("[data-sound]");
+      if (!el) return;
+      playSound(el.getAttribute("data-sound") as any);
+    };
+    document.addEventListener("click", handler);
+    return () => document.removeEventListener("click", handler);
   }, []);
 
   useEffect(() => {

@@ -17,6 +17,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/use-auth";
 import { NotificationsBell } from "./NotificationsBell";
 import { ThemeToggle } from "./ThemeToggle";
+import { SoundToggle } from "@/components/ui/SoundToggle";
 import { LanguageSwitcher } from "@/components/landing/LanguageSwitcher";
 import { CreditsBadge } from "./CreditsBadge";
 import { StoreSwitcherButton } from "./StoreSwitcherButton";
@@ -174,6 +175,7 @@ export function DashboardTopbar({ name, avatarUrl }: { name: string; avatarUrl?:
       <div className="flex items-center gap-2 ms-auto">
         <CreditsBadge />
         <LanguageSwitcher />
+        <SoundToggle />
         <ThemeToggle />
         <NotificationsBell />
         <DropdownMenu>

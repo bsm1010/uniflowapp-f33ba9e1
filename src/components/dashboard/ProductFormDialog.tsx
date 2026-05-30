@@ -4,6 +4,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
+import { playSound } from "@/lib/sounds";
 import { useAuth } from "@/hooks/use-auth";
 import { useCurrentStore } from "@/hooks/use-current-store";
 import { generateVoice } from "@/lib/ai/voice-generator";
@@ -158,6 +159,7 @@ export function ProductFormDialog({ open, onOpenChange, product, onSaved }: Prop
       const res = await generateVoiceFn({ data: { text: script, accessToken } });
       if (res.error || !res.audio) { toast.error(res.error || "Failed to generate voice"); return; }
       setVoiceUrl(`data:audio/mpeg;base64,${res.audio}`);
+      playSound("chime");
       toast.success("Product voice generated!");
     } catch (err) {
       console.error(err);
@@ -235,7 +237,8 @@ export function ProductFormDialog({ open, onOpenChange, product, onSaved }: Prop
       ? await supabase.from("products").update(payload).eq("id", product.id)
       : await supabase.from("products").insert({ ...payload, user_id: user.id, store_id: currentStore?.id ?? null });
     setSaving(false);
-    if (error) { toast.error(error.message); return; }
+    if (error) { playSound("error"); toast.error(error.message); return; }
+    playSound("success");
     toast.success(product ? "Product updated" : "Product created");
     onOpenChange(false);
     onSaved();
