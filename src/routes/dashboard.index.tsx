@@ -399,29 +399,29 @@ function DashboardHome() {
         className="mt-8 grid gap-4 lg:grid-cols-3"
       >
         <Card className="lg:col-span-2 border-border/60 shadow-soft">
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-lg">{t("dashboard.home.recentOrders")}</h3>
+              <h3 className="font-semibold text-sm sm:text-lg">{t("dashboard.home.recentOrders")}</h3>
               <Button variant="ghost" size="sm" asChild>
                 <Link to="/dashboard/orders">{t("dashboard.home.viewAll")}</Link>
               </Button>
             </div>
             {recentOrders.length === 0 ? (
-              <div className="mt-8 flex flex-col items-center justify-center py-12 text-center">
-                <div className="h-12 w-12 rounded-xl bg-accent flex items-center justify-center">
-                  <ShoppingBag className="h-6 w-6 text-accent-foreground" />
+              <div className="mt-6 sm:mt-8 flex flex-col items-center justify-center py-8 sm:py-12 text-center">
+                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-accent flex items-center justify-center">
+                  <ShoppingBag className="h-5 w-5 sm:h-6 sm:w-6 text-accent-foreground" />
                 </div>
-                <p className="mt-4 font-medium">{t("dashboard.home.noOrders")}</p>
-                <p className="mt-1 text-sm text-muted-foreground max-w-xs">
+                <p className="mt-3 sm:mt-4 font-medium text-sm sm:text-base">{t("dashboard.home.noOrders")}</p>
+                <p className="mt-1 text-xs sm:text-sm text-muted-foreground max-w-xs">
                   {t("dashboard.home.noOrdersDesc")}
                 </p>
               </div>
             ) : (
-              <ul className="mt-4 divide-y divide-border/60">
+              <ul className="mt-3 sm:mt-4 divide-y divide-border/60">
                 {recentOrders.map((o) => (
                   <li
                     key={o.id}
-                    className="flex items-center justify-between gap-3 py-3"
+                    className="flex items-center justify-between gap-2 sm:gap-3 py-2 sm:py-3"
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       {o.product_image ? (
@@ -466,17 +466,17 @@ function DashboardHome() {
 
         <Card className="border-border/60 shadow-soft bg-gradient-brand text-brand-foreground overflow-hidden relative">
           <div className="absolute inset-0 bg-soft-radial opacity-50" />
-          <CardContent className="relative p-6 flex flex-col h-full">
-            <div className="h-10 w-10 rounded-xl bg-white/15 backdrop-blur flex items-center justify-center">
-              <Palette className="h-5 w-5" />
+          <CardContent className="relative p-4 sm:p-6 flex flex-col h-full">
+            <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-white/15 backdrop-blur flex items-center justify-center">
+              <Palette className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
-            <h3 className="mt-4 text-xl font-bold font-display">
+            <h3 className="mt-3 sm:mt-4 text-lg sm:text-xl font-bold font-display">
               {t("dashboard.home.checklist")}
             </h3>
-            <p className="mt-2 text-sm text-brand-foreground/80">
+            <p className="mt-1.5 sm:mt-2 text-xs sm:text-sm text-brand-foreground/80">
               {t("dashboard.home.checklistDesc")}
             </p>
-            <div className="mt-auto pt-6">
+            <div className="mt-auto pt-4 sm:pt-6">
               <Button variant="secondary" size="sm" asChild className="w-full">
                 <Link to="/dashboard/store">{t("dashboard.home.continueSetup")}</Link>
               </Button>
