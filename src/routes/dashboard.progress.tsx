@@ -387,7 +387,7 @@ function ProgressPage() {
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-1.5">
                   <Zap className="h-3 w-3" /> Level Tiers
                 </p>
-                <div className="grid grid-cols-5 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
                   {LEVELS.map((l) => {
                     const reached = level >= l.level;
                     return (

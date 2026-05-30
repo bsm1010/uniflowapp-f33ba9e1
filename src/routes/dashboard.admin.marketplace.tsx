@@ -341,7 +341,7 @@ function AdminMarketplacePage() {
                 </a>
               )}
               {previewApp.screenshots?.length > 0 && (
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {previewApp.screenshots.map((s) => (
                     <img
                       key={s}

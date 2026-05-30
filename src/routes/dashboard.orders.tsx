@@ -545,7 +545,7 @@ function OrdersPage() {
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-card border border-border shadow-xl rounded-full px-4 py-2 flex items-center gap-2">
           <span className="text-sm font-medium px-2">{selectedIds.size} selected</span>
           <Select onValueChange={(v) => bulkUpdateStatus(v as Status)}>
-            <SelectTrigger className="h-8 w-[150px]">
+            <SelectTrigger className="h-8 w-[130px] sm:w-[150px]">
               <SelectValue placeholder="Update status" />
             </SelectTrigger>
             <SelectContent>

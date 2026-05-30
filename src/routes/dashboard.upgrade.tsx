@@ -454,7 +454,7 @@ function UpgradePage() {
                   {/* Method */}
                   <div className="space-y-2">
                     <Label>طريقة الدفع</Label>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       <button
                         type="button"
                         onClick={() => setMethod("ccp")}

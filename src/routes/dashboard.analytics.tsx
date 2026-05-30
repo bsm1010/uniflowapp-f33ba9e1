@@ -112,7 +112,7 @@ function AnalyticsPage() {
         gradient="from-emerald-500 via-teal-500 to-cyan-500"
       />
 
-      <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
         {statCards.map((k) => (
           <Card key={k.label} className="relative overflow-hidden border-border/60 shadow-soft">
             <div className={`absolute -top-12 -right-12 h-32 w-32 rounded-full blur-3xl opacity-25 bg-gradient-to-br ${k.gradient}`} />
@@ -135,7 +135,7 @@ function AnalyticsPage() {
         <Card className="border-border/60 shadow-soft">
           <CardContent className="p-5">
             <h3 className="font-semibold text-sm">7-day snapshot</h3>
-            <div className="mt-3 grid grid-cols-2 gap-4">
+            <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="rounded-lg bg-muted/30 p-4">
                 <p className="text-xs text-muted-foreground">Orders (7d)</p>
                 <p className="mt-1 text-2xl font-bold">{stats?.orders7d ?? 0}</p>

@@ -305,7 +305,7 @@ function AppLandingPage() {
           </div>
 
           {/* RIGHT — screenshot thumbnails column */}
-          <div className="lg:col-span-3 grid grid-cols-3 lg:grid-cols-1 gap-3">
+          <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-3">
             {sideShots.map((shot, i) => {
               const realIdx = i + 1;
               return (

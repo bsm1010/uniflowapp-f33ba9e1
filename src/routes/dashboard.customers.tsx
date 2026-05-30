@@ -258,7 +258,7 @@ function CustomersPage() {
                       </div>
                     )}
                   </div>
-                  <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                     <div className="rounded-lg bg-muted/30 p-3">
                       <p className="text-xs text-muted-foreground">Total spent</p>
                       <p className="mt-0.5 font-bold">{formatPrice(selected.totalSpent)}</p>

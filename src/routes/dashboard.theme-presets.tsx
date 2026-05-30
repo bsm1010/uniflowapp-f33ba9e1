@@ -371,7 +371,7 @@ function ThemeThumbnail({ preset }: { preset: ThemePreset }) {
           </div>
         </div>
         {/* Product grid */}
-        <div className="px-3 grid grid-cols-3 gap-1.5">
+        <div className="px-3 grid grid-cols-2 sm:grid-cols-3 gap-1.5">
           {[0, 1, 2].map((i) => (
             <div
               key={i}

@@ -362,8 +362,9 @@ function AdminPaymentsPage() {
         </div>
       )}
 
-      <div className="rounded-xl border bg-card overflow-hidden">
-        <Table>
+<div className="rounded-xl border bg-card overflow-hidden">
+    <div className="overflow-x-auto">
+    <Table>
           <TableHeader>
             <TableRow>
               <TableHead className="w-10">
@@ -487,6 +488,7 @@ function AdminPaymentsPage() {
           </TableBody>
         </Table>
       </div>
+    </div>
 
       <Dialog open={!!previewUrl} onOpenChange={(o) => !o && setPreviewUrl(null)}>
         <DialogContent className="max-w-2xl">
