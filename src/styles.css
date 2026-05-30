@@ -401,12 +401,12 @@
   margin: 4px 2px;
 }
 [data-sidebar="content"]::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, hsl(var(--primary) / 0.55), hsl(var(--primary) / 0.3));
+  background: linear-gradient(180deg, hsl(var(--sidebar-foreground) / 0.25), hsl(var(--sidebar-foreground) / 0.12));
   border-radius: 8px;
   border: none;
 }
 [data-sidebar="content"]::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, hsl(var(--primary) / 0.75), hsl(var(--primary) / 0.5));
+  background: linear-gradient(180deg, hsl(var(--sidebar-foreground) / 0.35), hsl(var(--sidebar-foreground) / 0.2));
 }
 
 /* Firefox */
