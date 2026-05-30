@@ -52,7 +52,7 @@ export function Navbar() {
       <div className="mx-auto max-w-6xl px-4 mt-4">
         <div className="flex items-center justify-between rounded-2xl border border-border/60 bg-background/70 backdrop-blur-xl px-4 py-3 shadow-soft">
           <a href="#" className="flex items-center gap-2">
-            <FennecyLogo className="h-14 w-[180px]" />
+            <FennecyLogo className="h-10 w-[130px] sm:h-14 sm:w-[180px]" />
           </a>
           <nav className="hidden md:flex items-center gap-7">
             {links.map((l) =>
@@ -75,8 +75,8 @@ export function Navbar() {
               ),
             )}
           </nav>
-          <div className="flex items-center gap-2">
-            <LanguageSwitcher />
+          <div className="flex items-center gap-1 sm:gap-2">
+            <span className="hidden sm:inline-flex"><LanguageSwitcher /></span>
             <DarkModeToggle />
             <Button
               variant="ghost"
