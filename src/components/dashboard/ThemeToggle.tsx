@@ -6,7 +6,8 @@ export function ThemeToggle() {
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem("theme");
+    let stored: string | null = null;
+    try { stored = localStorage.getItem("theme"); } catch {}
     const dark =
       stored === "dark" ||
       (!stored && window.matchMedia("(prefers-color-scheme: dark)").matches);
@@ -23,7 +24,7 @@ export function ThemeToggle() {
     document.head.appendChild(style);
     // Apply theme
     document.documentElement.classList.toggle("dark", next);
-    localStorage.setItem("theme", next ? "dark" : "light");
+    try { localStorage.setItem("theme", next ? "dark" : "light"); } catch {}
     // Force immediate paint then remove the blocker
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {

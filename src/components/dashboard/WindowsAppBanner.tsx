@@ -20,11 +20,11 @@ export function WindowsAppBanner() {
   }, []);
 
   useEffect(() => {
-    setVisible(localStorage.getItem(DISMISS_KEY) !== "1");
+    try { setVisible(localStorage.getItem(DISMISS_KEY) !== "1"); } catch {}
   }, []);
 
   const dismiss = () => {
-    localStorage.setItem(DISMISS_KEY, "1");
+    try { localStorage.setItem(DISMISS_KEY, "1"); } catch {}
     setVisible(false);
   };
 

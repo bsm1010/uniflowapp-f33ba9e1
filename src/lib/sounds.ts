@@ -1,6 +1,9 @@
 type SoundName = "click" | "success" | "error" | "whoosh" | "pop" | "chime" | "ring";
 
-let enabled = typeof window !== "undefined" && localStorage.getItem("fennecly_sound") !== "off";
+let enabled = false;
+try {
+  enabled = typeof window !== "undefined" && localStorage.getItem("fennecly_sound") !== "off";
+} catch {}
 let ctx: AudioContext | null = null;
 
 function getCtx() {

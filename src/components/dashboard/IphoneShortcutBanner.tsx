@@ -6,9 +6,10 @@ const GUIDE_URL = "https://fennecly.online/iphone-guide";
 const QR_URL = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(GUIDE_URL)}&bgcolor=000000&color=ffffff&format=png&margin=4`;
 
 export function IphoneShortcutBanner() {
-  const [dismissed, setDismissed] = useState(
-    () => typeof window !== "undefined" && localStorage.getItem("iphone-banner-v2-dismissed") === "true"
-  );
+  const [dismissed, setDismissed] = useState(() => {
+    try { return typeof window !== "undefined" && localStorage.getItem("iphone-banner-v2-dismissed") === "true"; }
+    catch { return false; }
+  });
   const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
@@ -21,7 +22,7 @@ export function IphoneShortcutBanner() {
   if (!isDesktop || dismissed) return null;
 
   const handleDismiss = () => {
-    localStorage.setItem("iphone-banner-v2-dismissed", "true");
+    try { localStorage.setItem("iphone-banner-v2-dismissed", "true"); } catch {}
     setDismissed(true);
   };
 

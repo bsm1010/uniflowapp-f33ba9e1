@@ -93,7 +93,8 @@ export function DashboardSidebar() {
   const [purpleSidebar, setPurpleSidebar] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem("sidebar-purple");
+    let stored: string | null = null;
+    try { stored = localStorage.getItem("sidebar-purple"); } catch {}
     const enabled = stored === "true";
     setPurpleSidebar(enabled);
     document.documentElement.setAttribute("data-sidebar-purple", String(enabled));
@@ -102,7 +103,7 @@ export function DashboardSidebar() {
   const togglePurple = (checked: boolean) => {
     setPurpleSidebar(checked);
     document.documentElement.setAttribute("data-sidebar-purple", String(checked));
-    localStorage.setItem("sidebar-purple", String(checked));
+    try { localStorage.setItem("sidebar-purple", String(checked)); } catch {}
   };
 
   const groups: NavGroup[] = [

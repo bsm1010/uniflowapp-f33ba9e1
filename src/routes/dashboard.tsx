@@ -132,10 +132,10 @@ function DashboardLayout() {
   const [storeHydrated, setStoreHydrated] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    try {
       setSelectedStore(localStorage.getItem("selectedStore"));
-      setStoreHydrated(true);
-    }
+    } catch {}
+    setStoreHydrated(true);
   }, []);
 
   useEffect(() => {
