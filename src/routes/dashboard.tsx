@@ -230,7 +230,7 @@ function DashboardLayout() {
                 avatarUrl={avatarUrl}
               />
 
-              <main className="flex-1 p-4 md:p-8 min-h-0 overflow-y-auto overflow-x-hidden">
+              <main className="flex-1 p-4 md:p-8 min-h-0 overflow-y-scroll overflow-x-hidden">
                 <AnimatedOutlet />
               </main>
             </SidebarInset>

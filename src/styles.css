@@ -119,13 +119,13 @@
   --chart-4: oklch(0.7 0.15 150);
   --chart-5: oklch(0.7 0.18 50);
 
-  --sidebar: oklch(0.97 0 0); /* #f6f6f7 */
+  --sidebar: oklch(1 0 0); /* white */
   --sidebar-foreground: oklch(0.25 0 0);
   --sidebar-primary: oklch(0.18 0 0);
   --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.93 0 0);
+  --sidebar-accent: oklch(0.96 0 0);
   --sidebar-accent-foreground: oklch(0.18 0 0);
-  --sidebar-border: oklch(0.91 0 0);
+  --sidebar-border: oklch(0.92 0 0);
   --sidebar-ring: oklch(0.18 0 0);
 }
 
