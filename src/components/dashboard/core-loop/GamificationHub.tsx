@@ -21,12 +21,12 @@ export function GamificationHub({ data, loading, compact }: GamificationHubProps
 
   if (loading) {
     return (
-      <Card className="border-0 shadow-soft overflow-hidden bg-gradient-to-br from-violet-600 via-fuchsia-600 to-indigo-700 text-white">
+      <Card className="border-border/50 shadow-sm overflow-hidden">
         <CardContent className="p-5">
           <div className="animate-pulse space-y-3">
-            <div className="h-4 w-24 bg-white/20 rounded" />
-            <div className="h-2 bg-white/20 rounded" />
-            <div className="h-4 w-32 bg-white/20 rounded" />
+            <div className="h-4 w-24 bg-muted rounded" />
+            <div className="h-2 bg-muted rounded" />
+            <div className="h-4 w-32 bg-muted rounded" />
           </div>
         </CardContent>
       </Card>
@@ -41,16 +41,19 @@ export function GamificationHub({ data, loading, compact }: GamificationHubProps
 
   if (compact) {
     return (
-      <Card className="border-0 shadow-soft overflow-hidden bg-gradient-to-br from-violet-600 via-fuchsia-600 to-indigo-700 text-white cursor-pointer hover:shadow-glow/30 transition-shadow"
+      <Card className="border-border/50 shadow-sm overflow-hidden cursor-pointer group transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
         onClick={() => navigate({ to: "/dashboard/gamification" })}
       >
-        <CardContent className="p-5 space-y-3">
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 via-fuchsia-500/5 to-transparent pointer-events-none" />
+        <CardContent className="relative p-5 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Zap className="h-4 w-4 text-amber-300" />
-              <span className="text-sm font-semibold">Your Progress</span>
+              <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center">
+                <Zap className="h-3.5 w-3.5 text-white" />
+              </div>
+              <span className="text-sm font-semibold text-foreground">Your Progress</span>
             </div>
-            <div className="flex items-center gap-1 text-xs text-white/70">
+            <div className="flex items-center gap-1 text-xs text-muted-foreground group-hover:text-foreground transition-colors">
               View <ArrowRight className="h-3 w-3" />
             </div>
           </div>
@@ -63,7 +66,7 @@ export function GamificationHub({ data, loading, compact }: GamificationHubProps
             size="sm"
             showLevel
           />
-          <div className="flex items-center justify-between text-xs text-white/80">
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
             <StreakFlame streak={data.currentStreak} longestStreak={data.longestStreak} size="sm" />
             <span>{dailyCompleted}/{data.dailyQuests.length} daily</span>
             <span>{earnedAchievements} achievements</span>
