@@ -17,6 +17,9 @@ import {
   AlertTriangle,
   CheckCircle2,
   Store,
+  TrendingUp,
+  ArrowRight,
+  Zap,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useCurrentStore } from "@/hooks/use-current-store";
@@ -41,6 +44,15 @@ export const Route = createFileRoute("/dashboard/")({
     meta: [{ title: "Dashboard — Storely" }],
   }),
 });
+
+const STATUS_COLORS: Record<string, string> = {
+  pending: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
+  processing: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
+  shipped: "bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-500/20",
+  delivered: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
+  cancelled: "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20",
+  refunded: "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20",
+};
 
 function DashboardHome() {
   const { user } = useAuth();
@@ -234,67 +246,76 @@ function DashboardHome() {
       label: t("dashboard.home.stats.products"),
       raw: counts.products,
       icon: Package,
-      accent: "from-violet-500/40 to-violet-500/15",
-      iconColor: "text-violet-600 dark:text-violet-400",
-      borderColor: "border-violet-500/30",
+      gradient: "from-violet-500 to-purple-600",
+      accent: "from-violet-500/10 via-violet-500/5 to-transparent",
+      iconBg: "bg-violet-500/15 text-violet-600 dark:text-violet-400",
     },
     {
       label: t("dashboard.home.stats.orders"),
       raw: counts.orders,
       icon: ShoppingBag,
-      accent: "from-fuchsia-500/40 to-fuchsia-500/15",
-      iconColor: "text-fuchsia-600 dark:text-fuchsia-400",
-      borderColor: "border-fuchsia-500/30",
+      gradient: "from-fuchsia-500 to-pink-600",
+      accent: "from-fuchsia-500/10 via-fuchsia-500/5 to-transparent",
+      iconBg: "bg-fuchsia-500/15 text-fuchsia-600 dark:text-fuchsia-400",
     },
     {
       label: t("dashboard.home.stats.revenue"),
       raw: counts.revenue,
       isRevenue: true,
       icon: DollarSign,
-      accent: "from-emerald-500/40 to-emerald-500/15",
-      iconColor: "text-emerald-600 dark:text-emerald-400",
-      borderColor: "border-emerald-500/30",
+      gradient: "from-emerald-500 to-teal-600",
+      accent: "from-emerald-500/10 via-emerald-500/5 to-transparent",
+      iconBg: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
     },
     {
       label: t("dashboard.home.stats.customers"),
       raw: counts.customers,
       icon: Users,
-      accent: "from-sky-500/40 to-sky-500/15",
-      iconColor: "text-sky-600 dark:text-sky-400",
-      borderColor: "border-sky-500/30",
+      gradient: "from-sky-500 to-blue-600",
+      accent: "from-sky-500/10 via-sky-500/5 to-transparent",
+      iconBg: "bg-sky-500/15 text-sky-600 dark:text-sky-400",
     },
   ];
 
   const displayName = name || user?.email?.split("@")[0] || "—";
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-7xl mx-auto space-y-6">
+      {/* Welcome header */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+        transition={{ duration: 0.5 }}
+        className="relative overflow-hidden rounded-2xl border border-border/50 bg-gradient-to-br from-background via-background to-primary/5 p-6 sm:p-8"
       >
-        <div>
-          <p className="text-xs uppercase tracking-wider text-primary font-semibold">
-            {t("dashboard.home.kicker")}
-          </p>
-          <h1 className="mt-1 text-3xl md:text-4xl font-bold font-display">
-            {t("dashboard.home.welcome")}{" "}
-            <span className="text-gradient-brand">{displayName}</span>
-          </h1>
-          <p className="mt-2 text-muted-foreground">
-            {t("dashboard.home.subtitle")}
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Badge
-            variant="outline"
-            className="gap-1.5 border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 px-3 py-1.5"
-          >
-            <CircleDot className="h-3 w-3 fill-emerald-500 text-emerald-500" />
-            {t("dashboard.home.storeActive")}
-          </Badge>
+        <div className="pointer-events-none absolute -top-24 -right-24 h-48 w-48 rounded-full bg-primary/10 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-16 -left-16 h-36 w-36 rounded-full bg-violet-500/10 blur-3xl" />
+        <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-primary">
+              <TrendingUp className="h-3 w-3" />
+              {t("dashboard.home.kicker")}
+            </div>
+            <h1 className="mt-3 text-3xl md:text-4xl font-bold font-display">
+              {t("dashboard.home.welcome")}{" "}
+              <span className="bg-gradient-to-r from-primary via-purple-500 to-fuchsia-500 bg-clip-text text-transparent">{displayName}</span>
+            </h1>
+            <p className="mt-1.5 text-muted-foreground/80 text-sm">
+              {t("dashboard.home.subtitle")}
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <Badge
+              variant="outline"
+              className="gap-1.5 border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-3 py-1.5 shadow-sm"
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+              </span>
+              {t("dashboard.home.storeActive")}
+            </Badge>
+          </div>
         </div>
       </motion.div>
 
@@ -308,12 +329,12 @@ function DashboardHome() {
         hasPendingPayment={hasPendingPayment}
       />
 
+      {/* Stats */}
       {counts.products === 0 && counts.orders === 0 ? (
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="mt-8"
         >
           <EmptyState
             icon={Store}
@@ -323,22 +344,22 @@ function DashboardHome() {
           />
         </motion.div>
       ) : (
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {stats.map((s, i) => (
             <motion.div
               key={s.label}
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.05 * i }}
+              transition={{ duration: 0.4, delay: 0.06 * i }}
             >
               <StatCard
                 label={s.label}
                 rawValue={s.raw}
                 isRevenue={s.isRevenue}
                 icon={s.icon}
+                gradient={s.gradient}
                 accent={s.accent}
-                iconColor={s.iconColor}
-                borderColor={s.borderColor}
+                iconBg={s.iconBg}
                 delay={i * 120}
               />
             </motion.div>
@@ -346,82 +367,96 @@ function DashboardHome() {
         </div>
       )}
 
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.2 }}
-        className="mt-8 max-w-sm"
-      >
-        <StoreProgressCard />
-      </motion.div>
+      {/* Progress + Gamification */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+        >
+          <StoreProgressCard />
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.24 }}
+        >
+          {gamiData && <GamificationHub data={gamiData} loading={gamiLoading} compact />}
+        </motion.div>
+      </div>
 
+      {/* Quick actions */}
       <motion.div
-        initial={{ opacity: 0, y: 12 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.22 }}
-        className="mt-4 max-w-sm"
-      >
-        {gamiData && <GamificationHub data={gamiData} loading={gamiLoading} compact />}
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.25 }}
-        className="mt-8 grid gap-4 md:grid-cols-3"
+        transition={{ duration: 0.4, delay: 0.28 }}
+        className="grid gap-4 md:grid-cols-3"
       >
         <QuickAction
           to="/dashboard/products"
           icon={Plus}
+          iconGradient="from-violet-500 to-fuchsia-500"
           title={t("dashboard.home.actions.addProduct.title")}
           description={t("dashboard.home.actions.addProduct.desc")}
-          variant="primary"
+          primary
         />
         <QuickAction
           to="/customize"
           external
           icon={Palette}
+          iconGradient="from-sky-500 to-indigo-500"
           title={t("dashboard.home.actions.customize.title")}
           description={t("dashboard.home.actions.customize.desc")}
         />
         <QuickAction
           to="/dashboard/store"
           icon={ExternalLink}
+          iconGradient="from-emerald-500 to-teal-500"
           title={t("dashboard.home.actions.viewStore.title")}
           description={t("dashboard.home.actions.viewStore.desc")}
         />
       </motion.div>
 
+      {/* Recent orders + Launch checklist */}
       <motion.div
-        initial={{ opacity: 0, y: 12 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.35 }}
-        className="mt-8 grid gap-4 lg:grid-cols-3"
+        className="grid gap-4 lg:grid-cols-3"
       >
-        <Card className="lg:col-span-2 border-border/60 shadow-soft">
+        <Card className="lg:col-span-2 border-border/50 shadow-sm overflow-hidden">
+          <div className="h-1 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-pink-500" />
           <CardContent className="p-4 sm:p-6">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-sm sm:text-lg">{t("dashboard.home.recentOrders")}</h3>
-              <Button variant="ghost" size="sm" asChild>
-                <Link to="/dashboard/orders">{t("dashboard.home.viewAll")}</Link>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-lg bg-violet-500/10 flex items-center justify-center">
+                  <ShoppingBag className="h-4 w-4 text-violet-600 dark:text-violet-400" />
+                </div>
+                <h3 className="font-semibold">{t("dashboard.home.recentOrders")}</h3>
+              </div>
+              <Button variant="ghost" size="sm" asChild className="gap-1 text-xs">
+                <Link to="/dashboard/orders">
+                  {t("dashboard.home.viewAll")}
+                  <ArrowRight className="h-3 w-3" />
+                </Link>
               </Button>
             </div>
             {recentOrders.length === 0 ? (
-              <div className="mt-6 sm:mt-8 flex flex-col items-center justify-center py-8 sm:py-12 text-center">
-                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-accent flex items-center justify-center">
-                  <ShoppingBag className="h-5 w-5 sm:h-6 sm:w-6 text-accent-foreground" />
+              <div className="flex flex-col items-center justify-center py-8 sm:py-12 text-center">
+                <div className="h-12 w-12 rounded-xl bg-muted flex items-center justify-center">
+                  <ShoppingBag className="h-6 w-6 text-muted-foreground" />
                 </div>
-                <p className="mt-3 sm:mt-4 font-medium text-sm sm:text-base">{t("dashboard.home.noOrders")}</p>
-                <p className="mt-1 text-xs sm:text-sm text-muted-foreground max-w-xs">
+                <p className="mt-3 font-medium">{t("dashboard.home.noOrders")}</p>
+                <p className="mt-1 text-xs text-muted-foreground max-w-xs">
                   {t("dashboard.home.noOrdersDesc")}
                 </p>
               </div>
             ) : (
-              <ul className="mt-3 sm:mt-4 divide-y divide-border/60">
+              <div className="divide-y divide-border/40">
                 {recentOrders.map((o) => (
-                  <li
+                  <div
                     key={o.id}
-                    className="flex items-center justify-between gap-2 sm:gap-3 py-2 sm:py-3"
+                    className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0 hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors"
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       {o.product_image ? (
@@ -430,18 +465,18 @@ function DashboardHome() {
                           alt={o.product_name ?? ""}
                           width={88}
                           quality={75}
-                          className="h-11 w-11 rounded-lg shrink-0"
+                          className="h-11 w-11 rounded-lg shrink-0 ring-1 ring-border/30"
                         />
                       ) : (
-                        <div className="h-11 w-11 rounded-lg bg-accent flex items-center justify-center shrink-0">
-                          <ShoppingBag className="h-4 w-4 text-accent-foreground" />
+                        <div className="h-11 w-11 rounded-lg bg-gradient-to-br from-violet-500/10 to-fuchsia-500/10 flex items-center justify-center shrink-0 ring-1 ring-border/30">
+                          <ShoppingBag className="h-4 w-4 text-violet-500" />
                         </div>
                       )}
                       <div className="min-w-0">
                         <p className="font-medium text-sm truncate">
                           {o.product_name ?? o.customer_name}
                         </p>
-                        <p className="text-xs text-muted-foreground truncate">
+                        <p className="text-xs text-muted-foreground/70 truncate">
                           {o.customer_name}
                           {o.item_count > 1 && ` • +${o.item_count - 1} more`}
                           {" • "}
@@ -450,35 +485,48 @@ function DashboardHome() {
                       </div>
                     </div>
                     <div className="flex items-center gap-3 shrink-0">
-                      <Badge variant="outline" className="capitalize text-xs">
+                      <Badge
+                        variant="outline"
+                        className={`capitalize text-[11px] px-2 py-0.5 border ${STATUS_COLORS[o.status] || "bg-muted text-muted-foreground border-border/50"}`}
+                      >
                         {o.status}
                       </Badge>
-                      <span className="font-semibold text-sm tabular-nums">
+                      <span className="font-semibold text-sm tabular-nums text-foreground">
                         ${Number(o.total).toFixed(2)}
                       </span>
                     </div>
-                  </li>
+                  </div>
                 ))}
-              </ul>
+              </div>
             )}
           </CardContent>
         </Card>
 
-        <Card className="border-border/60 shadow-soft bg-gradient-brand text-brand-foreground overflow-hidden relative">
-          <div className="absolute inset-0 bg-soft-radial opacity-50" />
-          <CardContent className="relative p-4 sm:p-6 flex flex-col h-full">
-            <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-white/15 backdrop-blur flex items-center justify-center">
-              <Palette className="h-4 w-4 sm:h-5 sm:w-5" />
+        <Card className="border-border/50 shadow-sm overflow-hidden relative group">
+          <div className="absolute inset-0 bg-gradient-to-br from-violet-600 via-fuchsia-600 to-indigo-700 opacity-[0.97]" />
+          <div className="pointer-events-none absolute -top-12 -right-12 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
+          <div className="pointer-events-none absolute -bottom-8 -left-8 h-24 w-24 rounded-full bg-white/5 blur-xl" />
+          <CardContent className="relative p-5 sm:p-6 flex flex-col h-full">
+            <div className="h-10 w-10 rounded-xl bg-white/15 backdrop-blur-sm flex items-center justify-center ring-1 ring-white/20">
+              <Zap className="h-5 w-5 text-amber-300" />
             </div>
-            <h3 className="mt-3 sm:mt-4 text-lg sm:text-xl font-bold font-display">
+            <h3 className="mt-4 text-lg sm:text-xl font-bold font-display text-white">
               {t("dashboard.home.checklist")}
             </h3>
-            <p className="mt-1.5 sm:mt-2 text-xs sm:text-sm text-brand-foreground/80">
+            <p className="mt-1.5 text-sm text-white/70">
               {t("dashboard.home.checklistDesc")}
             </p>
-            <div className="mt-auto pt-4 sm:pt-6">
-              <Button variant="secondary" size="sm" asChild className="w-full">
-                <Link to="/dashboard/store">{t("dashboard.home.continueSetup")}</Link>
+            <div className="mt-auto pt-6">
+              <Button
+                variant="secondary"
+                size="sm"
+                asChild
+                className="w-full bg-white/15 hover:bg-white/25 text-white border-0 backdrop-blur-sm transition-all"
+              >
+                <Link to="/dashboard/store">
+                  {t("dashboard.home.continueSetup")}
+                  <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+                </Link>
               </Button>
             </div>
           </CardContent>
@@ -495,18 +543,18 @@ function StatCard({
   rawValue,
   isRevenue,
   icon: Icon,
+  gradient,
   accent,
-  iconColor,
-  borderColor,
+  iconBg,
   delay,
 }: {
   label: string;
   rawValue: number;
   isRevenue?: boolean;
   icon: React.ComponentType<{ className?: string }>;
+  gradient: string;
   accent: string;
-  iconColor: string;
-  borderColor: string;
+  iconBg: string;
   delay: number;
 }) {
   const animated = useCountUp(rawValue, 1400, delay);
@@ -515,23 +563,21 @@ function StatCard({
     : animated.toLocaleString();
 
   return (
-    <Card
-      className={`relative overflow-hidden ${borderColor} shadow-soft hover:shadow-glow/20 transition-shadow`}
-    >
-      <div
-        className={`absolute inset-0 bg-gradient-to-br ${accent} pointer-events-none`}
-      />
-      <CardContent className="relative p-6">
+    <Card className="relative overflow-hidden border-border/50 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 group">
+      <div className={`absolute inset-0 bg-gradient-to-br ${accent} pointer-events-none`} />
+      <div className="absolute inset-0 bg-gradient-to-t from-background/0 to-background/0 pointer-events-none" />
+      <div className={`absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r ${gradient} opacity-0 group-hover:opacity-100 transition-opacity`} />
+      <CardContent className="relative p-5">
         <div className="flex items-center justify-between">
           <span className="text-sm text-muted-foreground font-medium">
             {label}
           </span>
-          <div className="h-9 w-9 rounded-xl bg-background/80 backdrop-blur flex items-center justify-center border border-border/60">
-            <Icon className={`h-4 w-4 ${iconColor}`} />
+          <div className={`h-9 w-9 rounded-xl ${iconBg} flex items-center justify-center backdrop-blur-sm`}>
+            <Icon className="h-4 w-4" />
           </div>
         </div>
-        <div className="mt-4">
-          <div className="text-3xl font-bold font-display tabular-nums">
+        <div className="mt-3">
+          <div className="text-2xl sm:text-3xl font-bold font-display tabular-nums tracking-tight">
             {display}
           </div>
         </div>
@@ -543,43 +589,36 @@ function StatCard({
 function QuickAction({
   to,
   icon: Icon,
+  iconGradient,
   title,
   description,
-  variant,
+  primary,
   external,
 }: {
   to: "/dashboard/products" | "/dashboard/store" | "/customize";
   icon: React.ComponentType<{ className?: string }>;
+  iconGradient: string;
   title: string;
   description: string;
-  variant?: "primary";
+  primary?: boolean;
   external?: boolean;
 }) {
   const inner = (
     <Card
-      className={`border-border/60 shadow-soft transition-all hover:shadow-glow/30 hover:-translate-y-0.5 ${
-        variant === "primary" ? "bg-foreground text-background" : ""
+      className={`border-border/50 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md group cursor-pointer overflow-hidden ${
+        primary ? "bg-gradient-to-br from-foreground to-foreground/95 text-background" : "bg-card"
       }`}
     >
-      <CardContent className="p-6 flex items-start gap-4">
+      <div className={`absolute inset-0 bg-gradient-to-br ${iconGradient} opacity-0 group-hover:opacity-5 transition-opacity pointer-events-none`} />
+      <CardContent className="p-5 flex items-start gap-4">
         <div
-          className={`h-11 w-11 rounded-xl flex items-center justify-center shrink-0 ${
-            variant === "primary"
-              ? "bg-background/15"
-              : "bg-accent text-accent-foreground"
-          }`}
+          className={`h-11 w-11 rounded-xl bg-gradient-to-br ${iconGradient} flex items-center justify-center shrink-0 shadow-sm`}
         >
-          <Icon className="h-5 w-5" />
+          <Icon className={`h-5 w-5 ${primary ? "text-background" : "text-white"}`} />
         </div>
         <div className="min-w-0">
-          <div className="font-semibold">{title}</div>
-          <p
-            className={`mt-1 text-sm ${
-              variant === "primary"
-                ? "text-background/70"
-                : "text-muted-foreground"
-            }`}
-          >
+          <div className={`font-semibold text-sm ${primary ? "text-background" : ""}`}>{title}</div>
+          <p className={`mt-0.5 text-sm ${primary ? "text-background/60" : "text-muted-foreground"}`}>
             {description}
           </p>
         </div>
@@ -589,13 +628,13 @@ function QuickAction({
 
   if (external) {
     return (
-      <a href={to} target="_blank" rel="noopener noreferrer" className="group">
+      <a href={to} target="_blank" rel="noopener noreferrer" className="block">
         {inner}
       </a>
     );
   }
   return (
-    <Link to={to as "/dashboard/products" | "/dashboard/store"} className="group">
+    <Link to={to as "/dashboard/products" | "/dashboard/store"} className="block">
       {inner}
     </Link>
   );
@@ -616,15 +655,16 @@ function SubscriptionStatusCard({
 
   if (status === "active") {
     return (
-      <Card className="mt-6 border-emerald-500/30 bg-emerald-500/5 shadow-soft">
-        <CardContent className="p-5 flex flex-wrap items-center justify-between gap-4">
+      <Card className="border-emerald-500/20 bg-gradient-to-r from-emerald-500/5 to-emerald-500/10 shadow-sm overflow-hidden relative">
+        <div className="pointer-events-none absolute -top-8 -right-8 h-24 w-24 rounded-full bg-emerald-500/10 blur-2xl" />
+        <CardContent className="p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 relative">
           <div className="flex items-center gap-3">
-            <div className="grid size-10 place-items-center rounded-xl bg-emerald-500/15 text-emerald-700 dark:text-emerald-400">
+            <div className="grid size-10 place-items-center rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 ring-1 ring-emerald-500/20">
               <CheckCircle2 className="size-5" />
             </div>
             <div>
-              <p className="font-semibold">{t("dashboard.home.subActive")}</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="font-semibold text-sm">{t("dashboard.home.subActive")}</p>
+              <p className="text-xs text-muted-foreground/70">
                 {t("dashboard.home.subActiveDesc")}
               </p>
             </div>
@@ -636,20 +676,21 @@ function SubscriptionStatusCard({
 
   if (hasPendingPayment) {
     return (
-      <Card className="mt-6 border-amber-500/30 bg-amber-500/5 shadow-soft">
-        <CardContent className="p-5 flex flex-wrap items-center justify-between gap-4">
+      <Card className="border-amber-500/20 bg-gradient-to-r from-amber-500/5 to-amber-500/10 shadow-sm overflow-hidden relative">
+        <div className="pointer-events-none absolute -top-8 -right-8 h-24 w-24 rounded-full bg-amber-500/10 blur-2xl" />
+        <CardContent className="p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 relative">
           <div className="flex items-center gap-3">
-            <div className="grid size-10 place-items-center rounded-xl bg-amber-500/15 text-amber-700 dark:text-amber-400">
+            <div className="grid size-10 place-items-center rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 ring-1 ring-amber-500/20">
               <Clock className="size-5" />
             </div>
             <div>
-              <p className="font-semibold">{t("dashboard.home.subPending")}</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="font-semibold text-sm">{t("dashboard.home.subPending")}</p>
+              <p className="text-xs text-muted-foreground/70">
                 {t("dashboard.home.subPendingDesc")}
               </p>
             </div>
           </div>
-          <Button variant="outline" size="sm" asChild>
+          <Button variant="outline" size="sm" asChild className="border-amber-500/20 hover:bg-amber-500/10">
             <Link to="/dashboard/upgrade">{t("dashboard.home.viewStatus")}</Link>
           </Button>
         </CardContent>
@@ -668,20 +709,21 @@ function SubscriptionStatusCard({
       ? t("dashboard.home.renew")
       : t("dashboard.home.upgradeNow");
     return (
-      <Card className="mt-6 border-destructive/30 bg-destructive/5 shadow-soft">
-        <CardContent className="p-5 flex flex-wrap items-center justify-between gap-4">
+      <Card className="border-red-500/20 bg-gradient-to-r from-red-500/5 to-red-500/10 shadow-sm overflow-hidden relative">
+        <div className="pointer-events-none absolute -top-8 -right-8 h-24 w-24 rounded-full bg-red-500/10 blur-2xl" />
+        <CardContent className="p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 relative">
           <div className="flex items-center gap-3">
-            <div className="grid size-10 place-items-center rounded-xl bg-destructive/15 text-destructive">
+            <div className="grid size-10 place-items-center rounded-xl bg-red-500/15 text-red-600 dark:text-red-400 ring-1 ring-red-500/20">
               <AlertTriangle className="size-5" />
             </div>
             <div>
-              <p className="font-semibold">{title}</p>
-              <p className="text-sm text-muted-foreground">{desc}</p>
+              <p className="font-semibold text-sm">{title}</p>
+              <p className="text-xs text-muted-foreground/70">{desc}</p>
             </div>
           </div>
-          <Button size="sm" asChild>
+          <Button size="sm" asChild className="bg-gradient-to-r from-red-500 to-rose-600 text-white hover:from-red-600 hover:to-rose-700 shadow-sm">
             <Link to="/dashboard/upgrade">
-              <Sparkles className="size-4" />
+              <Sparkles className="size-3.5 mr-1" />
               {cta}
             </Link>
           </Button>
@@ -691,25 +733,26 @@ function SubscriptionStatusCard({
   }
 
   return (
-    <Card className="mt-6 border-primary/30 bg-primary/5 shadow-soft">
-      <CardContent className="p-5 flex flex-wrap items-center justify-between gap-4">
+    <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 shadow-sm overflow-hidden relative">
+      <div className="pointer-events-none absolute -top-8 -right-8 h-24 w-24 rounded-full bg-primary/10 blur-2xl" />
+      <CardContent className="p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 relative">
         <div className="flex items-center gap-3">
-          <div className="grid size-10 place-items-center rounded-xl bg-primary/15 text-primary">
+          <div className="grid size-10 place-items-center rounded-xl bg-primary/15 text-primary ring-1 ring-primary/20">
             <Sparkles className="size-5" />
           </div>
           <div>
-            <p className="font-semibold">
+            <p className="font-semibold text-sm">
               {t("dashboard.home.trialLeft", {
                 days: daysRemaining,
                 unit: daysRemaining === 1 ? t("dashboard.home.day") : t("dashboard.home.days"),
               })}
             </p>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-xs text-muted-foreground/70">
               {t("dashboard.home.trialDesc")}
             </p>
           </div>
         </div>
-        <Button size="sm" variant="outline" asChild>
+        <Button size="sm" variant="outline" asChild className="border-primary/20 hover:bg-primary/10">
           <Link to="/dashboard/upgrade">{t("dashboard.home.upgrade")}</Link>
         </Button>
       </CardContent>
