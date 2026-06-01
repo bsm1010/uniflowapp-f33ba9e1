@@ -1,4 +1,4 @@
-type SoundName = "click" | "success" | "error" | "whoosh" | "pop" | "chime" | "ring";
+export type SoundName = "click" | "success" | "error" | "whoosh" | "pop" | "chime" | "ring";
 
 let enabled = false;
 try {
