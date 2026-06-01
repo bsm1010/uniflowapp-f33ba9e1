@@ -246,16 +246,12 @@ function DashboardHome() {
       label: t("dashboard.home.stats.products"),
       raw: counts.products,
       icon: Package,
-      gradient: "from-violet-500 to-purple-600",
-      accent: "from-violet-500/10 via-violet-500/5 to-transparent",
       iconBg: "bg-violet-500/15 text-violet-600 dark:text-violet-400",
     },
     {
       label: t("dashboard.home.stats.orders"),
       raw: counts.orders,
       icon: ShoppingBag,
-      gradient: "from-fuchsia-500 to-pink-600",
-      accent: "from-fuchsia-500/10 via-fuchsia-500/5 to-transparent",
       iconBg: "bg-fuchsia-500/15 text-fuchsia-600 dark:text-fuchsia-400",
     },
     {
@@ -263,16 +259,12 @@ function DashboardHome() {
       raw: counts.revenue,
       isRevenue: true,
       icon: DollarSign,
-      gradient: "from-emerald-500 to-teal-600",
-      accent: "from-emerald-500/10 via-emerald-500/5 to-transparent",
       iconBg: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
     },
     {
       label: t("dashboard.home.stats.customers"),
       raw: counts.customers,
       icon: Users,
-      gradient: "from-sky-500 to-blue-600",
-      accent: "from-sky-500/10 via-sky-500/5 to-transparent",
       iconBg: "bg-sky-500/15 text-sky-600 dark:text-sky-400",
     },
   ];
@@ -286,11 +278,9 @@ function DashboardHome() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="relative overflow-hidden rounded-2xl border border-border/50 bg-gradient-to-br from-background via-background to-primary/5 p-6 sm:p-8"
+        className="rounded-2xl border border-border/50 p-6 sm:p-8"
       >
-        <div className="pointer-events-none absolute -top-24 -right-24 h-48 w-48 rounded-full bg-primary/10 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-16 -left-16 h-36 w-36 rounded-full bg-violet-500/10 blur-3xl" />
-        <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-primary">
               <TrendingUp className="h-3 w-3" />
@@ -357,8 +347,6 @@ function DashboardHome() {
                 rawValue={s.raw}
                 isRevenue={s.isRevenue}
                 icon={s.icon}
-                gradient={s.gradient}
-                accent={s.accent}
                 iconBg={s.iconBg}
                 delay={i * 120}
               />
@@ -398,7 +386,6 @@ function DashboardHome() {
           iconGradient="from-violet-500 to-fuchsia-500"
           title={t("dashboard.home.actions.addProduct.title")}
           description={t("dashboard.home.actions.addProduct.desc")}
-          primary
         />
         <QuickAction
           to="/customize"
@@ -502,9 +489,8 @@ function DashboardHome() {
           </CardContent>
         </Card>
 
-        <Card className="border-border/50 shadow-sm overflow-hidden relative group">
-          <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 via-fuchsia-500/5 to-transparent pointer-events-none" />
-          <CardContent className="relative p-5 sm:p-6 flex flex-col h-full">
+        <Card className="border-border/50 shadow-sm overflow-hidden">
+          <CardContent className="p-5 sm:p-6 flex flex-col h-full">
             <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center shadow-sm">
               <Zap className="h-5 w-5 text-white" />
             </div>
@@ -540,8 +526,6 @@ function StatCard({
   rawValue,
   isRevenue,
   icon: Icon,
-  gradient,
-  accent,
   iconBg,
   delay,
 }: {
@@ -549,8 +533,6 @@ function StatCard({
   rawValue: number;
   isRevenue?: boolean;
   icon: React.ComponentType<{ className?: string }>;
-  gradient: string;
-  accent: string;
   iconBg: string;
   delay: number;
 }) {
@@ -560,16 +542,13 @@ function StatCard({
     : animated.toLocaleString();
 
   return (
-    <Card className="relative overflow-hidden border-border/50 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 group">
-      <div className={`absolute inset-0 bg-gradient-to-br ${accent} pointer-events-none`} />
-      <div className="absolute inset-0 bg-gradient-to-t from-background/0 to-background/0 pointer-events-none" />
-      <div className={`absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r ${gradient} opacity-0 group-hover:opacity-100 transition-opacity`} />
-      <CardContent className="relative p-5">
+    <Card className="border-border/50 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
+      <CardContent className="p-5">
         <div className="flex items-center justify-between">
           <span className="text-sm text-muted-foreground font-medium">
             {label}
           </span>
-          <div className={`h-9 w-9 rounded-xl ${iconBg} flex items-center justify-center backdrop-blur-sm`}>
+          <div className={`h-9 w-9 rounded-xl ${iconBg} flex items-center justify-center`}>
             <Icon className="h-4 w-4" />
           </div>
         </div>
@@ -589,7 +568,6 @@ function QuickAction({
   iconGradient,
   title,
   description,
-  primary,
   external,
 }: {
   to: "/dashboard/products" | "/dashboard/store" | "/customize";
@@ -597,25 +575,19 @@ function QuickAction({
   iconGradient: string;
   title: string;
   description: string;
-  primary?: boolean;
   external?: boolean;
 }) {
   const inner = (
-    <Card
-      className={`border-border/50 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md group cursor-pointer overflow-hidden ${
-        primary ? "bg-gradient-to-br from-foreground to-foreground/95 text-background" : "bg-card"
-      }`}
-    >
-      <div className={`absolute inset-0 bg-gradient-to-br ${iconGradient} opacity-0 group-hover:opacity-5 transition-opacity pointer-events-none`} />
+    <Card className="border-border/50 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md cursor-pointer overflow-hidden bg-card">
       <CardContent className="p-5 flex items-start gap-4">
         <div
           className={`h-11 w-11 rounded-xl bg-gradient-to-br ${iconGradient} flex items-center justify-center shrink-0 shadow-sm`}
         >
-          <Icon className={`h-5 w-5 ${primary ? "text-background" : "text-white"}`} />
+          <Icon className="h-5 w-5 text-white" />
         </div>
         <div className="min-w-0">
-          <div className={`font-semibold text-sm ${primary ? "text-background" : ""}`}>{title}</div>
-          <p className={`mt-0.5 text-sm ${primary ? "text-background/60" : "text-muted-foreground"}`}>
+          <div className="font-semibold text-sm">{title}</div>
+          <p className="mt-0.5 text-sm text-muted-foreground">
             {description}
           </p>
         </div>
@@ -652,9 +624,8 @@ function SubscriptionStatusCard({
 
   if (status === "active") {
     return (
-      <Card className="border-emerald-500/20 bg-gradient-to-r from-emerald-500/5 to-emerald-500/10 shadow-sm overflow-hidden relative">
-        <div className="pointer-events-none absolute -top-8 -right-8 h-24 w-24 rounded-full bg-emerald-500/10 blur-2xl" />
-        <CardContent className="p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 relative">
+      <Card className="border-emerald-500/20 shadow-sm overflow-hidden">
+        <CardContent className="p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="grid size-10 place-items-center rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 ring-1 ring-emerald-500/20">
               <CheckCircle2 className="size-5" />
@@ -673,9 +644,8 @@ function SubscriptionStatusCard({
 
   if (hasPendingPayment) {
     return (
-      <Card className="border-amber-500/20 bg-gradient-to-r from-amber-500/5 to-amber-500/10 shadow-sm overflow-hidden relative">
-        <div className="pointer-events-none absolute -top-8 -right-8 h-24 w-24 rounded-full bg-amber-500/10 blur-2xl" />
-        <CardContent className="p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 relative">
+      <Card className="border-amber-500/20 shadow-sm overflow-hidden">
+        <CardContent className="p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="grid size-10 place-items-center rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 ring-1 ring-amber-500/20">
               <Clock className="size-5" />
@@ -706,9 +676,8 @@ function SubscriptionStatusCard({
       ? t("dashboard.home.renew")
       : t("dashboard.home.upgradeNow");
     return (
-      <Card className="border-red-500/20 bg-gradient-to-r from-red-500/5 to-red-500/10 shadow-sm overflow-hidden relative">
-        <div className="pointer-events-none absolute -top-8 -right-8 h-24 w-24 rounded-full bg-red-500/10 blur-2xl" />
-        <CardContent className="p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 relative">
+      <Card className="border-red-500/20 shadow-sm overflow-hidden">
+        <CardContent className="p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="grid size-10 place-items-center rounded-xl bg-red-500/15 text-red-600 dark:text-red-400 ring-1 ring-red-500/20">
               <AlertTriangle className="size-5" />
@@ -718,7 +687,7 @@ function SubscriptionStatusCard({
               <p className="text-xs text-muted-foreground/70">{desc}</p>
             </div>
           </div>
-          <Button size="sm" asChild className="bg-gradient-to-r from-red-500 to-rose-600 text-white hover:from-red-600 hover:to-rose-700 shadow-sm">
+          <Button size="sm" asChild variant="destructive">
             <Link to="/dashboard/upgrade">
               <Sparkles className="size-3.5 mr-1" />
               {cta}
@@ -730,9 +699,8 @@ function SubscriptionStatusCard({
   }
 
   return (
-    <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 shadow-sm overflow-hidden relative">
-      <div className="pointer-events-none absolute -top-8 -right-8 h-24 w-24 rounded-full bg-primary/10 blur-2xl" />
-      <CardContent className="p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 relative">
+    <Card className="border-primary/20 shadow-sm overflow-hidden">
+      <CardContent className="p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="grid size-10 place-items-center rounded-xl bg-primary/15 text-primary ring-1 ring-primary/20">
             <Sparkles className="size-5" />

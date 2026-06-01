@@ -41,11 +41,10 @@ export function GamificationHub({ data, loading, compact }: GamificationHubProps
 
   if (compact) {
     return (
-      <Card className="border-border/50 shadow-sm overflow-hidden cursor-pointer group transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
+      <Card className="border-border/50 shadow-sm overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
         onClick={() => navigate({ to: "/dashboard/gamification" })}
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 via-fuchsia-500/5 to-transparent pointer-events-none" />
-        <CardContent className="relative p-5 space-y-3">
+        <CardContent className="p-5 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center">
