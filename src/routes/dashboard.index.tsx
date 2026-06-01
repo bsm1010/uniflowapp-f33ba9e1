@@ -503,29 +503,26 @@ function DashboardHome() {
         </Card>
 
         <Card className="border-border/50 shadow-sm overflow-hidden relative group">
-          <div className="absolute inset-0 bg-gradient-to-br from-violet-600 via-fuchsia-600 to-indigo-700 opacity-[0.97]" />
-          <div className="pointer-events-none absolute -top-12 -right-12 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
-          <div className="pointer-events-none absolute -bottom-8 -left-8 h-24 w-24 rounded-full bg-white/5 blur-xl" />
+          <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 via-fuchsia-500/5 to-transparent pointer-events-none" />
           <CardContent className="relative p-5 sm:p-6 flex flex-col h-full">
-            <div className="h-10 w-10 rounded-xl bg-white/15 backdrop-blur-sm flex items-center justify-center ring-1 ring-white/20">
-              <Zap className="h-5 w-5 text-amber-300" />
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center shadow-sm">
+              <Zap className="h-5 w-5 text-white" />
             </div>
-            <h3 className="mt-4 text-lg sm:text-xl font-bold font-display text-white">
+            <h3 className="mt-4 text-lg sm:text-xl font-bold font-display text-foreground">
               {t("dashboard.home.checklist")}
             </h3>
-            <p className="mt-1.5 text-sm text-white/70">
+            <p className="mt-1.5 text-sm text-muted-foreground/70">
               {t("dashboard.home.checklistDesc")}
             </p>
             <div className="mt-auto pt-6">
               <Button
-                variant="secondary"
                 size="sm"
                 asChild
-                className="w-full bg-white/15 hover:bg-white/25 text-white border-0 backdrop-blur-sm transition-all"
+                className="w-full gap-1.5"
               >
                 <Link to="/dashboard/store">
                   {t("dashboard.home.continueSetup")}
-                  <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+                  <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
               </Button>
             </div>

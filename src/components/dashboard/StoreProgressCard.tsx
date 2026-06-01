@@ -55,34 +55,36 @@ export function StoreProgressCard() {
   if (loading) return null;
 
   return (
-    <Card className="border-0 shadow-soft overflow-hidden bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 text-white">
+    <Card className="border-border/50 shadow-sm overflow-hidden">
       <CardContent className="p-5 space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-purple-200" />
-            <span className="text-sm font-semibold">Store Setup</span>
+            <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center">
+              <Sparkles className="h-3.5 w-3.5 text-white" />
+            </div>
+            <span className="text-sm font-semibold text-foreground">Store Setup</span>
           </div>
           {allDone ? (
-            <span className="flex items-center gap-1 text-xs text-emerald-300 font-medium">
+            <span className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
               <CheckCircle2 className="h-3.5 w-3.5" /> Complete
             </span>
           ) : (
-            <span className="text-xs text-purple-200 font-medium">{progress}%</span>
+            <span className="text-xs text-muted-foreground font-medium">{progress}%</span>
           )}
         </div>
 
         {/* Progress bar */}
-        <div className="h-2 rounded-full bg-white/15 overflow-hidden">
+        <div className="h-2 rounded-full bg-muted overflow-hidden">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="h-full rounded-full bg-gradient-to-r from-purple-300 to-pink-300"
+            className="h-full rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500"
           />
         </div>
 
         {allDone ? (
-          <p className="text-xs text-purple-200 text-center py-1">Everything is set up! 🎉</p>
+          <p className="text-xs text-muted-foreground text-center py-1">Everything is set up!</p>
         ) : nextIncomplete ? (
           <>
             <div className="space-y-1.5">
@@ -91,11 +93,11 @@ export function StoreProgressCard() {
                 return (
                   <div key={item.key} className="flex items-center gap-2.5 text-xs">
                     {item.completed ? (
-                      <CheckCircle2 className="h-4 w-4 text-emerald-300 shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
                     ) : (
-                      <Circle className="h-4 w-4 text-purple-200/50 shrink-0" />
+                      <Circle className="h-4 w-4 text-muted-foreground/30 shrink-0" />
                     )}
-                    <span className={cn(item.completed ? "text-purple-200 line-through opacity-60" : "text-white")}>
+                    <span className={cn(item.completed ? "text-muted-foreground line-through opacity-60" : "text-foreground")}>
                       {item.label}
                     </span>
                   </div>
@@ -104,9 +106,8 @@ export function StoreProgressCard() {
             </div>
 
             <Button
-              variant="secondary"
               size="sm"
-              className="w-full gap-1.5 bg-white/15 hover:bg-white/25 text-white border-0 text-xs"
+              className="w-full gap-1.5"
               onClick={() => navigate({ to: ITEM_ACTIONS[nextIncomplete.key] || "/dashboard" })}
             >
               {nextIncomplete.label}
