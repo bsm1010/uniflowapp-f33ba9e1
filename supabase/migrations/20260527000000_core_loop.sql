@@ -187,10 +187,17 @@ INSERT INTO public.unlockables (key, name, description, type, icon, requirement_
   ('badge_legend', 'Legend Badge', 'Legendary status at level 20', 'badge', 'Gem', 'level', 20, '{"badge_color": "from-cyan-400 to-blue-500"}'),
   ('cosmetic_dashboard_accent', 'Dashboard Accent', 'Custom accent color for your dashboard', 'cosmetic', 'Palette', 'level', 3, '{"type": "accent_color", "value": "#8b5cf6"}'),
   ('cosmetic_dashboard_theme', 'Dashboard Theme', 'Dark dashboard theme variant', 'cosmetic', 'Moon', 'level', 7, '{"type": "theme", "value": "dark"}'),
+  ('cosmetic_profile_frame', 'Profile Frame', 'Special profile frame for achievers', 'cosmetic', 'Image', 'achievement', 3, '{"frame_color": "gradient"}'),
+  ('cosmetic_aether_preset', 'Aether Storefront Theme', 'Unlock the ethereal Aether storefront preset', 'cosmetic', 'Sparkles', 'level', 6, '{"type": "theme_preset", "value": "aether"}'),
+  ('cosmetic_ember_preset', 'Ember Storefront Theme', 'Unlock the fiery Ember storefront preset', 'cosmetic', 'Flame', 'level', 9, '{"type": "theme_preset", "value": "ember"}'),
+  ('cosmetic_tide_preset', 'Tide Storefront Theme', 'Unlock the oceanic Tide storefront preset', 'cosmetic', 'Droplets', 'level', 12, '{"type": "theme_preset", "value": "tide"}'),
   ('feature_export', 'Analytics Export', 'Export your analytics data as CSV', 'feature', 'Download', 'level', 5, '{"feature_key": "analytics_export"}'),
   ('feature_bulk_edit', 'Bulk Product Edit', 'Edit multiple products at once', 'feature', 'PenTool', 'level', 8, '{"feature_key": "bulk_edit"}'),
-  ('feature_priority_support', 'Priority Support', 'Get priority customer support', 'feature', 'Headphones', 'achievement', 5, '{"feature_key": "priority_support"}'),
-  ('cosmetic_profile_frame', 'Profile Frame', 'Special profile frame for achievers', 'cosmetic', 'Image', 'achievement', 3, '{"frame_color": "gradient"}')
+  ('feature_abandoned_cart', 'Abandoned Cart Recovery', 'Recover lost sales with automated cart recovery emails', 'feature', 'ShoppingCart', 'level', 10, '{"feature_key": "abandoned_cart"}'),
+  ('feature_ai_extra', 'AI Voice Extra Uses', '10 additional AI voice generations per month', 'feature', 'Mic', 'level', 13, '{"feature_key": "ai_voice_extra", "amount": 10}'),
+  ('feature_custom_css', 'Custom Checkout CSS', 'Customize your checkout page with custom CSS', 'feature', 'FileCode', 'level', 15, '{"feature_key": "custom_checkout_css"}'),
+  ('feature_api_access', 'API Access', 'Full REST API access for developers', 'feature', 'Code', 'level', 18, '{"feature_key": "api_access"}'),
+  ('feature_priority_support', 'Priority Support', 'Get priority customer support with faster response times', 'feature', 'Headphones', 'achievement', 5, '{"feature_key": "priority_support"}')
 ON CONFLICT (key) DO NOTHING;
 
 CREATE OR REPLACE FUNCTION public.ensure_gamification_row()
