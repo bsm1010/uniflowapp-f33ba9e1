@@ -36,22 +36,22 @@ export type ProgressData = {
 };
 
 const CHECKLIST: SetupItem[] = [
-  { key: "product", label: "Add your first product", completed: false },
-  { key: "published", label: "Publish a product", completed: false },
-  { key: "store_customized", label: "Customize your store", completed: false },
-  { key: "first_order", label: "Get your first order", completed: false },
-  { key: "store_launched", label: "Launch your store", completed: false },
+  { key: "product", label: "", completed: false },
+  { key: "published", label: "", completed: false },
+  { key: "store_customized", label: "", completed: false },
+  { key: "first_order", label: "", completed: false },
+  { key: "store_launched", label: "", completed: false },
 ];
 
 const MILESTONES: (Omit<Milestone, "unlocked"> & { check: (stats: any) => boolean | number })[] = [
-  { key: "first_product", label: "First product", description: "Add your first product to the store", icon: "Package", check: (s) => s.products >= 1 },
-  { key: "first_published", label: "Go live", description: "Publish your first product publicly", icon: "CheckCircle2", check: (s) => s.published >= 1 },
-  { key: "ten_products", label: "Product catalog", description: "Reach 10 products in your store", icon: "Layers", check: (s) => Math.min(s.products / 10, 1) },
-  { key: "first_sale", label: "First sale", description: "Process your first customer order", icon: "ShoppingBag", check: (s) => s.orders >= 1 },
-  { key: "ten_orders", label: "10 orders", description: "Reach 10 total orders", icon: "TrendingUp", check: (s) => Math.min(s.orders / 10, 1) },
-  { key: "hundred_orders", label: "100 orders", description: "Reach 100 total orders", icon: "Award", check: (s) => Math.min(s.orders / 100, 1) },
-  { key: "first_revenue", label: "First revenue", description: "Earn your first DZD from sales", icon: "DollarSign", check: (s) => s.revenue >= 1 },
-  { key: "revenue_100k", label: "100k DA milestone", description: "Reach 100,000 DZD in total sales", icon: "Zap", check: (s) => Math.min(s.revenue / 100000, 1) },
+  { key: "first_product", label: "", description: "", icon: "Package", check: (s) => s.products >= 1 },
+  { key: "first_published", label: "", description: "", icon: "CheckCircle2", check: (s) => s.published >= 1 },
+  { key: "ten_products", label: "", description: "", icon: "Layers", check: (s) => Math.min(s.products / 10, 1) },
+  { key: "first_sale", label: "", description: "", icon: "ShoppingBag", check: (s) => s.orders >= 1 },
+  { key: "ten_orders", label: "", description: "", icon: "TrendingUp", check: (s) => Math.min(s.orders / 10, 1) },
+  { key: "hundred_orders", label: "", description: "", icon: "Award", check: (s) => Math.min(s.orders / 100, 1) },
+  { key: "first_revenue", label: "", description: "", icon: "DollarSign", check: (s) => s.revenue >= 1 },
+  { key: "revenue_100k", label: "", description: "", icon: "Zap", check: (s) => Math.min(s.revenue / 100000, 1) },
 ];
 
 const Schema = z.object({
@@ -94,11 +94,11 @@ export const getProgress = createServerFn({ method: "POST" })
     );
 
     const setupItems: SetupItem[] = [
-      { key: "product", label: "Add your first product", completed: productCount >= 1 },
-      { key: "published", label: "Publish a product", completed: publishedCount >= 1 },
-      { key: "store_customized", label: "Customize your store", completed: hasCustomized },
-      { key: "first_order", label: "Get your first order", completed: orderCount >= 1 },
-      { key: "store_launched", label: "Launch your store", completed: store?.is_active === true },
+      { key: "product", label: "", completed: productCount >= 1 },
+      { key: "published", label: "", completed: publishedCount >= 1 },
+      { key: "store_customized", label: "", completed: hasCustomized },
+      { key: "first_order", label: "", completed: orderCount >= 1 },
+      { key: "store_launched", label: "", completed: store?.is_active === true },
     ];
 
     const completedItems = setupItems.filter((i) => i.completed).length;

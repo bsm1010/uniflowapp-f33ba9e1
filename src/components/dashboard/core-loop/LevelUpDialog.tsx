@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { Zap, X, Sparkles } from "lucide-react";
 import { XPBar } from "./XPBar";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,7 @@ interface LevelUpDialogProps {
 }
 
 export function LevelUpDialog({ open, level, xp, xpForCurrent, xpForNext, onClose }: LevelUpDialogProps) {
+  const { t } = useTranslation();
   return (
     <AnimatePresence>
       {open && (
@@ -52,7 +54,7 @@ export function LevelUpDialog({ open, level, xp, xpForCurrent, xpForNext, onClos
                   transition={{ delay: 0.3 }}
                   className="text-2xl font-bold text-white"
                 >
-                  Level Up!
+                  {t("dashboard.gamification.levelUp")}
                 </motion.h2>
                 <motion.p
                   initial={{ opacity: 0, y: 10 }}
@@ -60,7 +62,7 @@ export function LevelUpDialog({ open, level, xp, xpForCurrent, xpForNext, onClos
                   transition={{ delay: 0.4 }}
                   className="text-white/80 text-sm mt-1"
                 >
-                  You reached <span className="font-bold text-white">Level {level}</span>
+                  {t("dashboard.gamification.youReached")} <span className="font-bold text-white">{t("dashboard.gamification.levelPrefix")}{level}</span>
                 </motion.p>
               </div>
               <div className="p-5 space-y-4">
@@ -76,7 +78,7 @@ export function LevelUpDialog({ open, level, xp, xpForCurrent, xpForNext, onClos
                   onClick={onClose}
                 >
                   <Sparkles className="h-4 w-4" />
-                  Continue
+                  {t("dashboard.gamification.continue")}
                 </Button>
               </div>
             </Card>

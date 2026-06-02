@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { CheckCircle2, Lock, Share2, Sparkles, Package, ShoppingBag, Palette, Layers, TrendingUp, Award, DollarSign, Star, Zap, Users, Flame, Rocket, type LucideIcon } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
@@ -19,6 +20,7 @@ interface AchievementCardProps {
 }
 
 export function AchievementCard({ achievement, onShared }: AchievementCardProps) {
+  const { t } = useTranslation();
   const Icon = ICON_MAP[achievement.icon] || Sparkles;
   const callShare = useServerFn(shareAchievement);
   const [sharing, setSharing] = useState(false);
@@ -71,7 +73,7 @@ export function AchievementCard({ achievement, onShared }: AchievementCardProps)
           {achievement.earned && (
             <div className="mt-2 flex items-center gap-2">
               <div className="flex items-center gap-1 text-xs text-emerald-500">
-                <CheckCircle2 className="h-3 w-3" /> Unlocked
+                <CheckCircle2 className="h-3 w-3" /> {t("dashboard.gamification.unlocked")}
               </div>
               {!achievement.shared && (
                 <Button
@@ -82,12 +84,12 @@ export function AchievementCard({ achievement, onShared }: AchievementCardProps)
                   disabled={sharing}
                 >
                   <Share2 className="h-3 w-3" />
-                  {sharing ? "..." : "Share"}
+                  {sharing ? t("dashboard.gamification.sharing") : t("dashboard.gamification.share")}
                 </Button>
               )}
               {achievement.shared && (
                 <span className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Share2 className="h-3 w-3" /> Shared
+                  <Share2 className="h-3 w-3" /> {t("dashboard.gamification.shared")}
                 </span>
               )}
             </div>

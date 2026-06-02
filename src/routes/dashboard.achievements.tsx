@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,6 +15,7 @@ export const Route = createFileRoute("/dashboard/achievements")({
 });
 
 function AchievementsPage() {
+  const { t } = useTranslation();
   const callGet = useServerFn(getGamification);
   const [data, setData] = useState<GamificationData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -38,7 +40,7 @@ function AchievementsPage() {
     );
   }
 
-  if (!data) return <p className="text-muted-foreground p-8 text-center">Could not load achievements.</p>;
+  if (!data) return <p className="text-muted-foreground p-8 text-center">{t("common.error")}</p>;
 
   const earned = data.achievements.filter((a) => a.earned);
   const locked = data.achievements.filter((a) => !a.earned);
@@ -46,9 +48,9 @@ function AchievementsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow="Achievements"
-        title="Your Achievement Collection"
-        description={`${earned.length} of ${data.achievements.length} unlocked`}
+        eyebrow={t("dashboard.achievements.eyebrow")}
+        title={t("dashboard.achievements.title")}
+        description={`${earned.length} ${t("dashboard.achievements.of")} ${data.achievements.length} ${t("dashboard.achievements.unlocked")}`}
         icon={Trophy}
         gradient="from-amber-500 to-orange-500"
       />
@@ -56,13 +58,13 @@ function AchievementsPage() {
       <Tabs defaultValue="all" className="w-full">
         <TabsList>
           <TabsTrigger value="all" className="gap-1.5">
-            <Trophy className="h-4 w-4" /> All ({data.achievements.length})
+            <Trophy className="h-4 w-4" /> {t("dashboard.achievements.tabAll")} ({data.achievements.length})
           </TabsTrigger>
           <TabsTrigger value="unlocked" className="gap-1.5">
-            <CheckCircle2 className="h-4 w-4" /> Unlocked ({earned.length})
+            <CheckCircle2 className="h-4 w-4" /> {t("dashboard.achievements.tabUnlocked")} ({earned.length})
           </TabsTrigger>
           <TabsTrigger value="locked" className="gap-1.5">
-            <Lock className="h-4 w-4" /> Locked ({locked.length})
+            <Lock className="h-4 w-4" /> {t("dashboard.achievements.tabLocked")} ({locked.length})
           </TabsTrigger>
         </TabsList>
         <TabsContent value="all" className="mt-4">
@@ -74,7 +76,7 @@ function AchievementsPage() {
         </TabsContent>
         <TabsContent value="unlocked" className="mt-4">
           {earned.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-8">No achievements unlocked yet. Keep building!</p>
+            <p className="text-sm text-muted-foreground text-center py-8">{t("dashboard.achievements.emptyLocked")}</p>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2">
               {earned.map((a) => (
@@ -85,7 +87,7 @@ function AchievementsPage() {
         </TabsContent>
         <TabsContent value="locked" className="mt-4">
           {locked.length === 0 ? (
-            <p className="text-sm text-emerald-500 text-center py-8">All achievements unlocked! Amazing!</p>
+            <p className="text-sm text-emerald-500 text-center py-8">{t("dashboard.achievements.emptyAll")}</p>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2">
               {locked.map((a) => (

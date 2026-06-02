@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +14,7 @@ export const Route = createFileRoute("/dashboard/gamification")({
 });
 
 function GamificationPage() {
+  const { t } = useTranslation();
   const callGet = useServerFn(getGamification);
   const [data, setData] = useState<GamificationData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -38,14 +40,14 @@ function GamificationPage() {
     );
   }
 
-  if (!data) return <p className="text-muted-foreground p-8 text-center">Could not load gamification data.</p>;
+  if (!data) return <p className="text-muted-foreground p-8 text-center">{t("common.error")}</p>;
 
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow="Core Loop"
-        title="Your Progress"
-        description="Earn XP, complete quests, unlock rewards, and level up as you build your store."
+        eyebrow={t("dashboard.gamification.coreLoop")}
+        title={t("dashboard.gamification.yourProgress")}
+        description={t("dashboard.gamification.coreLoopDesc")}
         icon={Zap}
         gradient="from-violet-500 via-fuchsia-500 to-amber-400"
       />

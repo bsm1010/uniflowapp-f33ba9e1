@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import {
   Sparkles, CheckCircle2, Circle, ArrowRight, Package, Palette,
   ShoppingBag, Store, Rocket, Trophy, Zap, Star, TrendingUp,
@@ -45,26 +46,26 @@ const LEVELS = [
 ];
 
 const REWARDS_ROADMAP = [
-  { key: "badge_rising_star", level: 2, tier: "Rising Star", label: "Rising Star Badge", desc: "Profile badge", icon: Gem, type: "badge", color: "from-violet-400 to-fuchsia-400" },
-  { key: "cosmetic_dashboard_accent", level: 3, tier: "Rising Star", label: "Dashboard Accent", desc: "Custom accent color", icon: Palette, type: "cosmetic", color: "from-violet-400 to-fuchsia-400" },
-  { key: "badge_merchant", level: 5, tier: "Merchant", label: "Merchant Badge", desc: "Profile badge", icon: Award, type: "badge", color: "from-amber-400 to-orange-400" },
-  { key: "feature_export", level: 5, tier: "Merchant", label: "Analytics Export", desc: "Export data as CSV", icon: Download, type: "feature", color: "from-amber-400 to-orange-400" },
-  { key: "cosmetic_aether_preset", level: 6, tier: "Merchant", label: "Aether Theme", desc: "Ethereal storefront preset", icon: Sparkles, type: "cosmetic", color: "from-amber-400 to-orange-400" },
-  { key: "cosmetic_dashboard_theme", level: 7, tier: "Merchant", label: "Dark Dashboard", desc: "Dark theme variant", icon: Moon, type: "cosmetic", color: "from-amber-400 to-orange-400" },
-  { key: "feature_bulk_edit", level: 8, tier: "Merchant", label: "Bulk Product Edit", desc: "Edit products in bulk", icon: PenTool, type: "feature", color: "from-amber-400 to-orange-400" },
-  { key: "cosmetic_ember_preset", level: 9, tier: "Merchant", label: "Ember Theme", desc: "Fiery storefront preset", icon: Flame, type: "cosmetic", color: "from-amber-400 to-orange-400" },
-  { key: "badge_elite", level: 10, tier: "Elite", label: "Elite Badge", desc: "Premium profile badge", icon: Crown, type: "badge", color: "from-yellow-400 to-rose-400" },
-  { key: "feature_abandoned_cart", level: 10, tier: "Elite", label: "Abandoned Cart", desc: "Recover lost sales", icon: ShoppingCart, type: "feature", color: "from-yellow-400 to-rose-400" },
-  { key: "cosmetic_tide_preset", level: 12, tier: "Elite", label: "Tide Theme", desc: "Oceanic storefront preset", icon: Droplets, type: "cosmetic", color: "from-yellow-400 to-rose-400" },
-  { key: "feature_ai_extra", level: 13, tier: "Elite", label: "AI Voice Extra", desc: "10 extra generations/mo", icon: Mic, type: "feature", color: "from-yellow-400 to-rose-400" },
-  { key: "feature_custom_css", level: 15, tier: "Elite", label: "Custom Checkout CSS", desc: "Customize checkout", icon: FileCode, type: "feature", color: "from-yellow-400 to-rose-400" },
-  { key: "feature_api_access", level: 18, tier: "Elite", label: "API Access", desc: "Full REST API", icon: Code, type: "feature", color: "from-yellow-400 to-rose-400" },
-  { key: "badge_legend", level: 20, tier: "Legend", label: "Legend Badge", desc: "Legendary profile badge", icon: Trophy, type: "badge", color: "from-cyan-400 to-blue-500" },
+  { key: "badge_rising_star", level: 2, tier: "Rising Star", icon: Gem, type: "badge", color: "from-violet-400 to-fuchsia-400" },
+  { key: "cosmetic_dashboard_accent", level: 3, tier: "Rising Star", icon: Palette, type: "cosmetic", color: "from-violet-400 to-fuchsia-400" },
+  { key: "badge_merchant", level: 5, tier: "Merchant", icon: Award, type: "badge", color: "from-amber-400 to-orange-400" },
+  { key: "feature_export", level: 5, tier: "Merchant", icon: Download, type: "feature", color: "from-amber-400 to-orange-400" },
+  { key: "cosmetic_aether_preset", level: 6, tier: "Merchant", icon: Sparkles, type: "cosmetic", color: "from-amber-400 to-orange-400" },
+  { key: "cosmetic_dashboard_theme", level: 7, tier: "Merchant", icon: Moon, type: "cosmetic", color: "from-amber-400 to-orange-400" },
+  { key: "feature_bulk_edit", level: 8, tier: "Merchant", icon: PenTool, type: "feature", color: "from-amber-400 to-orange-400" },
+  { key: "cosmetic_ember_preset", level: 9, tier: "Merchant", icon: Flame, type: "cosmetic", color: "from-amber-400 to-orange-400" },
+  { key: "badge_elite", level: 10, tier: "Elite", icon: Crown, type: "badge", color: "from-yellow-400 to-rose-400" },
+  { key: "feature_abandoned_cart", level: 10, tier: "Elite", icon: ShoppingCart, type: "feature", color: "from-yellow-400 to-rose-400" },
+  { key: "cosmetic_tide_preset", level: 12, tier: "Elite", icon: Droplets, type: "cosmetic", color: "from-yellow-400 to-rose-400" },
+  { key: "feature_ai_extra", level: 13, tier: "Elite", icon: Mic, type: "feature", color: "from-yellow-400 to-rose-400" },
+  { key: "feature_custom_css", level: 15, tier: "Elite", icon: FileCode, type: "feature", color: "from-yellow-400 to-rose-400" },
+  { key: "feature_api_access", level: 18, tier: "Elite", icon: Code, type: "feature", color: "from-yellow-400 to-rose-400" },
+  { key: "badge_legend", level: 20, tier: "Legend", icon: Trophy, type: "badge", color: "from-cyan-400 to-blue-500" },
 ];
 
 const ACHIEVEMENT_REWARDS = [
-  { count: 3, label: "Profile Frame", desc: "Gradient profile frame", icon: Image },
-  { count: 5, label: "Priority Support", desc: "Faster response times", icon: Headphones },
+  { count: 3, key: "profile_frame", icon: Image },
+  { count: 5, key: "priority_support", icon: Headphones },
 ];
 
 function calculateLevel(xp: number) {
@@ -82,6 +83,7 @@ function LevelProgress({ xp }: { xp: number }) {
 }
 
 function ProgressPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { currentStore } = useCurrentStore();
   const navigate = useNavigate();
@@ -133,8 +135,8 @@ function ProgressPage() {
         <div className="h-16 w-16 rounded-2xl bg-muted flex items-center justify-center">
           <Trophy className="h-8 w-8 text-muted-foreground" />
         </div>
-        <p className="text-muted-foreground">Could not load progress data.</p>
-        <Button variant="outline" onClick={() => window.location.reload()}>Retry</Button>
+        <p className="text-muted-foreground">{t("dashboard.progress.error")}</p>
+        <Button variant="outline" onClick={() => window.location.reload()}>{t("common.retry")}</Button>
       </div>
     );
   }
@@ -152,7 +154,6 @@ function ProgressPage() {
 
   return (
     <div className="relative space-y-8">
-      {/* Animated background glow */}
       <div
         className="fixed pointer-events-none inset-0 -z-10 opacity-30 dark:opacity-20 transition-all duration-1000"
         style={{
@@ -161,12 +162,11 @@ function ProgressPage() {
       />
 
       <PageHeader
-        eyebrow="Progress"
-        title="Store Progress"
+        eyebrow={t("dashboard.progress.eyebrow")}
+        title={t("dashboard.progress.title")}
         gradient="from-purple-500 via-violet-500 to-pink-500"
       />
 
-      {/* Level Card */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -182,18 +182,18 @@ function ProgressPage() {
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <h2 className="text-lg font-bold">Level {level}</h2>
+              <h2 className="text-lg font-bold">{t("dashboard.progress.level")} {level}</h2>
               <Badge variant="secondary" className="text-xs bg-violet-500/10 text-violet-600 dark:text-violet-400">
                 {currentLevelDef.label}
               </Badge>
               {nextLevelDef && (
                 <Badge variant="outline" className="text-xs text-muted-foreground ml-auto">
-                  Next: Level {nextLevelDef.level} · {nextLevelDef.label}
+                  {t("dashboard.progress.next")}: {t("dashboard.progress.level")} {nextLevelDef.level} · {nextLevelDef.label}
                 </Badge>
               )}
             </div>
             <p className="text-sm text-muted-foreground mt-1">
-              {xp.toLocaleString()} / {nextLevelXp.toLocaleString()} XP
+              {xp.toLocaleString()} / {nextLevelXp.toLocaleString()} {t("dashboard.progress.xp")}
             </p>
             <div className="mt-3 h-3 rounded-full bg-muted/60 overflow-hidden">
               <motion.div
@@ -209,13 +209,12 @@ function ProgressPage() {
         </div>
       </motion.div>
 
-      {/* Stats row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: "Products", value: stats.products, icon: Package, color: "from-emerald-500 to-teal-500" },
-          { label: "Published", value: stats.published, icon: Rocket, color: "from-sky-500 to-blue-500" },
-          { label: "Orders", value: stats.orders, icon: ShoppingBag, color: "from-amber-500 to-orange-500" },
-          { label: "Revenue", value: `${stats.revenue.toLocaleString("fr-DZ")} DA`, icon: TrendingUp, color: "from-violet-500 to-purple-500" },
+          { label: t("dashboard.progress.products"), value: stats.products, icon: Package, color: "from-emerald-500 to-teal-500" },
+          { label: t("dashboard.progress.published"), value: stats.published, icon: Rocket, color: "from-sky-500 to-blue-500" },
+          { label: t("dashboard.progress.orders"), value: stats.orders, icon: ShoppingBag, color: "from-amber-500 to-orange-500" },
+          { label: t("dashboard.progress.revenue"), value: `${stats.revenue.toLocaleString("fr-DZ")} DA`, icon: TrendingUp, color: "from-violet-500 to-purple-500" },
         ].map((s, i) => (
           <motion.div
             key={s.label}
@@ -242,7 +241,6 @@ function ProgressPage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* Setup Checklist */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -255,7 +253,7 @@ function ProgressPage() {
                 <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
                   <CheckCircle2 className="h-4 w-4 text-white" />
                 </div>
-                Setup Checklist
+                {t("dashboard.progress.setupChecklist")}
                 <Badge variant="secondary" className="ml-auto text-xs font-mono">
                   {setupProgress}%
                 </Badge>
@@ -303,7 +301,7 @@ function ProgressPage() {
                           "text-sm font-medium",
                           item.completed && "text-emerald-600 dark:text-emerald-400 line-through decoration-emerald-500/30",
                         )}>
-                          {item.label}
+                          {t(`dashboard.progress.checklist.${item.key}`)}
                         </span>
                       </div>
                       {!item.completed && (
@@ -313,11 +311,11 @@ function ProgressPage() {
                           className="opacity-0 group-hover:opacity-100 transition-all text-xs h-7 shrink-0 hover:bg-violet-500/10 hover:text-violet-600"
                           onClick={() => navigate({ to: ITEM_ACTIONS[item.key] || "/dashboard" })}
                         >
-                          Go <ArrowRight className="h-3 w-3 ml-1" />
+                          {t("dashboard.progress.go")} <ArrowRight className="h-3 w-3 ml-1" />
                         </Button>
                       )}
                       {item.completed && (
-                        <Badge variant="outline" className="text-[10px] text-emerald-500 h-5 shrink-0">Done</Badge>
+                        <Badge variant="outline" className="text-[10px] text-emerald-500 h-5 shrink-0">{t("dashboard.progress.done")}</Badge>
                       )}
                     </motion.div>
                   );
@@ -326,12 +324,12 @@ function ProgressPage() {
               {allSetupDone && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
+                  animate={{ opacity: 1, scale: 0.9 }}
                   className="text-center py-3"
                 >
                   <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs px-4 py-1.5 shadow-lg">
                     <Trophy className="h-3.5 w-3.5 mr-1.5" />
-                    All setup complete!
+                    {t("dashboard.progress.allDone")}
                   </Badge>
                 </motion.div>
               )}
@@ -339,7 +337,6 @@ function ProgressPage() {
           </Card>
         </motion.div>
 
-        {/* Milestones */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -352,7 +349,7 @@ function ProgressPage() {
                 <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
                   <Trophy className="h-4 w-4 text-white" />
                 </div>
-                Milestones
+                {t("dashboard.progress.milestones")}
                 <Badge variant="secondary" className="ml-auto text-xs font-mono">
                   {unlockedMilestones}/{milestones.length}
                 </Badge>
@@ -391,15 +388,15 @@ function ProgressPage() {
                             "text-sm font-medium",
                             isUnlocked ? "text-emerald-700 dark:text-emerald-400" : "text-foreground",
                           )}>
-                            {m.label}
+                            {t(`dashboard.progress.milestone.${m.key}`)}
                           </p>
                           {isUnlocked && (
                             <Badge variant="outline" className="h-5 text-[10px] text-emerald-500 shrink-0">
-                              <CheckCircle2 className="h-3 w-3 mr-0.5" /> Earned
+                              <CheckCircle2 className="h-3 w-3 mr-0.5" /> {t("dashboard.progress.earned")}
                             </Badge>
                           )}
                         </div>
-                        <p className="text-xs text-muted-foreground mt-0.5">{m.description}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">{t(`dashboard.progress.milestone.${m.key}_desc`)}</p>
                         {isProgress && m.target && (
                           <div className="mt-2 h-1.5 rounded-full bg-muted/60 overflow-hidden">
                             <motion.div
@@ -416,10 +413,9 @@ function ProgressPage() {
                 })}
               </div>
 
-              {/* Level progression table */}
               <div className="mt-5 pt-4 border-t border-border/40">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                  <Zap className="h-3 w-3" /> Level Tiers
+                  <Zap className="h-3 w-3" /> {t("dashboard.progress.levelTiers")}
                 </p>
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
                   {LEVELS.map((l) => {
@@ -440,7 +436,7 @@ function ProgressPage() {
                         )}>
                           <l.icon className={cn("h-4 w-4", reached ? "text-white" : "text-muted-foreground/50")} />
                         </div>
-                        <p className="text-xs font-bold tabular-nums">Lv.{l.level}</p>
+                        <p className="text-xs font-bold tabular-nums">{t("dashboard.progress.level")}.{l.level}</p>
                         <p className="text-[10px] text-muted-foreground truncate">{l.label}</p>
                       </div>
                     );
@@ -452,7 +448,6 @@ function ProgressPage() {
         </motion.div>
       </div>
 
-      {/* Rewards Roadmap */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -465,7 +460,7 @@ function ProgressPage() {
               <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center">
                 <Gift className="h-4 w-4 text-white" />
               </div>
-              Rewards Roadmap
+              {t("dashboard.progress.rewardsRoadmap")}
               <Badge variant="secondary" className="ml-auto text-xs font-mono">
                 {gami.unlockables.filter((u) => u.unlocked).length}/{gami.unlockables.length}
               </Badge>
@@ -475,9 +470,11 @@ function ProgressPage() {
             <div className="space-y-3">
               {REWARDS_ROADMAP.map((r, i) => {
                 const unlocked = earnedUnlockKeys.has(r.key);
+                const labelKey = `dashboard.progress.reward.${r.key}`;
+                const descKey = `dashboard.progress.reward.${r.key}_desc`;
                 return (
                   <motion.div
-                    key={r.label}
+                    key={r.key}
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.35 + i * 0.03 }}
@@ -502,7 +499,7 @@ function ProgressPage() {
                           "text-sm font-medium",
                           unlocked && "text-emerald-700 dark:text-emerald-400",
                         )}>
-                          {r.label}
+                          {t(labelKey)}
                         </span>
                         <span className={cn(
                           "text-[10px] px-1.5 py-0.5 rounded font-medium",
@@ -510,18 +507,18 @@ function ProgressPage() {
                             : r.type === "cosmetic" ? "bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400"
                             : "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400",
                         )}>
-                          {r.type}
+                          {t(`dashboard.progress.type${r.type.charAt(0).toUpperCase() + r.type.slice(1)}`)}
                         </span>
                       </div>
-                      <p className="text-xs text-muted-foreground">{r.desc} · Lv.{r.level}</p>
+                      <p className="text-xs text-muted-foreground">{t(descKey)} · {t("dashboard.progress.level")}.{r.level}</p>
                     </div>
                     {unlocked ? (
                       <Badge variant="outline" className="h-5 text-[10px] text-emerald-500 shrink-0">
-                        <CheckCircle2 className="h-3 w-3 mr-0.5" /> Unlocked
+                        <CheckCircle2 className="h-3 w-3 mr-0.5" /> {t("dashboard.progress.unlocked")}
                       </Badge>
                     ) : level >= r.level - 2 ? (
                       <Badge variant="outline" className="h-5 text-[10px] text-violet-500 shrink-0">
-                        <Zap className="h-3 w-3 mr-0.5" /> Close
+                        <Zap className="h-3 w-3 mr-0.5" /> {t("dashboard.progress.close")}
                       </Badge>
                     ) : (
                       <Lock className="h-3.5 w-3.5 text-muted-foreground/40 shrink-0" />
@@ -531,16 +528,17 @@ function ProgressPage() {
               })}
             </div>
 
-            {/* Achievement-based rewards */}
             <div className="mt-5 pt-4 border-t border-border/40">
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                <Award className="h-3 w-3" /> Achievement Milestone Rewards
+                <Award className="h-3 w-3" /> {t("dashboard.progress.achievementRewards")}
               </p>
               <div className="space-y-2">
                 {ACHIEVEMENT_REWARDS.map((ar) => {
                   const unlocked = earnedAchievementCount >= ar.count;
+                  const labelKey = `dashboard.progress.achReward.${ar.key}`;
+                  const descKey = `dashboard.progress.achReward.${ar.key}_desc`;
                   return (
-                    <div key={ar.label} className={cn(
+                    <div key={ar.key} className={cn(
                       "flex items-center gap-3 p-3 rounded-xl border transition-all",
                       unlocked
                         ? "bg-emerald-500/5 border-emerald-500/15"
@@ -556,13 +554,13 @@ function ProgressPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className={cn("text-sm font-medium", unlocked && "text-emerald-700 dark:text-emerald-400")}>
-                          {ar.label}
+                          {t(labelKey)}
                         </p>
-                        <p className="text-xs text-muted-foreground">{ar.desc} · {ar.count} achievements</p>
+                        <p className="text-xs text-muted-foreground">{t(descKey)} · {ar.count} {t("dashboard.progress.achievementRewards").toLowerCase()}</p>
                       </div>
                       {unlocked && (
                         <Badge variant="outline" className="h-5 text-[10px] text-emerald-500 shrink-0">
-                          <CheckCircle2 className="h-3 w-3 mr-0.5" /> Unlocked
+                          <CheckCircle2 className="h-3 w-3 mr-0.5" /> {t("dashboard.progress.unlocked")}
                         </Badge>
                       )}
                     </div>

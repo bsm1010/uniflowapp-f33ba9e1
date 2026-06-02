@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,6 +15,7 @@ export const Route = createFileRoute("/dashboard/quests")({
 });
 
 function QuestsPage() {
+  const { t } = useTranslation();
   const callGet = useServerFn(getGamification);
   const [data, setData] = useState<GamificationData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -38,7 +40,7 @@ function QuestsPage() {
     );
   }
 
-  if (!data) return <p className="text-muted-foreground p-8 text-center">Could not load quests.</p>;
+  if (!data) return <p className="text-muted-foreground p-8 text-center">{t("common.error")}</p>;
 
   const renderQuestList = (quests: QuestWithProgress[]) => {
     const unclaimed = quests.filter((q) => q.completed && !q.claimed);
@@ -49,7 +51,7 @@ function QuestsPage() {
       <div className="space-y-3">
         {unclaimed.length > 0 && (
           <div>
-            <p className="text-xs font-semibold text-emerald-500 uppercase tracking-wider mb-2">Ready to Claim</p>
+            <p className="text-xs font-semibold text-emerald-500 uppercase tracking-wider mb-2">{t("dashboard.quests.readyToClaim")}</p>
             <div className="space-y-2">
               {unclaimed.map((q) => <QuestCard key={q.id} quest={q} onClaimed={load} />)}
             </div>
@@ -57,7 +59,7 @@ function QuestsPage() {
         )}
         {inProgress.length > 0 && (
           <div>
-            {unclaimed.length > 0 && <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 mt-4">In Progress</p>}
+            {unclaimed.length > 0 && <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 mt-4">{t("dashboard.quests.inProgress")}</p>}
             <div className="space-y-2">
               {inProgress.map((q) => <QuestCard key={q.id} quest={q} onClaimed={load} />)}
             </div>
@@ -65,14 +67,14 @@ function QuestsPage() {
         )}
         {done.length > 0 && (
           <div>
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 mt-4">Completed</p>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 mt-4">{t("dashboard.quests.completed")}</p>
             <div className="space-y-2">
               {done.map((q) => <QuestCard key={q.id} quest={q} onClaimed={load} />)}
             </div>
           </div>
         )}
         {quests.length === 0 && (
-          <p className="text-sm text-muted-foreground text-center py-8">No quests available.</p>
+          <p className="text-sm text-muted-foreground text-center py-8">{t("dashboard.quests.noQuests")}</p>
         )}
       </div>
     );
@@ -81,21 +83,21 @@ function QuestsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow="Quests"
-        title="Complete Quests & Earn Rewards"
-        description="Finish quests to earn XP, unlock achievements, and level up."
+        eyebrow={t("dashboard.quests.eyebrow")}
+        title={t("dashboard.quests.title")}
+        description={t("dashboard.quests.description")}
         gradient="from-violet-500 to-purple-500"
       />
       <Tabs defaultValue="daily" className="w-full">
         <TabsList>
           <TabsTrigger value="daily" className="gap-1.5">
-            <Flame className="h-4 w-4" /> Daily
+            <Flame className="h-4 w-4" /> {t("dashboard.quests.tabDaily")}
           </TabsTrigger>
           <TabsTrigger value="weekly" className="gap-1.5">
-            <TrendingUp className="h-4 w-4" /> Weekly
+            <TrendingUp className="h-4 w-4" /> {t("dashboard.quests.tabWeekly")}
           </TabsTrigger>
           <TabsTrigger value="achievement" className="gap-1.5">
-            <Trophy className="h-4 w-4" /> Achievements
+            <Trophy className="h-4 w-4" /> {t("dashboard.quests.tabAchievements")}
           </TabsTrigger>
         </TabsList>
         <TabsContent value="daily" className="mt-4">

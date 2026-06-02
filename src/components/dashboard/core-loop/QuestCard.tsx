@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { CheckCircle2, Circle, Gift, Sparkles, Package, ShoppingBag, LayoutDashboard, LogIn, Truck, Palette, Layers, TrendingUp, DollarSign, Users, Flame, Award, type LucideIcon } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
@@ -13,12 +14,6 @@ const ICON_MAP: Record<string, LucideIcon> = {
   LogIn, LayoutDashboard, Package, ShoppingBag, Truck, Palette, Layers, TrendingUp, DollarSign, Users, Flame, Award, Sparkles, Gift,
 };
 
-const TYPE_LABELS: Record<string, string> = {
-  daily: "Daily",
-  weekly: "Weekly",
-  achievement: "Achievement",
-};
-
 const TYPE_COLORS: Record<string, string> = {
   daily: "from-blue-500 to-cyan-500",
   weekly: "from-violet-500 to-purple-500",
@@ -31,6 +26,12 @@ interface QuestCardProps {
 }
 
 export function QuestCard({ quest, onClaimed }: QuestCardProps) {
+  const { t } = useTranslation();
+  const typeLabels: Record<string, string> = {
+    daily: t("dashboard.gamification.questDaily"),
+    weekly: t("dashboard.gamification.questWeekly"),
+    achievement: t("dashboard.gamification.questAchievement"),
+  };
   const Icon = ICON_MAP[quest.icon] || Sparkles;
   const callClaim = useServerFn(claimQuest);
   const [claiming, setClaiming] = useState(false);
@@ -66,13 +67,13 @@ export function QuestCard({ quest, onClaimed }: QuestCardProps) {
           <div className="flex items-center justify-between gap-2">
             <div>
               <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                {TYPE_LABELS[quest.type]}
+                {typeLabels[quest.type]}
               </span>
               <p className="text-sm font-semibold leading-tight mt-0.5">{quest.title}</p>
             </div>
             <div className="flex items-center gap-1.5 shrink-0">
               <Sparkles className="h-3 w-3 text-amber-400" />
-              <span className="text-xs font-bold text-amber-400">+{quest.xpReward} XP</span>
+              <span className="text-xs font-bold text-amber-400">+{quest.xpReward}{t("dashboard.gamification.xpSuffix")}</span>
             </div>
           </div>
           {quest.description && (
@@ -102,12 +103,12 @@ export function QuestCard({ quest, onClaimed }: QuestCardProps) {
               disabled={claiming}
             >
               <Gift className="h-3 w-3" />
-              {claiming ? "Claiming..." : "Claim Reward"}
+              {claiming ? t("dashboard.gamification.claiming") : t("dashboard.gamification.claimReward")}
             </Button>
           )}
           {quest.completed && quest.claimed && (
             <div className="mt-2 flex items-center gap-1 text-xs text-emerald-500">
-              <CheckCircle2 className="h-3 w-3" /> Claimed
+              <CheckCircle2 className="h-3 w-3" /> {t("dashboard.gamification.claimed")}
             </div>
           )}
         </div>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { Zap, Flame, CheckCircle2, Gift, TrendingUp, ArrowRight, Trophy, Users, Package, ShoppingBag } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
@@ -16,6 +17,7 @@ interface GamificationHubProps {
 }
 
 export function GamificationHub({ data, loading, compact }: GamificationHubProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [showLevelUp, setShowLevelUp] = useState(false);
 
@@ -50,10 +52,10 @@ export function GamificationHub({ data, loading, compact }: GamificationHubProps
               <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center">
                 <Zap className="h-3.5 w-3.5 text-white" />
               </div>
-              <span className="text-sm font-semibold text-foreground">Your Progress</span>
+              <span className="text-sm font-semibold text-foreground">{t("dashboard.gamification.yourProgress")}</span>
             </div>
             <div className="flex items-center gap-1 text-xs text-muted-foreground group-hover:text-foreground transition-colors">
-              View <ArrowRight className="h-3 w-3" />
+              {t("dashboard.gamification.view")} <ArrowRight className="h-3 w-3" />
             </div>
           </div>
           <XPBar
@@ -67,8 +69,8 @@ export function GamificationHub({ data, loading, compact }: GamificationHubProps
           />
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <StreakFlame streak={data.currentStreak} longestStreak={data.longestStreak} size="sm" />
-            <span>{dailyCompleted}/{data.dailyQuests.length} daily</span>
-            <span>{earnedAchievements} achievements</span>
+            <span>{dailyCompleted}/{data.dailyQuests.length} {t("dashboard.gamification.daily")}</span>
+            <span>{earnedAchievements} {t("dashboard.gamification.achievements")}</span>
           </div>
         </CardContent>
       </Card>
@@ -86,8 +88,8 @@ export function GamificationHub({ data, loading, compact }: GamificationHubProps
                 <Zap className="h-6 w-6 text-amber-300" />
               </div>
               <div>
-                <p className="text-sm text-white/70">Current Level</p>
-                <p className="text-2xl font-bold font-display">Level {data.level}</p>
+                <p className="text-sm text-white/70">{t("dashboard.gamification.currentLevel")}</p>
+                <p className="text-2xl font-bold font-display">{t("dashboard.gamification.levelPrefix")}{data.level}</p>
               </div>
             </div>
             <StreakFlame streak={data.currentStreak} longestStreak={data.longestStreak} size="md" />
@@ -106,10 +108,10 @@ export function GamificationHub({ data, loading, compact }: GamificationHubProps
       {/* Stats row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: "Daily Quests", value: `${dailyCompleted}/${data.dailyQuests.length}`, icon: Flame, color: "text-blue-500" },
-          { label: "Weekly Quests", value: `${weeklyCompleted}/${data.weeklyQuests.length}`, icon: TrendingUp, color: "text-violet-500" },
-          { label: "Achievements", value: `${earnedAchievements}/${data.achievements.length}`, icon: Trophy, color: "text-amber-500" },
-          { label: "Unlocks", value: `${earnedUnlocks}/${data.unlockables.length}`, icon: Gift, color: "text-emerald-500" },
+          { label: t("dashboard.gamification.dailyQuests"), value: `${dailyCompleted}/${data.dailyQuests.length}`, icon: Flame, color: "text-blue-500" },
+          { label: t("dashboard.gamification.weeklyQuests"), value: `${weeklyCompleted}/${data.weeklyQuests.length}`, icon: TrendingUp, color: "text-violet-500" },
+          { label: t("dashboard.gamification.achievements_plural"), value: `${earnedAchievements}/${data.achievements.length}`, icon: Trophy, color: "text-amber-500" },
+          { label: t("dashboard.gamification.unlocks"), value: `${earnedUnlocks}/${data.unlockables.length}`, icon: Gift, color: "text-emerald-500" },
         ].map((s, i) => (
           <motion.div
             key={s.label}
@@ -136,10 +138,10 @@ export function GamificationHub({ data, loading, compact }: GamificationHubProps
             <div className="flex items-center justify-between">
               <h3 className="font-semibold text-sm flex items-center gap-2">
                 <Flame className="h-4 w-4 text-blue-500" />
-                Daily Quests
+{t("dashboard.gamification.dailyQuests")}
               </h3>
               <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => navigate({ to: "/dashboard/quests" })}>
-                View All <ArrowRight className="h-3 w-3 ml-1" />
+                {t("dashboard.gamification.viewAll")} <ArrowRight className="h-3 w-3 ml-1" />
               </Button>
             </div>
             <div className="space-y-2">
@@ -165,10 +167,10 @@ export function GamificationHub({ data, loading, compact }: GamificationHubProps
             <div className="flex items-center justify-between">
               <h3 className="font-semibold text-sm flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-violet-500" />
-                Weekly Quests
+{t("dashboard.gamification.weeklyQuests")}
               </h3>
               <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => navigate({ to: "/dashboard/quests" })}>
-                View All <ArrowRight className="h-3 w-3 ml-1" />
+                {t("dashboard.gamification.viewAll")} <ArrowRight className="h-3 w-3 ml-1" />
               </Button>
             </div>
             <div className="space-y-2">
@@ -195,11 +197,11 @@ export function GamificationHub({ data, loading, compact }: GamificationHubProps
         <CardContent className="p-5">
           <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
             <Trophy className="h-4 w-4 text-amber-500" />
-            Recent Activity
+{t("dashboard.gamification.recentActivity")}
           </h3>
           {data.recentEvents.length === 0 ? (
             <p className="text-xs text-muted-foreground text-center py-4">
-              Start interacting with your store to earn XP!
+              {t("dashboard.gamification.emptyActivity")}
             </p>
           ) : (
             <div className="space-y-1.5">
@@ -208,7 +210,7 @@ export function GamificationHub({ data, loading, compact }: GamificationHubProps
                   <span className="capitalize text-muted-foreground">
                     {e.eventType.replace(/_/g, " ")}
                   </span>
-                  <span className="font-medium text-amber-400">+{e.xpAmount} XP</span>
+                  <span className="font-medium text-amber-400">+{e.xpAmount}{t("dashboard.gamification.xpSuffix")}</span>
                 </div>
               ))}
             </div>

@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { Flame } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -10,6 +11,7 @@ interface StreakFlameProps {
 }
 
 export function StreakFlame({ streak, longestStreak, size = "md", className }: StreakFlameProps) {
+  const { t } = useTranslation();
   const isActive = streak > 0;
   const flameColor = streak >= 30 ? "text-orange-500" : streak >= 7 ? "text-orange-400" : streak >= 3 ? "text-amber-400" : "text-amber-300";
 
@@ -32,10 +34,10 @@ export function StreakFlame({ streak, longestStreak, size = "md", className }: S
           {streak}
         </span>
         <span className={cn("text-muted-foreground", size === "sm" ? "text-[10px]" : "text-xs", "ml-1")}>
-          day{streak !== 1 ? "s" : ""}
+{streak === 1 ? t("dashboard.gamification.streakDay") : t("dashboard.gamification.streakDays")}
         </span>
         {size === "lg" && (
-          <p className="text-[11px] text-muted-foreground">Best: {longestStreak} days</p>
+          <p className="text-[11px] text-muted-foreground">{t("dashboard.gamification.bestLabel")}: {longestStreak} {t("dashboard.gamification.streakDays")}</p>
         )}
       </div>
     </div>
