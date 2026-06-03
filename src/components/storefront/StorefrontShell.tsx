@@ -17,6 +17,7 @@ import { HamburgerNavbar } from "./navbars/HamburgerNavbar";
 import { ColumnsFooter } from "./footers/ColumnsFooter";
 import { SimpleFooter } from "./footers/SimpleFooter";
 import { BrandedFooter } from "./footers/BrandedFooter";
+import { CookieConsentBanner } from "@/components/gdpr/CookieConsentBanner";
 
 export { getStoreTokens } from "@/lib/storeTheme";
 
@@ -91,6 +92,8 @@ export function StorefrontShell({ settings, children }: Props) {
       <main className="flex-1">{children}</main>
 
       <FooterComponent {...footerProps} />
+
+      <CookieConsentBanner storeId={settings.user_id} />
     </div>
   );
 }

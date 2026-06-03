@@ -38,20 +38,27 @@ export const deleteAccount = createServerFn({ method: "POST" })
       "chatbot_conversations",
       "chatbot_settings",
       "contact_messages",
+      "consent_audit_log",
+      "cookie_consent_settings",
+      "cookie_consents",
       "credit_transactions",
       "currency_settings",
+      "data_export_requests",
       "db_automations",
       "db_fields",
       "db_records",
       "db_tables",
       "delivery_tariffs",
+      "deletion_requests",
       "discount_codes",
       "email_campaigns",
       "installed_apps",
       "notifications",
       "payment_submissions",
       "popups",
+      "privacy_policy_settings",
       "products",
+      "push_subscriptions",
       "seo_settings",
       "shipments",
       "store_delivery_companies",
@@ -62,7 +69,7 @@ export const deleteAccount = createServerFn({ method: "POST" })
     ] as const;
 
     for (const t of tables) {
-      const col = t === "delivery_tariffs" || t === "shipments" || t === "store_delivery_companies"
+      const col = t === "delivery_tariffs" || t === "shipments" || t === "store_delivery_companies" || t === "cookie_consent_settings" || t === "cookie_consents" || t === "privacy_policy_settings" || t === "data_export_requests" || t === "deletion_requests" || t === "consent_audit_log"
         ? "store_id"
         : t === "abandoned_carts" || t === "chatbot_conversations" || t === "contact_messages"
           ? "store_owner_id"

@@ -34,6 +34,7 @@ import {
   Trophy,
   Zap,
   Flame,
+  Shield,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { FennecyLogo } from "@/components/ui/fennecy-logo";
@@ -172,6 +173,7 @@ export function DashboardSidebar() {
         { title: t("dashboard.nav.progress", "Progress"), url: "/dashboard/progress", icon: Trophy, gradient: "from-purple-500 to-pink-500" },
         { title: t("dashboard.nav.credits"), url: "/dashboard/credits", icon: Coins, gradient: "from-yellow-500 to-amber-500" },
         { title: t("dashboard.nav.referrals"), url: "/dashboard/referrals", icon: Gift, gradient: "from-rose-500 to-pink-500" },
+        { title: "GDPR & Privacy", url: "/dashboard/gdpr", icon: Shield, gradient: "from-red-500 to-rose-500" },
         { title: "Store Settings", url: "/dashboard/store-settings", icon: StoreIcon, gradient: "from-emerald-500 to-teal-600" },
         { title: t("dashboard.nav.settings"), url: "/dashboard/settings", icon: Settings, gradient: "from-zinc-500 to-slate-600" },
       ],
