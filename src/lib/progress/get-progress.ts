@@ -111,8 +111,8 @@ export const getProgress = createServerFn({ method: "POST" })
       revenue: totalRevenue,
     };
 
-    const milestones: Milestone[] = MILESTONES.map((m) => {
-      const result = m.check(stats);
+    const milestones: Milestone[] = MILESTONES.map(({ check, ...m }) => {
+      const result = check(stats);
       if (typeof result === "boolean") {
         return { ...m, unlocked: result };
       }
