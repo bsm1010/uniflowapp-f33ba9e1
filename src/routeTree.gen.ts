@@ -41,6 +41,7 @@ import { Route as DashboardProductsRouteImport } from './routes/dashboard.produc
 import { Route as DashboardOrdersRouteImport } from './routes/dashboard.orders'
 import { Route as DashboardNotificationsRouteImport } from './routes/dashboard.notifications'
 import { Route as DashboardLandingGeneratorRouteImport } from './routes/dashboard.landing-generator'
+import { Route as DashboardGdprRouteImport } from './routes/dashboard.gdpr'
 import { Route as DashboardGamificationRouteImport } from './routes/dashboard.gamification'
 import { Route as DashboardDomainsRouteImport } from './routes/dashboard.domains'
 import { Route as DashboardDeveloperRouteImport } from './routes/dashboard.developer'
@@ -60,6 +61,7 @@ import { Route as SSlugIndexRouteImport } from './routes/s.$slug.index'
 import { Route as DashboardNotificationsIndexRouteImport } from './routes/dashboard.notifications.index'
 import { Route as DashboardAppsIndexRouteImport } from './routes/dashboard.apps.index'
 import { Route as SSlugTrackRouteImport } from './routes/s.$slug.track'
+import { Route as SSlugPrivacyRouteImport } from './routes/s.$slug.privacy'
 import { Route as SSlugContactRouteImport } from './routes/s.$slug.contact'
 import { Route as SSlugCheckoutRouteImport } from './routes/s.$slug.checkout'
 import { Route as SSlugCartRouteImport } from './routes/s.$slug.cart'
@@ -84,6 +86,8 @@ import { Route as DashboardAdminMarketplaceRouteImport } from './routes/dashboar
 import { Route as DashboardAdminAppsRouteImport } from './routes/dashboard.admin.apps'
 import { Route as ApiDbTableIdRouteImport } from './routes/api.db.$tableId'
 import { Route as SSlugPProductIdRouteImport } from './routes/s.$slug.p.$productId'
+import { Route as SSlugGdprExportRouteImport } from './routes/s.$slug.gdpr.export'
+import { Route as SSlugGdprDeletionRouteImport } from './routes/s.$slug.gdpr.deletion'
 import { Route as SSlugCheckoutSuccessRouteImport } from './routes/s.$slug.checkout.success'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
@@ -262,6 +266,11 @@ const DashboardLandingGeneratorRoute =
     path: '/landing-generator',
     getParentRoute: () => DashboardRoute,
   } as any)
+const DashboardGdprRoute = DashboardGdprRouteImport.update({
+  id: '/gdpr',
+  path: '/gdpr',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardGamificationRoute = DashboardGamificationRouteImport.update({
   id: '/gamification',
   path: '/gamification',
@@ -356,6 +365,11 @@ const DashboardAppsIndexRoute = DashboardAppsIndexRouteImport.update({
 const SSlugTrackRoute = SSlugTrackRouteImport.update({
   id: '/s/$slug/track',
   path: '/s/$slug/track',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SSlugPrivacyRoute = SSlugPrivacyRouteImport.update({
+  id: '/s/$slug/privacy',
+  path: '/s/$slug/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SSlugContactRoute = SSlugContactRouteImport.update({
@@ -491,6 +505,16 @@ const SSlugPProductIdRoute = SSlugPProductIdRouteImport.update({
   path: '/s/$slug/p/$productId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SSlugGdprExportRoute = SSlugGdprExportRouteImport.update({
+  id: '/s/$slug/gdpr/export',
+  path: '/s/$slug/gdpr/export',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SSlugGdprDeletionRoute = SSlugGdprDeletionRouteImport.update({
+  id: '/s/$slug/gdpr/deletion',
+  path: '/s/$slug/gdpr/deletion',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SSlugCheckoutSuccessRoute = SSlugCheckoutSuccessRouteImport.update({
   id: '/success',
   path: '/success',
@@ -608,6 +632,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/developer': typeof DashboardDeveloperRoute
   '/dashboard/domains': typeof DashboardDomainsRoute
   '/dashboard/gamification': typeof DashboardGamificationRoute
+  '/dashboard/gdpr': typeof DashboardGdprRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
   '/dashboard/notifications': typeof DashboardNotificationsRouteWithChildren
   '/dashboard/orders': typeof DashboardOrdersRoute
@@ -651,6 +676,7 @@ export interface FileRoutesByFullPath {
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
   '/s/$slug/contact': typeof SSlugContactRoute
+  '/s/$slug/privacy': typeof SSlugPrivacyRoute
   '/s/$slug/track': typeof SSlugTrackRoute
   '/dashboard/apps/': typeof DashboardAppsIndexRoute
   '/dashboard/notifications/': typeof DashboardNotificationsIndexRoute
@@ -671,6 +697,8 @@ export interface FileRoutesByFullPath {
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
+  '/s/$slug/gdpr/deletion': typeof SSlugGdprDeletionRoute
+  '/s/$slug/gdpr/export': typeof SSlugGdprExportRoute
   '/s/$slug/p/$productId': typeof SSlugPProductIdRoute
 }
 export interface FileRoutesByTo {
@@ -699,6 +727,7 @@ export interface FileRoutesByTo {
   '/dashboard/developer': typeof DashboardDeveloperRoute
   '/dashboard/domains': typeof DashboardDomainsRoute
   '/dashboard/gamification': typeof DashboardGamificationRoute
+  '/dashboard/gdpr': typeof DashboardGdprRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
@@ -741,6 +770,7 @@ export interface FileRoutesByTo {
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
   '/s/$slug/contact': typeof SSlugContactRoute
+  '/s/$slug/privacy': typeof SSlugPrivacyRoute
   '/s/$slug/track': typeof SSlugTrackRoute
   '/dashboard/apps': typeof DashboardAppsIndexRoute
   '/dashboard/notifications': typeof DashboardNotificationsIndexRoute
@@ -761,6 +791,8 @@ export interface FileRoutesByTo {
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
+  '/s/$slug/gdpr/deletion': typeof SSlugGdprDeletionRoute
+  '/s/$slug/gdpr/export': typeof SSlugGdprExportRoute
   '/s/$slug/p/$productId': typeof SSlugPProductIdRoute
 }
 export interface FileRoutesById {
@@ -792,6 +824,7 @@ export interface FileRoutesById {
   '/dashboard/developer': typeof DashboardDeveloperRoute
   '/dashboard/domains': typeof DashboardDomainsRoute
   '/dashboard/gamification': typeof DashboardGamificationRoute
+  '/dashboard/gdpr': typeof DashboardGdprRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
   '/dashboard/notifications': typeof DashboardNotificationsRouteWithChildren
   '/dashboard/orders': typeof DashboardOrdersRoute
@@ -835,6 +868,7 @@ export interface FileRoutesById {
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRouteWithChildren
   '/s/$slug/contact': typeof SSlugContactRoute
+  '/s/$slug/privacy': typeof SSlugPrivacyRoute
   '/s/$slug/track': typeof SSlugTrackRoute
   '/dashboard/apps/': typeof DashboardAppsIndexRoute
   '/dashboard/notifications/': typeof DashboardNotificationsIndexRoute
@@ -855,6 +889,8 @@ export interface FileRoutesById {
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/s/$slug/checkout/success': typeof SSlugCheckoutSuccessRoute
+  '/s/$slug/gdpr/deletion': typeof SSlugGdprDeletionRoute
+  '/s/$slug/gdpr/export': typeof SSlugGdprExportRoute
   '/s/$slug/p/$productId': typeof SSlugPProductIdRoute
 }
 export interface FileRouteTypes {
@@ -887,6 +923,7 @@ export interface FileRouteTypes {
     | '/dashboard/developer'
     | '/dashboard/domains'
     | '/dashboard/gamification'
+    | '/dashboard/gdpr'
     | '/dashboard/landing-generator'
     | '/dashboard/notifications'
     | '/dashboard/orders'
@@ -930,6 +967,7 @@ export interface FileRouteTypes {
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
     | '/s/$slug/contact'
+    | '/s/$slug/privacy'
     | '/s/$slug/track'
     | '/dashboard/apps/'
     | '/dashboard/notifications/'
@@ -950,6 +988,8 @@ export interface FileRouteTypes {
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
     | '/s/$slug/checkout/success'
+    | '/s/$slug/gdpr/deletion'
+    | '/s/$slug/gdpr/export'
     | '/s/$slug/p/$productId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -978,6 +1018,7 @@ export interface FileRouteTypes {
     | '/dashboard/developer'
     | '/dashboard/domains'
     | '/dashboard/gamification'
+    | '/dashboard/gdpr'
     | '/dashboard/landing-generator'
     | '/dashboard/orders'
     | '/dashboard/products'
@@ -1020,6 +1061,7 @@ export interface FileRouteTypes {
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
     | '/s/$slug/contact'
+    | '/s/$slug/privacy'
     | '/s/$slug/track'
     | '/dashboard/apps'
     | '/dashboard/notifications'
@@ -1040,6 +1082,8 @@ export interface FileRouteTypes {
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
     | '/s/$slug/checkout/success'
+    | '/s/$slug/gdpr/deletion'
+    | '/s/$slug/gdpr/export'
     | '/s/$slug/p/$productId'
   id:
     | '__root__'
@@ -1070,6 +1114,7 @@ export interface FileRouteTypes {
     | '/dashboard/developer'
     | '/dashboard/domains'
     | '/dashboard/gamification'
+    | '/dashboard/gdpr'
     | '/dashboard/landing-generator'
     | '/dashboard/notifications'
     | '/dashboard/orders'
@@ -1113,6 +1158,7 @@ export interface FileRouteTypes {
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
     | '/s/$slug/contact'
+    | '/s/$slug/privacy'
     | '/s/$slug/track'
     | '/dashboard/apps/'
     | '/dashboard/notifications/'
@@ -1133,6 +1179,8 @@ export interface FileRouteTypes {
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
     | '/s/$slug/checkout/success'
+    | '/s/$slug/gdpr/deletion'
+    | '/s/$slug/gdpr/export'
     | '/s/$slug/p/$productId'
   fileRoutesById: FileRoutesById
 }
@@ -1154,6 +1202,7 @@ export interface RootRouteChildren {
   SSlugCartRoute: typeof SSlugCartRoute
   SSlugCheckoutRoute: typeof SSlugCheckoutRouteWithChildren
   SSlugContactRoute: typeof SSlugContactRoute
+  SSlugPrivacyRoute: typeof SSlugPrivacyRoute
   SSlugTrackRoute: typeof SSlugTrackRoute
   SSlugIndexRoute: typeof SSlugIndexRoute
   ApiAuthInstagramCallbackRoute: typeof ApiAuthInstagramCallbackRoute
@@ -1167,6 +1216,8 @@ export interface RootRouteChildren {
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
+  SSlugGdprDeletionRoute: typeof SSlugGdprDeletionRoute
+  SSlugGdprExportRoute: typeof SSlugGdprExportRoute
   SSlugPProductIdRoute: typeof SSlugPProductIdRoute
 }
 
@@ -1396,6 +1447,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardLandingGeneratorRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/gdpr': {
+      id: '/dashboard/gdpr'
+      path: '/gdpr'
+      fullPath: '/dashboard/gdpr'
+      preLoaderRoute: typeof DashboardGdprRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/gamification': {
       id: '/dashboard/gamification'
       path: '/gamification'
@@ -1527,6 +1585,13 @@ declare module '@tanstack/react-router' {
       path: '/s/$slug/track'
       fullPath: '/s/$slug/track'
       preLoaderRoute: typeof SSlugTrackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/s/$slug/privacy': {
+      id: '/s/$slug/privacy'
+      path: '/s/$slug/privacy'
+      fullPath: '/s/$slug/privacy'
+      preLoaderRoute: typeof SSlugPrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/s/$slug/contact': {
@@ -1695,6 +1760,20 @@ declare module '@tanstack/react-router' {
       path: '/s/$slug/p/$productId'
       fullPath: '/s/$slug/p/$productId'
       preLoaderRoute: typeof SSlugPProductIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/s/$slug/gdpr/export': {
+      id: '/s/$slug/gdpr/export'
+      path: '/s/$slug/gdpr/export'
+      fullPath: '/s/$slug/gdpr/export'
+      preLoaderRoute: typeof SSlugGdprExportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/s/$slug/gdpr/deletion': {
+      id: '/s/$slug/gdpr/deletion'
+      path: '/s/$slug/gdpr/deletion'
+      fullPath: '/s/$slug/gdpr/deletion'
+      preLoaderRoute: typeof SSlugGdprDeletionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/s/$slug/checkout/success': {
@@ -1888,6 +1967,7 @@ interface DashboardRouteChildren {
   DashboardDeveloperRoute: typeof DashboardDeveloperRoute
   DashboardDomainsRoute: typeof DashboardDomainsRoute
   DashboardGamificationRoute: typeof DashboardGamificationRoute
+  DashboardGdprRoute: typeof DashboardGdprRoute
   DashboardLandingGeneratorRoute: typeof DashboardLandingGeneratorRoute
   DashboardNotificationsRoute: typeof DashboardNotificationsRouteWithChildren
   DashboardOrdersRoute: typeof DashboardOrdersRoute
@@ -1930,6 +2010,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardDeveloperRoute: DashboardDeveloperRoute,
   DashboardDomainsRoute: DashboardDomainsRoute,
   DashboardGamificationRoute: DashboardGamificationRoute,
+  DashboardGdprRoute: DashboardGdprRoute,
   DashboardLandingGeneratorRoute: DashboardLandingGeneratorRoute,
   DashboardNotificationsRoute: DashboardNotificationsRouteWithChildren,
   DashboardOrdersRoute: DashboardOrdersRoute,
@@ -2002,6 +2083,7 @@ const rootRouteChildren: RootRouteChildren = {
   SSlugCartRoute: SSlugCartRoute,
   SSlugCheckoutRoute: SSlugCheckoutRouteWithChildren,
   SSlugContactRoute: SSlugContactRoute,
+  SSlugPrivacyRoute: SSlugPrivacyRoute,
   SSlugTrackRoute: SSlugTrackRoute,
   SSlugIndexRoute: SSlugIndexRoute,
   ApiAuthInstagramCallbackRoute: ApiAuthInstagramCallbackRoute,
@@ -2016,6 +2098,8 @@ const rootRouteChildren: RootRouteChildren = {
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
+  SSlugGdprDeletionRoute: SSlugGdprDeletionRoute,
+  SSlugGdprExportRoute: SSlugGdprExportRoute,
   SSlugPProductIdRoute: SSlugPProductIdRoute,
 }
 export const routeTree = rootRouteImport
