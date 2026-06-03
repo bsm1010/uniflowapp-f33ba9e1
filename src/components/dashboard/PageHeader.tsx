@@ -38,94 +38,64 @@ export function PageHeader({
   }
 
   return (
-    <div
+    <section
       className={cn(
-        "relative overflow-hidden rounded-3xl border border-border/40 bg-card/40 p-6 sm:p-8 mb-8",
-        "shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)]",
-        "transition-all duration-500 group",
-        "animate-in fade-in slide-in-from-bottom-4 duration-700",
+        "relative overflow-hidden rounded-2xl border border-white/10 text-white shadow-lg mb-8",
+        "bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700",
+        "animate-in fade-in slide-in-from-bottom-4 duration-700 group",
       )}
     >
-      {/* Animated gradient orb top-right */}
+      {/* Dot pattern overlay */}
       <div
         aria-hidden
-        className={cn(
-          "absolute -top-20 -right-16 h-72 w-72 rounded-full opacity-25 dark:opacity-20",
-          "bg-gradient-to-br blur-3xl",
-          "animate-[pulse_6s_ease-in-out_infinite]",
-          gradient,
-        )}
-      />
-      {/* Animated gradient orb bottom-left */}
-      <div
-        aria-hidden
-        className={cn(
-          "absolute -bottom-24 -left-12 h-64 w-64 rounded-full opacity-15 dark:opacity-10",
-          "bg-gradient-to-tr blur-3xl",
-          "animate-[pulse_8s_ease-in-out_2s_infinite]",
-          gradient,
-        )}
+        className="absolute inset-0 rounded-2xl opacity-20 pointer-events-none"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle at 20% 20%, white 1px, transparent 1px), radial-gradient(circle at 80% 60%, white 1px, transparent 1px)",
+          backgroundSize: "40px 40px",
+        }}
       />
 
-      {/* Dot grid */}
+      {/* Soft glow orb */}
       <div
         aria-hidden
-        className="absolute inset-0 bg-grid-dots opacity-[0.12] [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]"
+        className="absolute -top-24 -right-16 h-72 w-72 rounded-full bg-white/15 blur-3xl pointer-events-none"
       />
 
       {/* Shimmer sweep on hover */}
       <div
         aria-hidden
         className={cn(
-          "absolute inset-0 -translate-x-full",
-          "bg-gradient-to-r from-transparent via-white/10 to-transparent",
+          "absolute inset-0 -translate-x-full pointer-events-none",
+          "bg-gradient-to-r from-transparent via-white/15 to-transparent",
           "group-hover:translate-x-full transition-transform duration-[1200ms] ease-in-out",
-          "pointer-events-none",
         )}
       />
 
-      <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="relative grid items-center gap-4 px-6 py-5 sm:grid-cols-[1fr_auto] sm:px-8">
         <div className="flex items-start gap-5 min-w-0">
           {Icon && (
             <div className="relative shrink-0">
-              {/* Pulse ring */}
               <div
                 aria-hidden
-                className={cn(
-                  "absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100",
-                  "bg-gradient-to-br scale-110 blur-md transition-opacity duration-500",
-                  gradient,
-                )}
+                className="absolute inset-0 rounded-2xl bg-white/30 blur-md scale-110 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
               />
-              <div
-                className={cn(
-                  "relative grid place-items-center h-14 w-14 rounded-2xl text-white",
-                  "shadow-[0_4px_20px_rgba(0,0,0,0.2)]",
-                  "bg-gradient-to-br transition-transform duration-300 group-hover:scale-105",
-                  gradient,
-                )}
-              >
+              <div className="relative grid place-items-center h-14 w-14 rounded-2xl bg-white/15 backdrop-blur border border-white/20 text-white shadow-[0_4px_20px_rgba(0,0,0,0.25)] transition-transform duration-300 group-hover:scale-105">
                 <Icon className="h-7 w-7 drop-shadow-sm" />
               </div>
             </div>
           )}
-          <div className="min-w-0">
+          <div className="min-w-0 space-y-2">
             {eyebrow && (
-              <p
-                className={cn(
-                  "text-[11px] uppercase tracking-[0.18em] font-semibold mb-1",
-                  "bg-gradient-to-r bg-clip-text text-transparent",
-                  gradient,
-                )}
-              >
+              <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-[11px] font-medium backdrop-blur border border-white/10">
                 {eyebrow}
-              </p>
+              </span>
             )}
-            <h1 className="text-2xl md:text-3xl font-bold font-display tracking-tight text-foreground">
+            <h1 className="text-2xl md:text-3xl font-bold font-display tracking-tight leading-tight">
               {title}
             </h1>
             {description && (
-              <p className="mt-1.5 text-muted-foreground text-sm md:text-base max-w-2xl leading-relaxed">
+              <p className="text-xs leading-relaxed text-white/85 sm:text-sm max-w-2xl">
                 {description}
               </p>
             )}
@@ -135,9 +105,10 @@ export function PageHeader({
           <div className="flex flex-wrap gap-2 shrink-0">{actions}</div>
         )}
       </div>
-    </div>
+    </section>
   );
 }
+
 
 export function EmptyState({
   icon: Icon,
