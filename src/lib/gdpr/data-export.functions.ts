@@ -17,7 +17,7 @@ export type ExportRequest = {
 };
 
 export const requestDataExport = createServerFn({ method: "POST" })
-  .validator(
+  .inputValidator(
     (input: {
       storeId: string;
       userId: string;
@@ -39,7 +39,7 @@ export const requestDataExport = createServerFn({ method: "POST" })
   });
 
 export const requestDataExportAsCustomer = createServerFn({ method: "POST" })
-  .validator(
+  .inputValidator(
     (input: {
       storeId: string;
       name: string;
@@ -69,7 +69,7 @@ export const requestDataExportAsCustomer = createServerFn({ method: "POST" })
   });
 
 export const processDataExport = createServerFn({ method: "POST" })
-  .validator((input: { requestId: string; accessToken: string }) => input)
+  .inputValidator((input: { requestId: string; accessToken: string }) => input)
   .handler(async ({ data }) => {
     const SUPABASE_URL = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL;
     const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -148,7 +148,7 @@ export const processDataExport = createServerFn({ method: "POST" })
   });
 
 export const getExportRequests = createServerFn({ method: "GET" })
-  .validator((input: { storeId: string }) => input)
+  .inputValidator((input: { storeId: string }) => input)
   .handler(async ({ data }) => {
     const { data: requests } = await supabase
       .from("data_export_requests")
@@ -159,7 +159,7 @@ export const getExportRequests = createServerFn({ method: "GET" })
   });
 
 export const getExportDownloadUrl = createServerFn({ method: "GET" })
-  .validator((input: { requestId: string }) => input)
+  .inputValidator((input: { requestId: string }) => input)
   .handler(async ({ data }) => {
     const { data: request } = await supabase
       .from("data_export_requests")

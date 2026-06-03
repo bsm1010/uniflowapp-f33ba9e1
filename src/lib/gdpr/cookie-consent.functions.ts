@@ -18,7 +18,7 @@ export type CookieConsentSettings = {
 };
 
 export const getCookieConsentSettings = createServerFn({ method: "GET" })
-  .validator((input: { storeId: string }) => input)
+  .inputValidator((input: { storeId: string }) => input)
   .handler(async ({ data }) => {
     const { data: settings } = await supabase
       .from("cookie_consent_settings")
@@ -29,7 +29,7 @@ export const getCookieConsentSettings = createServerFn({ method: "GET" })
   });
 
 export const saveCookieConsentSettings = createServerFn({ method: "POST" })
-  .validator(
+  .inputValidator(
     (input: {
       storeId: string;
       userId: string;
@@ -71,7 +71,7 @@ export const saveCookieConsentSettings = createServerFn({ method: "POST" })
   });
 
 export const recordCookieConsent = createServerFn({ method: "POST" })
-  .validator(
+  .inputValidator(
     (input: {
       storeId: string;
       visitorId: string;
@@ -116,7 +116,7 @@ export const recordCookieConsent = createServerFn({ method: "POST" })
   });
 
 export const getCookieConsentStats = createServerFn({ method: "GET" })
-  .validator((input: { storeId: string }) => input)
+  .inputValidator((input: { storeId: string }) => input)
   .handler(async ({ data }) => {
     const { data: consents } = await supabase
       .from("cookie_consents")
@@ -134,7 +134,7 @@ export const getCookieConsentStats = createServerFn({ method: "GET" })
   });
 
 export const deleteCookieConsent = createServerFn({ method: "POST" })
-  .validator((input: { consentId: string }) => input)
+  .inputValidator((input: { consentId: string }) => input)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cookie_consents")
