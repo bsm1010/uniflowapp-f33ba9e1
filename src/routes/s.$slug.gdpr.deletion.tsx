@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { StorefrontShell } from "@/components/storefront/StorefrontShell";
 import { DeletionRequestForm } from "@/components/gdpr/DeletionRequestForm";
-import { fetchSettings, type StoreSettings } from "@/lib/storeTheme";
+import { type StoreSettings } from "@/lib/storeTheme";
+import { fetchSettings } from "@/lib/storefrontCache";
 
 export const Route = createFileRoute("/s/$slug/gdpr/deletion")({
   component: DeletionRequestPage,
