@@ -18,7 +18,7 @@ export type DeletionRequest = {
 };
 
 export const submitDeletionRequest = createServerFn({ method: "POST" })
-  .validator(
+  .inputValidator(
     (input: {
       storeId: string;
       name: string;
@@ -48,7 +48,7 @@ export const submitDeletionRequest = createServerFn({ method: "POST" })
   });
 
 export const getDeletionRequests = createServerFn({ method: "GET" })
-  .validator((input: { storeId: string }) => input)
+  .inputValidator((input: { storeId: string }) => input)
   .handler(async ({ data }) => {
     const { data: requests } = await supabase
       .from("deletion_requests")
@@ -59,7 +59,7 @@ export const getDeletionRequests = createServerFn({ method: "GET" })
   });
 
 export const getDeletionRequestStats = createServerFn({ method: "GET" })
-  .validator((input: { storeId: string }) => input)
+  .inputValidator((input: { storeId: string }) => input)
   .handler(async ({ data }) => {
     const { data: requests } = await supabase
       .from("deletion_requests")
@@ -76,7 +76,7 @@ export const getDeletionRequestStats = createServerFn({ method: "GET" })
   });
 
 export const reviewDeletionRequest = createServerFn({ method: "POST" })
-  .validator(
+  .inputValidator(
     (input: {
       requestId: string;
       status: "approved" | "rejected";
@@ -115,7 +115,7 @@ export const reviewDeletionRequest = createServerFn({ method: "POST" })
   });
 
 export const processDeletion = createServerFn({ method: "POST" })
-  .validator((input: { requestId: string; accessToken: string }) => input)
+  .inputValidator((input: { requestId: string; accessToken: string }) => input)
   .handler(async ({ data }) => {
     const SUPABASE_URL = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL;
     const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
