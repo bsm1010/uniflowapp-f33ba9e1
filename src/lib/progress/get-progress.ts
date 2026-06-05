@@ -68,7 +68,14 @@ export const getProgress = createServerFn({ method: "POST" })
     });
 
     const { data: { user }, error: authError } = await client.auth.getUser(data.accessToken);
-    if (authError || !user) throw new Error("Unauthorized");
+    if (authError || !user) {
+      return {
+        setupProgress: 0,
+        setupItems: CHECKLIST,
+        milestones: MILESTONES.map(({ check, ...m }) => ({ ...m, unlocked: false })),
+        stats: { products: 0, published: 0, orders: 0, revenue: 0 },
+      } as ProgressData;
+    }
 
     const [prodRes, orderRes, settingsRes, storeRes] = await Promise.all([
       client.from("products").select("id,status").eq("store_id", data.storeId),
