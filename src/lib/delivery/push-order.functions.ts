@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
 import { createAuthenticatedDeliveryClient } from "./authenticated-client";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { getAdapterCtor } from "./registry";
 
 const InputSchema = z.object({
