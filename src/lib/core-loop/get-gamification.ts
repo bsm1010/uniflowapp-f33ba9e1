@@ -86,7 +86,15 @@ export const getGamification = createServerFn({ method: "POST" })
     });
 
     const { data: { user }, error: authError } = await client.auth.getUser(data.accessToken);
-    if (authError || !user) throw new Error("Unauthorized");
+    if (authError || !user) {
+      return {
+        xp: 0, level: 1, xpForCurrent: 0, xpForNext: 100,
+        currentStreak: 0, longestStreak: 0, lastActiveDate: null,
+        stats: { products: 0, published: 0, orders: 0, revenue: 0, referrals: 0, customized: false },
+        dailyQuests: [], weeklyQuests: [], achievementQuests: [],
+        achievements: [], unlockables: [], recentEvents: [],
+      } as GamificationData;
+    }
 
     const userId = user.id;
 
