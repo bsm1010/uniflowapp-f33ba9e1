@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { createAuthenticatedDeliveryClient } from "./authenticated-client";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 /**
  * Secrets-safe data layer for `store_delivery_companies`.
@@ -39,8 +40,8 @@ export const listStoreDeliveryCompanies = createServerFn({ method: "GET" })
         return { rows: [] };
       }
 
-      const { client: supabase, userId } = auth;
-      const { data: rowsData, error } = await supabase
+      const { userId } = auth;
+      const { data: rowsData, error } = await supabaseAdmin
         .from("store_delivery_companies")
         .select("company_id, enabled, is_default, api_key, api_secret")
         .eq("store_id", userId);
@@ -89,7 +90,7 @@ export const setStoreDeliveryCompanyEnabled = createServerFn({ method: "POST" })
       }
 
       const { client: supabase, userId } = auth;
-      const { data: row, error } = await supabase
+      const { data: row, error } = await supabaseAdmin
         .from("store_delivery_companies")
         .select("api_key")
         .eq("store_id", userId)

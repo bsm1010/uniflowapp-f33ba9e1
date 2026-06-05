@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { createAuthenticatedDeliveryClient } from "./authenticated-client";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { fetchZRTariffs } from "./services/ZRExpressTariffsService";
 import { normalizeProviderKey } from "./registry";
 
@@ -43,7 +44,7 @@ export const syncDeliveryCompanyTariffs = createServerFn({ method: "POST" })
         return { ok: false, message: "This delivery company is not available." };
       }
 
-      const { data: link, error: linkErr } = await supabase
+      const { data: link, error: linkErr } = await supabaseAdmin
         .from("store_delivery_companies")
         .select("api_key, api_secret, enabled")
         .eq("store_id", userId)

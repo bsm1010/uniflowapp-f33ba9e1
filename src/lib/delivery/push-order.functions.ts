@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
 import { createAuthenticatedDeliveryClient } from "./authenticated-client";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { getAdapterCtor } from "./registry";
 
 const InputSchema = z.object({
@@ -116,7 +117,7 @@ export async function pushOrderInternal(
     return { ok: false, message: "Delivery company is not active." };
   }
 
-  const { data: link } = await supabase
+  const { data: link } = await supabaseAdmin
     .from("store_delivery_companies")
     .select("api_key, api_secret, enabled")
     .eq("store_id", storeOwnerId)
