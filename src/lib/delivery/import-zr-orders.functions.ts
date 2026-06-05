@@ -66,7 +66,7 @@ export const importZRExpressOrders = createServerFn({ method: "POST" })
         return { ok: false, message: `Order import is only supported for ZRExpress.` };
       }
 
-      const { data: link } = await supabase
+      const { data: link } = await supabaseAdmin
         .from("store_delivery_companies")
         .select("api_key, api_secret, enabled")
         .eq("store_id", userId)
