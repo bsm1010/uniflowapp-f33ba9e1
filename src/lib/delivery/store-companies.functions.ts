@@ -40,8 +40,8 @@ export const listStoreDeliveryCompanies = createServerFn({ method: "GET" })
         return { rows: [] };
       }
 
-      const { client: supabase, userId } = auth;
-      const { data: rowsData, error } = await supabase
+      const { userId } = auth;
+      const { data: rowsData, error } = await supabaseAdmin
         .from("store_delivery_companies")
         .select("company_id, enabled, is_default, api_key, api_secret")
         .eq("store_id", userId);
