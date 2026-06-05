@@ -90,7 +90,7 @@ export const setStoreDeliveryCompanyEnabled = createServerFn({ method: "POST" })
       }
 
       const { client: supabase, userId } = auth;
-      const { data: row, error } = await supabase
+      const { data: row, error } = await supabaseAdmin
         .from("store_delivery_companies")
         .select("api_key")
         .eq("store_id", userId)
