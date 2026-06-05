@@ -54,7 +54,7 @@ export const trackOrderShipment = createServerFn({ method: "POST" })
       const companyId = zr?.id;
       if (!companyId) return { ok: false, message: "ZRExpress is not configured." };
 
-      const { data: link } = await supabase
+      const { data: link } = await supabaseAdmin
         .from("store_delivery_companies")
         .select("api_key, api_secret")
         .eq("store_id", userId)
