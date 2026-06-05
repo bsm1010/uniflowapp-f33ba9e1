@@ -52,7 +52,7 @@ export function AIAgentProvider({ children }: { children: ReactNode }) {
     if (!user) return;
     setLoading(true);
     Promise.all([
-      supabase.from("instagram_connections").select("*").eq("user_id", user.id).maybeSingle(),
+      supabase.from("instagram_connections").select("id, user_id, instagram_user_id, instagram_username, page_id, page_name, token_expires_at, status, last_synced_at, profile_picture_url, created_at, updated_at").eq("user_id", user.id).maybeSingle(),
       loadConversations(),
       loadSettings(),
     ]).then(([connRes]) => {
