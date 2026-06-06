@@ -42,8 +42,8 @@ export function applyDirection(lng: string) {
 
 i18n.on("languageChanged", applyDirection);
 
-// Apply direction on initial load so RTL is correct on first paint,
-// not only after the user switches languages.
+// Apply lang attribute on initial load so the correct language is set on
+// first paint. Direction is always LTR — layout never flips for Arabic.
 if (typeof document !== "undefined") {
   applyDirection(i18n.language || "en");
 }

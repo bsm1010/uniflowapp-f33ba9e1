@@ -47,8 +47,7 @@ const CCP = "0012345678 91 — STORELY SARL";
 function CreditsPage() {
   const { user } = useAuth();
   const { credits, plan, refresh } = useCredits();
-  const { t, i18n } = useTranslation();
-  const isRtl = i18n.dir() === "rtl";
+  const { t } = useTranslation();
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [tab, setTab] = useState<"packs" | "plans">("packs");
@@ -102,7 +101,7 @@ function CreditsPage() {
   };
 
   return (
-    <div dir={isRtl ? "rtl" : "ltr"} className="relative max-w-6xl mx-auto space-y-10 pb-12">
+    <div className="relative max-w-6xl mx-auto space-y-10 pb-12">
       {/* Decorative background orbs */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-24 -left-24 size-96 rounded-full bg-gradient-to-br from-violet-500/30 via-fuchsia-500/20 to-transparent blur-3xl" />
@@ -211,7 +210,7 @@ function CreditsPage() {
               <button
                 key={p.id}
                 onClick={() => setSelected(p.id)}
-                className={`group relative overflow-hidden ${isRtl ? "text-right" : "text-left"} rounded-3xl border p-6 transition-all duration-300 ${
+                className={`group relative overflow-hidden text-left rounded-3xl border p-6 transition-all duration-300 ${
                   active
                     ? "border-transparent ring-2 ring-primary shadow-[0_20px_50px_-15px_rgba(139,92,246,0.4)] scale-[1.02]"
                     : "border-border/60 bg-card hover:border-primary/40 hover:shadow-xl hover:-translate-y-1"
@@ -266,7 +265,7 @@ function CreditsPage() {
               <button
                 key={p.id}
                 onClick={() => setSelected(p.id)}
-                className={`group relative overflow-hidden ${isRtl ? "text-right" : "text-left"} rounded-3xl border p-6 transition-all duration-300 ${
+                className={`group relative overflow-hidden text-left rounded-3xl border p-6 transition-all duration-300 ${
                   active
                     ? "border-transparent ring-2 ring-primary shadow-[0_20px_50px_-15px_rgba(139,92,246,0.4)] scale-[1.02]"
                     : p.highlight
@@ -354,7 +353,7 @@ function CreditsPage() {
                 {choice.price.toLocaleString()} <span className="text-base text-muted-foreground font-normal">{t("dashboard.credits.currency")}</span>
               </div>
             </div>
-            <div className={isRtl ? "sm:text-left" : "sm:text-right"}>
+            <div className="sm:text-right">
               <div className="text-xs uppercase tracking-wider text-muted-foreground">{t("dashboard.credits.youGet")}</div>
               <div className="text-3xl font-bold font-display mt-1 flex items-baseline gap-2 sm:justify-end">
                 <Coins className="size-6 text-primary" />

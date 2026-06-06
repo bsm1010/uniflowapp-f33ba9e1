@@ -9,7 +9,7 @@ export function PaywallDialog() {
 
   return (
     <Dialog open={showPaywall} onOpenChange={setShowPaywall}>
-      <DialogContent className="sm:max-w-md" dir="rtl">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="mx-auto mb-3 grid size-14 place-items-center rounded-2xl bg-gradient-brand text-brand-foreground">
             <Zap className="size-6" />

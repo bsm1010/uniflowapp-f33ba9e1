@@ -19,8 +19,7 @@ export const Route = createFileRoute("/dashboard/referrals")({
 function ReferralsPage() {
   const { user } = useAuth();
   const { referralCode } = useCredits();
-  const { t, i18n } = useTranslation();
-  const isRtl = i18n.dir() === "rtl";
+  const { t } = useTranslation();
   const [refs, setRefs] = useState<{ id: string; created_at: string }[]>([]);
 
   useEffect(() => {
@@ -36,7 +35,7 @@ function ReferralsPage() {
   };
 
   return (
-    <div dir={isRtl ? "rtl" : "ltr"} className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6">
       <PageHeader
         eyebrow={t("dashboard.referrals.eyebrow")}
         title={t("dashboard.referrals.title")}

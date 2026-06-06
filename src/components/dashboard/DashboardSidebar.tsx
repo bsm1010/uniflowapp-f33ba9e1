@@ -78,8 +78,7 @@ export function DashboardSidebar() {
   const collapsed = state === "collapsed";
   const { pathname } = useLocation();
   const { user } = useAuth();
-  const { t, i18n } = useTranslation();
-  const isRtl = i18n.dir() === "rtl";
+  const { t } = useTranslation();
   const [isAdmin, setIsAdmin] = useState(false);
   const { installed } = useInstalledApps();
   const installedApps = Array.from(installed)
@@ -223,7 +222,7 @@ export function DashboardSidebar() {
             <Link to={item.url} className={linkClass} data-tour={item.tourId} data-sound="click">
               {active && (
                 <span
-                  className={`absolute ${isRtl ? "right-0" : "left-0"} top-1.5 bottom-1.5 w-0.5 rounded-full bg-gradient-to-b ${item.gradient}`}
+                  className={`absolute left-0 top-1.5 bottom-1.5 w-0.5 rounded-full bg-gradient-to-b ${item.gradient}`}
                 />
               )}
               {renderIcon(item.icon, item.gradient, active)}
@@ -238,8 +237,8 @@ export function DashboardSidebar() {
   return (
     <Sidebar
       collapsible="icon"
-      side={isRtl ? "right" : "left"}
-      className={`bg-gradient-to-b from-sidebar to-sidebar/95 ${isRtl ? "border-l border-sidebar-border" : "border-r border-sidebar-border"}`}
+      side="left"
+      className="bg-gradient-to-b from-sidebar to-sidebar/95 border-r border-sidebar-border"
     >
       <SidebarHeader className="bg-transparent">
         <Link to="/dashboard" className="flex items-center gap-2.5 px-2 py-2.5 group">

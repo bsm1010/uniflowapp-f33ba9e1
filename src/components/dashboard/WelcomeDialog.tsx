@@ -48,7 +48,6 @@ export function WelcomeDialog({ userId }: Props) {
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent
-        dir="rtl"
         className="max-w-md overflow-hidden border-0 p-0 shadow-2xl sm:rounded-2xl"
       >
         {/* Illustration */}

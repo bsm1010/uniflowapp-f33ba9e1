@@ -96,8 +96,7 @@ async function fileToCompressedDataUrl(file: File, maxDim = 1024): Promise<strin
 }
 
 function LandingGeneratorPage() {
-  const { t, i18n } = useTranslation();
-  const isRtl = i18n.dir() === "rtl";
+  const { t } = useTranslation();
   const [imageDataUrl, setImageDataUrl] = useState<string | null>(null);
   const [hint, setHint] = useState("");
   const [loading, setLoading] = useState(false);
@@ -186,7 +185,7 @@ function LandingGeneratorPage() {
   };
 
   return (
-    <div dir={isRtl ? "rtl" : "ltr"} className="space-y-6">
+    <div className="space-y-6">
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl font-display font-bold flex items-center gap-2">
@@ -287,7 +286,6 @@ function LandingGeneratorPage() {
             value={hint}
             onChange={(e) => setHint(e.target.value)}
             placeholder="مثال: ساعة فاخرة للرجال"
-            dir="rtl"
           />
           <Button
             className="w-full"

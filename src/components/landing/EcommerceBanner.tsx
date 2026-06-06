@@ -29,7 +29,7 @@ export function EcommerceBanner() {
           />
 
           <div dir="ltr" className="relative grid grid-cols-1 md:grid-cols-2 gap-6 p-8 sm:p-12 md:p-16 min-h-[340px] md:min-h-[420px]">
-            <div className="flex flex-col justify-center text-white rtl:text-right" dir="rtl">
+            <div className="flex flex-col justify-center text-white">
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}

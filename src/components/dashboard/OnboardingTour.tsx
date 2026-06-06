@@ -185,7 +185,6 @@ export function OnboardingTour({ userId }: Props) {
 
       {/* Tooltip card */}
       <div
-        dir="rtl"
         style={tooltipStyle}
         className="rounded-2xl border bg-background p-5 shadow-2xl"
       >

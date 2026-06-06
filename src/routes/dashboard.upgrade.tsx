@@ -292,7 +292,7 @@ function UpgradePage() {
   const pendingSubmission = submissions.find((s) => s.status === "pending");
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8" dir="rtl">
+    <div className="max-w-6xl mx-auto space-y-8">
       <PageHeader
         eyebrow="الاشتراكات"
         title="اختر خطتك"
