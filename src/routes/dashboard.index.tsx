@@ -542,18 +542,45 @@ function StatCard({
     : animated.toLocaleString();
 
   return (
-    <Card className="border-border/50 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
-      <CardContent className="p-5">
+    <Card
+      className={
+        isRevenue
+          ? "relative overflow-hidden border-0 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 bg-gradient-to-br from-emerald-500 to-teal-500"
+          : "relative overflow-hidden border-border/50 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5"
+      }
+    >
+      {isRevenue && (
+        <div className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shine" />
+      )}
+      <CardContent className="relative p-5">
         <div className="flex items-center justify-between">
-          <span className="text-sm text-muted-foreground font-medium">
+          <span
+            className={
+              isRevenue
+                ? "text-sm text-white/90 font-medium"
+                : "text-sm text-muted-foreground font-medium"
+            }
+          >
             {label}
           </span>
-          <div className={`h-9 w-9 rounded-xl ${iconBg} flex items-center justify-center`}>
+          <div
+            className={
+              isRevenue
+                ? "h-9 w-9 rounded-xl bg-white/20 text-white flex items-center justify-center"
+                : `h-9 w-9 rounded-xl ${iconBg} flex items-center justify-center`
+            }
+          >
             <Icon className="h-4 w-4" />
           </div>
         </div>
         <div className="mt-3">
-          <div className="text-2xl sm:text-3xl font-bold font-display tabular-nums tracking-tight">
+          <div
+            className={
+              isRevenue
+                ? "text-2xl sm:text-3xl font-bold font-display tabular-nums tracking-tight text-white"
+                : "text-2xl sm:text-3xl font-bold font-display tabular-nums tracking-tight"
+            }
+          >
             {display}
           </div>
         </div>

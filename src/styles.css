@@ -29,6 +29,14 @@
   -webkit-text-fill-color: transparent;
   animation: aurora 6s ease-in-out infinite;
 }
+
+@keyframes shine {
+  0%   { transform: translateX(-100%) skewX(-20deg); }
+  100% { transform: translateX(400%) skewX(-20deg); }
+}
+@utility animate-shine {
+  animation: shine 3s ease-in-out infinite;
+}
 @source "../src";
 @import "tw-animate-css";
 /* Fonts loaded via <link> in __root.tsx */
