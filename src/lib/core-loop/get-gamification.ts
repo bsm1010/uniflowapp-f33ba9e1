@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL!;
 const SUPABASE_ANON =
@@ -107,7 +108,7 @@ export const getGamification = createServerFn({ method: "POST" })
 
       if (existing) return existing;
 
-      const { data: created } = await client
+      const { data: created } = await supabaseAdmin
         .from("user_gamification")
         .insert({ user_id: userId, xp: 0, level: 1 })
         .select()

@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL!;
 const SUPABASE_ANON =
@@ -63,8 +64,8 @@ export const awardXp = createServerFn({ method: "POST" })
     let leveledUp = newLevel > oldLevel;
 
     await Promise.all([
-      client.from("xp_events").insert({ user_id: user.id, event_type: data.eventType, xp_amount: xpAmount, metadata: data.metadata }),
-      client.from("user_gamification").upsert({ user_id: user.id, xp: newXp, level: newLevel, updated_at: new Date().toISOString() }, { onConflict: "user_id" }),
+      supabaseAdmin.from("xp_events").insert({ user_id: user.id, event_type: data.eventType, xp_amount: xpAmount, metadata: data.metadata }),
+      supabaseAdmin.from("user_gamification").upsert({ user_id: user.id, xp: newXp, level: newLevel, updated_at: new Date().toISOString() }, { onConflict: "user_id" }),
     ]);
 
     const [achievementsRes, prodRes, orderRes, settingsRes, referralRes] = await Promise.all([
@@ -111,16 +112,16 @@ export const awardXp = createServerFn({ method: "POST" })
         case "streak": earned = newLevel >= a.condition_value; break;
       }
       if (earned) {
-        await client.from("user_achievements").insert({ user_id: user.id, achievement_id: a.id });
+        await supabaseAdmin.from("user_achievements").insert({ user_id: user.id, achievement_id: a.id });
         newAchievements.push(a.key);
         if (a.xp_reward > 0) {
           const bonusXp = a.xp_reward;
-          const { data: cur } = await client.from("user_gamification").select("xp,level").eq("user_id", user.id).maybeSingle();
+          const { data: cur } = await supabaseAdmin.from("user_gamification").select("xp,level").eq("user_id", user.id).maybeSingle();
           if (cur) {
             const updatedXp = cur.xp + bonusXp;
             let updatedLevel = cur.level;
             while (xpForLevel(updatedLevel + 1) <= updatedXp) updatedLevel++;
-            await client.from("user_gamification").upsert({ user_id: user.id, xp: updatedXp, level: updatedLevel, updated_at: new Date().toISOString() }, { onConflict: "user_id" });
+            await supabaseAdmin.from("user_gamification").upsert({ user_id: user.id, xp: updatedXp, level: updatedLevel, updated_at: new Date().toISOString() }, { onConflict: "user_id" });
             if (updatedLevel > cur.level) leveledUp = true;
           }
         }
@@ -157,7 +158,7 @@ export const awardXp = createServerFn({ method: "POST" })
         case "achievement": shouldUnlock = earnedAchievementCount >= u.requirement_value; break;
       }
       if (shouldUnlock) {
-        await client.from("user_unlocks").insert({ user_id: user.id, unlockable_id: u.id });
+        await supabaseAdmin.from("user_unlocks").insert({ user_id: user.id, unlockable_id: u.id });
         newUnlocks.push(u.key);
       }
     }
