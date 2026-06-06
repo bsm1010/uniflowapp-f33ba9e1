@@ -374,21 +374,37 @@ function DashboardHome() {
         </div>
       )}
 
-      {/* ZRExpress — Solde prêt (hidden when not connected) */}
-      {zrBalance?.ok && (
+      {/* ZRExpress — Solde prêt (shown when the API responded, even on error) */}
+      {zrBalance && (
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.18 }}
-          className="rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-teal-500/10 p-5 sm:p-6"
+          className={
+            zrBalance.ok
+              ? "rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-teal-500/10 p-5 sm:p-6"
+              : "rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-orange-500/10 p-5 sm:p-6"
+          }
         >
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white shadow-sm">
+              <div
+                className={
+                  zrBalance.ok
+                    ? "h-11 w-11 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white shadow-sm"
+                    : "h-11 w-11 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white shadow-sm"
+                }
+              >
                 <Wallet className="h-5 w-5" />
               </div>
               <div className="min-w-0">
-                <div className="text-[11px] font-semibold uppercase tracking-widest text-emerald-600/80">
+                <div
+                  className={
+                    zrBalance.ok
+                      ? "text-[11px] font-semibold uppercase tracking-widest text-emerald-600/80"
+                      : "text-[11px] font-semibold uppercase tracking-widest text-amber-600/80"
+                  }
+                >
                   ZRExpress
                 </div>
                 <div className="text-sm font-medium text-muted-foreground">
@@ -397,23 +413,36 @@ function DashboardHome() {
               </div>
             </div>
             <div className="flex items-baseline gap-2">
-              <div
-                className={
-                  zrBalance.readyBalance > 0
-                    ? "text-2xl sm:text-3xl font-bold text-emerald-600 tabular-nums"
-                    : "text-2xl sm:text-3xl font-bold text-red-600 tabular-nums"
-                }
-              >
-                {zrBalance.readyBalance.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
-              </div>
-              <div className="text-sm font-semibold text-muted-foreground">
-                {zrBalance.currency}
-              </div>
+              {zrBalance.ok ? (
+                <>
+                  <div
+                    className={
+                      zrBalance.readyBalance > 0
+                        ? "text-2xl sm:text-3xl font-bold text-emerald-600 tabular-nums"
+                        : "text-2xl sm:text-3xl font-bold text-red-600 tabular-nums"
+                    }
+                  >
+                    {zrBalance.readyBalance.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </div>
+                  <div className="text-sm font-semibold text-muted-foreground">
+                    {zrBalance.currency}
+                  </div>
+                </>
+              ) : (
+                <div className="text-2xl sm:text-3xl font-bold text-amber-700/70 tabular-nums">
+                  —
+                </div>
+              )}
             </div>
           </div>
+          {!zrBalance.ok && (
+            <div className="mt-3 text-xs text-amber-700/90 break-words">
+              {zrBalance.message}
+            </div>
+          )}
         </motion.div>
       )}
 

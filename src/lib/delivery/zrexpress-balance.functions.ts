@@ -22,6 +22,28 @@ export type ZRExpressBalanceResult =
       notConnected?: boolean;
     };
 
+const BALANCE_KEYS = [
+  "totalAmountReadyToBePaid",
+  "amountReadyToBePaid",
+  "readyAmount",
+  "readyBalance",
+  "ready_balance",
+  "soldePret",
+  "solde_pret",
+  "solde",
+  "montant",
+  "balance",
+  "amount",
+  "totalAmount",
+  "pret",
+];
+
+const BALANCE_ENDPOINTS = [
+  "supplier-payment/supplier-balance",
+  "payments/balance",
+  "supplier/balance",
+];
+
 /**
  * Fetch the current ZRExpress supplier balance for the authenticated user.
  * Returns the "Solde prêt" (ready-to-be-paid balance) and the currency (always DA).
@@ -65,69 +87,80 @@ export const getZRExpressBalance = createServerFn({ method: "POST" })
       const apiKey = link.api_key.trim();
       const tenantId = (link.api_secret ?? "").trim();
 
-      // GET /api/v1/supplier-payment/supplier-balance
-      // Response shape:
-      //   { totalAmountPaid, totalAmountReadyToBePaid, totalAmountNotCashed, totalAmountCashed }
-      // "Solde prêt" === totalAmountReadyToBePaid.
-      const url = `${ZR_BASE_URL}/supplier-payment/supplier-balance`;
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 12_000);
-      let res: Response;
-      try {
-        res = await fetch(url, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-            "X-Tenant": tenantId,
-            "X-Api-Key": apiKey,
-            Accept: "application/json",
-          },
-          signal: controller.signal,
-        });
-      } finally {
+      const headers = {
+        Authorization: `Bearer ${apiKey}`,
+        "X-Tenant": tenantId,
+        "X-Api-Key": apiKey,
+        Accept: "application/json",
+      };
+
+      // Try each candidate balance endpoint in order, log every raw response so
+      // we can see exactly what the API returns, and stop on the first one
+      // that gives us a parseable numeric balance.
+      const attempts: string[] = [];
+      let lastMessage = "ZRExpress balance endpoint not found.";
+
+      for (const path of BALANCE_ENDPOINTS) {
+        const url = `${ZR_BASE_URL}/${path}`;
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 12_000);
+        let res: Response;
+        try {
+          res = await fetch(url, { method: "GET", headers, signal: controller.signal });
+        } catch (e) {
+          const raw = e instanceof Error ? e.message : String(e);
+          clearTimeout(timer);
+          console.log(`[ZR Balance] ${url} -> network error: ${raw}`);
+          attempts.push(`${path}: network error (${raw})`);
+          lastMessage = `ZRExpress request failed: ${raw}`;
+          continue;
+        }
         clearTimeout(timer);
+
+        const text = await res.text();
+        console.log(
+          `[ZR Balance] ${url} -> ${res.status} ${res.statusText} :: ${text.slice(0, 2000)}`,
+        );
+
+        if (!res.ok) {
+          attempts.push(`${path}: HTTP ${res.status}`);
+          lastMessage = `ZRExpress returned ${res.status} on ${path}: ${text.slice(0, 200) || res.statusText}`;
+          continue;
+        }
+
+        let parsed: unknown = null;
+        try {
+          parsed = text ? JSON.parse(text) : null;
+        } catch {
+          attempts.push(`${path}: non-JSON body`);
+          lastMessage = `ZRExpress ${path} returned a non-JSON response.`;
+          continue;
+        }
+        const obj =
+          parsed && typeof parsed === "object"
+            ? (parsed as Record<string, unknown>)
+            : {};
+        // Accept either a flat object or a wrapped { data: ... } envelope.
+        const inner =
+          (obj.data && typeof obj.data === "object"
+            ? (obj.data as Record<string, unknown>)
+            : obj) ?? {};
+
+        const readyBalance = pickNum(inner, BALANCE_KEYS);
+        if (Number.isFinite(readyBalance)) {
+          console.log(
+            `[ZR Balance] resolved on ${path} -> readyBalance=${readyBalance}`,
+          );
+          return { ok: true, readyBalance, currency: "DA" };
+        }
+        attempts.push(`${path}: no known balance field in body`);
+        lastMessage = `ZRExpress ${path} did not include a known balance field.`;
       }
 
-      const text = await res.text();
-      if (!res.ok) {
-        return {
-          ok: false,
-          message: `ZRExpress returned ${res.status}: ${text.slice(0, 200) || res.statusText}`,
-        };
-      }
-
-      let parsed: unknown = null;
-      try {
-        parsed = text ? JSON.parse(text) : null;
-      } catch {
-        return { ok: false, message: "ZRExpress returned a non-JSON balance response." };
-      }
-      const obj =
-        parsed && typeof parsed === "object"
-          ? (parsed as Record<string, unknown>)
-          : {};
-      // Accept either a flat object or a wrapped { data: ... } envelope.
-      const inner =
-        (obj.data && typeof obj.data === "object"
-          ? (obj.data as Record<string, unknown>)
-          : obj) ?? {};
-
-      const readyBalance = pickNum(inner, [
-        "totalAmountReadyToBePaid",
-        "soldePret",
-        "solde_pret",
-        "readyBalance",
-        "ready_balance",
-      ]);
-
-      if (!Number.isFinite(readyBalance)) {
-        return {
-          ok: false,
-          message: "ZRExpress balance response did not include a ready-to-be-paid amount.",
-        };
-      }
-
-      return { ok: true, readyBalance, currency: "DA" };
+      console.log(
+        `[ZR Balance] all endpoints failed. Attempts: ${attempts.join(" | ")}`,
+      );
+      return { ok: false, message: lastMessage };
     } catch (e) {
       const raw = e instanceof Error ? e.message : String(e);
       if (raw.toLowerCase().includes("aborted")) {
