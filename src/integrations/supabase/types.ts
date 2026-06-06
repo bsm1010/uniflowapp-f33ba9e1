@@ -1919,33 +1919,6 @@ export type Database = {
           },
         ]
       }
-      payment_settings: {
-        Row: {
-          created_at: string
-          currency: string
-          enabled: boolean
-          payout_email: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          currency?: string
-          enabled?: boolean
-          payout_email?: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          currency?: string
-          enabled?: boolean
-          payout_email?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       payment_auto_verify_settings: {
         Row: {
           created_at: string
