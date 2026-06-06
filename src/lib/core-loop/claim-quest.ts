@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL!;
 const SUPABASE_ANON =
@@ -49,8 +50,8 @@ export const claimQuest = createServerFn({ method: "POST" })
     while (xpForLevel(newLevel + 1) <= newXp) newLevel++;
 
     await Promise.all([
-      client.from("xp_events").insert({ user_id: user.id, event_type: "complete_quest", xp_amount: quest.xp_reward, metadata: { quest_id: quest.id, quest_key: quest.key, quest_title: quest.title } }),
-      client.from("user_gamification").upsert({ user_id: user.id, xp: newXp, level: newLevel, updated_at: new Date().toISOString() }, { onConflict: "user_id" }),
+      supabaseAdmin.from("xp_events").insert({ user_id: user.id, event_type: "complete_quest", xp_amount: quest.xp_reward, metadata: { quest_id: quest.id, quest_key: quest.key, quest_title: quest.title } }),
+      supabaseAdmin.from("user_gamification").upsert({ user_id: user.id, xp: newXp, level: newLevel, updated_at: new Date().toISOString() }, { onConflict: "user_id" }),
       client.from("user_quests").update({ claimed: true, updated_at: new Date().toISOString() }).eq("user_id", user.id).eq("quest_id", data.questId),
     ]);
 
