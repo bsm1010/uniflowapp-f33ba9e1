@@ -39,8 +39,8 @@ export const processStreak = createServerFn({ method: "POST" })
       .maybeSingle();
 
     if (!gami) {
-      await client.from("user_gamification").insert({ user_id: user.id, xp: 10, level: 1, current_streak: 1, longest_streak: 1, last_active_date: today });
-      await client.from("xp_events").insert({ user_id: user.id, event_type: "daily_login", xp_amount: 10, metadata: { streak: 1 } });
+      await supabaseAdmin.from("user_gamification").insert({ user_id: user.id, xp: 10, level: 1, current_streak: 1, longest_streak: 1, last_active_date: today });
+      await supabaseAdmin.from("xp_events").insert({ user_id: user.id, event_type: "daily_login", xp_amount: 10, metadata: { streak: 1 } });
       return { currentStreak: 1, longestStreak: 1, isNewDay: true, xpAwarded: 10 } satisfies StreakResult;
     }
 
@@ -62,11 +62,11 @@ export const processStreak = createServerFn({ method: "POST" })
     const longestStreak = Math.max(gami.longest_streak || 0, newStreak);
 
     await Promise.all([
-      client.from("user_gamification").upsert(
+      supabaseAdmin.from("user_gamification").upsert(
         { user_id: user.id, xp: (gami.xp || 0) + 10, level: gami.level, current_streak: newStreak, longest_streak: longestStreak, last_active_date: today, updated_at: new Date().toISOString() },
         { onConflict: "user_id" },
       ),
-      client.from("xp_events").insert({ user_id: user.id, event_type: "daily_login", xp_amount: 10, metadata: { streak: newStreak } }),
+      supabaseAdmin.from("xp_events").insert({ user_id: user.id, event_type: "daily_login", xp_amount: 10, metadata: { streak: newStreak } }),
     ]);
 
     return { currentStreak: newStreak, longestStreak: longestStreak, isNewDay: true, xpAwarded: 10 } satisfies StreakResult;
