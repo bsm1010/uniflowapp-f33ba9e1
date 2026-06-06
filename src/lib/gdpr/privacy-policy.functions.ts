@@ -17,7 +17,7 @@ export type PrivacyPolicySettings = {
 };
 
 export const getPrivacyPolicySettings = createServerFn({ method: "GET" })
-  .validator((input: { storeId: string }) => input)
+  .inputValidator((input: { storeId: string }) => input)
   .handler(async ({ data }) => {
     const { data: settings } = await supabase
       .from("privacy_policy_settings")
@@ -28,7 +28,7 @@ export const getPrivacyPolicySettings = createServerFn({ method: "GET" })
   });
 
 export const getPrivacyPolicyBySlug = createServerFn({ method: "GET" })
-  .validator((input: { slug: string }) => input)
+  .inputValidator((input: { slug: string }) => input)
   .handler(async ({ data }) => {
     const { data: store } = await supabase
       .from("stores")
@@ -47,7 +47,7 @@ export const getPrivacyPolicyBySlug = createServerFn({ method: "GET" })
   });
 
 export const savePrivacyPolicySettings = createServerFn({ method: "POST" })
-  .validator(
+  .inputValidator(
     (input: {
       storeId: string;
       userId: string;

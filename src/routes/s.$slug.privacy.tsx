@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { Shield } from "lucide-react";
 import { StorefrontShell } from "@/components/storefront/StorefrontShell";
 import { getPrivacyPolicyBySlug, type PrivacyPolicySettings } from "@/lib/gdpr/privacy-policy.functions";
-import { fetchSettings, type StoreSettings } from "@/lib/storeTheme";
+import { type StoreSettings } from "@/lib/storeTheme";
+import { fetchSettings } from "@/lib/storefrontCache";
 
 export const Route = createFileRoute("/s/$slug/privacy")({
   component: PrivacyPolicyPage,

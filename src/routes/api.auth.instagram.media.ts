@@ -36,7 +36,12 @@ export const Route = createFileRoute("/api/auth/instagram/media")({
         const { data: { user }, error: authError } = await client.auth.getUser(token);
         if (authError || !user) return json({ error: "Invalid token" }, 401);
 
-        const { data: conn } = await client
+        const admin = createClient(
+          SUPABASE_URL,
+          process.env.SUPABASE_SERVICE_ROLE_KEY!,
+          { auth: { persistSession: false, autoRefreshToken: false } },
+        );
+        const { data: conn } = await admin
           .from("instagram_connections")
           .select("access_token, instagram_user_id")
           .eq("user_id", user.id)

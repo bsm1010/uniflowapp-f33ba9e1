@@ -604,6 +604,41 @@ export type Database = {
           },
         ]
       }
+      consent_audit_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          details: Json | null
+          id: string
+          store_id: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          details?: Json | null
+          id?: string
+          store_id: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          details?: Json | null
+          id?: string
+          store_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consent_audit_log_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contact_messages: {
         Row: {
           created_at: string
@@ -641,6 +676,112 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "contact_messages_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cookie_consent_settings: {
+        Row: {
+          accept_all_text: string
+          banner_text: string
+          banner_title: string
+          created_at: string
+          enabled: boolean
+          id: string
+          manage_text: string
+          position: string
+          privacy_policy_url: string | null
+          reject_all_text: string
+          save_text: string
+          store_id: string
+          theme: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          accept_all_text?: string
+          banner_text?: string
+          banner_title?: string
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          manage_text?: string
+          position?: string
+          privacy_policy_url?: string | null
+          reject_all_text?: string
+          save_text?: string
+          store_id: string
+          theme?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          accept_all_text?: string
+          banner_text?: string
+          banner_title?: string
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          manage_text?: string
+          position?: string
+          privacy_policy_url?: string | null
+          reject_all_text?: string
+          save_text?: string
+          store_id?: string
+          theme?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cookie_consent_settings_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cookie_consents: {
+        Row: {
+          analytics: boolean
+          created_at: string
+          expires_at: string
+          id: string
+          marketing: boolean
+          necessary: boolean
+          preferences: boolean
+          store_id: string
+          visitor_id: string
+        }
+        Insert: {
+          analytics?: boolean
+          created_at?: string
+          expires_at: string
+          id?: string
+          marketing?: boolean
+          necessary?: boolean
+          preferences?: boolean
+          store_id: string
+          visitor_id: string
+        }
+        Update: {
+          analytics?: boolean
+          created_at?: string
+          expires_at?: string
+          id?: string
+          marketing?: boolean
+          necessary?: boolean
+          preferences?: boolean
+          store_id?: string
+          visitor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cookie_consents_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"
@@ -788,6 +929,59 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "custom_domains_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      data_export_requests: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          customer_email: string | null
+          customer_name: string | null
+          delivery_method: string
+          email: string
+          file_url: string | null
+          id: string
+          request_type: string
+          status: string
+          store_id: string
+          user_id: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          delivery_method?: string
+          email: string
+          file_url?: string | null
+          id?: string
+          request_type?: string
+          status?: string
+          store_id: string
+          user_id?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          delivery_method?: string
+          email?: string
+          file_url?: string | null
+          id?: string
+          request_type?: string
+          status?: string
+          store_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "data_export_requests_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"
@@ -950,6 +1144,59 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      deletion_requests: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          customer_email: string
+          customer_name: string
+          id: string
+          order_ids: string[] | null
+          reason: string | null
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          store_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          customer_email: string
+          customer_name: string
+          id?: string
+          order_ids?: string[] | null
+          reason?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          store_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          customer_email?: string
+          customer_name?: string
+          id?: string
+          order_ids?: string[] | null
+          reason?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          store_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deletion_requests_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       delivery_companies: {
         Row: {
@@ -1820,6 +2067,47 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "popups_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      privacy_policy_settings: {
+        Row: {
+          created_at: string
+          custom_html: string | null
+          enabled: boolean
+          id: string
+          last_updated: string
+          sections: Json
+          store_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          custom_html?: string | null
+          enabled?: boolean
+          id?: string
+          last_updated?: string
+          sections?: Json
+          store_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          custom_html?: string | null
+          enabled?: boolean
+          id?: string
+          last_updated?: string
+          sections?: Json
+          store_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "privacy_policy_settings_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"
