@@ -108,7 +108,7 @@ export const getGamification = createServerFn({ method: "POST" })
 
       if (existing) return existing;
 
-      const { data: created } = await client
+      const { data: created } = await supabaseAdmin
         .from("user_gamification")
         .insert({ user_id: userId, xp: 0, level: 1 })
         .select()
