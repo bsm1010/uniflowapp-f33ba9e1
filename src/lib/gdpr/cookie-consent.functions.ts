@@ -86,7 +86,7 @@ export const recordCookieConsent = createServerFn({ method: "POST" })
     const expiresAt = new Date();
     expiresAt.setMonth(expiresAt.getMonth() + 12);
 
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from("cookie_consents")
       .upsert(
         {
@@ -102,7 +102,7 @@ export const recordCookieConsent = createServerFn({ method: "POST" })
       );
     if (error) throw new Error(error.message);
 
-    await supabase.from("consent_audit_log").insert({
+    await supabaseAdmin.from("consent_audit_log").insert({
       store_id: data.storeId,
       action: "consent_given",
       details: {
