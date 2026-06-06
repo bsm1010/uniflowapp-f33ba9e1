@@ -288,7 +288,7 @@ function DashboardHome() {
             </div>
             <h1 className="mt-3 text-3xl md:text-4xl font-bold font-display">
               {t("dashboard.home.welcome")}{" "}
-              <span className="bg-gradient-to-r from-primary via-purple-500 to-fuchsia-500 bg-clip-text text-transparent">{displayName}</span>
+              <span className="aurora-text">{displayName}</span>
             </h1>
             <p className="mt-1.5 text-muted-foreground/80 text-sm">
               {t("dashboard.home.subtitle")}
