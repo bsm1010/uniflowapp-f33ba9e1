@@ -20,6 +20,8 @@ import {
   TrendingUp,
   ArrowRight,
   Zap,
+  Wallet,
+  Loader2,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useCurrentStore } from "@/hooks/use-current-store";
@@ -37,6 +39,7 @@ import { Img } from "@/components/ui/Img";
 import { GamificationHub } from "@/components/dashboard/core-loop/GamificationHub";
 import { useServerFn } from "@tanstack/react-start";
 import { getGamification, type GamificationData } from "@/lib/core-loop";
+import { getZRExpressBalance, type ZRExpressBalanceResult } from "@/lib/delivery/zrexpress-balance.functions";
 
 export const Route = createFileRoute("/dashboard/")({
   component: DashboardHome,
@@ -81,6 +84,8 @@ function DashboardHome() {
   const [gamiData, setGamiData] = useState<GamificationData | null>(null);
   const [gamiLoading, setGamiLoading] = useState(true);
   const callGami = useServerFn(getGamification);
+  const [zrBalance, setZrBalance] = useState<ZRExpressBalanceResult | null>(null);
+  const callZrBalance = useServerFn(getZRExpressBalance);
 
   const loadDashboard = useCallback(() => {
     if (!user) return;
@@ -213,6 +218,20 @@ function DashboardHome() {
   }, [callGami]);
 
   useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      try {
+        const result = await callZrBalance({ data: { accessToken: session.access_token } });
+        if (!cancelled) setZrBalance(result);
+      } catch { if (!cancelled) setZrBalance(null); }
+    };
+    load();
+    return () => { cancelled = true; };
+  }, [callZrBalance]);
+
+  useEffect(() => {
     if (!user) return;
     const channel = supabase
       .channel(`dashboard-orders-${user.id}`)
@@ -246,26 +265,26 @@ function DashboardHome() {
       label: t("dashboard.home.stats.products"),
       raw: counts.products,
       icon: Package,
-      iconBg: "bg-violet-500/15 text-violet-600 dark:text-violet-400",
+      gradient: "bg-gradient-to-br from-violet-500 to-fuchsia-500",
     },
     {
       label: t("dashboard.home.stats.orders"),
       raw: counts.orders,
       icon: ShoppingBag,
-      iconBg: "bg-fuchsia-500/15 text-fuchsia-600 dark:text-fuchsia-400",
+      gradient: "bg-gradient-to-br from-blue-500 to-indigo-500",
     },
     {
       label: t("dashboard.home.stats.revenue"),
       raw: counts.revenue,
       isRevenue: true,
       icon: DollarSign,
-      iconBg: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
+      gradient: "bg-gradient-to-br from-emerald-500 to-teal-500",
     },
     {
       label: t("dashboard.home.stats.customers"),
       raw: counts.customers,
       icon: Users,
-      iconBg: "bg-sky-500/15 text-sky-600 dark:text-sky-400",
+      gradient: "bg-gradient-to-br from-orange-400 to-amber-500",
     },
   ];
 
@@ -347,12 +366,55 @@ function DashboardHome() {
                 rawValue={s.raw}
                 isRevenue={s.isRevenue}
                 icon={s.icon}
-                iconBg={s.iconBg}
+                gradient={s.gradient}
                 delay={i * 120}
               />
             </motion.div>
           ))}
         </div>
+      )}
+
+      {/* ZRExpress — Solde prêt (hidden when not connected) */}
+      {zrBalance?.ok && (
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.18 }}
+          className="rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-teal-500/10 p-5 sm:p-6"
+        >
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white shadow-sm">
+                <Wallet className="h-5 w-5" />
+              </div>
+              <div className="min-w-0">
+                <div className="text-[11px] font-semibold uppercase tracking-widest text-emerald-600/80">
+                  ZRExpress
+                </div>
+                <div className="text-sm font-medium text-muted-foreground">
+                  Solde prêt
+                </div>
+              </div>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <div
+                className={
+                  zrBalance.readyBalance > 0
+                    ? "text-2xl sm:text-3xl font-bold text-emerald-600 tabular-nums"
+                    : "text-2xl sm:text-3xl font-bold text-red-600 tabular-nums"
+                }
+              >
+                {zrBalance.readyBalance.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </div>
+              <div className="text-sm font-semibold text-muted-foreground">
+                {zrBalance.currency}
+              </div>
+            </div>
+          </div>
+        </motion.div>
       )}
 
       {/* Progress + Gamification */}
@@ -526,14 +588,14 @@ function StatCard({
   rawValue,
   isRevenue,
   icon: Icon,
-  iconBg,
+  gradient,
   delay,
 }: {
   label: string;
   rawValue: number;
   isRevenue?: boolean;
   icon: React.ComponentType<{ className?: string }>;
-  iconBg: string;
+  gradient?: string;
   delay: number;
 }) {
   const animated = useCountUp(rawValue, 1400, delay);
@@ -541,11 +603,13 @@ function StatCard({
     ? `${animated.toLocaleString()} DA`
     : animated.toLocaleString();
 
+  const isFilled = !!gradient;
+
   return (
     <Card
       className={
-        isRevenue
-          ? "relative overflow-hidden border-0 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 bg-gradient-to-br from-emerald-500 to-teal-500"
+        isFilled
+          ? `relative overflow-hidden border-0 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 ${gradient}`
           : "relative overflow-hidden border-border/50 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5"
       }
     >
@@ -556,7 +620,7 @@ function StatCard({
         <div className="flex items-center justify-between">
           <span
             className={
-              isRevenue
+              isFilled
                 ? "text-sm text-white/90 font-medium"
                 : "text-sm text-muted-foreground font-medium"
             }
@@ -565,9 +629,9 @@ function StatCard({
           </span>
           <div
             className={
-              isRevenue
+              isFilled
                 ? "h-9 w-9 rounded-xl bg-white/20 text-white flex items-center justify-center"
-                : `h-9 w-9 rounded-xl ${iconBg} flex items-center justify-center`
+                : "h-9 w-9 rounded-xl bg-muted text-muted-foreground flex items-center justify-center"
             }
           >
             <Icon className="h-4 w-4" />
@@ -576,7 +640,7 @@ function StatCard({
         <div className="mt-3">
           <div
             className={
-              isRevenue
+              isFilled
                 ? "text-2xl sm:text-3xl font-bold font-display tabular-nums tracking-tight text-white"
                 : "text-2xl sm:text-3xl font-bold font-display tabular-nums tracking-tight"
             }
