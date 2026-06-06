@@ -1946,6 +1946,33 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_settings: {
+        Row: {
+          created_at: string
+          currency: string
+          enabled: boolean
+          payout_email: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          enabled?: boolean
+          payout_email?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          enabled?: boolean
+          payout_email?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       payment_submissions: {
         Row: {
           amount: number
