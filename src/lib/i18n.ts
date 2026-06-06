@@ -35,8 +35,7 @@ if (!i18n.isInitialized) {
 
 export function applyDirection(lng: string) {
   if (typeof document === "undefined") return;
-  const dir = lng === "ar" ? "rtl" : "ltr";
-  document.documentElement.setAttribute("dir", dir);
+  document.documentElement.setAttribute("dir", "ltr");
   document.documentElement.setAttribute("lang", lng);
   document.documentElement.classList.toggle("font-arabic", lng === "ar");
 }

@@ -50,10 +50,12 @@ function SettingsPage() {
   const [savingStore, setSavingStore] = useState(false);
   const [savingDomain, setSavingDomain] = useState(false);
 
-  // Payments (UI-only preferences, persisted in localStorage for now)
+  // Payments preferences (persisted in Supabase `payment_settings`)
   const [paymentsEnabled, setPaymentsEnabled] = useState(false);
   const [currency, setCurrency] = useState("DZD");
   const [payoutEmail, setPayoutEmail] = useState("");
+  const [paymentsLoaded, setPaymentsLoaded] = useState(false);
+  const [savingPayments, setSavingPayments] = useState(false);
 
   // Danger zone
   const [deleteConfirm, setDeleteConfirm] = useState("");
@@ -86,18 +88,58 @@ function SettingsPage() {
       });
 
     const raw = localStorage.getItem(`payments:${user.id}`);
+    let localFallback: { enabled?: boolean; currency?: string; payoutEmail?: string } | null = null;
     if (raw) {
       try {
-        const p = JSON.parse(raw);
-        setPaymentsEnabled(!!p.enabled);
-        setCurrency(p.currency ?? "DZD");
-        setPayoutEmail(p.payoutEmail ?? "");
+        localFallback = JSON.parse(raw);
       } catch {
-        // ignore
+        // ignore corrupt localStorage value
       }
-    } else {
-      setPayoutEmail(user.email ?? "");
     }
+
+    (async () => {
+      const { data, error } = await supabase
+        .from("payment_settings")
+        .select("enabled, currency, payout_email")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (data) {
+        setPaymentsEnabled(!!data.enabled);
+        setCurrency(data.currency || "DZD");
+        setPayoutEmail(data.payout_email || user.email || "");
+      } else {
+        if (error && error.code !== "PGRST116") {
+          toast.error(error.message);
+        }
+        if (localFallback) {
+          setPaymentsEnabled(!!localFallback.enabled);
+          setCurrency(localFallback.currency ?? "DZD");
+          setPayoutEmail(localFallback.payoutEmail ?? user.email ?? "");
+        } else {
+          setPayoutEmail(user.email ?? "");
+        }
+      }
+
+      if (localFallback) {
+        const { error: migrateErr } = await supabase
+          .from("payment_settings")
+          .upsert(
+            {
+              user_id: user.id,
+              enabled: !!localFallback.enabled,
+              currency: localFallback.currency ?? "DZD",
+              payout_email: localFallback.payoutEmail ?? user.email ?? "",
+            },
+            { onConflict: "user_id" },
+          );
+        if (!migrateErr) {
+          localStorage.removeItem(`payments:${user.id}`);
+        }
+      }
+
+      setPaymentsLoaded(true);
+    })();
   }, [user]);
 
   const saveProfile = async () => {
@@ -207,12 +249,30 @@ function SettingsPage() {
     toast.success("Store URL saved");
   };
 
-  const savePayments = () => {
+  const savePayments = async () => {
     if (!user) return;
-    localStorage.setItem(
-      `payments:${user.id}`,
-      JSON.stringify({ enabled: paymentsEnabled, currency, payoutEmail }),
-    );
+    setSavingPayments(true);
+    const cleanedCurrency = (currency || "DZD").toUpperCase().slice(0, 3);
+    const cleanedEmail = payoutEmail.trim();
+    const { error } = await supabase
+      .from("payment_settings")
+      .upsert(
+        {
+          user_id: user.id,
+          enabled: paymentsEnabled,
+          currency: cleanedCurrency,
+          payout_email: cleanedEmail,
+        },
+        { onConflict: "user_id" },
+      );
+    setSavingPayments(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    setCurrency(cleanedCurrency);
+    setPayoutEmail(cleanedEmail);
+    localStorage.removeItem(`payments:${user.id}`);
     toast.success("Payment preferences saved");
   };
 
@@ -452,7 +512,9 @@ function SettingsPage() {
           </div>
 
           <div className="flex justify-end">
-            <Button onClick={savePayments}>Save payments</Button>
+            <Button onClick={savePayments} disabled={savingPayments || !paymentsLoaded}>
+              {savingPayments ? "Saving…" : "Save payments"}
+            </Button>
           </div>
         </CardContent>
       </Card>
