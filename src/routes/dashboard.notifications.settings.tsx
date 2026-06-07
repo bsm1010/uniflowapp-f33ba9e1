@@ -15,8 +15,8 @@ import {
   getPushStatus,
 } from "@/lib/push/push.functions";
 import { useCurrentStore } from "@/hooks/use-current-store";
-import { supabase } from "@/integrations/supabase/client";
-import { createTelegramLinkToken } from "@/lib/telegram-link.functions";
+
+import { createTelegramLinkToken, getTelegramStatus, disconnectTelegram } from "@/lib/telegram-link.functions";
 
 export const Route = createFileRoute("/dashboard/notifications/settings")({
   component: NotificationsSettings,
@@ -62,6 +62,8 @@ function NotificationsSettings() {
   const loadStatus = useServerFn(getPushStatus);
   const sendTest = useServerFn(sendTestPush);
   const generateLinkToken = useServerFn(createTelegramLinkToken);
+  const fetchTelegramStatus = useServerFn(getTelegramStatus);
+  const callDisconnectTelegram = useServerFn(disconnectTelegram);
   const [linking, setLinking] = useState(false);
 
   useEffect(() => {
@@ -80,26 +82,18 @@ function NotificationsSettings() {
 
   useEffect(() => {
     if (!currentStore?.id) return;
-    supabase
-      .from("stores")
-      .select("telegram_chat_id")
-      .eq("id", currentStore.id)
-      .single()
-      .then(({ data }) => {
-        setTelegramConnected(!!data?.telegram_chat_id);
-      });
-  }, [currentStore?.id]);
+    fetchTelegramStatus({ data: { storeId: currentStore.id } })
+      .then((r) => setTelegramConnected(!!r?.connected))
+      .catch(() => setTelegramConnected(false));
+  }, [currentStore?.id, fetchTelegramStatus]);
 
   const handleDisconnectTelegram = async () => {
     if (!currentStore?.id) return;
-    const { error } = await supabase
-      .from("stores")
-      .update({ telegram_chat_id: null })
-      .eq("id", currentStore.id);
-    if (!error) {
+    try {
+      await callDisconnectTelegram({ data: { storeId: currentStore.id } });
       setTelegramConnected(false);
       toast.success("Telegram disconnected");
-    } else {
+    } catch {
       toast.error("Failed to disconnect");
     }
   };

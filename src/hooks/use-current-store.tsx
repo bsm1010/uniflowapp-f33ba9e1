@@ -41,7 +41,7 @@ export function CurrentStoreProvider({ children }: { children: ReactNode }) {
     if (!user) return;
     setLoading(true);
     const [{ data: storesData }, { data: prof }] = await Promise.all([
-      supabase.from("stores").select("*").eq("owner_id", user.id).order("created_at", { ascending: true }),
+      supabase.from("stores").select("id, owner_id, name, slug, logo_url, description, category, currency, is_default, is_active, tiktok_pixel_id, created_at, updated_at").eq("owner_id", user.id).order("created_at", { ascending: true }),
       supabase.from("profiles").select("current_store_id").eq("id", user.id).maybeSingle(),
     ]);
     const list = (storesData ?? []) as Store[];
