@@ -62,6 +62,8 @@ function NotificationsSettings() {
   const loadStatus = useServerFn(getPushStatus);
   const sendTest = useServerFn(sendTestPush);
   const generateLinkToken = useServerFn(createTelegramLinkToken);
+  const fetchTelegramStatus = useServerFn(getTelegramStatus);
+  const callDisconnectTelegram = useServerFn(disconnectTelegram);
   const [linking, setLinking] = useState(false);
 
   useEffect(() => {
