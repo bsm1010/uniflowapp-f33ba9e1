@@ -20,6 +20,9 @@ export function LanguageSwitcher() {
   const current = LANGS.find((l) => l.code === i18n.language) ?? LANGS[0];
 
   const change = (code: string) => {
+    try {
+      window.localStorage.setItem("lang", code);
+    } catch {}
     i18n.changeLanguage(code);
     applyDirection(code);
   };
