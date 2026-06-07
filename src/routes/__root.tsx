@@ -105,6 +105,12 @@ function RootShell({ children }: { children: React.ReactNode }) {
         >
           <div className="logo" role="img" aria-label="Fennecly" />
         </div>
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "setTimeout(function(){document.documentElement.classList.add('app-booted')},3000);",
+          }}
+        />
         {children}
         <Scripts />
       </body>
