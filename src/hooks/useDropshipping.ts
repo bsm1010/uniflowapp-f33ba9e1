@@ -210,6 +210,92 @@ export function useMyWalletTransactions(): UseQueryResult<WalletTransactionRow[]
 // ============================================================
 
 /**
+ * Update an existing reseller_listing row (selling_price and/or is_active).
+ *
+ * Selling price is re-validated against platform_price (DB trigger is the
+ * real safety net; we pre-check for a friendlier error message).
+ */
+export function useUpdateMyListing() {
+  const qc = useQueryClient();
+  const { user } = useAuth();
+  return useMutation({
+    mutationFn: async (args: {
+      listingId: string;
+      sellingPrice?: number;
+      isActive?: boolean;
+    }) => {
+      if (!user) throw new Error("Not signed in");
+
+      if (args.sellingPrice !== undefined) {
+        if (args.sellingPrice < 0) {
+          throw new Error("sellingPrice must be >= 0");
+        }
+        const { data: listing, error: lErr } = await supabase
+          .from("reseller_listings")
+          .select("marketplace_product_id")
+          .eq("id", args.listingId)
+          .maybeSingle();
+        if (lErr) throw new Error(lErr.message);
+        if (!listing) throw new Error("Listing not found");
+
+        const { data: product, error: pErr } = await supabase
+          .from("marketplace_products")
+          .select("platform_price")
+          .eq("id", listing.marketplace_product_id)
+          .maybeSingle();
+        if (pErr) throw new Error(pErr.message);
+        if (args.sellingPrice < Number(product?.platform_price ?? 0)) {
+          throw new Error(
+            `sellingPrice must be >= platform_price (${product?.platform_price})`,
+          );
+        }
+      }
+
+      const patch: Database["public"]["Tables"]["reseller_listings"]["Update"] = {};
+      if (args.sellingPrice !== undefined) patch.selling_price = args.sellingPrice;
+      if (args.isActive !== undefined) patch.is_active = args.isActive;
+      if (Object.keys(patch).length === 0) {
+        throw new Error("Nothing to update");
+      }
+
+      const { data, error } = await supabase
+        .from("reseller_listings")
+        .update(patch)
+        .eq("id", args.listingId)
+        .select("id, reseller_id, marketplace_product_id, store_id, selling_price, is_active, total_orders, total_returns, total_profit_earned, created_at")
+        .single();
+      if (error) throw new Error(error.message);
+      return data as ResellerListing;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: dropshippingKeys.myListings(user?.id) });
+    },
+  });
+}
+
+/**
+ * Remove a product from the reseller's store (deletes the reseller_listings row).
+ */
+export function useRemoveMyListing() {
+  const qc = useQueryClient();
+  const { user } = useAuth();
+  return useMutation({
+    mutationFn: async (args: { listingId: string }) => {
+      if (!user) throw new Error("Not signed in");
+      const { error } = await supabase
+        .from("reseller_listings")
+        .delete()
+        .eq("id", args.listingId);
+      if (error) throw new Error(error.message);
+      return { listingId: args.listingId };
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: dropshippingKeys.myListings(user?.id) });
+    },
+  });
+}
+
+/**
  * Add a marketplace product to the current reseller's store.
  * Creates (or upserts) a row in reseller_listings with selling_price.
  *

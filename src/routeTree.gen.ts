@@ -40,6 +40,7 @@ import { Route as DashboardProgressRouteImport } from './routes/dashboard.progre
 import { Route as DashboardProductsRouteImport } from './routes/dashboard.products'
 import { Route as DashboardOrdersRouteImport } from './routes/dashboard.orders'
 import { Route as DashboardNotificationsRouteImport } from './routes/dashboard.notifications'
+import { Route as DashboardMarketplaceRouteImport } from './routes/dashboard.marketplace'
 import { Route as DashboardLandingGeneratorRouteImport } from './routes/dashboard.landing-generator'
 import { Route as DashboardGdprRouteImport } from './routes/dashboard.gdpr'
 import { Route as DashboardGamificationRouteImport } from './routes/dashboard.gamification'
@@ -258,6 +259,11 @@ const DashboardOrdersRoute = DashboardOrdersRouteImport.update({
 const DashboardNotificationsRoute = DashboardNotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardMarketplaceRoute = DashboardMarketplaceRouteImport.update({
+  id: '/marketplace',
+  path: '/marketplace',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardLandingGeneratorRoute =
@@ -634,6 +640,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/gamification': typeof DashboardGamificationRoute
   '/dashboard/gdpr': typeof DashboardGdprRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
+  '/dashboard/marketplace': typeof DashboardMarketplaceRoute
   '/dashboard/notifications': typeof DashboardNotificationsRouteWithChildren
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
@@ -729,6 +736,7 @@ export interface FileRoutesByTo {
   '/dashboard/gamification': typeof DashboardGamificationRoute
   '/dashboard/gdpr': typeof DashboardGdprRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
+  '/dashboard/marketplace': typeof DashboardMarketplaceRoute
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/progress': typeof DashboardProgressRoute
@@ -826,6 +834,7 @@ export interface FileRoutesById {
   '/dashboard/gamification': typeof DashboardGamificationRoute
   '/dashboard/gdpr': typeof DashboardGdprRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
+  '/dashboard/marketplace': typeof DashboardMarketplaceRoute
   '/dashboard/notifications': typeof DashboardNotificationsRouteWithChildren
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
@@ -925,6 +934,7 @@ export interface FileRouteTypes {
     | '/dashboard/gamification'
     | '/dashboard/gdpr'
     | '/dashboard/landing-generator'
+    | '/dashboard/marketplace'
     | '/dashboard/notifications'
     | '/dashboard/orders'
     | '/dashboard/products'
@@ -1020,6 +1030,7 @@ export interface FileRouteTypes {
     | '/dashboard/gamification'
     | '/dashboard/gdpr'
     | '/dashboard/landing-generator'
+    | '/dashboard/marketplace'
     | '/dashboard/orders'
     | '/dashboard/products'
     | '/dashboard/progress'
@@ -1116,6 +1127,7 @@ export interface FileRouteTypes {
     | '/dashboard/gamification'
     | '/dashboard/gdpr'
     | '/dashboard/landing-generator'
+    | '/dashboard/marketplace'
     | '/dashboard/notifications'
     | '/dashboard/orders'
     | '/dashboard/products'
@@ -1438,6 +1450,13 @@ declare module '@tanstack/react-router' {
       path: '/notifications'
       fullPath: '/dashboard/notifications'
       preLoaderRoute: typeof DashboardNotificationsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/marketplace': {
+      id: '/dashboard/marketplace'
+      path: '/marketplace'
+      fullPath: '/dashboard/marketplace'
+      preLoaderRoute: typeof DashboardMarketplaceRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/landing-generator': {
@@ -1969,6 +1988,7 @@ interface DashboardRouteChildren {
   DashboardGamificationRoute: typeof DashboardGamificationRoute
   DashboardGdprRoute: typeof DashboardGdprRoute
   DashboardLandingGeneratorRoute: typeof DashboardLandingGeneratorRoute
+  DashboardMarketplaceRoute: typeof DashboardMarketplaceRoute
   DashboardNotificationsRoute: typeof DashboardNotificationsRouteWithChildren
   DashboardOrdersRoute: typeof DashboardOrdersRoute
   DashboardProductsRoute: typeof DashboardProductsRoute
@@ -2012,6 +2032,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardGamificationRoute: DashboardGamificationRoute,
   DashboardGdprRoute: DashboardGdprRoute,
   DashboardLandingGeneratorRoute: DashboardLandingGeneratorRoute,
+  DashboardMarketplaceRoute: DashboardMarketplaceRoute,
   DashboardNotificationsRoute: DashboardNotificationsRouteWithChildren,
   DashboardOrdersRoute: DashboardOrdersRoute,
   DashboardProductsRoute: DashboardProductsRoute,
