@@ -10,11 +10,11 @@ import heroScene from "@/assets/Scene_clean.json";
 // server render. Load it lazily on the client only.
 const Lottie = lazy(() =>
   import("lottie-react").then((m) => {
-    const Cmp =
+    const Cmp: any =
       (m as any).default?.default ?? (m as any).default ?? (m as any);
     return { default: Cmp };
   }),
-);
+) as any;
 
 export function Hero() {
   return (
