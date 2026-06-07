@@ -39,10 +39,17 @@ export const shareAchievement = createServerFn({ method: "POST" })
     if (!existing) throw new Error("Achievement not found");
     if (existing.shared) return { shared: true, xpAwarded: 0 } satisfies ShareAchievementResult;
 
+    const { data: curGami } = await supabaseAdmin
+      .from("user_gamification")
+      .select("xp")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    const currentXp = curGami?.xp ?? 0;
+
     await Promise.all([
       supabaseAdmin.from("user_achievements").update({ shared: true }).eq("id", data.achievementId),
       supabaseAdmin.from("xp_events").insert({ user_id: user.id, event_type: "share_achievement", xp_amount: 15, metadata: { achievement_id: data.achievementId } }),
-      supabaseAdmin.from("user_gamification").upsert({ user_id: user.id, xp: (await supabaseAdmin.from("user_gamification").select("xp").eq("user_id", user.id).maybeSingle()).data?.xp + 15 }, { onConflict: "user_id" }),
+      supabaseAdmin.from("user_gamification").upsert({ user_id: user.id, xp: currentXp + 15 }, { onConflict: "user_id" }),
     ]);
 
     return { shared: true, xpAwarded: 15 } satisfies ShareAchievementResult;
