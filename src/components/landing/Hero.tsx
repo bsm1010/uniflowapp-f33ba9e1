@@ -79,12 +79,14 @@ export function Hero() {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="mt-12 flex justify-center"
         >
-          <Lottie
-            animationData={heroScene}
-            loop
-            aria-hidden
-            className="w-full max-w-3xl select-none pointer-events-none mix-blend-multiply dark:mix-blend-screen"
-          />
+          <Suspense fallback={<div className="w-full max-w-3xl aspect-square" aria-hidden />}>
+            <Lottie
+              animationData={heroScene}
+              loop
+              aria-hidden
+              className="w-full max-w-3xl select-none pointer-events-none mix-blend-multiply dark:mix-blend-screen"
+            />
+          </Suspense>
         </motion.div>
       </div>
     </section>
