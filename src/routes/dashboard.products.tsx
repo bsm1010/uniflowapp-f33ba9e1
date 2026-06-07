@@ -67,15 +67,29 @@ function ProductsPage() {
     if (!user || storeLoading) return;
     if (!currentStore?.id) { setProducts([]); setLoading(false); return; }
     setLoading(true);
-    const { data, error } = await supabase
-      .from("products")
-      .select("id,name,description,price,sale_price,stock,category,images,sku,weight,tags,status,variants,sales_count")
-      .eq("store_id", currentStore.id)
-      .order("created_at", { ascending: false });
+    const selectCols = "id,name,description,price,sale_price,stock,category,images,sku,weight,tags,status,variants,sales_count,user_id,store_id";
+    const base = () =>
+      supabase
+        .from("products")
+        .select(selectCols)
+        .order("created_at", { ascending: false });
+    const storeScoped = await base().eq("store_id", currentStore.id);
+    let data = storeScoped.data ?? [];
+    if (data.length === 0 && !storeScoped.error) {
+      const legacy = await base().eq("user_id", user.id);
+      if (legacy.error) { setLoading(false); toast.error("Failed to load products. Please try again."); return; }
+      data = legacy.data ?? [];
+      if (import.meta.env.DEV && data.length > 0) {
+        console.warn(
+          `[products] ${data.length} product(s) loaded via user_id fallback (store_id is null/wrong on these rows). ` +
+          `Run: UPDATE public.products SET store_id = '${currentStore.id}' WHERE user_id = '${user.id}' AND store_id IS NULL;`
+        );
+      }
+    }
     setLoading(false);
-    if (error) { toast.error("Failed to load products. Please try again."); return; }
+    if (storeScoped.error) { toast.error("Failed to load products. Please try again."); return; }
     setProducts(
-      (data ?? []).map((p) => ({
+      data.map((p) => ({
         ...p,
         price: Number(p.price),
         sale_price: p.sale_price != null ? Number(p.sale_price) : null,
