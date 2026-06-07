@@ -15,7 +15,7 @@ import {
   getPushStatus,
 } from "@/lib/push/push.functions";
 import { useCurrentStore } from "@/hooks/use-current-store";
-import { supabase } from "@/integrations/supabase/client";
+
 import { createTelegramLinkToken, getTelegramStatus, disconnectTelegram } from "@/lib/telegram-link.functions";
 
 export const Route = createFileRoute("/dashboard/notifications/settings")({
