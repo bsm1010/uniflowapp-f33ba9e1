@@ -2,8 +2,19 @@ import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
-import Lottie from "lottie-react";
+import { lazy, Suspense } from "react";
 import heroScene from "@/assets/Scene_clean.json";
+
+// lottie-react has a CJS/ESM interop quirk that makes its default export
+// resolve to an object (not a component) during SSR, which crashes the
+// server render. Load it lazily on the client only.
+const Lottie = lazy(() =>
+  import("lottie-react").then((m) => {
+    const Cmp =
+      (m as any).default?.default ?? (m as any).default ?? (m as any);
+    return { default: Cmp };
+  }),
+);
 
 export function Hero() {
   return (
