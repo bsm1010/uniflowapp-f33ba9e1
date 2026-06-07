@@ -96,12 +96,6 @@ function RootShell({ children }: { children: React.ReactNode }) {
       <body>
         <div
           id="app-boot-loader"
-          className={
-            typeof document !== "undefined" &&
-            document.documentElement.classList.contains("dark")
-              ? "dark"
-              : ""
-          }
         >
           <div className="logo" role="img" aria-label="Fennecly" />
         </div>
