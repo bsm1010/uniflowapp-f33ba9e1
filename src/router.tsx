@@ -3,10 +3,12 @@ import { routeTree } from "./routeTree.gen";
 
 function DefaultErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   const router = useRouter();
+  const componentStack =
+    (error as Error & { componentStack?: string }).componentStack ?? null;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
+      <div className="max-w-2xl text-center">
         <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -27,9 +29,10 @@ function DefaultErrorComponent({ error, reset }: { error: Error; reset: () => vo
         <p className="mt-2 text-sm text-muted-foreground">
           An unexpected error occurred. Please try again.
         </p>
-        {import.meta.env.DEV && error.message && (
-          <pre className="mt-4 max-h-40 overflow-auto rounded-md bg-muted p-3 text-left font-mono text-xs text-destructive">
-            {error.message}
+        {import.meta.env.DEV && (error.message || componentStack) && (
+          <pre className="mt-4 max-h-80 overflow-auto rounded-md bg-muted p-3 text-left font-mono text-xs text-destructive whitespace-pre-wrap break-words">
+{componentStack ? `Component stack:\n${componentStack.trim()}\n\n` : ""}{error.message}
+{error.stack ? `\n\nStack:\n${error.stack}` : ""}
           </pre>
         )}
         <div className="mt-6 flex items-center justify-center gap-3">
