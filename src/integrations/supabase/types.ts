@@ -2163,6 +2163,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          image_url: string | null
           images: string[]
           low_stock_threshold: number
           name: string
@@ -2170,6 +2171,8 @@ export type Database = {
           sale_price: number | null
           sales_count: number
           sku: string | null
+          source: string | null
+          source_url: string | null
           status: string
           stock: number
           stock_alert_sent_at: string | null
@@ -2185,6 +2188,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          image_url?: string | null
           images?: string[]
           low_stock_threshold?: number
           name: string
@@ -2192,6 +2196,8 @@ export type Database = {
           sale_price?: number | null
           sales_count?: number
           sku?: string | null
+          source?: string | null
+          source_url?: string | null
           status?: string
           stock?: number
           stock_alert_sent_at?: string | null
@@ -2207,6 +2213,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          image_url?: string | null
           images?: string[]
           low_stock_threshold?: number
           name?: string
@@ -2214,6 +2221,8 @@ export type Database = {
           sale_price?: number | null
           sales_count?: number
           sku?: string | null
+          source?: string | null
+          source_url?: string | null
           status?: string
           stock?: number
           stock_alert_sent_at?: string | null
