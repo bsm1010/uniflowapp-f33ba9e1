@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { AuthProvider } from "@/hooks/use-auth";
 import "@/lib/i18n";
-import { applyDirection } from "@/lib/i18n";
+import { applyDirection, getSavedLanguage } from "@/lib/i18n";
 
 import appCss from "../styles.css?url";
 import fennecyLogo from "@/assets/fennecly-logo.webp";
@@ -77,7 +77,7 @@ export const Route = createRootRoute({
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" dir="ltr" suppressHydrationWarning>
       <head>
         <HeadContent />
         <style
@@ -96,12 +96,6 @@ function RootShell({ children }: { children: React.ReactNode }) {
       <body>
         <div
           id="app-boot-loader"
-          className={
-            typeof document !== "undefined" &&
-            document.documentElement.classList.contains("dark")
-              ? "dark"
-              : ""
-          }
         >
           <div className="logo" role="img" aria-label="Fennecly" />
         </div>
@@ -120,6 +114,15 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { i18n } = useTranslation();
+
+  useEffect(() => {
+    const savedLanguage = getSavedLanguage();
+    if (i18n.language !== savedLanguage) {
+      i18n.changeLanguage(savedLanguage);
+    } else {
+      applyDirection(savedLanguage);
+    }
+  }, [i18n]);
 
   useEffect(() => {
     applyDirection(i18n.language);

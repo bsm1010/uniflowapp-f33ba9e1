@@ -1,6 +1,5 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-import LanguageDetector from "i18next-browser-languagedetector";
 
 import en from "@/locales/en.json";
 import fr from "@/locales/fr.json";
@@ -14,7 +13,6 @@ export const SUPPORTED_LANGUAGES = [
 
 if (!i18n.isInitialized) {
   i18n
-    .use(LanguageDetector)
     .use(initReactI18next)
     .init({
       resources: {
@@ -22,14 +20,10 @@ if (!i18n.isInitialized) {
         fr: { translation: fr },
         ar: { translation: ar },
       },
+      lng: "en",
       fallbackLng: "en",
       supportedLngs: ["en", "fr", "ar"],
       interpolation: { escapeValue: false },
-      detection: {
-        order: ["localStorage", "navigator"],
-        caches: ["localStorage"],
-        lookupLocalStorage: "lang",
-      },
     });
 }
 
@@ -42,10 +36,14 @@ export function applyDirection(lng: string) {
 
 i18n.on("languageChanged", applyDirection);
 
-// Apply lang attribute on initial load so the correct language is set on
-// first paint. Direction is always LTR — layout never flips for Arabic.
-if (typeof document !== "undefined") {
-  applyDirection(i18n.language || "en");
+export function getSavedLanguage() {
+  if (typeof window === "undefined") return "en";
+  try {
+    const saved = window.localStorage.getItem("lang");
+    return saved === "fr" || saved === "ar" || saved === "en" ? saved : "en";
+  } catch {
+    return "en";
+  }
 }
 
 export default i18n;
