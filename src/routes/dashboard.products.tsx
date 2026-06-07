@@ -293,7 +293,7 @@ function ProductsPage() {
                         </TableCell>
                         <TableCell>
                           <div className="h-11 w-11 rounded-lg bg-muted overflow-hidden flex items-center justify-center">
-                            {p.images[0] ? <Img src={p.images[0]} alt={p.name} width={80} quality={75} className="h-full w-full" /> : <ImageIcon className="h-5 w-5 text-muted-foreground" />}
+                            {p.images[0] ? <Img src={p.images[0]} alt={p.name} width={88} quality={80} objectFit="contain" className="h-full w-full" /> : <ImageIcon className="h-5 w-5 text-muted-foreground" />}
                           </div>
                         </TableCell>
                         <TableCell>

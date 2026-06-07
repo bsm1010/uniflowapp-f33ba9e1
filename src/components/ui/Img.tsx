@@ -8,9 +8,18 @@ interface ImgProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, "src"
   width?: number;
   height?: number;
   quality?: number;
+  objectFit?: "cover" | "contain" | "fill" | "none" | "scale-down";
 }
 
-export function Img({ src, alt, className, width, height, quality = 80, ...rest }: ImgProps) {
+const FIT_CLASS: Record<NonNullable<ImgProps["objectFit"]>, string> = {
+  cover: "object-cover",
+  contain: "object-contain",
+  fill: "object-fill",
+  none: "object-none",
+  "scale-down": "object-scale-down",
+};
+
+export function Img({ src, alt, className, width, height, quality = 80, objectFit = "cover", ...rest }: ImgProps) {
   const [loaded, setLoaded] = useState(false);
   const [errored, setErrored] = useState(false);
   const optimized = optimizeImageUrl(src, { width, height, quality });
@@ -36,7 +45,11 @@ export function Img({ src, alt, className, width, height, quality = 80, ...rest 
         decoding="async"
         onLoad={() => setLoaded(true)}
         onError={() => setErrored(true)}
-        className={cn("transition-opacity duration-300 w-full h-full object-cover", loaded ? "opacity-100" : "opacity-0")}
+        className={cn(
+          "transition-opacity duration-300 w-full h-full",
+          FIT_CLASS[objectFit],
+          loaded ? "opacity-100" : "opacity-0",
+        )}
         {...rest}
       />
     </div>
