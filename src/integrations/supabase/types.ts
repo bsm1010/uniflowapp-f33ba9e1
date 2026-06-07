@@ -3279,6 +3279,338 @@ export type Database = {
           },
         ]
       }
+      marketplace_products: {
+        Row: {
+          id: string
+          name: string
+          description: string | null
+          images: string[]
+          category: string | null
+          supplier_name: string | null
+          supplier_wilaya: string | null
+          cost_price: number
+          platform_price: number
+          availability_status: string
+          return_rate_percent: number
+          total_orders_count: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          description?: string | null
+          images?: string[]
+          category?: string | null
+          supplier_name?: string | null
+          supplier_wilaya?: string | null
+          cost_price: number
+          platform_price: number
+          availability_status?: string
+          return_rate_percent?: number
+          total_orders_count?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string | null
+          images?: string[]
+          category?: string | null
+          supplier_name?: string | null
+          supplier_wilaya?: string | null
+          cost_price?: number
+          platform_price?: number
+          availability_status?: string
+          return_rate_percent?: number
+          total_orders_count?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      reseller_listings: {
+        Row: {
+          id: string
+          reseller_id: string
+          marketplace_product_id: string
+          store_id: string | null
+          selling_price: number
+          is_active: boolean
+          total_orders: number
+          total_returns: number
+          total_profit_earned: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          reseller_id: string
+          marketplace_product_id: string
+          store_id?: string | null
+          selling_price: number
+          is_active?: boolean
+          total_orders?: number
+          total_returns?: number
+          total_profit_earned?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          reseller_id?: string
+          marketplace_product_id?: string
+          store_id?: string | null
+          selling_price?: number
+          is_active?: boolean
+          total_orders?: number
+          total_returns?: number
+          total_profit_earned?: number
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reseller_listings_marketplace_product_id_fkey"
+            columns: ["marketplace_product_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reseller_listings_reseller_id_fkey"
+            columns: ["reseller_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reseller_listings_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dropship_orders: {
+        Row: {
+          id: string
+          reseller_listing_id: string
+          reseller_id: string
+          client_name: string
+          client_phone: string
+          client_wilaya: string
+          client_address: string
+          selling_price: number
+          platform_price: number
+          cost_price: number
+          admin_profit: number
+          reseller_profit: number
+          status: string
+          tracking_number: string | null
+          zr_express_id: string | null
+          reseller_paid_at: string | null
+          shipped_at: string | null
+          delivered_at: string | null
+          refused_at: string | null
+          buffer_expires_at: string | null
+          returned_to_reseller_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          reseller_listing_id: string
+          reseller_id: string
+          client_name: string
+          client_phone: string
+          client_wilaya: string
+          client_address: string
+          selling_price: number
+          platform_price: number
+          cost_price: number
+          admin_profit?: number
+          reseller_profit?: number
+          status?: string
+          tracking_number?: string | null
+          zr_express_id?: string | null
+          reseller_paid_at?: string | null
+          shipped_at?: string | null
+          delivered_at?: string | null
+          refused_at?: string | null
+          buffer_expires_at?: string | null
+          returned_to_reseller_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          reseller_listing_id?: string
+          reseller_id?: string
+          client_name?: string
+          client_phone?: string
+          client_wilaya?: string
+          client_address?: string
+          selling_price?: number
+          platform_price?: number
+          cost_price?: number
+          admin_profit?: number
+          reseller_profit?: number
+          status?: string
+          tracking_number?: string | null
+          zr_express_id?: string | null
+          reseller_paid_at?: string | null
+          shipped_at?: string | null
+          delivered_at?: string | null
+          refused_at?: string | null
+          buffer_expires_at?: string | null
+          returned_to_reseller_at?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dropship_orders_reseller_id_fkey"
+            columns: ["reseller_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dropship_orders_reseller_listing_id_fkey"
+            columns: ["reseller_listing_id"]
+            isOneToOne: false
+            referencedRelation: "reseller_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stock_buffer: {
+        Row: {
+          id: string
+          dropship_order_id: string
+          marketplace_product_id: string
+          reseller_id: string
+          refused_at: string
+          buffer_expires_at: string
+          status: string
+          relist_count: number
+          return_delivery_cost: number
+          returned_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          dropship_order_id: string
+          marketplace_product_id: string
+          reseller_id: string
+          refused_at: string
+          buffer_expires_at: string
+          status?: string
+          relist_count?: number
+          return_delivery_cost?: number
+          returned_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          dropship_order_id?: string
+          marketplace_product_id?: string
+          reseller_id?: string
+          refused_at?: string
+          buffer_expires_at?: string
+          status?: string
+          relist_count?: number
+          return_delivery_cost?: number
+          returned_at?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_buffer_dropship_order_id_fkey"
+            columns: ["dropship_order_id"]
+            isOneToOne: true
+            referencedRelation: "dropship_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_buffer_marketplace_product_id_fkey"
+            columns: ["marketplace_product_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_buffer_reseller_id_fkey"
+            columns: ["reseller_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reseller_wallet: {
+        Row: {
+          id: string
+          reseller_id: string
+          balance: number
+          total_earned: number
+          total_spent: number
+          total_withdrawn: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          reseller_id: string
+          balance?: number
+          total_earned?: number
+          total_spent?: number
+          total_withdrawn?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          reseller_id?: string
+          balance?: number
+          total_earned?: number
+          total_spent?: number
+          total_withdrawn?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      wallet_transactions: {
+        Row: {
+          id: string
+          reseller_id: string
+          type: string
+          amount: number
+          balance_after: number
+          reference_id: string | null
+          description: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          reseller_id: string
+          type: string
+          amount: number
+          balance_after: number
+          reference_id?: string | null
+          description?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          reseller_id?: string
+          type?: string
+          amount?: number
+          balance_after?: number
+          reference_id?: string | null
+          description?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -3296,6 +3628,17 @@ export type Database = {
       consume_credits: {
         Args: { _amount: number; _metadata?: Json; _reason: string }
         Returns: boolean
+      }
+      deduct_wallet_and_create_order: {
+        Args: {
+          p_client_address: string
+          p_client_name: string
+          p_client_phone: string
+          p_client_wilaya: string
+          p_listing_id: string
+          p_reseller_id: string
+        }
+        Returns: string
       }
       delete_email: {
         Args: { message_id: number; queue_name: string }
