@@ -31,6 +31,8 @@ import {
   Bell,
   Store as StoreIcon,
   PackageOpen,
+  Banknote,
+  Wallet,
   Code2,
   Trophy,
   Zap,
@@ -132,6 +134,7 @@ export function DashboardSidebar() {
       label: "Operations",
       items: [
         { title: t("dashboard.nav.orders"), url: "/dashboard/orders", icon: ShoppingBag, gradient: "from-pink-500 to-rose-500", tourId: "orders" },
+        { title: "طلبات التوريد", url: "/dashboard/dropship-orders", icon: Banknote, gradient: "from-sky-500 to-indigo-500" },
         { title: "Returns & Refunds", url: "/dashboard/returns", icon: RotateCcw, gradient: "from-rose-500 to-pink-500" },
         { title: "Stock Alerts", url: "/dashboard/stock-alerts", icon: AlertTriangle, gradient: "from-amber-500 to-red-500" },
         { title: "Shipping", url: "/dashboard/shipping", icon: Truck, gradient: "from-green-500 to-emerald-500", tourId: "shipping" },
@@ -373,6 +376,46 @@ export function DashboardSidebar() {
                     >
                       {renderIcon(ShieldCheck, "from-purple-500 to-pink-500", isActive("/dashboard/admin/marketplace"))}
                       <span className="text-sm">Marketplace Review</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive("/dashboard/admin/dropship-orders")}
+                    tooltip="Dropship Orders"
+                    className="h-9"
+                  >
+                    <Link
+                      to="/dashboard/admin/dropship-orders"
+                      className={`group/menu-item relative rounded-lg transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
+                        isActive("/dashboard/admin/dropship-orders")
+                          ? "bg-gradient-to-r from-sidebar-accent to-sidebar-accent/40 text-sidebar-accent-foreground font-medium shadow-sm"
+                          : "hover:bg-sidebar-accent/50"
+                      }`}
+                    >
+                      {renderIcon(ShoppingBag, "from-rose-500 to-fuchsia-500", isActive("/dashboard/admin/dropship-orders"))}
+                      <span className="text-sm">Dropship Orders</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive("/dashboard/admin/wallet-topups")}
+                    tooltip="Wallet Top-ups"
+                    className="h-9"
+                  >
+                    <Link
+                      to="/dashboard/admin/wallet-topups"
+                      className={`group/menu-item relative rounded-lg transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
+                        isActive("/dashboard/admin/wallet-topups")
+                          ? "bg-gradient-to-r from-sidebar-accent to-sidebar-accent/40 text-sidebar-accent-foreground font-medium shadow-sm"
+                          : "hover:bg-sidebar-accent/50"
+                      }`}
+                    >
+                      {renderIcon(Wallet, "from-violet-500 to-purple-500", isActive("/dashboard/admin/wallet-topups"))}
+                      <span className="text-sm">Wallet Top-ups</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

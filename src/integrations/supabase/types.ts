@@ -3611,11 +3611,55 @@ export type Database = {
         }
         Relationships: []
       }
+      wallet_topup_requests: {
+        Row: {
+          id: string
+          reseller_id: string
+          amount: number
+          payment_reference: string
+          status: string
+          admin_note: string | null
+          processed_at: string | null
+          processed_by: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          reseller_id: string
+          amount: number
+          payment_reference: string
+          status?: string
+          admin_note?: string | null
+          processed_at?: string | null
+          processed_by?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          reseller_id?: string
+          amount?: number
+          payment_reference?: string
+          status?: string
+          admin_note?: string | null
+          processed_at?: string | null
+          processed_by?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      admin_approve_wallet_topup: {
+        Args: { p_admin_id: string; p_admin_note?: string; p_request_id: string }
+        Returns: undefined
+      }
+      admin_reject_wallet_topup: {
+        Args: { p_admin_id: string; p_admin_note?: string; p_request_id: string }
+        Returns: undefined
+      }
       admin_set_plan: {
         Args: { _credits: number; _plan: string; _user_id: string }
         Returns: undefined
@@ -3644,6 +3688,21 @@ export type Database = {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
       }
+      confirm_and_pay_order: {
+        Args: { p_order_id: string }
+        Returns: undefined
+      }
+      create_pending_dropship_order: {
+        Args: {
+          p_client_address: string
+          p_client_name: string
+          p_client_phone: string
+          p_client_wilaya: string
+          p_listing_id: string
+          p_reseller_id: string
+        }
+        Returns: string
+      }
       disconnect_store_telegram: {
         Args: { _store_id: string }
         Returns: boolean
@@ -3669,6 +3728,14 @@ export type Database = {
           _user_id: string
         }
         Returns: undefined
+      }
+      request_wallet_topup: {
+        Args: {
+          p_amount: number
+          p_payment_reference: string
+          p_reseller_id: string
+        }
+        Returns: string
       }
       has_role: {
         Args: {

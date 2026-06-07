@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { createAuthenticatedDeliveryClient } from "@/lib/delivery/authenticated-client";
 import type { Database } from "@/integrations/supabase/types";
 
 /**
@@ -120,4 +121,71 @@ export const updateDropshipOrderStatus = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     if (!order) throw new Error("Order not found");
     return { order };
+  });
+
+// ------------------------------------------------------------
+// Admin: list wallet topup requests (with optional status filter)
+// ------------------------------------------------------------
+const ListTopupRequestsInput = z.object({
+  status: z.enum(["pending", "approved", "rejected"]).optional(),
+  limit: z.number().int().min(1).max(500).optional().default(100),
+  offset: z.number().int().min(0).optional().default(0),
+});
+
+export const listWalletTopupRequests = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => ListTopupRequestsInput.parse(input))
+  .handler(async ({ data }) => {
+    let q = supabaseAdmin
+      .from("wallet_topup_requests")
+      .select(
+        "id, reseller_id, amount, payment_reference, status, admin_note, " +
+          "processed_at, processed_by, created_at",
+      )
+      .order("created_at", { ascending: false })
+      .range(data.offset, data.offset + data.limit - 1);
+    if (data.status) q = q.eq("status", data.status);
+    const { data: requests, error } = await q;
+    if (error) throw new Error(error.message);
+    return { requests: (requests ?? []) as unknown as Database["public"]["Tables"]["wallet_topup_requests"]["Row"][] };
+  });
+
+// ------------------------------------------------------------
+// Admin: approve / reject a wallet topup request
+// ------------------------------------------------------------
+const TopupDecisionInput = z.object({
+  request_id: z.string().uuid(),
+  admin_note: z.string().max(500).optional(),
+  access_token: z.string().min(1),
+});
+
+export const approveWalletTopup = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => TopupDecisionInput.parse(input))
+  .handler(async ({ data }) => {
+    const auth = await createAuthenticatedDeliveryClient(data.access_token);
+    if ("error" in auth) throw new Error(auth.error);
+    const { userId: adminId } = auth;
+
+    const { error } = await supabaseAdmin.rpc("admin_approve_wallet_topup", {
+      p_request_id: data.request_id,
+      p_admin_id: adminId,
+      p_admin_note: data.admin_note ?? undefined,
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const rejectWalletTopup = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => TopupDecisionInput.parse(input))
+  .handler(async ({ data }) => {
+    const auth = await createAuthenticatedDeliveryClient(data.access_token);
+    if ("error" in auth) throw new Error(auth.error);
+    const { userId: adminId } = auth;
+
+    const { error } = await supabaseAdmin.rpc("admin_reject_wallet_topup", {
+      p_request_id: data.request_id,
+      p_admin_id: adminId,
+      p_admin_note: data.admin_note ?? undefined,
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });

@@ -44,6 +44,7 @@ import { Route as DashboardMarketplaceRouteImport } from './routes/dashboard.mar
 import { Route as DashboardLandingGeneratorRouteImport } from './routes/dashboard.landing-generator'
 import { Route as DashboardGdprRouteImport } from './routes/dashboard.gdpr'
 import { Route as DashboardGamificationRouteImport } from './routes/dashboard.gamification'
+import { Route as DashboardDropshipOrdersRouteImport } from './routes/dashboard.dropship-orders'
 import { Route as DashboardDomainsRouteImport } from './routes/dashboard.domains'
 import { Route as DashboardDeveloperRouteImport } from './routes/dashboard.developer'
 import { Route as DashboardDeliveryRouteImport } from './routes/dashboard.delivery'
@@ -82,8 +83,10 @@ import { Route as DashboardAppsAnalyticsRouteImport } from './routes/dashboard.a
 import { Route as DashboardAppsAiDescriptionsRouteImport } from './routes/dashboard.apps.ai-descriptions'
 import { Route as DashboardAppsAdGeneratorRouteImport } from './routes/dashboard.apps.ad-generator'
 import { Route as DashboardAppsAbandonedCartRouteImport } from './routes/dashboard.apps.abandoned-cart'
+import { Route as DashboardAdminWalletTopupsRouteImport } from './routes/dashboard.admin.wallet-topups'
 import { Route as DashboardAdminPaymentsRouteImport } from './routes/dashboard.admin.payments'
 import { Route as DashboardAdminMarketplaceRouteImport } from './routes/dashboard.admin.marketplace'
+import { Route as DashboardAdminDropshipOrdersRouteImport } from './routes/dashboard.admin.dropship-orders'
 import { Route as DashboardAdminAppsRouteImport } from './routes/dashboard.admin.apps'
 import { Route as ApiDbTableIdRouteImport } from './routes/api.db.$tableId'
 import { Route as SSlugPProductIdRouteImport } from './routes/s.$slug.p.$productId'
@@ -280,6 +283,11 @@ const DashboardGdprRoute = DashboardGdprRouteImport.update({
 const DashboardGamificationRoute = DashboardGamificationRouteImport.update({
   id: '/gamification',
   path: '/gamification',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardDropshipOrdersRoute = DashboardDropshipOrdersRouteImport.update({
+  id: '/dropship-orders',
+  path: '/dropship-orders',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardDomainsRoute = DashboardDomainsRouteImport.update({
@@ -485,6 +493,12 @@ const DashboardAppsAbandonedCartRoute =
     path: '/abandoned-cart',
     getParentRoute: () => DashboardAppsRoute,
   } as any)
+const DashboardAdminWalletTopupsRoute =
+  DashboardAdminWalletTopupsRouteImport.update({
+    id: '/admin/wallet-topups',
+    path: '/admin/wallet-topups',
+    getParentRoute: () => DashboardRoute,
+  } as any)
 const DashboardAdminPaymentsRoute = DashboardAdminPaymentsRouteImport.update({
   id: '/admin/payments',
   path: '/admin/payments',
@@ -494,6 +508,12 @@ const DashboardAdminMarketplaceRoute =
   DashboardAdminMarketplaceRouteImport.update({
     id: '/admin/marketplace',
     path: '/admin/marketplace',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAdminDropshipOrdersRoute =
+  DashboardAdminDropshipOrdersRouteImport.update({
+    id: '/admin/dropship-orders',
+    path: '/admin/dropship-orders',
     getParentRoute: () => DashboardRoute,
   } as any)
 const DashboardAdminAppsRoute = DashboardAdminAppsRouteImport.update({
@@ -637,6 +657,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/delivery': typeof DashboardDeliveryRoute
   '/dashboard/developer': typeof DashboardDeveloperRoute
   '/dashboard/domains': typeof DashboardDomainsRoute
+  '/dashboard/dropship-orders': typeof DashboardDropshipOrdersRoute
   '/dashboard/gamification': typeof DashboardGamificationRoute
   '/dashboard/gdpr': typeof DashboardGdprRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
@@ -662,8 +683,10 @@ export interface FileRoutesByFullPath {
   '/dashboard/': typeof DashboardIndexRoute
   '/api/db/$tableId': typeof ApiDbTableIdRouteWithChildren
   '/dashboard/admin/apps': typeof DashboardAdminAppsRoute
+  '/dashboard/admin/dropship-orders': typeof DashboardAdminDropshipOrdersRoute
   '/dashboard/admin/marketplace': typeof DashboardAdminMarketplaceRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
+  '/dashboard/admin/wallet-topups': typeof DashboardAdminWalletTopupsRoute
   '/dashboard/apps/abandoned-cart': typeof DashboardAppsAbandonedCartRoute
   '/dashboard/apps/ad-generator': typeof DashboardAppsAdGeneratorRoute
   '/dashboard/apps/ai-descriptions': typeof DashboardAppsAiDescriptionsRoute
@@ -733,6 +756,7 @@ export interface FileRoutesByTo {
   '/dashboard/delivery': typeof DashboardDeliveryRoute
   '/dashboard/developer': typeof DashboardDeveloperRoute
   '/dashboard/domains': typeof DashboardDomainsRoute
+  '/dashboard/dropship-orders': typeof DashboardDropshipOrdersRoute
   '/dashboard/gamification': typeof DashboardGamificationRoute
   '/dashboard/gdpr': typeof DashboardGdprRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
@@ -757,8 +781,10 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardIndexRoute
   '/api/db/$tableId': typeof ApiDbTableIdRouteWithChildren
   '/dashboard/admin/apps': typeof DashboardAdminAppsRoute
+  '/dashboard/admin/dropship-orders': typeof DashboardAdminDropshipOrdersRoute
   '/dashboard/admin/marketplace': typeof DashboardAdminMarketplaceRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
+  '/dashboard/admin/wallet-topups': typeof DashboardAdminWalletTopupsRoute
   '/dashboard/apps/abandoned-cart': typeof DashboardAppsAbandonedCartRoute
   '/dashboard/apps/ad-generator': typeof DashboardAppsAdGeneratorRoute
   '/dashboard/apps/ai-descriptions': typeof DashboardAppsAiDescriptionsRoute
@@ -831,6 +857,7 @@ export interface FileRoutesById {
   '/dashboard/delivery': typeof DashboardDeliveryRoute
   '/dashboard/developer': typeof DashboardDeveloperRoute
   '/dashboard/domains': typeof DashboardDomainsRoute
+  '/dashboard/dropship-orders': typeof DashboardDropshipOrdersRoute
   '/dashboard/gamification': typeof DashboardGamificationRoute
   '/dashboard/gdpr': typeof DashboardGdprRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
@@ -856,8 +883,10 @@ export interface FileRoutesById {
   '/dashboard/': typeof DashboardIndexRoute
   '/api/db/$tableId': typeof ApiDbTableIdRouteWithChildren
   '/dashboard/admin/apps': typeof DashboardAdminAppsRoute
+  '/dashboard/admin/dropship-orders': typeof DashboardAdminDropshipOrdersRoute
   '/dashboard/admin/marketplace': typeof DashboardAdminMarketplaceRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
+  '/dashboard/admin/wallet-topups': typeof DashboardAdminWalletTopupsRoute
   '/dashboard/apps/abandoned-cart': typeof DashboardAppsAbandonedCartRoute
   '/dashboard/apps/ad-generator': typeof DashboardAppsAdGeneratorRoute
   '/dashboard/apps/ai-descriptions': typeof DashboardAppsAiDescriptionsRoute
@@ -931,6 +960,7 @@ export interface FileRouteTypes {
     | '/dashboard/delivery'
     | '/dashboard/developer'
     | '/dashboard/domains'
+    | '/dashboard/dropship-orders'
     | '/dashboard/gamification'
     | '/dashboard/gdpr'
     | '/dashboard/landing-generator'
@@ -956,8 +986,10 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/api/db/$tableId'
     | '/dashboard/admin/apps'
+    | '/dashboard/admin/dropship-orders'
     | '/dashboard/admin/marketplace'
     | '/dashboard/admin/payments'
+    | '/dashboard/admin/wallet-topups'
     | '/dashboard/apps/abandoned-cart'
     | '/dashboard/apps/ad-generator'
     | '/dashboard/apps/ai-descriptions'
@@ -1027,6 +1059,7 @@ export interface FileRouteTypes {
     | '/dashboard/delivery'
     | '/dashboard/developer'
     | '/dashboard/domains'
+    | '/dashboard/dropship-orders'
     | '/dashboard/gamification'
     | '/dashboard/gdpr'
     | '/dashboard/landing-generator'
@@ -1051,8 +1084,10 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/api/db/$tableId'
     | '/dashboard/admin/apps'
+    | '/dashboard/admin/dropship-orders'
     | '/dashboard/admin/marketplace'
     | '/dashboard/admin/payments'
+    | '/dashboard/admin/wallet-topups'
     | '/dashboard/apps/abandoned-cart'
     | '/dashboard/apps/ad-generator'
     | '/dashboard/apps/ai-descriptions'
@@ -1124,6 +1159,7 @@ export interface FileRouteTypes {
     | '/dashboard/delivery'
     | '/dashboard/developer'
     | '/dashboard/domains'
+    | '/dashboard/dropship-orders'
     | '/dashboard/gamification'
     | '/dashboard/gdpr'
     | '/dashboard/landing-generator'
@@ -1149,8 +1185,10 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/api/db/$tableId'
     | '/dashboard/admin/apps'
+    | '/dashboard/admin/dropship-orders'
     | '/dashboard/admin/marketplace'
     | '/dashboard/admin/payments'
+    | '/dashboard/admin/wallet-topups'
     | '/dashboard/apps/abandoned-cart'
     | '/dashboard/apps/ad-generator'
     | '/dashboard/apps/ai-descriptions'
@@ -1480,6 +1518,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardGamificationRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/dropship-orders': {
+      id: '/dashboard/dropship-orders'
+      path: '/dropship-orders'
+      fullPath: '/dashboard/dropship-orders'
+      preLoaderRoute: typeof DashboardDropshipOrdersRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/domains': {
       id: '/dashboard/domains'
       path: '/domains'
@@ -1746,6 +1791,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAppsAbandonedCartRouteImport
       parentRoute: typeof DashboardAppsRoute
     }
+    '/dashboard/admin/wallet-topups': {
+      id: '/dashboard/admin/wallet-topups'
+      path: '/admin/wallet-topups'
+      fullPath: '/dashboard/admin/wallet-topups'
+      preLoaderRoute: typeof DashboardAdminWalletTopupsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/admin/payments': {
       id: '/dashboard/admin/payments'
       path: '/admin/payments'
@@ -1758,6 +1810,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/marketplace'
       fullPath: '/dashboard/admin/marketplace'
       preLoaderRoute: typeof DashboardAdminMarketplaceRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/admin/dropship-orders': {
+      id: '/dashboard/admin/dropship-orders'
+      path: '/admin/dropship-orders'
+      fullPath: '/dashboard/admin/dropship-orders'
+      preLoaderRoute: typeof DashboardAdminDropshipOrdersRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/admin/apps': {
@@ -1985,6 +2044,7 @@ interface DashboardRouteChildren {
   DashboardDeliveryRoute: typeof DashboardDeliveryRoute
   DashboardDeveloperRoute: typeof DashboardDeveloperRoute
   DashboardDomainsRoute: typeof DashboardDomainsRoute
+  DashboardDropshipOrdersRoute: typeof DashboardDropshipOrdersRoute
   DashboardGamificationRoute: typeof DashboardGamificationRoute
   DashboardGdprRoute: typeof DashboardGdprRoute
   DashboardLandingGeneratorRoute: typeof DashboardLandingGeneratorRoute
@@ -2009,8 +2069,10 @@ interface DashboardRouteChildren {
   DashboardVoiceGeneratorRoute: typeof DashboardVoiceGeneratorRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   DashboardAdminAppsRoute: typeof DashboardAdminAppsRoute
+  DashboardAdminDropshipOrdersRoute: typeof DashboardAdminDropshipOrdersRoute
   DashboardAdminMarketplaceRoute: typeof DashboardAdminMarketplaceRoute
   DashboardAdminPaymentsRoute: typeof DashboardAdminPaymentsRoute
+  DashboardAdminWalletTopupsRoute: typeof DashboardAdminWalletTopupsRoute
   DashboardOrdersOrderIdTrackingRoute: typeof DashboardOrdersOrderIdTrackingRoute
 }
 
@@ -2029,6 +2091,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardDeliveryRoute: DashboardDeliveryRoute,
   DashboardDeveloperRoute: DashboardDeveloperRoute,
   DashboardDomainsRoute: DashboardDomainsRoute,
+  DashboardDropshipOrdersRoute: DashboardDropshipOrdersRoute,
   DashboardGamificationRoute: DashboardGamificationRoute,
   DashboardGdprRoute: DashboardGdprRoute,
   DashboardLandingGeneratorRoute: DashboardLandingGeneratorRoute,
@@ -2053,8 +2116,10 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardVoiceGeneratorRoute: DashboardVoiceGeneratorRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   DashboardAdminAppsRoute: DashboardAdminAppsRoute,
+  DashboardAdminDropshipOrdersRoute: DashboardAdminDropshipOrdersRoute,
   DashboardAdminMarketplaceRoute: DashboardAdminMarketplaceRoute,
   DashboardAdminPaymentsRoute: DashboardAdminPaymentsRoute,
+  DashboardAdminWalletTopupsRoute: DashboardAdminWalletTopupsRoute,
   DashboardOrdersOrderIdTrackingRoute: DashboardOrdersOrderIdTrackingRoute,
 }
 

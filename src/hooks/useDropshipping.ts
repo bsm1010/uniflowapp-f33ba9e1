@@ -4,6 +4,9 @@ import { useAuth } from "@/hooks/use-auth";
 import {
   listAllDropshipOrders,
   updateDropshipOrderStatus,
+  listWalletTopupRequests,
+  approveWalletTopup,
+  rejectWalletTopup,
 } from "@/lib/dropshipping/admin.functions";
 
 /**
@@ -21,6 +24,7 @@ type ResellerListingRow = Database["public"]["Tables"]["reseller_listings"]["Row
 type DropshipOrderRow = Database["public"]["Tables"]["dropship_orders"]["Row"];
 type ResellerWalletRow = Database["public"]["Tables"]["reseller_wallet"]["Row"];
 type WalletTransactionRow = Database["public"]["Tables"]["wallet_transactions"]["Row"];
+type WalletTopupRequestRow = Database["public"]["Tables"]["wallet_topup_requests"]["Row"];
 
 // ------------------------------------------------------------
 // Row types (mirrors the migration's columns exactly)
@@ -28,6 +32,7 @@ type WalletTransactionRow = Database["public"]["Tables"]["wallet_transactions"][
 export type MarketplaceProduct = MarketplaceProductRow;
 export type ResellerListing = ResellerListingRow;
 export type DropshipOrder = DropshipOrderRow;
+export type WalletTopupRequest = WalletTopupRequestRow;
 export type StockBuffer = Database["public"]["Tables"]["stock_buffer"]["Row"];
 export type ResellerWallet = ResellerWalletRow;
 export type WalletTransaction = WalletTransactionRow;
@@ -69,8 +74,12 @@ export const dropshippingKeys = {
     [...dropshippingKeys.all, "my-wallet", resellerId ?? "anon"] as const,
   myWalletTx: (resellerId?: string) =>
     [...dropshippingKeys.all, "my-wallet-tx", resellerId ?? "anon"] as const,
+  myTopupRequests: (resellerId?: string) =>
+    [...dropshippingKeys.all, "my-topup-requests", resellerId ?? "anon"] as const,
   adminOrders: (status?: string) =>
     [...dropshippingKeys.all, "admin-orders", status ?? "all"] as const,
+  adminTopupRequests: (status?: string) =>
+    [...dropshippingKeys.all, "admin-topup-requests", status ?? "all"] as const,
 };
 
 // ============================================================
@@ -356,36 +365,24 @@ export function useAddToMyStore() {
 }
 
 /**
- * Confirm + pay for a customer order.
+ * Confirm + pay for an existing pending dropship order.
  *
- * The user's request was `useConfirmAndPayOrder(orderId)`, but the underlying
- * `deduct_wallet_and_create_order` RPC needs (reseller_id, listing_id, and
- * full client info) — there's no orderId yet because the order is the
- * OUTPUT of this call. So the hook takes the inputs the RPC needs and
- * returns the new orderId.
+ * The order must already exist with status='pending_payment' (created by
+ * the storefront checkout via `create_pending_dropship_order`). This hook
+ * debits the wallet atomically and flips the order to 'paid_by_reseller'.
+ * Insufficient balance → RPC raises P0001 with a clear message.
  */
 export function useConfirmAndPayOrder() {
   const qc = useQueryClient();
   const { user } = useAuth();
   return useMutation({
-    mutationFn: async (args: {
-      listingId: string;
-      clientName: string;
-      clientPhone: string;
-      clientWilaya: string;
-      clientAddress: string;
-    }) => {
+    mutationFn: async (args: { orderId: string }) => {
       if (!user) throw new Error("Not signed in");
-      const { data, error } = await supabase.rpc("deduct_wallet_and_create_order", {
-        p_reseller_id: user.id,
-        p_listing_id: args.listingId,
-        p_client_name: args.clientName,
-        p_client_phone: args.clientPhone,
-        p_client_wilaya: args.clientWilaya,
-        p_client_address: args.clientAddress,
+      const { error } = await supabase.rpc("confirm_and_pay_order", {
+        p_order_id: args.orderId,
       });
       if (error) throw new Error(error.message);
-      return data as string; // new dropship_order.id
+      return args.orderId;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: dropshippingKeys.myOrders(user?.id) });
@@ -450,6 +447,133 @@ export function useAdminUpdateOrderStatus() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: [...dropshippingKeys.all, "admin-orders"] });
       qc.invalidateQueries({ queryKey: [...dropshippingKeys.all, "my-orders"] });
+      qc.invalidateQueries({ queryKey: [...dropshippingKeys.all, "my-wallet"] });
+      qc.invalidateQueries({ queryKey: [...dropshippingKeys.all, "my-wallet-tx"] });
+    },
+  });
+}
+
+// ============================================================
+// Wallet topup hooks (reseller + admin)
+// ============================================================
+
+/** Reseller: their own topup requests, newest first. */
+export function useMyTopupRequests(): UseQueryResult<WalletTopupRequestRow[]> {
+  const { user } = useAuth();
+  return useQuery({
+    queryKey: dropshippingKeys.myTopupRequests(user?.id),
+    enabled: !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("wallet_topup_requests")
+        .select(
+          "id, reseller_id, amount, payment_reference, status, admin_note, " +
+            "processed_at, processed_by, created_at",
+        )
+        .eq("reseller_id", user!.id)
+        .order("created_at", { ascending: false });
+      if (error) throw new Error(error.message);
+      return (data ?? []) as unknown as WalletTopupRequestRow[];
+    },
+  });
+}
+
+/** Reseller: ask for a wallet topup (admin must approve). */
+export function useRequestWalletTopup() {
+  const qc = useQueryClient();
+  const { user } = useAuth();
+  return useMutation({
+    mutationFn: async (args: { amount: number; paymentReference: string }) => {
+      if (!user) throw new Error("Not signed in");
+      if (!args.paymentReference.trim()) {
+        throw new Error("paymentReference is required");
+      }
+      if (!(args.amount > 0)) {
+        throw new Error("amount must be > 0");
+      }
+      const { data, error } = await supabase.rpc("request_wallet_topup", {
+        p_reseller_id: user.id,
+        p_amount: args.amount,
+        p_payment_reference: args.paymentReference,
+      });
+      if (error) throw new Error(error.message);
+      return data as string; // request id
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: dropshippingKeys.myTopupRequests() });
+      qc.invalidateQueries({ queryKey: dropshippingKeys.myWallet() });
+    },
+  });
+}
+
+/** Admin: list all wallet topup requests (optionally filtered by status). */
+export function useAdminTopupRequests(
+  status?: "pending" | "approved" | "rejected",
+): UseQueryResult<WalletTopupRequestRow[]> {
+  const { user } = useAuth();
+  return useQuery({
+    queryKey: dropshippingKeys.adminTopupRequests(status),
+    enabled: !!user,
+    queryFn: async () => {
+      const res = await listWalletTopupRequests({
+        data: { status, limit: 200, offset: 0 },
+      });
+      const raw = res.requests as unknown;
+      return raw as WalletTopupRequestRow[];
+    },
+  });
+}
+
+/** Admin: approve a topup → credits the wallet, records ledger row. */
+export function useAdminApproveTopup() {
+  const qc = useQueryClient();
+  const { user } = useAuth();
+  return useMutation({
+    mutationFn: async (args: {
+      requestId: string;
+      adminNote?: string;
+      accessToken: string;
+    }) => {
+      if (!user) throw new Error("Not signed in");
+      const res = await approveWalletTopup({
+        data: {
+          request_id: args.requestId,
+          admin_note: args.adminNote,
+          access_token: args.accessToken,
+        },
+      });
+      return res;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [...dropshippingKeys.all, "admin-topup-requests"] });
+      qc.invalidateQueries({ queryKey: [...dropshippingKeys.all, "my-wallet"] });
+      qc.invalidateQueries({ queryKey: [...dropshippingKeys.all, "my-wallet-tx"] });
+    },
+  });
+}
+
+/** Admin: reject a topup (no wallet change). */
+export function useAdminRejectTopup() {
+  const qc = useQueryClient();
+  const { user } = useAuth();
+  return useMutation({
+    mutationFn: async (args: {
+      requestId: string;
+      adminNote?: string;
+      accessToken: string;
+    }) => {
+      if (!user) throw new Error("Not signed in");
+      const res = await rejectWalletTopup({
+        data: {
+          request_id: args.requestId,
+          admin_note: args.adminNote,
+          access_token: args.accessToken,
+        },
+      });
+      return res;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [...dropshippingKeys.all, "admin-topup-requests"] });
     },
   });
 }
