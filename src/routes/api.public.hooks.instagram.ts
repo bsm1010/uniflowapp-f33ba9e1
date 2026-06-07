@@ -227,9 +227,44 @@ Keep replies concise (1-3 sentences). Sound human and natural.`;
                           .eq("id", conversation.id);
                       }
 
-                      // TODO: Send reply back via Instagram Send API
-                      // This requires META_PAGE_ACCESS_TOKEN and calling
-                      // POST https://graph.instagram.com/v21.0/me/messages
+                      // Auto-send to Instagram is disabled until the merchant
+                      // configures META_PAGE_ACCESS_TOKEN. Replies still appear
+                      // in the merchant's LiveChat preview, and a clear
+                      // warning is surfaced in the AI Agent UI.
+                      if (!process.env.META_PAGE_ACCESS_TOKEN) {
+                        console.warn(
+                          "[instagram-webhook] AI reply generated for conversation",
+                          conversation.id,
+                          "but not sent: META_PAGE_ACCESS_TOKEN is not configured.",
+                        );
+                      } else {
+                        try {
+                          const igSend = await fetch(
+                            `https://graph.instagram.com/v21.0/me/messages`,
+                            {
+                              method: "POST",
+                              headers: {
+                                Authorization: `Bearer ${process.env.META_PAGE_ACCESS_TOKEN}`,
+                                "Content-Type": "application/json",
+                              },
+                              body: JSON.stringify({
+                                recipient: { id: senderId },
+                                message: { text: aiReply.replace("[HUMAN_TAKEOVER]", "").trim() },
+                              }),
+                            },
+                          );
+                          if (!igSend.ok) {
+                            const errText = await igSend.text().catch(() => "");
+                            console.error(
+                              "[instagram-webhook] Instagram Send API failed",
+                              igSend.status,
+                              errText.slice(0, 500),
+                            );
+                          }
+                        } catch (sendErr) {
+                          console.error("[instagram-webhook] Instagram Send API threw", sendErr);
+                        }
+                      }
                     }
                   }
                 } catch (err) {

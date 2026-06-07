@@ -1,7 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from "@/integrations/supabase/types";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const StatusEnum = z.enum(["confirmed", "shipped", "delivered", "cancelled"]);
 
@@ -29,7 +28,7 @@ function normalizePhone(raw: string): string | null {
   if (!digits) return null;
   if (digits.startsWith("+")) return digits.slice(1);
   if (digits.startsWith("00")) return digits.slice(2);
-  if (digits.startsWith("0")) return "213" + digits.slice(1); // Algeria default
+  if (digits.startsWith("0")) return "213" + digits.slice(1);
   return digits;
 }
 
@@ -37,30 +36,19 @@ export const sendOrderStatusSms = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => Schema.parse(input))
   .handler(async ({ data }) => {
     try {
-      const supabaseUrl = process.env.SUPABASE_URL;
-      const supabaseKey = process.env.SUPABASE_PUBLISHABLE_KEY;
-      if (!supabaseUrl || !supabaseKey) {
-        console.error("SMS: backend auth env vars missing");
-        return { sent: false, reason: "backend_not_configured" };
+      if (!data.accessToken) {
+        return { sent: false, reason: "unauthorized" };
       }
 
-      const supabase = createClient<Database>(supabaseUrl, supabaseKey, {
-        global: { headers: { Authorization: `Bearer ${data.accessToken}` } },
-        auth: {
-          storage: undefined,
-          persistSession: false,
-          autoRefreshToken: false,
-        },
-      });
-
-      const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(data.accessToken);
-      const userId = claimsData?.claims?.sub;
+      const { data: userData, error: claimsError } =
+        await supabaseAdmin.auth.getUser(data.accessToken);
+      const userId = userData?.user?.id;
       if (claimsError || !userId) {
         console.error("SMS: invalid auth token", claimsError?.message);
         return { sent: false, reason: "unauthorized" };
       }
 
-      const { data: order, error } = await supabase
+      const { data: order, error } = await supabaseAdmin
         .from("orders")
         .select("id, shipping_address, store_owner_id")
         .eq("id", data.orderId)

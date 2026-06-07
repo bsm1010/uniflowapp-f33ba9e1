@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { getRequest } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { createAuthenticatedDeliveryClient } from "./authenticated-client";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
@@ -44,12 +45,8 @@ const BALANCE_ENDPOINTS = [
   "supplier/balance",
 ];
 
-/**
- * Fetch the current ZRExpress supplier balance for the authenticated user.
- * Returns the "Solde prêt" (ready-to-be-paid balance) and the currency (always DA).
- * If the user has not connected ZRExpress, returns `{ ok: false, notConnected: true }`
- * so the UI can hide the balance card.
- */
+const PER_REQUEST_TIMEOUT_MS = 12_000;
+
 export const getZRExpressBalance = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => InputSchema.parse(input))
   .handler(async ({ data }): Promise<ZRExpressBalanceResult> => {
@@ -61,8 +58,6 @@ export const getZRExpressBalance = createServerFn({ method: "POST" })
       const { userId } = auth;
       const { client: supabase } = auth;
 
-      // Resolve the ZRExpress company (matches the same pattern used by
-      // import-zr-orders / track-shipment so we don't depend on a specific row id).
       const { data: companies } = await supabase
         .from("delivery_companies")
         .select("id, name");
@@ -73,7 +68,6 @@ export const getZRExpressBalance = createServerFn({ method: "POST" })
         return { ok: false, notConnected: true, message: "ZRExpress is not configured." };
       }
 
-      // Pull the user's stored credentials for this provider.
       const { data: link } = await supabaseAdmin
         .from("store_delivery_companies")
         .select("api_key, api_secret, enabled")
@@ -94,40 +88,64 @@ export const getZRExpressBalance = createServerFn({ method: "POST" })
         Accept: "application/json",
       };
 
-      // Try each candidate balance endpoint in order, log every raw response so
-      // we can see exactly what the API returns, and stop on the first one
-      // that gives us a parseable numeric balance.
+      // Chain the incoming request's abort signal so a hung outbound socket
+      // doesn't outlive a client disconnect or a Worker shutdown.
+      const requestSignal = (() => {
+        try {
+          return getRequest()?.signal ?? undefined;
+        } catch {
+          return undefined;
+        }
+      })();
+      const isDev = import.meta.env.DEV;
+
+      const probe = async (path: string) => {
+        const url = `${ZR_BASE_URL}/${path}`;
+        const controller = new AbortController();
+        const linked = requestSignal
+          ? AbortSignal.any([controller.signal, requestSignal])
+          : controller.signal;
+        const timer = setTimeout(() => controller.abort(), PER_REQUEST_TIMEOUT_MS);
+        try {
+          const res = await fetch(url, {
+            method: "GET",
+            headers,
+            signal: linked,
+          });
+          const text = await res.text();
+          return { path, url, res, text };
+        } finally {
+          clearTimeout(timer);
+        }
+      };
+
+      // Fire all candidate endpoints in parallel. The first one to return a
+      // parseable balance wins; the others are aborted when their fetch
+      // resolves/rejects (Workers close the connection on read end).
+      const probes = await Promise.allSettled(BALANCE_ENDPOINTS.map(probe));
       const attempts: string[] = [];
       let lastMessage = "ZRExpress balance endpoint not found.";
 
-      for (const path of BALANCE_ENDPOINTS) {
-        const url = `${ZR_BASE_URL}/${path}`;
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 12_000);
-        let res: Response;
-        try {
-          res = await fetch(url, { method: "GET", headers, signal: controller.signal });
-        } catch (e) {
-          const raw = e instanceof Error ? e.message : String(e);
-          clearTimeout(timer);
-          console.log(`[ZR Balance] ${url} -> network error: ${raw}`);
-          attempts.push(`${path}: network error (${raw})`);
-          lastMessage = `ZRExpress request failed: ${raw}`;
+      for (const p of probes) {
+        if (p.status === "rejected") {
+          const reason =
+            p.reason instanceof Error ? p.reason.message : String(p.reason);
+          attempts.push(`network error (${reason})`);
+          lastMessage = `ZRExpress request failed: ${reason}`;
+          if (isDev) console.log(`[ZR Balance] network error: ${reason}`);
           continue;
         }
-        clearTimeout(timer);
-
-        const text = await res.text();
-        console.log(
-          `[ZR Balance] ${url} -> ${res.status} ${res.statusText} :: ${text.slice(0, 2000)}`,
-        );
-
+        const { path, url, res, text } = p.value;
+        if (isDev) {
+          console.log(
+            `[ZR Balance] ${url} -> ${res.status} ${res.statusText} :: ${text.slice(0, 2000)}`,
+          );
+        }
         if (!res.ok) {
           attempts.push(`${path}: HTTP ${res.status}`);
           lastMessage = `ZRExpress returned ${res.status} on ${path}: ${text.slice(0, 200) || res.statusText}`;
           continue;
         }
-
         let parsed: unknown = null;
         try {
           parsed = text ? JSON.parse(text) : null;
@@ -140,26 +158,28 @@ export const getZRExpressBalance = createServerFn({ method: "POST" })
           parsed && typeof parsed === "object"
             ? (parsed as Record<string, unknown>)
             : {};
-        // Accept either a flat object or a wrapped { data: ... } envelope.
         const inner =
           (obj.data && typeof obj.data === "object"
             ? (obj.data as Record<string, unknown>)
             : obj) ?? {};
-
         const readyBalance = pickNum(inner, BALANCE_KEYS);
         if (Number.isFinite(readyBalance)) {
-          console.log(
-            `[ZR Balance] resolved on ${path} -> readyBalance=${readyBalance}`,
-          );
+          if (isDev) {
+            console.log(
+              `[ZR Balance] resolved on ${path} -> readyBalance=${readyBalance}`,
+            );
+          }
           return { ok: true, readyBalance, currency: "DA" };
         }
         attempts.push(`${path}: no known balance field in body`);
         lastMessage = `ZRExpress ${path} did not include a known balance field.`;
       }
 
-      console.log(
-        `[ZR Balance] all endpoints failed. Attempts: ${attempts.join(" | ")}`,
-      );
+      if (isDev) {
+        console.log(
+          `[ZR Balance] all endpoints failed. Attempts: ${attempts.join(" | ")}`,
+        );
+      }
       return { ok: false, message: lastMessage };
     } catch (e) {
       const raw = e instanceof Error ? e.message : String(e);

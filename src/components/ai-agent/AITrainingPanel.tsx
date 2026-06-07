@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Save, TestTube, Bot, Loader2 } from "lucide-react";
+import { Save, TestTube, Bot, Loader2, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useAIAgent } from "@/hooks/use-ai-agent";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -133,6 +134,17 @@ export function AITrainingPanel() {
             <CardDescription>Configure how your AI agent responds</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            <Alert className="border-amber-500/30 bg-amber-500/10 text-amber-900 dark:text-amber-200">
+              <AlertTriangle className="h-4 w-4 !text-amber-600" />
+              <AlertTitle>Auto-reply is in preview mode</AlertTitle>
+              <AlertDescription>
+                AI replies are generated and shown in your LiveChat, but they
+                will not be sent to your customers on Instagram until
+                <code className="mx-1 rounded bg-amber-500/20 px-1 py-0.5 text-xs">META_PAGE_ACCESS_TOKEN</code>
+                is configured. Until then, the AI Auto-Reply switch below is
+                cosmetic.
+              </AlertDescription>
+            </Alert>
             <div className="flex items-center justify-between">
               <Label>AI Auto-Reply</Label>
               <Switch checked={form.auto_reply} onCheckedChange={(v) => setForm((f) => ({ ...f, auto_reply: v }))} />
