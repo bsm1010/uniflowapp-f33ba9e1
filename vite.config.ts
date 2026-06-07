@@ -9,6 +9,13 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 export default defineConfig({
   tanstackStart: {
     server: { entry: "server" },
+    importProtection: {
+      // .functions.ts files wrap server logic in createServerFn().handler(...) and
+      // are imported by client routes for the RPC bridge. The static imports of
+      // `*.server.*` modules inside them are stripped from the client bundle by
+      // the bundler, so allow them here.
+      exclude: ["**/*.functions.ts"],
+    },
   },
   vite: {
     build: {
