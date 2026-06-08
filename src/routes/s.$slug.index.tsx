@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { Loader2, Search, ShoppingBag, Mail, ArrowRight, Sparkles, Star, Grid3X3, SlidersHorizontal } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -8,6 +8,7 @@ import type { Tables } from "@/integrations/supabase/types";
 import { StorefrontShell } from "@/components/storefront/StorefrontShell";
 import { StorefrontHero } from "@/components/storefront/StorefrontHero";
 import { ProductCard } from "@/components/storefront/ProductCard";
+import { LAYOUT_COMPONENTS, type LayoutTemplate } from "@/components/storefront/layouts";
 import {
   getStoreTokens,
   getButtonLabels,
@@ -60,6 +61,11 @@ export const Route = createFileRoute("/s/$slug/")({
 });
 
 type SortKey = "newest" | "price-asc" | "price-desc" | "name";
+
+const ALGERIAN_LAYOUTS = new Set<string>([
+  "sahara", "mediterranean", "casbah", "atlas", "tlemcen",
+  "constantine", "oran", "ghardaia", "kabyle", "algiers",
+]);
 
 // ── TikTok Pixel injection ────────────────────────────────────────
 const TIKTOK_PIXEL_ID_PATTERN = /^[A-Za-z0-9]{1,30}$/;
@@ -250,6 +256,8 @@ function StorefrontHome() {
         ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10"
         : "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8";
 
+  const isAlgerianLayout = ALGERIAN_LAYOUTS.has(template);
+
   const handleQuickAdd = (p: Product) => {
     cart.add({
       productId: p.id,
@@ -260,6 +268,52 @@ function StorefrontHome() {
     toast.success(tr("storefront.product.addedToCart", { name: p.name }));
   };
 
+  // ── Algerian layout rendering ──
+  if (isAlgerianLayout) {
+    const LayoutComponent = LAYOUT_COMPONENTS[template as LayoutTemplate];
+    const layoutProducts = filtered.map((p) => ({
+      id: p.id,
+      name: p.name,
+      price: Number(p.price),
+      images: p.images as string[],
+      category: p.category,
+      stock: p.stock,
+    }));
+
+    return (
+      <StorefrontShell settings={settings}>
+        {tiktokPixelId && <TikTokPixel pixelId={tiktokPixelId} />}
+        <Suspense
+          fallback={
+            <div className="flex h-64 items-center justify-center">
+              <Loader2 className="h-6 w-6 animate-spin" style={{ color: t.muted }} />
+            </div>
+          }
+        >
+          <LayoutComponent
+            products={layoutProducts}
+            tokens={t}
+            currency={currency}
+            brandName={settings.store_name || "Store"}
+            heroHeading={settings.hero_heading || "Welcome"}
+            heroSubheading={settings.hero_subheading || ""}
+            heroCta={settings.hero_cta_label || "Shop Now"}
+            onAddToCart={(p) => {
+              cart.add({
+                productId: p.id,
+                name: p.name,
+                price: p.price,
+                image: p.images[0] ?? null,
+              });
+              toast.success(tr("storefront.product.addedToCart", { name: p.name }));
+            }}
+          />
+        </Suspense>
+      </StorefrontShell>
+    );
+  }
+
+  // ── Legacy template rendering (fallback) ──
   const sectionRenderers: Record<SectionKey, () => React.ReactNode> = {
     hero: () =>
       settings.show_hero ? (
@@ -586,7 +640,3 @@ function StorefrontHome() {
     </StorefrontShell>
   );
 }
-
-void Link;
-void Star;
-void SlidersHorizontal;
