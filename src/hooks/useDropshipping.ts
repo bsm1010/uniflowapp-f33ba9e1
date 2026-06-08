@@ -925,6 +925,35 @@ export function useRemoveSupplyFromMyStore() {
   });
 }
 
+/** User: update a supply listing (selling price, is_active). */
+export function useUpdateSupplyListing() {
+  const qc = useQueryClient();
+  const { user } = useAuth();
+  return useMutation({
+    mutationFn: async (args: {
+      listingId: string;
+      selling_price?: number;
+      is_active?: boolean;
+    }) => {
+      if (!user) throw new Error("Not signed in");
+      const { data, error } = await supabase
+        .from("user_supply_listings")
+        .update({
+          ...(args.selling_price !== undefined && { selling_price: args.selling_price }),
+          ...(args.is_active !== undefined && { is_active: args.is_active }),
+        })
+        .eq("id", args.listingId)
+        .select("id, user_id, store_id, supply_product_id, selling_price, is_active, created_at")
+        .single();
+      if (error) throw new Error(error.message);
+      return data as UserSupplyListing;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [...dropshippingKeys.all, "my-supply-listings", user?.id] });
+    },
+  });
+}
+
 /** User: buy a supply product (deducts wallet, creates supply_order). */
 export function useBuySupplyProduct() {
   const qc = useQueryClient();
