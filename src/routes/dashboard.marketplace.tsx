@@ -335,8 +335,6 @@ function MarketplacePage() {
                     <Img
                       src={buyTarget.images[0]}
                       alt={buyTarget.name}
-                      width={112}
-                      quality={80}
                       objectFit="contain"
                       className="h-full w-full"
                     />
@@ -538,8 +536,6 @@ function ProductCard({
                     <Img
                       src={src}
                       alt={product.name}
-                      width={600}
-                      quality={80}
                       objectFit="contain"
                       className="h-full w-full"
                     />
@@ -708,8 +704,6 @@ function MyListingsTable({
                             <Img
                               src={p.images[0]}
                               alt={p.name}
-                              width={80}
-                              quality={70}
                               objectFit="contain"
                               className="h-full w-full"
                             />

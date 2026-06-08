@@ -404,8 +404,6 @@ function AdminSupplyMarketplacePage() {
                                   <Img
                                     src={p.images[0]}
                                     alt={p.name}
-                                    width={80}
-                                    quality={70}
                                     objectFit="contain"
                                     className="h-full w-full"
                                   />
@@ -522,8 +520,6 @@ function AdminSupplyMarketplacePage() {
                                   <Img
                                     src={o.supply_product.images[0]}
                                     alt=""
-                                    width={64}
-                                    quality={60}
                                     objectFit="contain"
                                     className="h-full w-full"
                                   />
@@ -874,13 +870,11 @@ function SupplyProductFormDialog({
               {images.map((src, i) => (
                 <div
                   key={i}
-                  className="relative h-20 w-20 rounded-lg overflow-hidden border border-border/60 group"
+                  className="relative h-28 w-28 rounded-lg overflow-hidden border border-border/60 group bg-muted/30"
                 >
                   <Img
                     src={src}
                     alt=""
-                    width={160}
-                    quality={80}
                     objectFit="contain"
                     className="h-full w-full"
                   />
@@ -894,7 +888,7 @@ function SupplyProductFormDialog({
                 </div>
               ))}
               {images.length < 10 && (
-                <label className="h-20 w-20 rounded-lg border-2 border-dashed border-border/60 grid place-items-center cursor-pointer hover:border-primary/50 transition-colors">
+                <label className="h-28 w-28 rounded-lg border-2 border-dashed border-border/60 grid place-items-center cursor-pointer hover:border-primary/50 transition-colors">
                   <input
                     type="file"
                     accept="image/*"
