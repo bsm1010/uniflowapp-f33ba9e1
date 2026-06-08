@@ -6,10 +6,7 @@ import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import { Img } from "@/components/ui/Img";
-import {
-  StorefrontShell,
-  getStoreTokens,
-} from "@/components/storefront/StorefrontShell";
+import { StorefrontShell, getStoreTokens } from "@/components/storefront/StorefrontShell";
 import { AlgerianCheckoutForm } from "@/components/storefront/AlgerianCheckoutForm";
 import { useCart } from "@/hooks/use-cart";
 import { fetchSettings, getCachedSettings, setCachedSettings } from "@/lib/storefrontCache";
@@ -34,9 +31,7 @@ export const Route = createFileRoute("/s/$slug/p/$productId")({
     const product = loaderData?.product;
     const settings = loaderData?.settings;
     const storeName = settings?.store_name ?? params.slug;
-    const title = product
-      ? `${product.name} — ${storeName}`
-      : `Product — ${storeName}`;
+    const title = product ? `${product.name} — ${storeName}` : `Product — ${storeName}`;
     const description = product
       ? (product.description?.slice(0, 160) ??
         `${product.name} available at ${storeName}. Order online with fast checkout.`)
@@ -143,11 +138,7 @@ function ProductPage() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4 text-center">
         <h1 className="text-2xl font-bold">{tr("storefront.product.notFound")}</h1>
-        <Link
-          to="/s/$slug"
-          params={{ slug }}
-          className="mt-4 text-sm text-primary underline"
-        >
+        <Link to="/s/$slug" params={{ slug }} className="mt-4 text-sm text-primary underline">
           {tr("storefront.product.back")}
         </Link>
       </div>
@@ -156,8 +147,7 @@ function ProductPage() {
 
   const t = getStoreTokens(settings);
   const outOfStock = product.stock <= 0;
-  const radius =
-    settings.theme === "minimal" ? 0 : settings.theme === "grid" ? 8 : 16;
+  const radius = settings.theme === "minimal" ? 0 : settings.theme === "grid" ? 8 : 16;
 
   const handleAdd = () => {
     cart.add(
@@ -199,8 +189,7 @@ function ProductPage() {
                 <Img
                   src={product.images[activeImage]}
                   alt={product.name}
-                  width={800}
-                  quality={85}
+                  objectFit="cover"
                   className="h-full w-full"
                 />
               ) : (
@@ -221,19 +210,11 @@ function ProductPage() {
                     className="aspect-square overflow-hidden transition-opacity"
                     style={{
                       borderRadius: radius / 2,
-                      border: `2px solid ${
-                        i === activeImage ? t.primary : "transparent"
-                      }`,
+                      border: `2px solid ${i === activeImage ? t.primary : "transparent"}`,
                       opacity: i === activeImage ? 1 : 0.7,
                     }}
                   >
-                    <Img
-                      src={img}
-                      alt=""
-                      width={150}
-                      quality={70}
-                      className="h-full w-full"
-                    />
+                    <Img src={img} alt="" objectFit="cover" className="h-full w-full" />
                   </button>
                 ))}
               </div>
@@ -251,9 +232,7 @@ function ProductPage() {
                   {product.category}
                 </div>
               )}
-              <h1 className="mt-2 text-2xl md:text-3xl font-bold tracking-tight">
-                {product.name}
-              </h1>
+              <h1 className="mt-2 text-2xl md:text-3xl font-bold tracking-tight">{product.name}</h1>
               <div className="mt-3 text-2xl font-semibold" style={{ color: t.primary }}>
                 {Number(product.price).toFixed(2)} DA
               </div>
@@ -289,14 +268,10 @@ function ProductPage() {
                   >
                     <Minus className="h-3.5 w-3.5" />
                   </button>
-                  <span className="w-10 text-center text-sm font-medium">
-                    {qty}
-                  </span>
+                  <span className="w-10 text-center text-sm font-medium">{qty}</span>
                   <button
                     onClick={() =>
-                      setQty((q) =>
-                        product.stock > 0 ? Math.min(product.stock, q + 1) : q + 1,
-                      )
+                      setQty((q) => (product.stock > 0 ? Math.min(product.stock, q + 1) : q + 1))
                     }
                     className="h-10 w-10 inline-flex items-center justify-center hover:opacity-70"
                     aria-label={tr("storefront.product.increase")}

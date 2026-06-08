@@ -54,8 +54,7 @@ export function ProductCard({
           <Img
             src={product.images[0]}
             alt={product.name}
-            width={400}
-            quality={80}
+            objectFit="cover"
             className="absolute inset-0 transition-all duration-700 ease-out group-hover:scale-110"
           />
         ) : (
@@ -73,8 +72,7 @@ export function ProductCard({
           <Img
             src={product.images[1]}
             alt=""
-            width={400}
-            quality={75}
+            objectFit="cover"
             className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
           />
         )}
@@ -174,10 +172,7 @@ export function ProductCard({
           {product.name}
         </Link>
         <div className="mt-2 flex items-center gap-2">
-          <span
-            className="text-lg font-bold"
-            style={{ color: t.fg }}
-          >
+          <span className="text-lg font-bold" style={{ color: t.fg }}>
             {formatPrice(Number(product.price), currency)}
           </span>
         </div>

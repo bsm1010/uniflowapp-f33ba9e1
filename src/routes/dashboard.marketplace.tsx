@@ -335,7 +335,7 @@ function MarketplacePage() {
                     <Img
                       src={buyTarget.images[0]}
                       alt={buyTarget.name}
-                      objectFit="contain"
+                      objectFit="cover"
                       className="h-full w-full"
                     />
                   ) : (
@@ -533,12 +533,7 @@ function ProductCard({
               {images.map((src, i) => (
                 <CarouselItem key={`${product.id}-${i}`}>
                   <div className="aspect-square">
-                    <Img
-                      src={src}
-                      alt={product.name}
-                      objectFit="contain"
-                      className="h-full w-full"
-                    />
+                    <Img src={src} alt={product.name} objectFit="cover" className="h-full w-full" />
                   </div>
                 </CarouselItem>
               ))}
@@ -704,7 +699,7 @@ function MyListingsTable({
                             <Img
                               src={p.images[0]}
                               alt={p.name}
-                              objectFit="contain"
+                              objectFit="cover"
                               className="h-full w-full"
                             />
                           ) : (

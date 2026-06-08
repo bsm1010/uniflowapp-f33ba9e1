@@ -21,9 +21,7 @@ export function Section({
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       className={cn("w-full py-12 md:py-16", className)}
     >
-      <div className={cn(fullBleed ? "" : "mx-auto w-full max-w-7xl px-4 md:px-6")}>
-        {children}
-      </div>
+      <div className={cn(fullBleed ? "" : "mx-auto w-full max-w-7xl px-4 md:px-6")}>{children}</div>
     </motion.section>
   );
 }
@@ -42,10 +40,7 @@ export function SectionHeading({
 }) {
   return (
     <div
-      className={cn(
-        "mb-10 max-w-2xl",
-        align === "center" ? "mx-auto text-center" : "text-left",
-      )}
+      className={cn("mb-10 max-w-2xl", align === "center" ? "mx-auto text-center" : "text-left")}
     >
       {eyebrow ? (
         <span className="mb-3 inline-block rounded-full border border-border bg-muted/40 px-3 py-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
@@ -93,9 +88,8 @@ export function BlockImage({
     <Img
       src={src}
       alt={alt}
-      width={800}
-      quality={80}
-      className={cn(aspectClass, "w-full rounded-lg", className)}
+      objectFit="cover"
+      className={cn(aspectClass, "w-full overflow-hidden rounded-lg", className)}
     />
   );
 }
