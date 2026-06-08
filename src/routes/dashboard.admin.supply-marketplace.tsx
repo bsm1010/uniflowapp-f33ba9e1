@@ -406,7 +406,7 @@ function AdminSupplyMarketplacePage() {
                                     alt={p.name}
                                     width={80}
                                     quality={70}
-                                    objectFit="cover"
+                                    objectFit="contain"
                                     className="h-full w-full"
                                   />
                                 ) : (
@@ -524,7 +524,7 @@ function AdminSupplyMarketplacePage() {
                                     alt=""
                                     width={64}
                                     quality={60}
-                                    objectFit="cover"
+                                    objectFit="contain"
                                     className="h-full w-full"
                                   />
                                 ) : (
@@ -881,7 +881,7 @@ function SupplyProductFormDialog({
                     alt=""
                     width={160}
                     quality={80}
-                    objectFit="cover"
+                    objectFit="contain"
                     className="h-full w-full"
                   />
                   <button

@@ -337,7 +337,7 @@ function MarketplacePage() {
                       alt={buyTarget.name}
                       width={112}
                       quality={80}
-                      objectFit="cover"
+                      objectFit="contain"
                       className="h-full w-full"
                     />
                   ) : (
@@ -710,7 +710,7 @@ function MyListingsTable({
                               alt={p.name}
                               width={80}
                               quality={70}
-                              objectFit="cover"
+                              objectFit="contain"
                               className="h-full w-full"
                             />
                           ) : (
