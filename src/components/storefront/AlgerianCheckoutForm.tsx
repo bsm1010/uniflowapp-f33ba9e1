@@ -33,8 +33,10 @@ type Tokens = {
   fg: string;
   bg: string;
   surface: string;
+  surfaceStrong: string;
   border: string;
   muted: string;
+  isDark: boolean;
 };
 
 type Props = {
@@ -181,8 +183,8 @@ export function AlgerianCheckoutForm({
         data: {
           storeSlug,
           customerName: `${parsed.data.firstName} ${parsed.data.lastName}`,
-          customerEmail: `${parsed.data.phone}@phone.local`,
-          shippingAddress: parsed.data.phone,
+          customerEmail: "",
+          shippingAddress: `${parsed.data.wilaya}, ${parsed.data.city}`,
           shippingCity: parsed.data.city,
           shippingWilaya: parsed.data.wilaya,
           shippingCountry: "Algeria",
@@ -241,8 +243,9 @@ export function AlgerianCheckoutForm({
         transition={{ duration: 0.35 }}
         className="relative overflow-hidden rounded-3xl border p-6 sm:p-7 space-y-5 shadow-2xl backdrop-blur-xl"
         style={{
-          background:
-            "linear-gradient(135deg, rgba(20,20,20,0.98), rgba(10,10,10,0.96))",
+          background: t.isDark
+            ? `linear-gradient(135deg, ${t.surfaceStrong}, ${t.surface})`
+            : `linear-gradient(135deg, ${t.surface}, ${t.bg})`,
           border: `1px solid ${t.border}`,
           borderRadius: radius,
         }}
@@ -274,7 +277,12 @@ export function AlgerianCheckoutForm({
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
               placeholder="Ahmed"
-              className="w-full rounded-2xl border border-zinc-700 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-zinc-500 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+              className="w-full rounded-2xl border px-4 py-3 text-sm outline-none transition"
+              style={{
+                borderColor: t.border,
+                backgroundColor: t.isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
+                color: t.fg,
+              }}
             />
           </Field>
 
@@ -289,7 +297,12 @@ export function AlgerianCheckoutForm({
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
               placeholder="Benali"
-              className="w-full rounded-2xl border border-zinc-700 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-zinc-500 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+              className="w-full rounded-2xl border px-4 py-3 text-sm outline-none transition"
+              style={{
+                borderColor: t.border,
+                backgroundColor: t.isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
+                color: t.fg,
+              }}
             />
           </Field>
         </div>
@@ -307,7 +320,12 @@ export function AlgerianCheckoutForm({
               onChange={(e) => setPhone(e.target.value)}
               placeholder="0555 12 34 56"
               inputMode="tel"
-              className="w-full rounded-2xl border border-zinc-700 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-zinc-500 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+              className="w-full rounded-2xl border px-4 py-3 text-sm outline-none transition"
+              style={{
+                borderColor: t.border,
+                backgroundColor: t.isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
+                color: t.fg,
+              }}
             />
           </Field>
         </div>
@@ -330,10 +348,10 @@ export function AlgerianCheckoutForm({
               searchPlaceholder={tr("storefront.cod.searchWilaya")}
               emptyMessage={tr("storefront.cod.noWilaya")}
               triggerStyle={{
-                backgroundColor: "rgba(0,0,0,0.4)",
-                border: "1px solid rgb(63 63 70)",
+                backgroundColor: t.isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
+                border: `1px solid ${t.border}`,
                 borderRadius: 16,
-                color: "white",
+                color: t.fg,
               }}
             />
           </Field>
@@ -357,10 +375,10 @@ export function AlgerianCheckoutForm({
               emptyMessage={tr("storefront.cod.noCity")}
               disabled={!wilaya}
               triggerStyle={{
-                backgroundColor: "rgba(0,0,0,0.4)",
-                border: "1px solid rgb(63 63 70)",
+                backgroundColor: t.isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
+                border: `1px solid ${t.border}`,
                 borderRadius: 16,
-                color: "white",
+                color: t.fg,
               }}
             />
           </Field>
@@ -377,9 +395,14 @@ export function AlgerianCheckoutForm({
                 onClick={() => setDeliveryType("domicile")}
                 className={`rounded-2xl border p-4 transition-all duration-300 ${
                   deliveryType === "domicile"
-                    ? "border-orange-400 bg-gradient-to-br from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/30"
-                    : "border-zinc-700 bg-zinc-900/70 text-zinc-300 hover:border-orange-400"
+                    ? "text-white shadow-lg"
+                    : "hover:border-orange-400"
                 }`}
+                style={{
+                  borderColor: deliveryType === "domicile" ? t.primary : t.border,
+                  backgroundColor: deliveryType === "domicile" ? t.primary : t.surface,
+                  color: deliveryType === "domicile" ? t.onPrimary : t.muted,
+                }}
               >
                 <div className="flex flex-col items-center gap-2">
                   <Home className="h-5 w-5" />
@@ -394,9 +417,14 @@ export function AlgerianCheckoutForm({
                 onClick={() => setDeliveryType("stopdesk")}
                 className={`rounded-2xl border p-4 transition-all duration-300 ${
                   deliveryType === "stopdesk"
-                    ? "border-orange-400 bg-gradient-to-br from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/30"
-                    : "border-zinc-700 bg-zinc-900/70 text-zinc-300 hover:border-orange-400"
+                    ? "text-white shadow-lg"
+                    : "hover:border-orange-400"
                 }`}
+                style={{
+                  borderColor: deliveryType === "stopdesk" ? t.primary : t.border,
+                  backgroundColor: deliveryType === "stopdesk" ? t.primary : t.surface,
+                  color: deliveryType === "stopdesk" ? t.onPrimary : t.muted,
+                }}
               >
                 <div className="flex flex-col items-center gap-2">
                   <Building2 className="h-5 w-5" />
@@ -409,16 +437,16 @@ export function AlgerianCheckoutForm({
           </Field>
         </div>
 
-        <div className="relative z-10 rounded-2xl border border-zinc-800 bg-black/30 p-5 backdrop-blur-sm">
-          <div className="flex items-center justify-between text-sm text-zinc-400">
+        <div className="relative z-10 rounded-2xl border p-5 backdrop-blur-sm" style={{ borderColor: t.border, backgroundColor: t.surface }}>
+          <div className="flex items-center justify-between text-sm" style={{ color: t.muted }}>
             <span>{tr("storefront.cod.subtotal")}</span>
-            <span className="text-white">{subtotal.toFixed(2)} DA</span>
+            <span style={{ color: t.fg }}>{subtotal.toFixed(2)} DA</span>
           </div>
 
-          <div className="mt-3 flex items-center justify-between text-sm text-zinc-400">
+          <div className="mt-3 flex items-center justify-between text-sm" style={{ color: t.muted }}>
             <span>{tr("storefront.cod.shipping")}</span>
 
-            <span className="text-white">
+            <span style={{ color: t.fg }}>
               {!wilaya
                 ? "—"
                 : shippingLoading
@@ -429,12 +457,12 @@ export function AlgerianCheckoutForm({
             </span>
           </div>
 
-          <div className="mt-4 flex items-center justify-between border-t border-zinc-700 pt-4">
-            <div className="text-sm text-zinc-400">
+          <div className="mt-4 flex items-center justify-between border-t pt-4" style={{ borderColor: t.border }}>
+            <div className="text-sm" style={{ color: t.muted }}>
               {tr("storefront.cod.totalLine", { count: quantity })}
             </div>
 
-            <div className="text-2xl font-bold text-white">
+            <div className="text-2xl font-bold" style={{ color: t.fg }}>
               {total.toFixed(2)} DA
             </div>
           </div>

@@ -1,6 +1,6 @@
 /**
  * Layout template registry.
- * Each layout template renders a full storefront homepage with a unique structure.
+ * 10 Algerian-themed storefront layouts, each with unique visual structure.
  */
 import { lazy } from "react";
 import type { LayoutTemplate } from "@/lib/themePresets";
@@ -11,12 +11,16 @@ export const LAYOUT_COMPONENTS: Record<
   LayoutTemplate,
   React.LazyExoticComponent<React.ComponentType<LayoutProps>>
 > = {
-  editorial: lazy(() => import("./EditorialLayout")),
-  "grid-dense": lazy(() => import("./GridDenseLayout")),
-  magazine: lazy(() => import("./MagazineLayout")),
-  showcase: lazy(() => import("./ShowcaseLayout")),
-  storytelling: lazy(() => import("./StorytellingLayout")),
-  catalog: lazy(() => import("./CatalogLayout")),
+  sahara: lazy(() => import("./SaharaLayout")),
+  mediterranean: lazy(() => import("./MediterraneanLayout")),
+  casbah: lazy(() => import("./CasbahLayout")),
+  atlas: lazy(() => import("./AtlasLayout")),
+  tlemcen: lazy(() => import("./TlemcenLayout")),
+  constantine: lazy(() => import("./ConstantineLayout")),
+  oran: lazy(() => import("./OranLayout")),
+  ghardaia: lazy(() => import("./GhardaiaLayout")),
+  kabyle: lazy(() => import("./KabyleLayout")),
+  algiers: lazy(() => import("./AlgiersLayout")),
 };
 
 export interface LayoutProps {

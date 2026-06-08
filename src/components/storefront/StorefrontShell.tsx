@@ -26,6 +26,10 @@ interface Props {
   children: ReactNode;
 }
 
+function isArabic(str: string): boolean {
+  return /[\u0600-\u06FF\u0750-\u077F]/.test(str);
+}
+
 export function StorefrontShell({ settings, children }: Props) {
   useEffect(() => { loadStorefrontFonts(); }, []);
   const { t: tr } = useTranslation();
@@ -36,6 +40,9 @@ export function StorefrontShell({ settings, children }: Props) {
   const navbarStyle: NavbarStyle = (settings as any).navbar_style || "classic";
   const footerStyle: FooterStyle = (settings as any).footer_style || "columns";
 
+  const storeName = settings.store_name || "Store";
+  const isRTL = isArabic(storeName) || isArabic(settings.tagline || "");
+
   const links = navLinks.map((l) => ({ label: l.label, href: l.href }));
   const socialEntries: Array<{ key: string; url: string; Icon: typeof Instagram }> = [
     { key: "instagram", url: socials.instagram ?? "", Icon: Instagram },
@@ -45,12 +52,12 @@ export function StorefrontShell({ settings, children }: Props) {
   ].filter((s) => s.url.trim().length > 0);
 
   const copyright = settings.footer_copyright?.trim()
-    || `© ${new Date().getFullYear()} ${settings.store_name}. ${tr("storefront.footer.rights")}`;
+    || `© ${new Date().getFullYear()} ${storeName}. ${tr("storefront.footer.rights")}`;
 
   const navbarProps = {
     tokens: t,
     logo: settings.logo_url ?? null,
-    brand: settings.store_name || "Store",
+    brand: storeName,
     links,
     cartCount: count,
     slug: settings.slug,
@@ -59,7 +66,7 @@ export function StorefrontShell({ settings, children }: Props) {
 
   const footerProps = {
     tokens: t,
-    brand: settings.store_name || "Store",
+    brand: storeName,
     tagline: settings.tagline || "",
     links,
     socials,
@@ -79,13 +86,16 @@ export function StorefrontShell({ settings, children }: Props) {
     <div
       className="min-h-screen flex flex-col"
       style={{ backgroundColor: t.bg, color: t.fg, fontFamily: t.fontFamily }}
+      dir={isRTL ? "rtl" : "ltr"}
     >
-      <div
-        className="text-center text-xs font-medium tracking-wide py-2.5 px-4"
-        style={{ backgroundColor: t.primary, color: t.onPrimary }}
-      >
-        ✨ {tr("storefront.nav.announcement", { defaultValue: "Free shipping on orders over 5 000 DA" })}
-      </div>
+      {settings.show_newsletter !== false && (
+        <div
+          className="text-center text-xs font-medium tracking-wide py-2.5 px-4"
+          style={{ backgroundColor: t.primary, color: t.onPrimary }}
+        >
+          {tr("storefront.nav.announcement", { defaultValue: "✨ Free shipping on orders over 5 000 DA" })}
+        </div>
+      )}
 
       <NavbarComponent {...navbarProps} />
 
