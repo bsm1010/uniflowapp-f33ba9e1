@@ -162,7 +162,8 @@ export const listSupplyOrders = createServerFn({ method: "POST" })
         "id, user_id, store_id, supply_product_id, quantity, unit_price, " +
           "total_price, status, created_at, updated_at, " +
           "supply_product:supply_marketplace_products!supply_orders_supply_product_id_fkey" +
-          "(id, name, images, category)",
+          "(id, name, images, category), " +
+          "buyer:profiles!supply_orders_user_id_fkey(id, name, email)",
       )
       .order("created_at", { ascending: false })
       .range(data.offset, data.offset + data.limit - 1);
@@ -182,9 +183,24 @@ const UpdateSupplyOrderStatusInput = z.object({
   status: z.enum(["pending", "processing", "shipped", "delivered", "cancelled"]),
 });
 
+const STATUS_LABELS: Record<string, string> = {
+  pending: "بانتظار المعالجة",
+  processing: "قيد المعالجة",
+  shipped: "تم الشحن",
+  delivered: "تم التسليم",
+  cancelled: "تم الإلغاء",
+};
+
 export const updateSupplyOrderStatus = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => UpdateSupplyOrderStatusInput.parse(input))
   .handler(async ({ data }) => {
+    // Fetch order before update to get user_id
+    const { data: existing } = await supabaseAdmin
+      .from("supply_orders")
+      .select("user_id, supply_product_id")
+      .eq("id", data.order_id)
+      .maybeSingle();
+
     const { data: order, error } = await supabaseAdmin
       .from("supply_orders")
       .update({ status: data.status })
@@ -192,6 +208,22 @@ export const updateSupplyOrderStatus = createServerFn({ method: "POST" })
       .select("id, status, created_at, updated_at")
       .single();
     if (error) throw new Error(error.message);
+
+    // Notify the user about the status change
+    if (existing?.user_id) {
+      try {
+        const statusLabel = STATUS_LABELS[data.status] ?? data.status;
+        await supabaseAdmin.from("notifications").insert({
+          user_id: existing.user_id,
+          title: "تحديث حالة طلبية التوريد",
+          message: `تم تحديث حالة طلبتك إلى "${statusLabel}".`,
+          type: data.status === "delivered" ? "success" : data.status === "cancelled" ? "error" : "info",
+        });
+      } catch {
+        // Non-critical
+      }
+    }
+
     return { order };
   });
 
@@ -213,7 +245,7 @@ export const buySupplyProduct = createServerFn({ method: "POST" })
     // Fetch the product
     const { data: product, error: pErr } = await supabaseAdmin
       .from("supply_marketplace_products")
-      .select("id, price, stock, status")
+      .select("id, name, price, stock, status")
       .eq("id", data.supply_product_id)
       .maybeSingle();
     if (pErr) throw new Error(pErr.message);
@@ -274,6 +306,43 @@ export const buySupplyProduct = createServerFn({ method: "POST" })
       .select("id, status, created_at")
       .single();
     if (oErr) throw new Error(oErr.message);
+
+    // Notify all admins about the new supply purchase
+    try {
+      const { data: admins } = await supabaseAdmin
+        .from("user_roles")
+        .select("user_id")
+        .in("role", ["admin", "marketplace_admin"]);
+      if (admins && admins.length > 0) {
+        const { data: buyer } = await supabaseAdmin
+          .from("profiles")
+          .select("name, email")
+          .eq("id", data.user_id)
+          .maybeSingle();
+        const buyerName = buyer?.name ?? buyer?.email ?? "مستخدم";
+        const notifRows = admins.map((a) => ({
+          user_id: a.user_id,
+          title: "طلبية توريد جديدة",
+          message: `${buyerName} اشترى ${qty}x ${product.name} بقيمة ${total.toLocaleString("fr-DZ")} DA`,
+          type: "info" as const,
+        }));
+        await supabaseAdmin.from("notifications").insert(notifRows);
+      }
+    } catch {
+      // Non-critical — don't fail the purchase if notification fails
+    }
+
+    // Notify the buyer about their purchase
+    try {
+      await supabaseAdmin.from("notifications").insert({
+        user_id: data.user_id,
+        title: "تم استلام طلبية التوريد",
+        message: `طلبك "${product.name}" (${qty}x) بقيمة ${total.toLocaleString("fr-DZ")} DA قيد المعالجة.`,
+        type: "success" as const,
+      });
+    } catch {
+      // Non-critical
+    }
 
     return { order };
   });

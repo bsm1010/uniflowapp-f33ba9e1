@@ -71,6 +71,16 @@ import {
   type SupplyOrder,
 } from "@/hooks/useDropshipping";
 
+type SupplyOrderWithBuyer = SupplyOrder & {
+  supply_product: {
+    id: string;
+    name: string;
+    images: string[];
+    category: string | null;
+  } | null;
+  buyer: { id: string; name: string | null; email: string | null } | null;
+};
+
 export const Route = createFileRoute("/dashboard/admin/supply-marketplace")({
   component: AdminSupplyMarketplacePage,
 });
@@ -131,17 +141,7 @@ function AdminSupplyMarketplacePage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<SupplyMarketplaceProduct | null>(null);
   const [deleting, setDeleting] = useState<SupplyMarketplaceProduct | null>(null);
-  const [selectedOrder, setSelectedOrder] = useState<
-    | (SupplyOrder & {
-        supply_product: {
-          id: string;
-          name: string;
-          images: string[];
-          category: string | null;
-        } | null;
-      })
-    | null
-  >(null);
+  const [selectedOrder, setSelectedOrder] = useState<SupplyOrderWithBuyer | null>(null);
 
   // Admin role check
   useEffect(() => {
@@ -498,6 +498,7 @@ function AdminSupplyMarketplacePage() {
                       <TableRow className="bg-muted/40 hover:bg-muted/40">
                         <TableHead className="text-right">رقم الطلبية</TableHead>
                         <TableHead className="text-right">المنتج</TableHead>
+                        <TableHead className="text-right">المشتري</TableHead>
                         <TableHead className="text-right">الكمية</TableHead>
                         <TableHead className="text-right">السعر الإجمالي</TableHead>
                         <TableHead className="text-right">التاريخ</TableHead>
@@ -532,6 +533,14 @@ function AdminSupplyMarketplacePage() {
                               <span className="text-sm font-medium">
                                 {o.supply_product?.name ?? "—"}
                               </span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-sm">
+                            <div className="min-w-0">
+                              <p className="font-medium truncate">{o.buyer?.name ?? "بدون اسم"}</p>
+                              <p className="text-[11px] text-muted-foreground truncate">
+                                {o.buyer?.email ?? "—"}
+                              </p>
                             </div>
                           </TableCell>
                           <TableCell className="text-sm" dir="ltr">
@@ -631,10 +640,33 @@ function AdminSupplyMarketplacePage() {
           </DialogHeader>
           {selectedOrder && (
             <div className="space-y-4">
+              {/* Buyer Info */}
+              <div className="rounded-lg border border-border/60 p-3 bg-muted/20">
+                <p className="text-[11px] text-muted-foreground mb-1.5">المشتري</p>
+                <div className="flex items-center gap-3">
+                  <div className="h-9 w-9 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 grid place-items-center text-xs font-bold text-primary shrink-0">
+                    {selectedOrder.buyer?.name?.[0] ?? selectedOrder.buyer?.email?.[0] ?? "?"}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium truncate">
+                      {selectedOrder.buyer?.name ?? "بدون اسم"}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {selectedOrder.buyer?.email ?? "—"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Order Details */}
               <div className="grid grid-cols-2 gap-2 text-sm rounded-lg border border-border/60 p-3">
                 <div>
                   <p className="text-[11px] text-muted-foreground">المنتج</p>
                   <p className="font-medium">{selectedOrder.supply_product?.name ?? "—"}</p>
+                </div>
+                <div>
+                  <p className="text-[11px] text-muted-foreground">الفئة</p>
+                  <p className="font-medium">{selectedOrder.supply_product?.category ?? "—"}</p>
                 </div>
                 <div>
                   <p className="text-[11px] text-muted-foreground">الكمية</p>
@@ -653,6 +685,10 @@ function AdminSupplyMarketplacePage() {
                   <p dir="ltr" className="text-end font-bold">
                     {formatPrice(Number(selectedOrder.total_price))}
                   </p>
+                </div>
+                <div>
+                  <p className="text-[11px] text-muted-foreground">التاريخ</p>
+                  <p className="text-xs">{formatDate(selectedOrder.created_at)}</p>
                 </div>
               </div>
 

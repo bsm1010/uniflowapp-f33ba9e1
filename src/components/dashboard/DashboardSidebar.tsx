@@ -202,6 +202,12 @@ export function DashboardSidebar() {
           gradient: "from-sky-500 to-indigo-500",
         },
         {
+          title: "سوق التوريد",
+          url: "/dashboard/supply-orders",
+          icon: Store,
+          gradient: "from-amber-500 to-orange-500",
+        },
+        {
           title: "Returns & Refunds",
           url: "/dashboard/returns",
           icon: RotateCcw,

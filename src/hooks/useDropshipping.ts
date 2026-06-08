@@ -746,6 +746,7 @@ export function useAdminSupplyOrders(
 ): UseQueryResult<
   (SupplyOrder & {
     supply_product: Pick<SupplyMarketplaceProduct, "id" | "name" | "images" | "category"> | null;
+    buyer: { id: string; name: string | null; email: string | null } | null;
   })[]
 > {
   const { user } = useAuth();
@@ -762,6 +763,7 @@ export function useAdminSupplyOrders(
             SupplyMarketplaceProduct,
             "id" | "name" | "images" | "category"
           > | null;
+          buyer: { id: string; name: string | null; email: string | null } | null;
         })[];
       } catch (e) {
         console.error(
@@ -948,7 +950,46 @@ export function useBuySupplyProduct() {
       qc.invalidateQueries({ queryKey: [...dropshippingKeys.all, "my-wallet", user?.id] });
       qc.invalidateQueries({ queryKey: [...dropshippingKeys.all, "my-wallet-tx", user?.id] });
       qc.invalidateQueries({ queryKey: [...dropshippingKeys.all, "admin-supply-orders"] });
+      qc.invalidateQueries({ queryKey: [...dropshippingKeys.all, "my-supply-orders", user?.id] });
       qc.invalidateQueries({ queryKey: dropshippingKeys.supplyProducts() });
+    },
+  });
+}
+
+/** User: their own supply orders. */
+export function useMySupplyOrders(): UseQueryResult<
+  (SupplyOrder & {
+    supply_product: Pick<
+      SupplyMarketplaceProduct,
+      "id" | "name" | "images" | "price" | "category"
+    > | null;
+  })[]
+> {
+  const { user } = useAuth();
+  return useQuery({
+    queryKey: [...dropshippingKeys.all, "my-supply-orders", user?.id ?? "anon"],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("supply_orders")
+        .select(
+          "id, user_id, store_id, supply_product_id, quantity, unit_price, " +
+            "total_price, status, created_at, updated_at, " +
+            "supply_product:supply_marketplace_products!supply_orders_supply_product_id_fkey" +
+            "(id, name, images, price, category)",
+        )
+        .eq("user_id", user!.id)
+        .order("created_at", { ascending: false });
+      if (error) {
+        console.error("[useMySupplyOrders] Query error:", error.message);
+        return [];
+      }
+      return (data ?? []) as unknown as (SupplyOrder & {
+        supply_product: Pick<
+          SupplyMarketplaceProduct,
+          "id" | "name" | "images" | "price" | "category"
+        > | null;
+      })[];
     },
   });
 }

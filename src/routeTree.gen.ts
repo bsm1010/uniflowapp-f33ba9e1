@@ -27,6 +27,7 @@ import { Route as DashboardUpgradeRouteImport } from './routes/dashboard.upgrade
 import { Route as DashboardThemesRouteImport } from './routes/dashboard.themes'
 import { Route as DashboardThemePresetsRouteImport } from './routes/dashboard.theme-presets'
 import { Route as DashboardThemeManagerRouteImport } from './routes/dashboard.theme-manager'
+import { Route as DashboardSupplyOrdersRouteImport } from './routes/dashboard.supply-orders'
 import { Route as DashboardStoreSettingsRouteImport } from './routes/dashboard.store-settings'
 import { Route as DashboardStoreRouteImport } from './routes/dashboard.store'
 import { Route as DashboardStockAlertsRouteImport } from './routes/dashboard.stock-alerts'
@@ -198,6 +199,11 @@ const DashboardThemePresetsRoute = DashboardThemePresetsRouteImport.update({
 const DashboardThemeManagerRoute = DashboardThemeManagerRouteImport.update({
   id: '/theme-manager',
   path: '/theme-manager',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardSupplyOrdersRoute = DashboardSupplyOrdersRouteImport.update({
+  id: '/supply-orders',
+  path: '/supply-orders',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardStoreSettingsRoute = DashboardStoreSettingsRouteImport.update({
@@ -682,6 +688,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/stock-alerts': typeof DashboardStockAlertsRoute
   '/dashboard/store': typeof DashboardStoreRoute
   '/dashboard/store-settings': typeof DashboardStoreSettingsRoute
+  '/dashboard/supply-orders': typeof DashboardSupplyOrdersRoute
   '/dashboard/theme-manager': typeof DashboardThemeManagerRoute
   '/dashboard/theme-presets': typeof DashboardThemePresetsRoute
   '/dashboard/themes': typeof DashboardThemesRoute
@@ -781,6 +788,7 @@ export interface FileRoutesByTo {
   '/dashboard/stock-alerts': typeof DashboardStockAlertsRoute
   '/dashboard/store': typeof DashboardStoreRoute
   '/dashboard/store-settings': typeof DashboardStoreSettingsRoute
+  '/dashboard/supply-orders': typeof DashboardSupplyOrdersRoute
   '/dashboard/theme-manager': typeof DashboardThemeManagerRoute
   '/dashboard/theme-presets': typeof DashboardThemePresetsRoute
   '/dashboard/themes': typeof DashboardThemesRoute
@@ -884,6 +892,7 @@ export interface FileRoutesById {
   '/dashboard/stock-alerts': typeof DashboardStockAlertsRoute
   '/dashboard/store': typeof DashboardStoreRoute
   '/dashboard/store-settings': typeof DashboardStoreSettingsRoute
+  '/dashboard/supply-orders': typeof DashboardSupplyOrdersRoute
   '/dashboard/theme-manager': typeof DashboardThemeManagerRoute
   '/dashboard/theme-presets': typeof DashboardThemePresetsRoute
   '/dashboard/themes': typeof DashboardThemesRoute
@@ -988,6 +997,7 @@ export interface FileRouteTypes {
     | '/dashboard/stock-alerts'
     | '/dashboard/store'
     | '/dashboard/store-settings'
+    | '/dashboard/supply-orders'
     | '/dashboard/theme-manager'
     | '/dashboard/theme-presets'
     | '/dashboard/themes'
@@ -1087,6 +1097,7 @@ export interface FileRouteTypes {
     | '/dashboard/stock-alerts'
     | '/dashboard/store'
     | '/dashboard/store-settings'
+    | '/dashboard/supply-orders'
     | '/dashboard/theme-manager'
     | '/dashboard/theme-presets'
     | '/dashboard/themes'
@@ -1189,6 +1200,7 @@ export interface FileRouteTypes {
     | '/dashboard/stock-alerts'
     | '/dashboard/store'
     | '/dashboard/store-settings'
+    | '/dashboard/supply-orders'
     | '/dashboard/theme-manager'
     | '/dashboard/theme-presets'
     | '/dashboard/themes'
@@ -1410,6 +1422,13 @@ declare module '@tanstack/react-router' {
       path: '/theme-manager'
       fullPath: '/dashboard/theme-manager'
       preLoaderRoute: typeof DashboardThemeManagerRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/supply-orders': {
+      id: '/dashboard/supply-orders'
+      path: '/supply-orders'
+      fullPath: '/dashboard/supply-orders'
+      preLoaderRoute: typeof DashboardSupplyOrdersRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/store-settings': {
@@ -2082,6 +2101,7 @@ interface DashboardRouteChildren {
   DashboardStockAlertsRoute: typeof DashboardStockAlertsRoute
   DashboardStoreRoute: typeof DashboardStoreRoute
   DashboardStoreSettingsRoute: typeof DashboardStoreSettingsRoute
+  DashboardSupplyOrdersRoute: typeof DashboardSupplyOrdersRoute
   DashboardThemeManagerRoute: typeof DashboardThemeManagerRoute
   DashboardThemePresetsRoute: typeof DashboardThemePresetsRoute
   DashboardThemesRoute: typeof DashboardThemesRoute
@@ -2130,6 +2150,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardStockAlertsRoute: DashboardStockAlertsRoute,
   DashboardStoreRoute: DashboardStoreRoute,
   DashboardStoreSettingsRoute: DashboardStoreSettingsRoute,
+  DashboardSupplyOrdersRoute: DashboardSupplyOrdersRoute,
   DashboardThemeManagerRoute: DashboardThemeManagerRoute,
   DashboardThemePresetsRoute: DashboardThemePresetsRoute,
   DashboardThemesRoute: DashboardThemesRoute,
