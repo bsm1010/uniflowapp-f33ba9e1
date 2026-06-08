@@ -22,6 +22,7 @@ import {
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { useCurrentStore } from "@/hooks/use-current-store";
 import { PageHeader, EmptyState } from "@/components/dashboard/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -199,13 +200,17 @@ function PipelineSteps({ status }: { status: string }) {
 
 function DropshipOrdersPage() {
   const { user } = useAuth();
+  const { currentStore, loading: storeLoading } = useCurrentStore();
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [confirmingPay, setConfirmingPay] = useState<DropshipOrder | null>(null);
   const [topupOpen, setTopupOpen] = useState(false);
   const [topupAmount, setTopupAmount] = useState<string>("");
   const [topupReference, setTopupReference] = useState<string>("");
 
-  const { data: orders = [], isLoading: ordersLoading } = useMyDropshipOrders();
+  const { data: orders = [], isLoading: ordersLoading } = useMyDropshipOrders(
+    statusFilter === "all" ? undefined : statusFilter,
+    currentStore?.id,
+  );
   const { data: wallet } = useMyWallet();
   const { data: walletTx = [] } = useMyWalletTransactions();
   const { data: topupRequests = [] } = useMyTopupRequests();
@@ -221,8 +226,12 @@ function DropshipOrdersPage() {
     () => ({
       pending_payment: orders.filter((o) => o.status === "pending_payment").length,
       paid_by_reseller: orders.filter((o) => o.status === "paid_by_reseller").length,
+      purchased_by_admin: orders.filter((o) => o.status === "purchased_by_admin").length,
+      shipped: orders.filter((o) => o.status === "shipped").length,
       delivered: orders.filter((o) => o.status === "delivered").length,
       refused: orders.filter((o) => o.status === "refused").length,
+      in_stock_buffer: orders.filter((o) => o.status === "in_stock_buffer").length,
+      returned_to_reseller: orders.filter((o) => o.status === "returned_to_reseller").length,
     }),
     [orders],
   );
@@ -263,6 +272,22 @@ function DropshipOrdersPage() {
   };
 
   if (!user) return null;
+  if (storeLoading) {
+    return (
+      <div className="max-w-7xl mx-auto" dir="rtl">
+        <PageHeader
+          eyebrow="Dropshipping"
+          title="طلبات التوريد"
+          description="تابع طلبيات زبائنك وادفع ثمنها من محفظتك"
+          icon={ShoppingBag}
+          gradient="from-sky-500 via-blue-500 to-indigo-500"
+        />
+        <div className="flex h-64 items-center justify-center">
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto" dir="rtl">
@@ -279,7 +304,7 @@ function DropshipOrdersPage() {
         }
       />
 
-      {/* Stats */}
+      {/* Stats - RTL order: first in JSX = rightmost visually */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-6">
         <StatCard
           icon={Wallet}
@@ -288,16 +313,22 @@ function DropshipOrdersPage() {
           gradient="from-violet-500 to-fuchsia-500"
         />
         <StatCard
-          icon={Clock}
-          label="بانتظار الدفع"
-          value={counts.pending_payment.toLocaleString("fr-DZ")}
+          icon={RotateCcw}
+          label="أُعيد إليك"
+          value={counts.returned_to_reseller.toLocaleString("fr-DZ")}
+          gradient="from-zinc-500 to-gray-500"
+        />
+        <StatCard
+          icon={RotateCcw}
+          label="في المخزن المؤقت"
+          value={counts.in_stock_buffer.toLocaleString("fr-DZ")}
           gradient="from-amber-500 to-orange-500"
         />
         <StatCard
-          icon={CheckCircle2}
-          label="مدفوعة"
-          value={counts.paid_by_reseller.toLocaleString("fr-DZ")}
-          gradient="from-sky-500 to-blue-500"
+          icon={XCircle}
+          label="مرفوضة"
+          value={counts.refused.toLocaleString("fr-DZ")}
+          gradient="from-rose-500 to-pink-500"
         />
         <StatCard
           icon={PackageCheck}
@@ -306,10 +337,28 @@ function DropshipOrdersPage() {
           gradient="from-emerald-500 to-teal-500"
         />
         <StatCard
-          icon={XCircle}
-          label="مرفوضة"
-          value={counts.refused.toLocaleString("fr-DZ")}
-          gradient="from-rose-500 to-pink-500"
+          icon={Truck}
+          label="تم الشحن"
+          value={counts.shipped.toLocaleString("fr-DZ")}
+          gradient="from-blue-500 to-cyan-500"
+        />
+        <StatCard
+          icon={PackageCheck}
+          label="تم الشراء"
+          value={counts.purchased_by_admin.toLocaleString("fr-DZ")}
+          gradient="from-indigo-500 to-violet-500"
+        />
+        <StatCard
+          icon={CheckCircle2}
+          label="مدفوعة"
+          value={counts.paid_by_reseller.toLocaleString("fr-DZ")}
+          gradient="from-sky-500 to-blue-500"
+        />
+        <StatCard
+          icon={Clock}
+          label="بانتظار الدفع"
+          value={counts.pending_payment.toLocaleString("fr-DZ")}
+          gradient="from-amber-500 to-orange-500"
         />
       </div>
 

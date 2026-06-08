@@ -68,8 +68,8 @@ export const dropshippingKeys = {
     [...dropshippingKeys.all, "products", filters ?? {}] as const,
   myListings: (resellerId?: string) =>
     [...dropshippingKeys.all, "my-listings", resellerId ?? "anon"] as const,
-  myOrders: (resellerId?: string, status?: string) =>
-    [...dropshippingKeys.all, "my-orders", resellerId ?? "anon", status ?? "all"] as const,
+  myOrders: (resellerId?: string, status?: string, storeId?: string) =>
+    [...dropshippingKeys.all, "my-orders", resellerId ?? "anon", status ?? "all", storeId ?? "all"] as const,
   myWallet: (resellerId?: string) =>
     [...dropshippingKeys.all, "my-wallet", resellerId ?? "anon"] as const,
   myWalletTx: (resellerId?: string) =>
@@ -153,13 +153,14 @@ export function useMyResellerListings(): UseQueryResult<ResellerListingWithProdu
   });
 }
 
-/** Reseller's own dropship orders, optionally filtered by status. */
+/** Reseller's own dropship orders, optionally filtered by status and store. */
 export function useMyDropshipOrders(
   status?: string,
+  storeId?: string,
 ): UseQueryResult<DropshipOrderWithListing[]> {
   const { user } = useAuth();
   return useQuery({
-    queryKey: dropshippingKeys.myOrders(user?.id, status),
+    queryKey: dropshippingKeys.myOrders(user?.id, status, storeId),
     enabled: !!user,
     queryFn: async () => {
       let q = supabase
@@ -176,6 +177,7 @@ export function useMyDropshipOrders(
         .eq("reseller_id", user!.id)
         .order("created_at", { ascending: false });
       if (status) q = q.eq("status", status);
+      if (storeId) q = q.eq("reseller_listing.store_id", storeId);
       const { data, error } = await q;
       if (error) {
         console.error("[useMyDropshipOrders] Query error:", error.message);
