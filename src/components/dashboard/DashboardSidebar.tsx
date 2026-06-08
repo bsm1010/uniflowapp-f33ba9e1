@@ -57,11 +57,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Switch } from "@/components/ui/switch";
 
 type NavItem = {
@@ -97,7 +93,9 @@ export function DashboardSidebar() {
 
   useEffect(() => {
     let stored: string | null = null;
-    try { stored = localStorage.getItem("sidebar-purple"); } catch {}
+    try {
+      stored = localStorage.getItem("sidebar-purple");
+    } catch {}
     const enabled = stored === "true";
     setPurpleSidebar(enabled);
     document.documentElement.setAttribute("data-sidebar-purple", String(enabled));
@@ -106,80 +104,274 @@ export function DashboardSidebar() {
   const togglePurple = (checked: boolean) => {
     setPurpleSidebar(checked);
     document.documentElement.setAttribute("data-sidebar-purple", String(checked));
-    try { localStorage.setItem("sidebar-purple", String(checked)); } catch {}
+    try {
+      localStorage.setItem("sidebar-purple", String(checked));
+    } catch {}
   };
 
   const groups: NavGroup[] = [
     {
       label: "Workspace",
       items: [
-        { title: t("dashboard.nav.dashboard"), url: "/dashboard", icon: LayoutDashboard, end: true, gradient: "from-violet-500 to-fuchsia-500", tourId: "dashboard" },
-        { title: t("dashboard.nav.store"), url: "/dashboard/store", icon: Store, gradient: "from-indigo-500 to-blue-500" },
-        { title: "Notifications", url: "/dashboard/notifications", icon: Bell, gradient: "from-violet-500 to-indigo-500" },
-        { title: t("dashboard.nav.customize"), url: "/customize", icon: Palette, external: true, gradient: "from-teal-500 to-emerald-500", tourId: "customize" },
+        {
+          title: t("dashboard.nav.dashboard"),
+          url: "/dashboard",
+          icon: LayoutDashboard,
+          end: true,
+          gradient: "from-violet-500 to-fuchsia-500",
+          tourId: "dashboard",
+        },
+        {
+          title: t("dashboard.nav.store"),
+          url: "/dashboard/store",
+          icon: Store,
+          gradient: "from-indigo-500 to-blue-500",
+        },
+        {
+          title: "Notifications",
+          url: "/dashboard/notifications",
+          icon: Bell,
+          gradient: "from-violet-500 to-indigo-500",
+        },
+        {
+          title: t("dashboard.nav.customize"),
+          url: "/customize",
+          icon: Palette,
+          external: true,
+          gradient: "from-teal-500 to-emerald-500",
+          tourId: "customize",
+        },
       ],
     },
     {
       label: "Catalog",
       items: [
-        { title: t("dashboard.nav.products"), url: "/dashboard/products", icon: Package, gradient: "from-emerald-500 to-teal-500", tourId: "products" },
-        { title: t("dashboard.nav.categories"), url: "/dashboard/categories", icon: Tag, gradient: "from-amber-500 to-orange-500" },
-        { title: "سوق التوريد", url: "/dashboard/marketplace", icon: PackageOpen, gradient: "from-orange-500 to-rose-500" },
-        { title: t("dashboard.nav.themePresets"), url: "/dashboard/theme-presets", icon: Sparkles, gradient: "from-fuchsia-500 to-purple-500" },
-        { title: "Theme Manager", url: "/dashboard/theme-manager", icon: Palette, gradient: "from-violet-500 to-fuchsia-500" },
-        { title: "Section Builder", url: "/dashboard/builder", icon: Layers, gradient: "from-violet-500 to-fuchsia-500" },
+        {
+          title: t("dashboard.nav.products"),
+          url: "/dashboard/products",
+          icon: Package,
+          gradient: "from-emerald-500 to-teal-500",
+          tourId: "products",
+        },
+        {
+          title: t("dashboard.nav.categories"),
+          url: "/dashboard/categories",
+          icon: Tag,
+          gradient: "from-amber-500 to-orange-500",
+        },
+        {
+          title: "سوق التوريد",
+          url: "/dashboard/marketplace",
+          icon: PackageOpen,
+          gradient: "from-orange-500 to-rose-500",
+        },
+        {
+          title: t("dashboard.nav.themePresets"),
+          url: "/dashboard/theme-presets",
+          icon: Sparkles,
+          gradient: "from-fuchsia-500 to-purple-500",
+        },
+        {
+          title: "Theme Manager",
+          url: "/dashboard/theme-manager",
+          icon: Palette,
+          gradient: "from-violet-500 to-fuchsia-500",
+        },
+        {
+          title: "Section Builder",
+          url: "/dashboard/builder",
+          icon: Layers,
+          gradient: "from-violet-500 to-fuchsia-500",
+        },
       ],
     },
     {
       label: "Operations",
       items: [
-        { title: t("dashboard.nav.orders"), url: "/dashboard/orders", icon: ShoppingBag, gradient: "from-pink-500 to-rose-500", tourId: "orders" },
-        { title: "طلبات التوريد", url: "/dashboard/dropship-orders", icon: Banknote, gradient: "from-sky-500 to-indigo-500" },
-        { title: "Returns & Refunds", url: "/dashboard/returns", icon: RotateCcw, gradient: "from-rose-500 to-pink-500" },
-        { title: "Stock Alerts", url: "/dashboard/stock-alerts", icon: AlertTriangle, gradient: "from-amber-500 to-red-500" },
-        { title: "Shipping", url: "/dashboard/shipping", icon: Truck, gradient: "from-green-500 to-emerald-500", tourId: "shipping" },
-        { title: "Shipments", url: "/dashboard/shipments", icon: Package, gradient: "from-sky-500 to-indigo-500" },
-        { title: t("dashboard.nav.customers"), url: "/dashboard/customers", icon: Users, gradient: "from-sky-500 to-cyan-500" },
+        {
+          title: t("dashboard.nav.orders"),
+          url: "/dashboard/orders",
+          icon: ShoppingBag,
+          gradient: "from-pink-500 to-rose-500",
+          tourId: "orders",
+        },
+        {
+          title: "طلبات التوريد",
+          url: "/dashboard/dropship-orders",
+          icon: Banknote,
+          gradient: "from-sky-500 to-indigo-500",
+        },
+        {
+          title: "Returns & Refunds",
+          url: "/dashboard/returns",
+          icon: RotateCcw,
+          gradient: "from-rose-500 to-pink-500",
+        },
+        {
+          title: "Stock Alerts",
+          url: "/dashboard/stock-alerts",
+          icon: AlertTriangle,
+          gradient: "from-amber-500 to-red-500",
+        },
+        {
+          title: "Shipping",
+          url: "/dashboard/shipping",
+          icon: Truck,
+          gradient: "from-green-500 to-emerald-500",
+          tourId: "shipping",
+        },
+        {
+          title: "Shipments",
+          url: "/dashboard/shipments",
+          icon: Package,
+          gradient: "from-sky-500 to-indigo-500",
+        },
+        {
+          title: t("dashboard.nav.customers"),
+          url: "/dashboard/customers",
+          icon: Users,
+          gradient: "from-sky-500 to-cyan-500",
+        },
       ],
     },
     {
       label: "AI Tools",
       items: [
-        { title: "AI Sales Agent", url: "/dashboard/ai-agent", icon: Bot, gradient: "from-violet-500 to-indigo-600" },
-        { title: t("dashboard.nav.landingGenerator"), url: "/dashboard/landing-generator", icon: Wand2, gradient: "from-purple-500 to-indigo-500" },
-        { title: "AI Voice Generator", url: "/dashboard/voice-generator", icon: Mic, gradient: "from-pink-500 to-purple-500" },
+        {
+          title: "AI Sales Agent",
+          url: "/dashboard/ai-agent",
+          icon: Bot,
+          gradient: "from-violet-500 to-indigo-600",
+        },
+        {
+          title: t("dashboard.nav.landingGenerator"),
+          url: "/dashboard/landing-generator",
+          icon: Wand2,
+          gradient: "from-purple-500 to-indigo-500",
+        },
+        {
+          title: "AI Voice Generator",
+          url: "/dashboard/voice-generator",
+          icon: Mic,
+          gradient: "from-pink-500 to-purple-500",
+        },
       ],
     },
     {
       label: "Marketing",
       items: [
-        { title: t("dashboard.nav.analytics"), url: "/dashboard/analytics", icon: BarChart3, gradient: "from-orange-500 to-red-500" },
-        { title: t("dashboard.nav.aboutPage"), url: "/dashboard/about", icon: FileText, gradient: "from-blue-500 to-sky-500" },
-        { title: t("dashboard.nav.contactPage"), url: "/dashboard/contact", icon: Mail, gradient: "from-cyan-500 to-blue-500" },
+        {
+          title: t("dashboard.nav.analytics"),
+          url: "/dashboard/analytics",
+          icon: BarChart3,
+          gradient: "from-orange-500 to-red-500",
+        },
+        {
+          title: t("dashboard.nav.aboutPage"),
+          url: "/dashboard/about",
+          icon: FileText,
+          gradient: "from-blue-500 to-sky-500",
+        },
+        {
+          title: t("dashboard.nav.contactPage"),
+          url: "/dashboard/contact",
+          icon: Mail,
+          gradient: "from-cyan-500 to-blue-500",
+        },
       ],
     },
     {
       label: "Rewards",
       items: [
-        { title: "Progress Hub", url: "/dashboard/gamification", icon: Zap, gradient: "from-violet-500 to-amber-400" },
-        { title: "Quests", url: "/dashboard/quests", icon: Flame, gradient: "from-blue-500 to-cyan-500" },
-        { title: "Achievements", url: "/dashboard/achievements", icon: Trophy, gradient: "from-amber-500 to-orange-500" },
+        {
+          title: "Progress Hub",
+          url: "/dashboard/gamification",
+          icon: Zap,
+          gradient: "from-violet-500 to-amber-400",
+        },
+        {
+          title: "Quests",
+          url: "/dashboard/quests",
+          icon: Flame,
+          gradient: "from-blue-500 to-cyan-500",
+        },
+        {
+          title: "Achievements",
+          url: "/dashboard/achievements",
+          icon: Trophy,
+          gradient: "from-amber-500 to-orange-500",
+        },
       ],
     },
     {
       label: "Settings",
       items: [
-        { title: "Custom Domains", url: "/dashboard/domains", icon: Globe, gradient: "from-sky-500 to-blue-600" },
-        { title: t("dashboard.nav.database"), url: "/dashboard/database", icon: Database, gradient: "from-slate-600 to-slate-800" },
-        { title: t("dashboard.nav.appStore"), url: "/dashboard/apps", icon: Blocks, gradient: "from-violet-500 to-purple-500" },
-        { title: "Marketplace", url: "/dashboard/apps/marketplace", icon: StoreIcon, gradient: "from-purple-500 to-pink-500" },
-        { title: "Developer", url: "/dashboard/developer", icon: Code2, gradient: "from-fuchsia-500 to-violet-500" },
-        { title: t("dashboard.nav.progress", "Progress"), url: "/dashboard/progress", icon: Trophy, gradient: "from-purple-500 to-pink-500" },
-        { title: t("dashboard.nav.credits"), url: "/dashboard/credits", icon: Coins, gradient: "from-yellow-500 to-amber-500" },
-        { title: t("dashboard.nav.referrals"), url: "/dashboard/referrals", icon: Gift, gradient: "from-rose-500 to-pink-500" },
-        { title: "GDPR & Privacy", url: "/dashboard/gdpr", icon: Shield, gradient: "from-red-500 to-rose-500" },
-        { title: "Store Settings", url: "/dashboard/store-settings", icon: StoreIcon, gradient: "from-emerald-500 to-teal-600" },
-        { title: t("dashboard.nav.settings"), url: "/dashboard/settings", icon: Settings, gradient: "from-zinc-500 to-slate-600" },
+        {
+          title: "Custom Domains",
+          url: "/dashboard/domains",
+          icon: Globe,
+          gradient: "from-sky-500 to-blue-600",
+        },
+        {
+          title: t("dashboard.nav.database"),
+          url: "/dashboard/database",
+          icon: Database,
+          gradient: "from-slate-600 to-slate-800",
+        },
+        {
+          title: t("dashboard.nav.appStore"),
+          url: "/dashboard/apps",
+          icon: Blocks,
+          gradient: "from-violet-500 to-purple-500",
+        },
+        {
+          title: "Marketplace",
+          url: "/dashboard/apps/marketplace",
+          icon: StoreIcon,
+          gradient: "from-purple-500 to-pink-500",
+        },
+        {
+          title: "Developer",
+          url: "/dashboard/developer",
+          icon: Code2,
+          gradient: "from-fuchsia-500 to-violet-500",
+        },
+        {
+          title: t("dashboard.nav.progress", "Progress"),
+          url: "/dashboard/progress",
+          icon: Trophy,
+          gradient: "from-purple-500 to-pink-500",
+        },
+        {
+          title: t("dashboard.nav.credits"),
+          url: "/dashboard/credits",
+          icon: Coins,
+          gradient: "from-yellow-500 to-amber-500",
+        },
+        {
+          title: t("dashboard.nav.referrals"),
+          url: "/dashboard/referrals",
+          icon: Gift,
+          gradient: "from-rose-500 to-pink-500",
+        },
+        {
+          title: "GDPR & Privacy",
+          url: "/dashboard/gdpr",
+          icon: Shield,
+          gradient: "from-red-500 to-rose-500",
+        },
+        {
+          title: "Store Settings",
+          url: "/dashboard/store-settings",
+          icon: StoreIcon,
+          gradient: "from-emerald-500 to-teal-600",
+        },
+        {
+          title: t("dashboard.nav.settings"),
+          url: "/dashboard/settings",
+          icon: Settings,
+          gradient: "from-zinc-500 to-slate-600",
+        },
       ],
     },
   ];
@@ -201,7 +393,9 @@ export function DashboardSidebar() {
   const renderIcon = (Icon: typeof LayoutDashboard, gradient: string, active: boolean) => (
     <span
       className={`relative flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br ${gradient} text-white shadow-sm transition-all duration-200 ${
-        active ? "shadow-md scale-105" : "opacity-85 group-hover/menu-item:opacity-100 group-hover/menu-item:scale-105"
+        active
+          ? "shadow-md scale-105"
+          : "opacity-85 group-hover/menu-item:opacity-100 group-hover/menu-item:scale-105"
       }`}
     >
       <Icon className="h-3.5 w-3.5" />
@@ -219,7 +413,13 @@ export function DashboardSidebar() {
       <SidebarMenuItem key={item.title}>
         <SidebarMenuButton asChild isActive={active} tooltip={item.title} className="h-9">
           {item.external ? (
-            <a href={item.url} target="_blank" rel="noopener noreferrer" className={linkClass} data-tour={item.tourId}>
+            <a
+              href={item.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={linkClass}
+              data-tour={item.tourId}
+            >
               {renderIcon(item.icon, item.gradient, active)}
               <span className="text-sm">{item.title}</span>
             </a>
@@ -263,11 +463,7 @@ export function DashboardSidebar() {
               </span>
               <span className="text-xs font-medium text-sidebar-foreground/80">Purple sidebar</span>
             </div>
-            <Switch
-              checked={purpleSidebar}
-              onCheckedChange={togglePurple}
-              className="h-5 w-9"
-            />
+            <Switch checked={purpleSidebar} onCheckedChange={togglePurple} className="h-5 w-9" />
           </div>
         )}
       </SidebarHeader>
@@ -309,7 +505,12 @@ export function DashboardSidebar() {
                       const gradient = "from-violet-500 to-fuchsia-500";
                       return (
                         <SidebarMenuItem key={app.key}>
-                          <SidebarMenuButton asChild isActive={active} tooltip={app.name} className="h-9">
+                          <SidebarMenuButton
+                            asChild
+                            isActive={active}
+                            tooltip={app.name}
+                            className="h-9"
+                          >
                             <Link
                               to={url}
                               className={`group/menu-item relative rounded-lg transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
@@ -354,7 +555,11 @@ export function DashboardSidebar() {
                           : "hover:bg-sidebar-accent/50"
                       }`}
                     >
-                      {renderIcon(ShieldCheck, "from-red-500 to-orange-500", isActive("/dashboard/admin/payments"))}
+                      {renderIcon(
+                        ShieldCheck,
+                        "from-red-500 to-orange-500",
+                        isActive("/dashboard/admin/payments"),
+                      )}
                       <span className="text-sm">{t("dashboard.nav.payments")}</span>
                     </Link>
                   </SidebarMenuButton>
@@ -374,7 +579,11 @@ export function DashboardSidebar() {
                           : "hover:bg-sidebar-accent/50"
                       }`}
                     >
-                      {renderIcon(ShieldCheck, "from-purple-500 to-pink-500", isActive("/dashboard/admin/marketplace"))}
+                      {renderIcon(
+                        ShieldCheck,
+                        "from-purple-500 to-pink-500",
+                        isActive("/dashboard/admin/marketplace"),
+                      )}
                       <span className="text-sm">Marketplace Review</span>
                     </Link>
                   </SidebarMenuButton>
@@ -394,7 +603,11 @@ export function DashboardSidebar() {
                           : "hover:bg-sidebar-accent/50"
                       }`}
                     >
-                      {renderIcon(ShoppingBag, "from-rose-500 to-fuchsia-500", isActive("/dashboard/admin/dropship-orders"))}
+                      {renderIcon(
+                        ShoppingBag,
+                        "from-rose-500 to-fuchsia-500",
+                        isActive("/dashboard/admin/dropship-orders"),
+                      )}
                       <span className="text-sm">Dropship Orders</span>
                     </Link>
                   </SidebarMenuButton>
@@ -414,8 +627,36 @@ export function DashboardSidebar() {
                           : "hover:bg-sidebar-accent/50"
                       }`}
                     >
-                      {renderIcon(Wallet, "from-violet-500 to-purple-500", isActive("/dashboard/admin/wallet-topups"))}
+                      {renderIcon(
+                        Wallet,
+                        "from-violet-500 to-purple-500",
+                        isActive("/dashboard/admin/wallet-topups"),
+                      )}
                       <span className="text-sm">Wallet Top-ups</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive("/dashboard/admin/supply-marketplace")}
+                    tooltip="سوق التوريد"
+                    className="h-9"
+                  >
+                    <Link
+                      to="/dashboard/admin/supply-marketplace"
+                      className={`group/menu-item relative rounded-lg transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
+                        isActive("/dashboard/admin/supply-marketplace")
+                          ? "bg-gradient-to-r from-sidebar-accent to-sidebar-accent/40 text-sidebar-accent-foreground font-medium shadow-sm"
+                          : "hover:bg-sidebar-accent/50"
+                      }`}
+                    >
+                      {renderIcon(
+                        Store,
+                        "from-amber-500 to-orange-500",
+                        isActive("/dashboard/admin/supply-marketplace"),
+                      )}
+                      <span className="text-sm">سوق التوريد</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -434,7 +675,11 @@ export function DashboardSidebar() {
                           : "hover:bg-sidebar-accent/50"
                       }`}
                     >
-                      {renderIcon(Blocks, "from-blue-500 to-cyan-500", isActive("/dashboard/admin/apps"))}
+                      {renderIcon(
+                        Blocks,
+                        "from-blue-500 to-cyan-500",
+                        isActive("/dashboard/admin/apps"),
+                      )}
                       <span className="text-sm">Built-in Apps</span>
                     </Link>
                   </SidebarMenuButton>

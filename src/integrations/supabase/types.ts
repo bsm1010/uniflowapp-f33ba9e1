@@ -3647,6 +3647,126 @@ export type Database = {
         }
         Relationships: []
       }
+      supply_marketplace_products: {
+        Row: {
+          id: string
+          name: string
+          description: string | null
+          images: string[]
+          price: number
+          suggested_price: number
+          category: string | null
+          stock: number
+          supplier_name: string | null
+          status: string
+          created_by: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          description?: string | null
+          images?: string[]
+          price: number
+          suggested_price: number
+          category?: string | null
+          stock?: number
+          supplier_name?: string | null
+          status?: string
+          created_by: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string | null
+          images?: string[]
+          price?: number
+          suggested_price?: number
+          category?: string | null
+          stock?: number
+          supplier_name?: string | null
+          status?: string
+          created_by?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      supply_orders: {
+        Row: {
+          id: string
+          user_id: string
+          store_id: string | null
+          supply_product_id: string
+          quantity: number
+          unit_price: number
+          total_price: number
+          status: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          store_id?: string | null
+          supply_product_id: string
+          quantity?: number
+          unit_price: number
+          total_price: number
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          store_id?: string | null
+          supply_product_id?: string
+          quantity?: number
+          unit_price?: number
+          total_price?: number
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_supply_listings: {
+        Row: {
+          id: string
+          user_id: string
+          store_id: string | null
+          supply_product_id: string
+          selling_price: number
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          store_id?: string | null
+          supply_product_id: string
+          selling_price: number
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          store_id?: string | null
+          supply_product_id?: string
+          selling_price?: number
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

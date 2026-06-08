@@ -84,6 +84,7 @@ import { Route as DashboardAppsAiDescriptionsRouteImport } from './routes/dashbo
 import { Route as DashboardAppsAdGeneratorRouteImport } from './routes/dashboard.apps.ad-generator'
 import { Route as DashboardAppsAbandonedCartRouteImport } from './routes/dashboard.apps.abandoned-cart'
 import { Route as DashboardAdminWalletTopupsRouteImport } from './routes/dashboard.admin.wallet-topups'
+import { Route as DashboardAdminSupplyMarketplaceRouteImport } from './routes/dashboard.admin.supply-marketplace'
 import { Route as DashboardAdminPaymentsRouteImport } from './routes/dashboard.admin.payments'
 import { Route as DashboardAdminMarketplaceRouteImport } from './routes/dashboard.admin.marketplace'
 import { Route as DashboardAdminDropshipOrdersRouteImport } from './routes/dashboard.admin.dropship-orders'
@@ -499,6 +500,12 @@ const DashboardAdminWalletTopupsRoute =
     path: '/admin/wallet-topups',
     getParentRoute: () => DashboardRoute,
   } as any)
+const DashboardAdminSupplyMarketplaceRoute =
+  DashboardAdminSupplyMarketplaceRouteImport.update({
+    id: '/admin/supply-marketplace',
+    path: '/admin/supply-marketplace',
+    getParentRoute: () => DashboardRoute,
+  } as any)
 const DashboardAdminPaymentsRoute = DashboardAdminPaymentsRouteImport.update({
   id: '/admin/payments',
   path: '/admin/payments',
@@ -686,6 +693,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/admin/dropship-orders': typeof DashboardAdminDropshipOrdersRoute
   '/dashboard/admin/marketplace': typeof DashboardAdminMarketplaceRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
+  '/dashboard/admin/supply-marketplace': typeof DashboardAdminSupplyMarketplaceRoute
   '/dashboard/admin/wallet-topups': typeof DashboardAdminWalletTopupsRoute
   '/dashboard/apps/abandoned-cart': typeof DashboardAppsAbandonedCartRoute
   '/dashboard/apps/ad-generator': typeof DashboardAppsAdGeneratorRoute
@@ -784,6 +792,7 @@ export interface FileRoutesByTo {
   '/dashboard/admin/dropship-orders': typeof DashboardAdminDropshipOrdersRoute
   '/dashboard/admin/marketplace': typeof DashboardAdminMarketplaceRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
+  '/dashboard/admin/supply-marketplace': typeof DashboardAdminSupplyMarketplaceRoute
   '/dashboard/admin/wallet-topups': typeof DashboardAdminWalletTopupsRoute
   '/dashboard/apps/abandoned-cart': typeof DashboardAppsAbandonedCartRoute
   '/dashboard/apps/ad-generator': typeof DashboardAppsAdGeneratorRoute
@@ -886,6 +895,7 @@ export interface FileRoutesById {
   '/dashboard/admin/dropship-orders': typeof DashboardAdminDropshipOrdersRoute
   '/dashboard/admin/marketplace': typeof DashboardAdminMarketplaceRoute
   '/dashboard/admin/payments': typeof DashboardAdminPaymentsRoute
+  '/dashboard/admin/supply-marketplace': typeof DashboardAdminSupplyMarketplaceRoute
   '/dashboard/admin/wallet-topups': typeof DashboardAdminWalletTopupsRoute
   '/dashboard/apps/abandoned-cart': typeof DashboardAppsAbandonedCartRoute
   '/dashboard/apps/ad-generator': typeof DashboardAppsAdGeneratorRoute
@@ -989,6 +999,7 @@ export interface FileRouteTypes {
     | '/dashboard/admin/dropship-orders'
     | '/dashboard/admin/marketplace'
     | '/dashboard/admin/payments'
+    | '/dashboard/admin/supply-marketplace'
     | '/dashboard/admin/wallet-topups'
     | '/dashboard/apps/abandoned-cart'
     | '/dashboard/apps/ad-generator'
@@ -1087,6 +1098,7 @@ export interface FileRouteTypes {
     | '/dashboard/admin/dropship-orders'
     | '/dashboard/admin/marketplace'
     | '/dashboard/admin/payments'
+    | '/dashboard/admin/supply-marketplace'
     | '/dashboard/admin/wallet-topups'
     | '/dashboard/apps/abandoned-cart'
     | '/dashboard/apps/ad-generator'
@@ -1188,6 +1200,7 @@ export interface FileRouteTypes {
     | '/dashboard/admin/dropship-orders'
     | '/dashboard/admin/marketplace'
     | '/dashboard/admin/payments'
+    | '/dashboard/admin/supply-marketplace'
     | '/dashboard/admin/wallet-topups'
     | '/dashboard/apps/abandoned-cart'
     | '/dashboard/apps/ad-generator'
@@ -1798,6 +1811,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAdminWalletTopupsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/admin/supply-marketplace': {
+      id: '/dashboard/admin/supply-marketplace'
+      path: '/admin/supply-marketplace'
+      fullPath: '/dashboard/admin/supply-marketplace'
+      preLoaderRoute: typeof DashboardAdminSupplyMarketplaceRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/admin/payments': {
       id: '/dashboard/admin/payments'
       path: '/admin/payments'
@@ -2072,6 +2092,7 @@ interface DashboardRouteChildren {
   DashboardAdminDropshipOrdersRoute: typeof DashboardAdminDropshipOrdersRoute
   DashboardAdminMarketplaceRoute: typeof DashboardAdminMarketplaceRoute
   DashboardAdminPaymentsRoute: typeof DashboardAdminPaymentsRoute
+  DashboardAdminSupplyMarketplaceRoute: typeof DashboardAdminSupplyMarketplaceRoute
   DashboardAdminWalletTopupsRoute: typeof DashboardAdminWalletTopupsRoute
   DashboardOrdersOrderIdTrackingRoute: typeof DashboardOrdersOrderIdTrackingRoute
 }
@@ -2119,6 +2140,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAdminDropshipOrdersRoute: DashboardAdminDropshipOrdersRoute,
   DashboardAdminMarketplaceRoute: DashboardAdminMarketplaceRoute,
   DashboardAdminPaymentsRoute: DashboardAdminPaymentsRoute,
+  DashboardAdminSupplyMarketplaceRoute: DashboardAdminSupplyMarketplaceRoute,
   DashboardAdminWalletTopupsRoute: DashboardAdminWalletTopupsRoute,
   DashboardOrdersOrderIdTrackingRoute: DashboardOrdersOrderIdTrackingRoute,
 }
@@ -2191,13 +2213,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

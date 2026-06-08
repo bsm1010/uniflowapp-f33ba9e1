@@ -8,6 +8,15 @@ import {
   approveWalletTopup,
   rejectWalletTopup,
 } from "@/lib/dropshipping/admin.functions";
+import {
+  listSupplyProducts,
+  createSupplyProduct,
+  updateSupplyProduct,
+  deleteSupplyProduct,
+  listSupplyOrders,
+  updateSupplyOrderStatus,
+  buySupplyProduct as buySupplyProductServer,
+} from "@/lib/dropshipping/supply-admin.functions";
 
 /**
  * Dropshipping marketplace hooks (TanStack Query v5).
@@ -25,6 +34,8 @@ type DropshipOrderRow = Database["public"]["Tables"]["dropship_orders"]["Row"];
 type ResellerWalletRow = Database["public"]["Tables"]["reseller_wallet"]["Row"];
 type WalletTransactionRow = Database["public"]["Tables"]["wallet_transactions"]["Row"];
 type WalletTopupRequestRow = Database["public"]["Tables"]["wallet_topup_requests"]["Row"];
+type SupplyMarketplaceProductRow =
+  Database["public"]["Tables"]["supply_marketplace_products"]["Row"];
 
 // ------------------------------------------------------------
 // Row types (mirrors the migration's columns exactly)
@@ -33,6 +44,7 @@ export type MarketplaceProduct = MarketplaceProductRow;
 export type ResellerListing = ResellerListingRow;
 export type DropshipOrder = DropshipOrderRow;
 export type WalletTopupRequest = WalletTopupRequestRow;
+export type SupplyMarketplaceProduct = SupplyMarketplaceProductRow;
 export type StockBuffer = Database["public"]["Tables"]["stock_buffer"]["Row"];
 export type ResellerWallet = ResellerWalletRow;
 export type WalletTransaction = WalletTransactionRow;
@@ -69,7 +81,13 @@ export const dropshippingKeys = {
   myListings: (resellerId?: string) =>
     [...dropshippingKeys.all, "my-listings", resellerId ?? "anon"] as const,
   myOrders: (resellerId?: string, status?: string, storeId?: string) =>
-    [...dropshippingKeys.all, "my-orders", resellerId ?? "anon", status ?? "all", storeId ?? "all"] as const,
+    [
+      ...dropshippingKeys.all,
+      "my-orders",
+      resellerId ?? "anon",
+      status ?? "all",
+      storeId ?? "all",
+    ] as const,
   myWallet: (resellerId?: string) =>
     [...dropshippingKeys.all, "my-wallet", resellerId ?? "anon"] as const,
   myWalletTx: (resellerId?: string) =>
@@ -80,6 +98,10 @@ export const dropshippingKeys = {
     [...dropshippingKeys.all, "admin-orders", status ?? "all"] as const,
   adminTopupRequests: (status?: string) =>
     [...dropshippingKeys.all, "admin-topup-requests", status ?? "all"] as const,
+  supplyProducts: (filters?: { category?: string; status?: string }) =>
+    [...dropshippingKeys.all, "supply-products", filters ?? {}] as const,
+  adminSupplyProducts: (filters?: { category?: string; status?: string }) =>
+    [...dropshippingKeys.all, "admin-supply-products", filters ?? {}] as const,
 };
 
 // ============================================================
@@ -96,9 +118,10 @@ export const dropshippingKeys = {
  * Returns the row columns the marketplace RLS policy exposes to resellers
  * (cost_price is column-revoked server-side, so it's never returned).
  */
-export function useMarketplaceProducts(
-  filters?: { category?: string; maxReturnRate?: number },
-): UseQueryResult<MarketplaceProductWithJoins[]> {
+export function useMarketplaceProducts(filters?: {
+  category?: string;
+  maxReturnRate?: number;
+}): UseQueryResult<MarketplaceProductWithJoins[]> {
   const { user } = useAuth();
   return useQuery({
     queryKey: dropshippingKeys.products(filters),
@@ -197,7 +220,9 @@ export function useMyWallet(): UseQueryResult<ResellerWallet | null> {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("reseller_wallet")
-        .select("id, reseller_id, balance, total_earned, total_spent, total_withdrawn, created_at, updated_at")
+        .select(
+          "id, reseller_id, balance, total_earned, total_spent, total_withdrawn, created_at, updated_at",
+        )
         .eq("reseller_id", user!.id)
         .maybeSingle();
       if (error) {
@@ -218,7 +243,9 @@ export function useMyWalletTransactions(): UseQueryResult<WalletTransactionRow[]
     queryFn: async () => {
       const { data, error } = await supabase
         .from("wallet_transactions")
-        .select("id, reseller_id, type, amount, balance_after, reference_id, description, created_at")
+        .select(
+          "id, reseller_id, type, amount, balance_after, reference_id, description, created_at",
+        )
         .eq("reseller_id", user!.id)
         .order("created_at", { ascending: false })
         .limit(200);
@@ -245,11 +272,7 @@ export function useUpdateMyListing() {
   const qc = useQueryClient();
   const { user } = useAuth();
   return useMutation({
-    mutationFn: async (args: {
-      listingId: string;
-      sellingPrice?: number;
-      isActive?: boolean;
-    }) => {
+    mutationFn: async (args: { listingId: string; sellingPrice?: number; isActive?: boolean }) => {
       if (!user) throw new Error("Not signed in");
 
       if (args.sellingPrice !== undefined) {
@@ -271,9 +294,7 @@ export function useUpdateMyListing() {
           .maybeSingle();
         if (pErr) throw new Error(pErr.message);
         if (args.sellingPrice < Number(product?.platform_price ?? 0)) {
-          throw new Error(
-            `sellingPrice must be >= platform_price (${product?.platform_price})`,
-          );
+          throw new Error(`sellingPrice must be >= platform_price (${product?.platform_price})`);
         }
       }
 
@@ -288,7 +309,9 @@ export function useUpdateMyListing() {
         .from("reseller_listings")
         .update(patch)
         .eq("id", args.listingId)
-        .select("id, reseller_id, marketplace_product_id, store_id, selling_price, is_active, total_orders, total_returns, total_profit_earned, created_at")
+        .select(
+          "id, reseller_id, marketplace_product_id, store_id, selling_price, is_active, total_orders, total_returns, total_profit_earned, created_at",
+        )
         .single();
       if (error) throw new Error(error.message);
       return data as ResellerListing;
@@ -308,10 +331,7 @@ export function useRemoveMyListing() {
   return useMutation({
     mutationFn: async (args: { listingId: string }) => {
       if (!user) throw new Error("Not signed in");
-      const { error } = await supabase
-        .from("reseller_listings")
-        .delete()
-        .eq("id", args.listingId);
+      const { error } = await supabase.from("reseller_listings").delete().eq("id", args.listingId);
       if (error) throw new Error(error.message);
       return { listingId: args.listingId };
     },
@@ -353,9 +373,7 @@ export function useAddToMyStore() {
         throw new Error("This product is currently unavailable");
       }
       if (args.sellingPrice < Number(product.platform_price)) {
-        throw new Error(
-          `sellingPrice must be >= platform_price (${product.platform_price})`,
-        );
+        throw new Error(`sellingPrice must be >= platform_price (${product.platform_price})`);
       }
 
       const { data, error } = await supabase
@@ -370,7 +388,9 @@ export function useAddToMyStore() {
           },
           { onConflict: "reseller_id,marketplace_product_id" },
         )
-        .select("id, reseller_id, marketplace_product_id, store_id, selling_price, is_active, total_orders, total_returns, total_profit_earned, created_at")
+        .select(
+          "id, reseller_id, marketplace_product_id, store_id, selling_price, is_active, total_orders, total_returns, total_profit_earned, created_at",
+        )
         .single();
       if (error) throw new Error(error.message);
       return data as ResellerListing;
@@ -420,9 +440,7 @@ export function useConfirmAndPayOrder() {
 // ============================================================
 
 /** Admin: all dropship orders across the platform. */
-export function useAdminDropshipOrders(
-  status?: string,
-): UseQueryResult<DropshipOrder[]> {
+export function useAdminDropshipOrders(status?: string): UseQueryResult<DropshipOrder[]> {
   const { user } = useAuth();
   return useQuery({
     queryKey: dropshippingKeys.adminOrders(status),
@@ -434,7 +452,10 @@ export function useAdminDropshipOrders(
         });
         return (res.orders ?? []) as unknown as DropshipOrder[];
       } catch (e) {
-        console.error("[useAdminDropshipOrders] Server fn error:", e instanceof Error ? e.message : e);
+        console.error(
+          "[useAdminDropshipOrders] Server fn error:",
+          e instanceof Error ? e.message : e,
+        );
         return [] as DropshipOrder[];
       }
     },
@@ -557,7 +578,10 @@ export function useAdminTopupRequests(
         const raw = res.requests as unknown;
         return raw as WalletTopupRequestRow[];
       } catch (e) {
-        console.error("[useAdminTopupRequests] Server fn error:", e instanceof Error ? e.message : e);
+        console.error(
+          "[useAdminTopupRequests] Server fn error:",
+          e instanceof Error ? e.message : e,
+        );
         return [] as WalletTopupRequestRow[];
       }
     },
@@ -569,11 +593,7 @@ export function useAdminApproveTopup() {
   const qc = useQueryClient();
   const { user } = useAuth();
   return useMutation({
-    mutationFn: async (args: {
-      requestId: string;
-      adminNote?: string;
-      accessToken: string;
-    }) => {
+    mutationFn: async (args: { requestId: string; adminNote?: string; accessToken: string }) => {
       if (!user) throw new Error("Not signed in");
       const res = await approveWalletTopup({
         data: {
@@ -597,11 +617,7 @@ export function useAdminRejectTopup() {
   const qc = useQueryClient();
   const { user } = useAuth();
   return useMutation({
-    mutationFn: async (args: {
-      requestId: string;
-      adminNote?: string;
-      accessToken: string;
-    }) => {
+    mutationFn: async (args: { requestId: string; adminNote?: string; accessToken: string }) => {
       if (!user) throw new Error("Not signed in");
       const res = await rejectWalletTopup({
         data: {
@@ -614,6 +630,325 @@ export function useAdminRejectTopup() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: [...dropshippingKeys.all, "admin-topup-requests"] });
+    },
+  });
+}
+
+// ============================================================
+// Supply Marketplace — Admin hooks (server-fn backed)
+// ============================================================
+
+export type SupplyOrder = Database["public"]["Tables"]["supply_orders"]["Row"];
+export type UserSupplyListing = Database["public"]["Tables"]["user_supply_listings"]["Row"];
+
+/** Admin: list all supply marketplace products. */
+export function useAdminSupplyProducts(filters?: {
+  category?: string;
+  status?: string;
+  search?: string;
+}): UseQueryResult<SupplyMarketplaceProduct[]> {
+  const { user } = useAuth();
+  return useQuery({
+    queryKey: dropshippingKeys.adminSupplyProducts(filters),
+    enabled: !!user,
+    queryFn: async () => {
+      try {
+        const res = await listSupplyProducts({
+          data: { ...filters, limit: 500, offset: 0 },
+        });
+        return (res.products ?? []) as unknown as SupplyMarketplaceProduct[];
+      } catch (e) {
+        console.error(
+          "[useAdminSupplyProducts] Server fn error:",
+          e instanceof Error ? e.message : e,
+        );
+        return [] as SupplyMarketplaceProduct[];
+      }
+    },
+  });
+}
+
+/** Admin: create a supply marketplace product. */
+export function useAdminCreateSupplyProduct() {
+  const qc = useQueryClient();
+  const { user } = useAuth();
+  return useMutation({
+    mutationFn: async (args: {
+      name: string;
+      description?: string;
+      images?: string[];
+      price: number;
+      suggested_price: number;
+      category?: string;
+      stock?: number;
+      supplier_name?: string;
+      status?: "active" | "inactive";
+    }) => {
+      if (!user) throw new Error("Not signed in");
+      const res = await createSupplyProduct({
+        data: {
+          ...args,
+          created_by: user.id,
+          images: args.images ?? [],
+          status: args.status ?? "active",
+        },
+      });
+      return res.product as unknown as SupplyMarketplaceProduct;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: dropshippingKeys.adminSupplyProducts() });
+    },
+  });
+}
+
+/** Admin: update a supply marketplace product. */
+export function useAdminUpdateSupplyProduct() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (args: {
+      id: string;
+      name?: string;
+      description?: string | null;
+      images?: string[];
+      price?: number;
+      suggested_price?: number;
+      category?: string | null;
+      stock?: number;
+      supplier_name?: string | null;
+      status?: "active" | "inactive";
+    }) => {
+      const res = await updateSupplyProduct({ data: args });
+      return res.product as unknown as SupplyMarketplaceProduct;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: dropshippingKeys.adminSupplyProducts() });
+    },
+  });
+}
+
+/** Admin: delete a supply marketplace product. */
+export function useAdminDeleteSupplyProduct() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (args: { id: string }) => {
+      const res = await deleteSupplyProduct({ data: args });
+      return res;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: dropshippingKeys.adminSupplyProducts() });
+    },
+  });
+}
+
+/** Admin: list all supply orders. */
+export function useAdminSupplyOrders(
+  status?: string,
+): UseQueryResult<
+  (SupplyOrder & {
+    supply_product: Pick<SupplyMarketplaceProduct, "id" | "name" | "images" | "category"> | null;
+  })[]
+> {
+  const { user } = useAuth();
+  return useQuery({
+    queryKey: [...dropshippingKeys.all, "admin-supply-orders", status ?? "all"],
+    enabled: !!user,
+    queryFn: async () => {
+      try {
+        const res = await listSupplyOrders({
+          data: { status, limit: 500, offset: 0 },
+        });
+        return (res.orders ?? []) as unknown as (SupplyOrder & {
+          supply_product: Pick<
+            SupplyMarketplaceProduct,
+            "id" | "name" | "images" | "category"
+          > | null;
+        })[];
+      } catch (e) {
+        console.error(
+          "[useAdminSupplyOrders] Server fn error:",
+          e instanceof Error ? e.message : e,
+        );
+        return [];
+      }
+    },
+  });
+}
+
+/** Admin: update a supply order's status. */
+export function useAdminUpdateSupplyOrderStatus() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (args: {
+      orderId: string;
+      status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
+    }) => {
+      const res = await updateSupplyOrderStatus({
+        data: { order_id: args.orderId, status: args.status },
+      });
+      return res.order;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [...dropshippingKeys.all, "admin-supply-orders"] });
+    },
+  });
+}
+
+// ============================================================
+// Supply Marketplace — User-side hooks
+// ============================================================
+
+/** User: browse active supply marketplace products. */
+export function useSupplyProducts(filters?: {
+  category?: string;
+}): UseQueryResult<SupplyMarketplaceProduct[]> {
+  const { user } = useAuth();
+  return useQuery({
+    queryKey: dropshippingKeys.supplyProducts(filters),
+    enabled: !!user,
+    queryFn: async () => {
+      let q = supabase
+        .from("supply_marketplace_products")
+        .select(
+          "id, name, description, images, price, suggested_price, category, " +
+            "stock, supplier_name, status, created_at",
+        )
+        .eq("status", "active")
+        .order("created_at", { ascending: false });
+      if (filters?.category) q = q.eq("category", filters.category);
+      const { data, error } = await q;
+      if (error) {
+        console.error("[useSupplyProducts] Query error:", error.message);
+        return [] as SupplyMarketplaceProduct[];
+      }
+      return (data ?? []) as unknown as SupplyMarketplaceProduct[];
+    },
+  });
+}
+
+/** User: their own supply listings (products added to their store). */
+export function useMySupplyListings(): UseQueryResult<
+  (UserSupplyListing & {
+    supply_product: Pick<
+      SupplyMarketplaceProduct,
+      "id" | "name" | "images" | "price" | "suggested_price" | "category" | "stock"
+    > | null;
+  })[]
+> {
+  const { user } = useAuth();
+  return useQuery({
+    queryKey: [...dropshippingKeys.all, "my-supply-listings", user?.id ?? "anon"],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("user_supply_listings")
+        .select(
+          "id, user_id, store_id, supply_product_id, selling_price, is_active, created_at, " +
+            "supply_product:supply_marketplace_products!user_supply_listings_supply_product_id_fkey" +
+            "(id, name, images, price, suggested_price, category, stock)",
+        )
+        .eq("user_id", user!.id)
+        .order("created_at", { ascending: false });
+      if (error) {
+        console.error("[useMySupplyListings] Query error:", error.message);
+        return [];
+      }
+      return (data ?? []) as unknown as (UserSupplyListing & {
+        supply_product: Pick<
+          SupplyMarketplaceProduct,
+          "id" | "name" | "images" | "price" | "suggested_price" | "category" | "stock"
+        > | null;
+      })[];
+    },
+  });
+}
+
+/** User: add a supply product to their store. */
+export function useAddSupplyToMyStore() {
+  const qc = useQueryClient();
+  const { user } = useAuth();
+  return useMutation({
+    mutationFn: async (args: {
+      supplyProductId: string;
+      sellingPrice: number;
+      storeId?: string | null;
+    }) => {
+      if (!user) throw new Error("Not signed in");
+      // Check if already added
+      const { data: existing } = await supabase
+        .from("user_supply_listings")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("supply_product_id", args.supplyProductId)
+        .maybeSingle();
+      if (existing) {
+        throw new Error("المنتج موجود بالفعل في متجرك");
+      }
+      const { data, error } = await supabase
+        .from("user_supply_listings")
+        .insert({
+          user_id: user.id,
+          supply_product_id: args.supplyProductId,
+          selling_price: args.sellingPrice,
+          store_id: args.storeId ?? null,
+          is_active: true,
+        })
+        .select("id, user_id, store_id, supply_product_id, selling_price, is_active, created_at")
+        .single();
+      if (error) throw new Error(error.message);
+      return data as UserSupplyListing;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [...dropshippingKeys.all, "my-supply-listings", user?.id] });
+    },
+  });
+}
+
+/** User: remove a supply product from their store. */
+export function useRemoveSupplyFromMyStore() {
+  const qc = useQueryClient();
+  const { user } = useAuth();
+  return useMutation({
+    mutationFn: async (args: { listingId: string }) => {
+      if (!user) throw new Error("Not signed in");
+      const { error } = await supabase
+        .from("user_supply_listings")
+        .delete()
+        .eq("id", args.listingId);
+      if (error) throw new Error(error.message);
+      return { listingId: args.listingId };
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [...dropshippingKeys.all, "my-supply-listings", user?.id] });
+    },
+  });
+}
+
+/** User: buy a supply product (deducts wallet, creates supply_order). */
+export function useBuySupplyProduct() {
+  const qc = useQueryClient();
+  const { user } = useAuth();
+  return useMutation({
+    mutationFn: async (args: {
+      supplyProductId: string;
+      quantity?: number;
+      storeId?: string | null;
+    }) => {
+      if (!user) throw new Error("Not signed in");
+      const res = await buySupplyProductServer({
+        data: {
+          user_id: user.id,
+          supply_product_id: args.supplyProductId,
+          quantity: args.quantity ?? 1,
+          store_id: args.storeId ?? undefined,
+        },
+      });
+      return res.order as SupplyOrder;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [...dropshippingKeys.all, "my-wallet", user?.id] });
+      qc.invalidateQueries({ queryKey: [...dropshippingKeys.all, "my-wallet-tx", user?.id] });
+      qc.invalidateQueries({ queryKey: [...dropshippingKeys.all, "admin-supply-orders"] });
+      qc.invalidateQueries({ queryKey: dropshippingKeys.supplyProducts() });
     },
   });
 }
