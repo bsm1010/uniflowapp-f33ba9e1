@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, useNavigate, useLocation } from "@tanstack/react-router";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState, useMemo } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -12,6 +12,7 @@ import { CurrentStoreProvider } from "@/hooks/use-current-store";
 import { IOSInstallBanner } from "@/components/dashboard/IOSInstallBanner";
 import { registerServiceWorker } from "@/lib/pwa/register-sw";
 import { playSound } from "@/lib/sounds";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const WelcomeDialog = lazy(() =>
   import("@/components/dashboard/WelcomeDialog").then((m) => ({
@@ -122,6 +123,20 @@ function DashboardLayout() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
+  const queryClient = useMemo(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 30_000,
+            retry: 1,
+            refetchOnWindowFocus: false,
+          },
+        },
+      }),
+    [],
+  );
+
   const [name, setName] = useState<string>("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [onboardingCompleted, setOnboardingCompleted] = useState<
@@ -216,36 +231,38 @@ function DashboardLayout() {
   }
 
   return (
-    <CreditsProvider>
-      <CurrentStoreProvider>
-        <SidebarProvider>
-          <div className="min-h-screen flex w-full bg-background">
-            <DashboardSidebar />
+    <QueryClientProvider client={queryClient}>
+      <CreditsProvider>
+        <CurrentStoreProvider>
+          <SidebarProvider>
+            <div className="min-h-screen flex w-full bg-background">
+              <DashboardSidebar />
 
-            <SidebarInset className="flex-1 flex flex-col min-w-0">
-              <IOSInstallBanner />
+              <SidebarInset className="flex-1 flex flex-col min-w-0">
+                <IOSInstallBanner />
 
-              <DashboardTopbar
-                name={name}
-                avatarUrl={avatarUrl}
-              />
+                <DashboardTopbar
+                  name={name}
+                  avatarUrl={avatarUrl}
+                />
 
-              <main className="flex-1 p-4 md:p-8 min-h-0 overflow-y-scroll overflow-x-hidden">
-                <AnimatedOutlet />
-              </main>
-            </SidebarInset>
-          </div>
+                <main className="flex-1 p-4 md:p-8 min-h-0 overflow-y-scroll overflow-x-hidden">
+                  <AnimatedOutlet />
+                </main>
+              </SidebarInset>
+            </div>
 
-          <PaywallDialog />
+            <PaywallDialog />
 
-          <Suspense fallback={null}>
-            <WelcomeDialog userId={user.id} />
-            <OnboardingTour userId={user.id} />
-            <HelpChatbot />
-            <AICopilot />
-          </Suspense>
-        </SidebarProvider>
-      </CurrentStoreProvider>
-    </CreditsProvider>
+            <Suspense fallback={null}>
+              <WelcomeDialog userId={user.id} />
+              <OnboardingTour userId={user.id} />
+              <HelpChatbot />
+              <AICopilot />
+            </Suspense>
+          </SidebarProvider>
+        </CurrentStoreProvider>
+      </CreditsProvider>
+    </QueryClientProvider>
   );
 }

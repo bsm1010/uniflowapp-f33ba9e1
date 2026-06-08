@@ -72,12 +72,22 @@ function AdminWalletTopupsPage() {
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const { data } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", user.id)
-        .in("role", ["admin", "marketplace_admin"]);
-      setIsAdmin(!!data && data.length > 0);
+      try {
+        const { data, error } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", user.id)
+          .in("role", ["admin", "marketplace_admin"]);
+        if (error) {
+          console.error("[AdminWalletTopups] user_roles query error:", error.message);
+          setIsAdmin(false);
+        } else {
+          setIsAdmin(!!data && data.length > 0);
+        }
+      } catch (e) {
+        console.error("[AdminWalletTopups] Admin check failed:", e instanceof Error ? e.message : e);
+        setIsAdmin(false);
+      }
     })();
   }, [user]);
 

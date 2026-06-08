@@ -118,7 +118,10 @@ export function useMarketplaceProducts(
         q = q.lte("return_rate_percent", filters.maxReturnRate);
       }
       const { data, error } = await q;
-      if (error) throw new Error(error.message);
+      if (error) {
+        console.error("[useMarketplaceProducts] Query error:", error.message);
+        return [] as MarketplaceProductWithJoins[];
+      }
       return (data ?? []) as unknown as MarketplaceProductWithJoins[];
     },
   });
@@ -141,7 +144,10 @@ export function useMyResellerListings(): UseQueryResult<ResellerListingWithProdu
         )
         .eq("reseller_id", user!.id)
         .order("created_at", { ascending: false });
-      if (error) throw new Error(error.message);
+      if (error) {
+        console.error("[useMyResellerListings] Query error:", error.message);
+        return [] as ResellerListingWithProduct[];
+      }
       return (data ?? []) as unknown as ResellerListingWithProduct[];
     },
   });
@@ -171,7 +177,10 @@ export function useMyDropshipOrders(
         .order("created_at", { ascending: false });
       if (status) q = q.eq("status", status);
       const { data, error } = await q;
-      if (error) throw new Error(error.message);
+      if (error) {
+        console.error("[useMyDropshipOrders] Query error:", error.message);
+        return [] as DropshipOrderWithListing[];
+      }
       return (data ?? []) as unknown as DropshipOrderWithListing[];
     },
   });
@@ -189,7 +198,10 @@ export function useMyWallet(): UseQueryResult<ResellerWallet | null> {
         .select("id, reseller_id, balance, total_earned, total_spent, total_withdrawn, created_at, updated_at")
         .eq("reseller_id", user!.id)
         .maybeSingle();
-      if (error) throw new Error(error.message);
+      if (error) {
+        console.error("[useMyWallet] Query error:", error.message);
+        return null;
+      }
       return (data ?? null) as ResellerWallet | null;
     },
   });
@@ -208,7 +220,10 @@ export function useMyWalletTransactions(): UseQueryResult<WalletTransactionRow[]
         .eq("reseller_id", user!.id)
         .order("created_at", { ascending: false })
         .limit(200);
-      if (error) throw new Error(error.message);
+      if (error) {
+        console.error("[useMyWalletTransactions] Query error:", error.message);
+        return [] as WalletTransactionRow[];
+      }
       return (data ?? []) as WalletTransactionRow[];
     },
   });
@@ -378,11 +393,16 @@ export function useConfirmAndPayOrder() {
   return useMutation({
     mutationFn: async (args: { orderId: string }) => {
       if (!user) throw new Error("Not signed in");
-      const { error } = await supabase.rpc("confirm_and_pay_order", {
-        p_order_id: args.orderId,
-      });
-      if (error) throw new Error(error.message);
-      return args.orderId;
+      try {
+        const { error } = await supabase.rpc("confirm_and_pay_order", {
+          p_order_id: args.orderId,
+        });
+        if (error) throw new Error(error.message);
+        return args.orderId;
+      } catch (e) {
+        console.error("[useConfirmAndPayOrder] RPC error:", e instanceof Error ? e.message : e);
+        throw e;
+      }
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: dropshippingKeys.myOrders(user?.id) });
@@ -406,10 +426,15 @@ export function useAdminDropshipOrders(
     queryKey: dropshippingKeys.adminOrders(status),
     enabled: !!user,
     queryFn: async () => {
-      const res = await listAllDropshipOrders({
-        data: { status, limit: 100, offset: 0 },
-      });
-      return (res.orders ?? []) as unknown as DropshipOrder[];
+      try {
+        const res = await listAllDropshipOrders({
+          data: { status, limit: 100, offset: 0 },
+        });
+        return (res.orders ?? []) as unknown as DropshipOrder[];
+      } catch (e) {
+        console.error("[useAdminDropshipOrders] Server fn error:", e instanceof Error ? e.message : e);
+        return [] as DropshipOrder[];
+      }
     },
   });
 }
@@ -472,7 +497,10 @@ export function useMyTopupRequests(): UseQueryResult<WalletTopupRequestRow[]> {
         )
         .eq("reseller_id", user!.id)
         .order("created_at", { ascending: false });
-      if (error) throw new Error(error.message);
+      if (error) {
+        console.error("[useMyTopupRequests] Query error:", error.message);
+        return [] as unknown as WalletTopupRequestRow[];
+      }
       return (data ?? []) as unknown as WalletTopupRequestRow[];
     },
   });
@@ -491,13 +519,18 @@ export function useRequestWalletTopup() {
       if (!(args.amount > 0)) {
         throw new Error("amount must be > 0");
       }
-      const { data, error } = await supabase.rpc("request_wallet_topup", {
-        p_reseller_id: user.id,
-        p_amount: args.amount,
-        p_payment_reference: args.paymentReference,
-      });
-      if (error) throw new Error(error.message);
-      return data as string; // request id
+      try {
+        const { data, error } = await supabase.rpc("request_wallet_topup", {
+          p_reseller_id: user.id,
+          p_amount: args.amount,
+          p_payment_reference: args.paymentReference,
+        });
+        if (error) throw new Error(error.message);
+        return data as string; // request id
+      } catch (e) {
+        console.error("[useRequestWalletTopup] RPC error:", e instanceof Error ? e.message : e);
+        throw e;
+      }
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: dropshippingKeys.myTopupRequests() });
@@ -515,11 +548,16 @@ export function useAdminTopupRequests(
     queryKey: dropshippingKeys.adminTopupRequests(status),
     enabled: !!user,
     queryFn: async () => {
-      const res = await listWalletTopupRequests({
-        data: { status, limit: 200, offset: 0 },
-      });
-      const raw = res.requests as unknown;
-      return raw as WalletTopupRequestRow[];
+      try {
+        const res = await listWalletTopupRequests({
+          data: { status, limit: 200, offset: 0 },
+        });
+        const raw = res.requests as unknown;
+        return raw as WalletTopupRequestRow[];
+      } catch (e) {
+        console.error("[useAdminTopupRequests] Server fn error:", e instanceof Error ? e.message : e);
+        return [] as WalletTopupRequestRow[];
+      }
     },
   });
 }
