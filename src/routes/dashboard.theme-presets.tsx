@@ -1,29 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import {
-  Check,
-  Eye,
-  Loader2,
-  Palette,
-  Sparkles,
-  ArrowRight,
-} from "lucide-react";
+import { Check, Eye, Loader2, Palette, Sparkles, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useSubscription } from "@/hooks/use-subscription";
 import { ExpiredOverlay } from "@/components/dashboard/ExpiredOverlay";
 import { PageHeader } from "@/components/dashboard/PageHeader";
-import { StorePreview } from "@/components/dashboard/StorePreview";
 import { ProductPagePreview } from "@/components/dashboard/ProductPagePreview";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import type { StoreSettings } from "@/lib/storeTheme";
-import {
-  THEME_PRESETS,
-  applyPreset,
-  type ThemePreset,
-} from "@/lib/themePresets";
+import { THEME_PRESETS, applyPreset, type ThemePreset } from "@/lib/themePresets";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -44,9 +32,7 @@ function PresetsPage() {
   const { user } = useAuth();
   const { isExpired } = useSubscription();
   const [settings, setSettings] = useState<StoreSettings | null>(null);
-  const [products, setProducts] = useState<
-    { name: string; price: number; images: string[] }[]
-  >([]);
+  const [products, setProducts] = useState<{ name: string; price: number; images: string[] }[]>([]);
   const [applyingId, setApplyingId] = useState<string | null>(null);
   const [previewing, setPreviewing] = useState<ThemePreset | null>(null);
 
@@ -146,18 +132,14 @@ function PresetsPage() {
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <h3 className="text-lg font-semibold tracking-tight">
-                          {preset.name}
-                        </h3>
+                        <h3 className="text-lg font-semibold tracking-tight">{preset.name}</h3>
                         {active && (
                           <Badge className="bg-primary/15 text-primary hover:bg-primary/15 border-0 gap-1">
                             <Check className="h-3 w-3" /> Active
                           </Badge>
                         )}
                       </div>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        {preset.tagline}
-                      </p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{preset.tagline}</p>
                     </div>
                   </div>
 
@@ -189,9 +171,7 @@ function PresetsPage() {
                       size="sm"
                       className="flex-1"
                       onClick={() => apply(preset)}
-                      disabled={
-                        !settings || isExpired || applyingId === preset.id || active
-                      }
+                      disabled={!settings || isExpired || applyingId === preset.id || active}
                     >
                       {applyingId === preset.id ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -280,10 +260,7 @@ function PresetsPage() {
               >
                 <TabsContent value="home" className="h-full m-0 data-[state=inactive]:hidden">
                   {settings && previewing && (
-                    <StorePreview
-                      settings={applyPreset(settings, previewing)}
-                      products={products}
-                    />
+                    <ThemePreview settings={applyPreset(settings, previewing)} />
                   )}
                 </TabsContent>
                 <TabsContent value="product" className="h-full m-0 data-[state=inactive]:hidden">
@@ -321,13 +298,10 @@ function ThemeThumbnail({ preset }: { preset: ThemePreset }) {
         : p.border_radius === "large"
           ? 18
           : 10;
-  const btnRadius =
-    p.button_style === "pill" ? 999 : p.button_style === "square" ? 0 : 8;
+  const btnRadius = p.button_style === "pill" ? 999 : p.button_style === "square" ? 0 : 8;
 
   return (
-    <div
-      className={`relative aspect-[16/9] overflow-hidden bg-gradient-to-br ${preset.accent}`}
-    >
+    <div className={`relative aspect-[16/9] overflow-hidden bg-gradient-to-br ${preset.accent}`}>
       {/* Mock storefront card */}
       <div
         className="absolute inset-x-6 bottom-4 top-8 rounded-lg overflow-hidden shadow-xl transition-transform duration-500 group-hover:scale-[1.02]"
@@ -343,10 +317,7 @@ function ThemeThumbnail({ preset }: { preset: ThemePreset }) {
           style={{ borderBottom: `1px solid ${border}` }}
         >
           <div className="flex items-center gap-1.5">
-            <div
-              className="h-3 w-3 rounded"
-              style={{ backgroundColor: p.primary_color }}
-            />
+            <div className="h-3 w-3 rounded" style={{ backgroundColor: p.primary_color }} />
             <div className="h-1.5 w-10 rounded" style={{ backgroundColor: muted }} />
           </div>
           <div className="flex gap-1.5">
@@ -382,6 +353,93 @@ function ThemeThumbnail({ preset }: { preset: ThemePreset }) {
                 border: `1px solid ${border}`,
               }}
             />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ThemePreview({
+  settings,
+}: {
+  settings: {
+    primary_color: string;
+    secondary_color: string;
+    accent_color: string;
+    background_color: string;
+    font_family: string;
+    button_style: string;
+    border_radius: string;
+    hero_heading: string;
+    hero_subheading: string;
+    hero_cta_label: string;
+  };
+}) {
+  const s = settings;
+  const radius =
+    s.border_radius === "pill"
+      ? 9999
+      : s.border_radius === "large"
+        ? 16
+        : s.border_radius === "medium"
+          ? 8
+          : s.border_radius === "small"
+            ? 4
+            : 0;
+  return (
+    <div
+      className="h-full overflow-auto"
+      style={{ fontFamily: s.font_family, backgroundColor: s.background_color }}
+    >
+      <div
+        className="p-8 text-center"
+        style={{
+          background: `linear-gradient(135deg, ${s.primary_color}15, ${s.accent_color}10)`,
+        }}
+      >
+        <h1 className="text-2xl font-bold mb-2" style={{ color: s.primary_color }}>
+          {s.hero_heading}
+        </h1>
+        <p className="text-sm mb-4" style={{ color: "#666" }}>
+          {s.hero_subheading}
+        </p>
+        <button
+          className="px-6 py-2 text-sm font-medium text-white"
+          style={{
+            backgroundColor: s.primary_color,
+            borderRadius: radius,
+          }}
+        >
+          {s.hero_cta_label}
+        </button>
+      </div>
+      <div className="p-6">
+        <h2 className="text-lg font-semibold mb-4">Featured products</h2>
+        <div className="grid grid-cols-3 gap-3">
+          {[0, 1, 2].map((i) => (
+            <div
+              key={i}
+              className="rounded-lg border overflow-hidden"
+              style={{ borderColor: "#e5e7eb" }}
+            >
+              <div
+                className="aspect-square"
+                style={{
+                  background: `linear-gradient(135deg, ${s.primary_color}20, ${s.accent_color}15)`,
+                }}
+              />
+              <div className="p-2">
+                <div
+                  className="h-3 rounded mb-1"
+                  style={{ backgroundColor: "#e5e7eb", width: "80%" }}
+                />
+                <div
+                  className="h-3 rounded"
+                  style={{ backgroundColor: s.primary_color, width: "40%" }}
+                />
+              </div>
+            </div>
           ))}
         </div>
       </div>
