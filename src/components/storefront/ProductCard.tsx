@@ -12,6 +12,7 @@ export interface ProductCardData {
   images: string[];
   category?: string | null;
   stock?: number | null;
+  created_at?: string | null;
 }
 
 interface Props {
@@ -21,7 +22,7 @@ interface Props {
   template: string;
   currency: string;
   addLabel: string;
-  onAdd?: (p: any) => void;
+  onAdd?: (p: ProductCardData) => void;
 }
 
 export function ProductCard({
@@ -35,7 +36,9 @@ export function ProductCard({
 }: Props) {
   const { t: tr } = useTranslation();
   const out = (product.stock ?? 1) <= 0;
-  const isNew = false; // Could be driven by created_at logic
+  const isNew = product.created_at
+    ? Date.now() - new Date(product.created_at).getTime() < 7 * 24 * 60 * 60 * 1000
+    : false;
 
   return (
     <div className="group relative flex flex-col">

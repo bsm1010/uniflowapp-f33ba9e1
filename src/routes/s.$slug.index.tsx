@@ -22,7 +22,7 @@ import { fetchSettings, getCachedSettings, setCachedSettings } from "@/lib/store
 
 type Product = Pick<
   Tables<"products">,
-  "id" | "name" | "price" | "images" | "category" | "stock"
+  "id" | "name" | "price" | "images" | "category" | "stock" | "created_at"
 >;
 
 export const Route = createFileRoute("/s/$slug/")({
@@ -43,6 +43,7 @@ export const Route = createFileRoute("/s/$slug/")({
         { property: "og:description", content: description },
         { property: "og:type", content: "website" },
         { property: "og:site_name", content: storeName },
+        { name: "twitter:card", content: "summary_large_image" },
       ],
       scripts: [
         {
@@ -140,7 +141,7 @@ function StorefrontHome() {
       // Fetch products
       const { data: p } = await supabase
         .from("products")
-        .select("id,name,price,images,category,stock")
+        .select("id,name,price,images,category,stock,created_at")
         .eq("user_id", s.user_id)
         .order("created_at", { ascending: false });
       if (!active) return;
@@ -258,7 +259,7 @@ function StorefrontHome() {
 
   const isAlgerianLayout = ALGERIAN_LAYOUTS.has(template);
 
-  const handleQuickAdd = (p: Product) => {
+  const handleQuickAdd = (p: { id: string; name: string; price: number; images: string[] }) => {
     cart.add({
       productId: p.id,
       name: p.name,
@@ -294,6 +295,7 @@ function StorefrontHome() {
             products={layoutProducts}
             tokens={t}
             currency={currency}
+            slug={slug}
             brandName={settings.store_name || "Store"}
             heroHeading={settings.hero_heading || "Welcome"}
             heroSubheading={settings.hero_subheading || ""}

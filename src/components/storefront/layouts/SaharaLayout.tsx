@@ -1,4 +1,5 @@
 import { ArrowRight, ShoppingBag, Star } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { Img } from "@/components/ui/Img";
 import { formatPrice } from "@/lib/storeTheme";
 import type { LayoutProps } from "./index";
@@ -7,6 +8,7 @@ export default function SaharaLayout({
   products,
   tokens: t,
   currency,
+  slug,
   brandName,
   heroHeading,
   heroSubheading,
@@ -32,10 +34,7 @@ export default function SaharaLayout({
           >
             {brandName}
           </p>
-          <div
-            className="w-16 h-0.5 mx-auto mb-8"
-            style={{ backgroundColor: t.primary }}
-          />
+          <div className="w-16 h-0.5 mx-auto mb-8" style={{ backgroundColor: t.primary }} />
           <h1
             className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight"
             dir="auto"
@@ -79,9 +78,10 @@ export default function SaharaLayout({
           <div className="w-12 h-0.5 mb-10" style={{ backgroundColor: t.primary }} />
           <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
             {featured.map((p) => (
-              <a
+              <Link
                 key={p.id}
-                href="#shop"
+                to="/s/$slug/p/$productId"
+                params={{ slug, productId: p.id }}
                 className="snap-start shrink-0 w-72 md:w-80 group"
               >
                 <div
@@ -104,26 +104,17 @@ export default function SaharaLayout({
                     }}
                   />
                   <div className="absolute bottom-0 left-0 right-0 p-5">
-                    <h3
-                      className="text-base font-semibold mb-1"
-                      dir="auto"
-                    >
+                    <h3 className="text-base font-semibold mb-1" dir="auto">
                       {p.name}
                     </h3>
-                    <span className="text-sm font-bold">
-                      {formatPrice(p.price, currency)}
-                    </span>
+                    <span className="text-sm font-bold">{formatPrice(p.price, currency)}</span>
                   </div>
                   {p.badge && (
                     <span
                       className="absolute top-3 left-3 text-[9px] font-bold uppercase tracking-wider px-2.5 py-1"
                       style={{
                         backgroundColor:
-                          p.badge === "sale"
-                            ? t.accent
-                            : p.badge === "new"
-                            ? t.primary
-                            : "#f59e0b",
+                          p.badge === "sale" ? t.accent : p.badge === "new" ? t.primary : "#f59e0b",
                         color: "#fff",
                         borderRadius: t.radius.sm,
                       }}
@@ -132,7 +123,7 @@ export default function SaharaLayout({
                     </span>
                   )}
                 </div>
-              </a>
+              </Link>
             ))}
           </div>
         </section>
@@ -158,11 +149,17 @@ export default function SaharaLayout({
                   backgroundColor: t.surface,
                 }}
               >
-                <Img
-                  src={p.images[0]}
-                  alt={p.name}
-                  className="w-full h-full transition-transform duration-500 group-hover:scale-105"
-                />
+                <Link
+                  to="/s/$slug/p/$productId"
+                  params={{ slug, productId: p.id }}
+                  className="block"
+                >
+                  <Img
+                    src={p.images[0]}
+                    alt={p.name}
+                    className="w-full h-full transition-transform duration-500 group-hover:scale-105"
+                  />
+                </Link>
                 <div
                   className="absolute inset-0"
                   style={{
@@ -170,12 +167,11 @@ export default function SaharaLayout({
                   }}
                 />
                 <div className="absolute bottom-0 left-0 right-0 p-4">
-                  <h3
-                    className="text-sm font-semibold line-clamp-2"
-                    dir="auto"
-                  >
-                    {p.name}
-                  </h3>
+                  <Link to="/s/$slug/p/$productId" params={{ slug, productId: p.id }}>
+                    <h3 className="text-sm font-semibold line-clamp-2" dir="auto">
+                      {p.name}
+                    </h3>
+                  </Link>
                   <span className="text-sm font-bold mt-1 block">
                     {formatPrice(p.price, currency)}
                   </span>
@@ -185,11 +181,7 @@ export default function SaharaLayout({
                     className="absolute top-2 left-2 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5"
                     style={{
                       backgroundColor:
-                        p.badge === "sale"
-                          ? t.accent
-                          : p.badge === "new"
-                          ? t.primary
-                          : "#f59e0b",
+                        p.badge === "sale" ? t.accent : p.badge === "new" ? t.primary : "#f59e0b",
                       color: "#fff",
                       borderRadius: t.radius.sm,
                     }}
@@ -206,9 +198,7 @@ export default function SaharaLayout({
                 {p.category}
               </p>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-bold">
-                  {formatPrice(p.price, currency)}
-                </span>
+                <span className="text-sm font-bold">{formatPrice(p.price, currency)}</span>
                 {onAddToCart && (
                   <button
                     onClick={() => onAddToCart(p)}
@@ -229,10 +219,7 @@ export default function SaharaLayout({
       </section>
 
       {/* Newsletter */}
-      <section
-        className="px-6 py-20"
-        style={{ backgroundColor: t.primary }}
-      >
+      <section className="px-6 py-20" style={{ backgroundColor: t.primary }}>
         <div className="max-w-xl mx-auto text-center">
           <h2
             className="text-2xl md:text-3xl font-bold mb-3"
@@ -241,11 +228,7 @@ export default function SaharaLayout({
           >
             Join Our Newsletter
           </h2>
-          <p
-            className="text-sm mb-8"
-            dir="auto"
-            style={{ color: t.onPrimary, opacity: 0.85 }}
-          >
+          <p className="text-sm mb-8" dir="auto" style={{ color: t.onPrimary, opacity: 0.85 }}>
             Get exclusive offers and first access to new arrivals.
           </p>
           <form

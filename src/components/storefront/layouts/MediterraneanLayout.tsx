@@ -1,4 +1,5 @@
 import { ArrowRight, ShoppingBag, Truck, Shield, Clock, Heart } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { Img } from "@/components/ui/Img";
 import { formatPrice } from "@/lib/storeTheme";
 import type { LayoutProps } from "./index";
@@ -7,6 +8,7 @@ export default function MediterraneanLayout({
   products,
   tokens: t,
   currency,
+  slug,
   brandName,
   heroHeading,
   heroSubheading,
@@ -34,11 +36,7 @@ export default function MediterraneanLayout({
           >
             {heroHeading}
           </h1>
-          <p
-            className="text-base md:text-lg mb-8 max-w-md"
-            dir="auto"
-            style={{ color: t.muted }}
-          >
+          <p className="text-base md:text-lg mb-8 max-w-md" dir="auto" style={{ color: t.muted }}>
             {heroSubheading}
           </p>
           <a
@@ -60,11 +58,7 @@ export default function MediterraneanLayout({
           style={{ borderRadius: t.radius.lg, backgroundColor: t.surface }}
         >
           {products[0]?.images[0] ? (
-            <Img
-              src={products[0].images[0]}
-              alt={products[0].name}
-              className="w-full h-full"
-            />
+            <Img src={products[0].images[0]} alt={products[0].name} className="w-full h-full" />
           ) : (
             <div
               className="w-full h-full"
@@ -121,21 +115,23 @@ export default function MediterraneanLayout({
                   border: `1px solid ${t.border}`,
                 }}
               >
-                <Img
-                  src={p.images[0]}
-                  alt={p.name}
-                  className="w-full h-full transition-transform duration-500 group-hover:scale-105"
-                />
+                <Link
+                  to="/s/$slug/p/$productId"
+                  params={{ slug, productId: p.id }}
+                  className="block"
+                >
+                  <Img
+                    src={p.images[0]}
+                    alt={p.name}
+                    className="w-full h-full transition-transform duration-500 group-hover:scale-105"
+                  />
+                </Link>
                 {p.badge && (
                   <span
                     className="absolute top-3 left-3 text-[9px] font-bold uppercase tracking-wider px-2.5 py-1"
                     style={{
                       backgroundColor:
-                        p.badge === "sale"
-                          ? t.accent
-                          : p.badge === "new"
-                          ? t.primary
-                          : "#f59e0b",
+                        p.badge === "sale" ? t.accent : p.badge === "new" ? t.primary : "#f59e0b",
                       color: "#fff",
                       borderRadius: t.radius.sm,
                     }}
@@ -151,13 +147,13 @@ export default function MediterraneanLayout({
               >
                 {p.category}
               </p>
-              <h3 className="text-sm font-semibold mb-1" dir="auto">
-                {p.name}
-              </h3>
+              <Link to="/s/$slug/p/$productId" params={{ slug, productId: p.id }}>
+                <h3 className="text-sm font-semibold mb-1" dir="auto">
+                  {p.name}
+                </h3>
+              </Link>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-bold">
-                  {formatPrice(p.price, currency)}
-                </span>
+                <span className="text-sm font-bold">{formatPrice(p.price, currency)}</span>
                 {onAddToCart && (
                   <button
                     onClick={() => onAddToCart(p)}
@@ -181,7 +177,11 @@ export default function MediterraneanLayout({
       {/* Trust Badges */}
       <section
         className="px-6 py-10"
-        style={{ backgroundColor: t.surface, borderTop: `1px solid ${t.border}`, borderBottom: `1px solid ${t.border}` }}
+        style={{
+          backgroundColor: t.surface,
+          borderTop: `1px solid ${t.border}`,
+          borderBottom: `1px solid ${t.border}`,
+        }}
       >
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
           {[
@@ -210,11 +210,7 @@ export default function MediterraneanLayout({
           >
             Stay Connected
           </h2>
-          <p
-            className="text-sm mb-8"
-            dir="auto"
-            style={{ color: t.muted }}
-          >
+          <p className="text-sm mb-8" dir="auto" style={{ color: t.muted }}>
             Subscribe for updates and exclusive offers.
           </p>
           <form

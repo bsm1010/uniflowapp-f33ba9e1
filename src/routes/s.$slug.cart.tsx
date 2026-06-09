@@ -15,7 +15,7 @@ type StoreSettings = Tables<"store_settings">;
 export const Route = createFileRoute("/s/$slug/cart")({
   component: CartPage,
   loader: ({ params }) => fetchSettings(params.slug),
-  head: () => ({ meta: [{ title: "Cart — Storely" }] }),
+  head: ({ loaderData }) => ({ meta: [{ title: `${loaderData?.store_name ?? "Cart"} — Cart` }] }),
 });
 
 function CartPage() {
@@ -58,6 +58,7 @@ function CartPage() {
   }
 
   const t = getStoreTokens(settings);
+  const currency = settings.currency || "DZD";
   const radius =
     settings.theme === "minimal" ? 0 : settings.theme === "grid" ? 8 : 16;
 
@@ -155,7 +156,7 @@ function CartPage() {
                           className="text-xs mt-0.5"
                           style={{ color: t.muted }}
                         >
-                          ${item.price.toFixed(2)} {tr("storefront.cart.each")}
+                          {item.price.toFixed(2)} {currency} {tr("storefront.cart.each")}
                         </div>
                       </div>
                       <button
@@ -198,7 +199,7 @@ function CartPage() {
                         </button>
                       </div>
                       <div className="text-sm font-semibold">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        {(item.price * item.quantity).toFixed(2)} {currency}
                       </div>
                     </div>
                   </div>
@@ -219,7 +220,7 @@ function CartPage() {
                 <div className="flex justify-between">
                   <span style={{ color: t.muted }}>{tr("storefront.cart.subtotal")}</span>
                   <span className="font-medium">
-                    ${cart.subtotal.toFixed(2)}
+                    {cart.subtotal.toFixed(2)} {currency}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -232,7 +233,7 @@ function CartPage() {
                 style={{ borderTop: `1px solid ${t.border}` }}
               >
                 <span>{tr("storefront.cart.total")}</span>
-                <span>${cart.subtotal.toFixed(2)}</span>
+                <span>{cart.subtotal.toFixed(2)} {currency}</span>
               </div>
               <Link
                 to="/s/$slug/checkout"

@@ -27,6 +27,7 @@ export interface LayoutProps {
   products: ProductForLayout[];
   tokens: import("@/lib/storeTheme").StoreTokens;
   currency: string;
+  slug: string;
   brandName: string;
   heroHeading: string;
   heroSubheading: string;

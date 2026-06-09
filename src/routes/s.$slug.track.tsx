@@ -26,7 +26,7 @@ const searchSchema = z.object({
 export const Route = createFileRoute("/s/$slug/track")({
   component: TrackPage,
   validateSearch: searchSchema,
-  head: () => ({ meta: [{ title: "Track your order" }] }),
+  head: ({ params }) => ({ meta: [{ title: `Track Order — ${params.slug}` }] }),
 });
 
 const STEP_KEYS = ["pending", "confirmed", "shipped", "delivered"] as const;

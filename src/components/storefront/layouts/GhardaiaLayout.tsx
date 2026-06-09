@@ -1,4 +1,5 @@
 import { ArrowRight, ShoppingBag, Quote } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { Img } from "@/components/ui/Img";
 import { formatPrice } from "@/lib/storeTheme";
 import type { LayoutProps } from "./index";
@@ -7,6 +8,7 @@ export default function GhardaiaLayout({
   products,
   tokens: t,
   currency,
+  slug,
   brandName,
   heroHeading,
   heroSubheading,
@@ -18,13 +20,28 @@ export default function GhardaiaLayout({
   return (
     <div style={{ fontFamily: t.fontFamily, backgroundColor: t.bg, color: t.fg }}>
       {/* Hero — Deep blue with geometric accents */}
-      <section className="relative px-6 py-20 md:py-32 overflow-hidden" style={{ backgroundColor: t.primary }}>
+      <section
+        className="relative px-6 py-20 md:py-32 overflow-hidden"
+        style={{ backgroundColor: t.primary }}
+      >
         {/* Geometric shapes */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full" style={{ border: `2px solid ${t.onPrimary}20` }} />
-          <div className="absolute top-1/3 -left-16 w-40 h-40 rounded-full" style={{ border: `2px solid ${t.onPrimary}15` }} />
-          <div className="absolute bottom-10 right-1/4 w-24 h-24 rounded-full" style={{ backgroundColor: t.onPrimary + "08" }} />
-          <div className="absolute top-1/2 left-1/2 w-px h-32 -translate-x-1/2 -translate-y-1/2" style={{ backgroundColor: t.onPrimary + "15" }} />
+          <div
+            className="absolute -top-20 -right-20 w-64 h-64 rounded-full"
+            style={{ border: `2px solid ${t.onPrimary}20` }}
+          />
+          <div
+            className="absolute top-1/3 -left-16 w-40 h-40 rounded-full"
+            style={{ border: `2px solid ${t.onPrimary}15` }}
+          />
+          <div
+            className="absolute bottom-10 right-1/4 w-24 h-24 rounded-full"
+            style={{ backgroundColor: t.onPrimary + "08" }}
+          />
+          <div
+            className="absolute top-1/2 left-1/2 w-px h-32 -translate-x-1/2 -translate-y-1/2"
+            style={{ backgroundColor: t.onPrimary + "15" }}
+          />
         </div>
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <p
@@ -85,11 +102,17 @@ export default function GhardaiaLayout({
                     backgroundColor: t.surface,
                   }}
                 >
-                  <Img
-                    src={p.images[0]}
-                    alt={p.name}
-                    className="w-full h-full transition-transform duration-500 group-hover:scale-105"
-                  />
+                  <Link
+                    to="/s/$slug/p/$productId"
+                    params={{ slug, productId: p.id }}
+                    className="block"
+                  >
+                    <Img
+                      src={p.images[0]}
+                      alt={p.name}
+                      className="w-full h-full transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </Link>
                   {p.badge && (
                     <span
                       className="absolute top-3 left-3 text-[9px] font-bold uppercase tracking-wider px-2.5 py-1"
@@ -104,10 +127,7 @@ export default function GhardaiaLayout({
                     </span>
                   )}
                 </div>
-                <div
-                  className="pl-3"
-                  style={{ borderLeft: `3px solid ${t.primary}` }}
-                >
+                <div className="pl-3" style={{ borderLeft: `3px solid ${t.primary}` }}>
                   <p
                     className="text-[10px] uppercase tracking-wider mb-1"
                     dir="auto"
@@ -115,11 +135,13 @@ export default function GhardaiaLayout({
                   >
                     {p.category}
                   </p>
-                  <h3 className="text-sm font-semibold mb-1" dir="auto">{p.name}</h3>
+                  <Link to="/s/$slug/p/$productId" params={{ slug, productId: p.id }}>
+                    <h3 className="text-sm font-semibold mb-1" dir="auto">
+                      {p.name}
+                    </h3>
+                  </Link>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-bold">
-                      {formatPrice(p.price, currency)}
-                    </span>
+                    <span className="text-sm font-bold">{formatPrice(p.price, currency)}</span>
                     {onAddToCart && (
                       <button
                         onClick={() => onAddToCart(p)}
@@ -153,7 +175,11 @@ export default function GhardaiaLayout({
           </h2>
           <div
             className="relative p-8 md:p-12"
-            style={{ backgroundColor: t.bg, borderRadius: t.radius.lg, border: `1px solid ${t.border}` }}
+            style={{
+              backgroundColor: t.bg,
+              borderRadius: t.radius.lg,
+              border: `1px solid ${t.border}`,
+            }}
           >
             <Quote className="h-10 w-10 mb-4" style={{ color: t.primary, opacity: 0.3 }} />
             <p
@@ -161,8 +187,8 @@ export default function GhardaiaLayout({
               dir="auto"
               style={{ color: t.fg }}
             >
-              Absolutely love the quality and attention to detail. Every piece feels crafted with care.
-              This is exactly what I was looking for.
+              Absolutely love the quality and attention to detail. Every piece feels crafted with
+              care. This is exactly what I was looking for.
             </p>
             <div className="flex items-center gap-3">
               <div
@@ -172,8 +198,12 @@ export default function GhardaiaLayout({
                 A
               </div>
               <div>
-                <p className="text-sm font-semibold" dir="auto">Amina K.</p>
-                <p className="text-xs" dir="auto" style={{ color: t.muted }}>Verified Buyer</p>
+                <p className="text-sm font-semibold" dir="auto">
+                  Amina K.
+                </p>
+                <p className="text-xs" dir="auto" style={{ color: t.muted }}>
+                  Verified Buyer
+                </p>
               </div>
             </div>
           </div>
@@ -190,11 +220,7 @@ export default function GhardaiaLayout({
           >
             Join Our Newsletter
           </h2>
-          <p
-            className="text-sm mb-8"
-            dir="auto"
-            style={{ color: t.onPrimary, opacity: 0.8 }}
-          >
+          <p className="text-sm mb-8" dir="auto" style={{ color: t.onPrimary, opacity: 0.8 }}>
             Get the latest updates and exclusive offers.
           </p>
           <form

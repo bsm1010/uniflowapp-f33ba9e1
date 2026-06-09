@@ -1,4 +1,5 @@
 import { ArrowRight, ShoppingBag, Crown, Gem, Sparkles } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { Img } from "@/components/ui/Img";
 import { formatPrice } from "@/lib/storeTheme";
 import type { LayoutProps } from "./index";
@@ -7,6 +8,7 @@ export default function TlemcenLayout({
   products,
   tokens: t,
   currency,
+  slug,
   brandName,
   heroHeading,
   heroSubheading,
@@ -16,10 +18,7 @@ export default function TlemcenLayout({
   return (
     <div style={{ fontFamily: t.fontFamily, backgroundColor: t.bg, color: t.fg }}>
       {/* Hero — Dark background with gold double border frame */}
-      <section
-        className="px-6 py-20 md:py-28"
-        style={{ backgroundColor: t.surface }}
-      >
+      <section className="px-6 py-20 md:py-28" style={{ backgroundColor: t.surface }}>
         <div
           className="max-w-5xl mx-auto text-center p-12 md:p-20 relative"
           style={{
@@ -77,10 +76,7 @@ export default function TlemcenLayout({
       </section>
 
       {/* Heritage Section */}
-      <section
-        className="px-6 py-16"
-        style={{ borderBottom: `1px solid ${t.border}` }}
-      >
+      <section className="px-6 py-16" style={{ borderBottom: `1px solid ${t.border}` }}>
         <div
           className="max-w-3xl mx-auto text-center px-8 py-12 relative"
           style={{
@@ -100,14 +96,10 @@ export default function TlemcenLayout({
             dir="auto"
             style={{ color: t.muted }}
           >
-            Rooted in tradition, crafted with passion. Every piece tells a story
-            of artisanal excellence and timeless beauty passed down through
-            generations.
+            Rooted in tradition, crafted with passion. Every piece tells a story of artisanal
+            excellence and timeless beauty passed down through generations.
           </p>
-          <div
-            className="w-12 h-0.5 mx-auto mt-6"
-            style={{ backgroundColor: t.primary }}
-          />
+          <div className="w-12 h-0.5 mx-auto mt-6" style={{ backgroundColor: t.primary }} />
         </div>
       </section>
 
@@ -132,11 +124,17 @@ export default function TlemcenLayout({
                   border: `2px solid ${t.primary}25`,
                 }}
               >
-                <Img
-                  src={p.images[0]}
-                  alt={p.name}
-                  className="w-full h-full transition-transform duration-500 group-hover:scale-105"
-                />
+                <Link
+                  to="/s/$slug/p/$productId"
+                  params={{ slug, productId: p.id }}
+                  className="block"
+                >
+                  <Img
+                    src={p.images[0]}
+                    alt={p.name}
+                    className="w-full h-full transition-transform duration-500 group-hover:scale-105"
+                  />
+                </Link>
                 <div
                   className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
                   style={{
@@ -163,11 +161,13 @@ export default function TlemcenLayout({
               >
                 {p.category}
               </p>
-              <h3 className="text-sm font-semibold mb-1" dir="auto">{p.name}</h3>
+              <Link to="/s/$slug/p/$productId" params={{ slug, productId: p.id }}>
+                <h3 className="text-sm font-semibold mb-1" dir="auto">
+                  {p.name}
+                </h3>
+              </Link>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-bold">
-                  {formatPrice(p.price, currency)}
-                </span>
+                <span className="text-sm font-bold">{formatPrice(p.price, currency)}</span>
                 {onAddToCart && (
                   <button
                     onClick={() => onAddToCart(p)}
@@ -188,10 +188,7 @@ export default function TlemcenLayout({
       </section>
 
       {/* Newsletter — Dark background with gold text */}
-      <section
-        className="px-6 py-20"
-        style={{ backgroundColor: t.surface }}
-      >
+      <section className="px-6 py-20" style={{ backgroundColor: t.surface }}>
         <div className="max-w-xl mx-auto text-center">
           <Crown className="h-6 w-6 mx-auto mb-4" style={{ color: t.primary }} />
           <h2
@@ -201,11 +198,7 @@ export default function TlemcenLayout({
           >
             Royal Updates
           </h2>
-          <p
-            className="text-sm mb-8"
-            dir="auto"
-            style={{ color: t.muted }}
-          >
+          <p className="text-sm mb-8" dir="auto" style={{ color: t.muted }}>
             Be the first to discover new treasures and exclusive collections.
           </p>
           <form

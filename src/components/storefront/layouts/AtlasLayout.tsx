@@ -1,4 +1,5 @@
 import { ArrowRight, ShoppingBag, TreePine, Leaf, Recycle, Heart } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { Img } from "@/components/ui/Img";
 import { formatPrice } from "@/lib/storeTheme";
 import type { LayoutProps } from "./index";
@@ -7,6 +8,7 @@ export default function AtlasLayout({
   products,
   tokens: t,
   currency,
+  slug,
   brandName,
   heroHeading,
   heroSubheading,
@@ -70,7 +72,11 @@ export default function AtlasLayout({
       {/* Stats Bar */}
       <section
         className="px-6 py-8"
-        style={{ backgroundColor: t.surface, borderTop: `1px solid ${t.border}`, borderBottom: `1px solid ${t.border}` }}
+        style={{
+          backgroundColor: t.surface,
+          borderTop: `1px solid ${t.border}`,
+          borderBottom: `1px solid ${t.border}`,
+        }}
       >
         <div className="max-w-4xl mx-auto grid grid-cols-3 gap-6">
           {[
@@ -79,10 +85,7 @@ export default function AtlasLayout({
             { value: "Eco", label: "Sustainable" },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
-              <div
-                className="text-2xl md:text-3xl font-bold mb-1"
-                style={{ color: t.primary }}
-              >
+              <div className="text-2xl md:text-3xl font-bold mb-1" style={{ color: t.primary }}>
                 {stat.value}
               </div>
               <div
@@ -117,21 +120,23 @@ export default function AtlasLayout({
                   backgroundColor: t.surface,
                 }}
               >
-                <Img
-                  src={p.images[0]}
-                  alt={p.name}
-                  className="w-full h-full transition-transform duration-500 group-hover:scale-105"
-                />
+                <Link
+                  to="/s/$slug/p/$productId"
+                  params={{ slug, productId: p.id }}
+                  className="block"
+                >
+                  <Img
+                    src={p.images[0]}
+                    alt={p.name}
+                    className="w-full h-full transition-transform duration-500 group-hover:scale-105"
+                  />
+                </Link>
                 {p.badge && (
                   <span
                     className="absolute top-3 left-3 text-[9px] font-bold uppercase tracking-wider px-2.5 py-1"
                     style={{
                       backgroundColor:
-                        p.badge === "sale"
-                          ? t.accent
-                          : p.badge === "new"
-                          ? t.primary
-                          : "#f59e0b",
+                        p.badge === "sale" ? t.accent : p.badge === "new" ? t.primary : "#f59e0b",
                       color: "#fff",
                       borderRadius: t.radius.pill,
                     }}
@@ -147,11 +152,13 @@ export default function AtlasLayout({
               >
                 {p.category}
               </p>
-              <h3 className="text-sm font-semibold mb-1" dir="auto">{p.name}</h3>
+              <Link to="/s/$slug/p/$productId" params={{ slug, productId: p.id }}>
+                <h3 className="text-sm font-semibold mb-1" dir="auto">
+                  {p.name}
+                </h3>
+              </Link>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-bold">
-                  {formatPrice(p.price, currency)}
-                </span>
+                <span className="text-sm font-bold">{formatPrice(p.price, currency)}</span>
                 {onAddToCart && (
                   <button
                     onClick={() => onAddToCart(p)}
@@ -185,11 +192,7 @@ export default function AtlasLayout({
           >
             Go Green With Us
           </h2>
-          <p
-            className="text-sm mb-8"
-            dir="auto"
-            style={{ color: t.muted }}
-          >
+          <p className="text-sm mb-8" dir="auto" style={{ color: t.muted }}>
             Join our community of conscious shoppers.
           </p>
           <form

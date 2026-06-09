@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
+  ArrowLeft,
+  CheckCircle2,
   Loader2,
   ShoppingBag,
   Home,
@@ -8,24 +10,15 @@ import {
   Phone,
   MapPin,
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { Link } from "@tanstack/react-router";
 import { z } from "zod";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { createOrder } from "@/lib/orders/create-order.functions";
 import { SearchableSelect } from "@/components/ui/searchable-select";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  ALGERIA_WILAYAS,
-  WILAYA_LIST,
-  isValidAlgerianPhone,
-} from "@/lib/algeriaWilayas";
+import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { ALGERIA_WILAYAS, WILAYA_LIST, isValidAlgerianPhone } from "@/lib/algeriaWilayas";
 
 type Tokens = {
   primary: string;
@@ -72,6 +65,8 @@ type FormErrors = Partial<
   Record<"firstName" | "lastName" | "phone" | "wilaya" | "city" | "deliveryType", string>
 >;
 
+const STEPS = ["info", "delivery", "confirm"] as const;
+
 export function AlgerianCheckoutForm({
   storeOwnerId,
   storeSlug,
@@ -82,6 +77,8 @@ export function AlgerianCheckoutForm({
   onSuccess,
 }: Props) {
   const { t: tr } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const [step, setStep] = useState<number>(0);
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -95,10 +92,7 @@ export function AlgerianCheckoutForm({
   const [submitting, setSubmitting] = useState(false);
   const [successOrderId, setSuccessOrderId] = useState<string | null>(null);
 
-  const cities = useMemo(
-    () => (wilaya ? ALGERIA_WILAYAS[wilaya] ?? [] : []),
-    [wilaya],
-  );
+  const cities = useMemo(() => (wilaya ? (ALGERIA_WILAYAS[wilaya] ?? []) : []), [wilaya]);
 
   const subtotal = product.price * quantity;
   const total = subtotal + (shippingPrice ?? 0);
@@ -132,9 +126,7 @@ export function AlgerianCheckoutForm({
       }
 
       const exact = cityNorm
-        ? data.find(
-            (r) => (r.city ?? "").trim().toLowerCase() === cityNorm.toLowerCase(),
-          )
+        ? data.find((r) => (r.city ?? "").trim().toLowerCase() === cityNorm.toLowerCase())
         : null;
 
       const wilayaDefault = data.find((r) => !r.city || r.city.trim() === "");
@@ -149,11 +141,60 @@ export function AlgerianCheckoutForm({
     };
   }, [wilaya, city, deliveryType, storeOwnerId]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const validateInfoStep = (): boolean => {
+    const schema = z.object({
+      firstName: z.string().trim().min(2).max(60),
+      lastName: z.string().trim().min(2).max(60),
+      phone: z.string().trim().min(1).refine(isValidAlgerianPhone),
+    });
+    const result = schema.safeParse({ firstName, lastName, phone });
+    if (!result.success) {
+      const errs: FormErrors = {};
+      for (const issue of result.error.issues) {
+        const key = issue.path[0] as keyof FormErrors;
+        if (!errs[key]) errs[key] = issue.message;
+      }
+      setErrors(errs);
+      return false;
+    }
+    setErrors({});
+    return true;
+  };
 
+  const validateDeliveryStep = (): boolean => {
+    const schema = z.object({
+      wilaya: z.string().min(1),
+      city: z.string().min(1),
+      deliveryType: z.enum(["domicile", "stopdesk"]),
+    });
+    const result = schema.safeParse({ wilaya, city, deliveryType });
+    if (!result.success) {
+      const errs: FormErrors = {};
+      for (const issue of result.error.issues) {
+        const key = issue.path[0] as keyof FormErrors;
+        if (!errs[key]) errs[key] = issue.message;
+      }
+      setErrors(errs);
+      return false;
+    }
+    if (shippingPrice === null && !shippingLoading) {
+      toast.error(tr("storefront.cod.errCity"));
+      return false;
+    }
+    setErrors({});
+    return true;
+  };
+
+  const nextStep = () => {
+    if (step === 0 && !validateInfoStep()) return;
+    if (step === 1 && !validateDeliveryStep()) return;
+    setStep((s) => Math.min(s + 1, STEPS.length - 1));
+  };
+
+  const prevStep = () => setStep((s) => Math.max(s - 1, 0));
+
+  const handleSubmit = async () => {
     const schema = makeSchema(tr);
-
     const parsed = schema.safeParse({
       firstName,
       lastName,
@@ -165,13 +206,12 @@ export function AlgerianCheckoutForm({
 
     if (!parsed.success) {
       const errs: FormErrors = {};
-
       for (const issue of parsed.error.issues) {
         const key = issue.path[0] as keyof FormErrors;
         if (!errs[key]) errs[key] = issue.message;
       }
-
       setErrors(errs);
+      setStep(0);
       return;
     }
 
@@ -198,15 +238,7 @@ export function AlgerianCheckoutForm({
         duration: 5000,
       });
 
-      setFirstName("");
-      setLastName("");
-      setPhone("");
-      setWilaya("");
-      setCity("");
-      setDeliveryType("domicile");
-      setShippingPrice(null);
       setSuccessOrderId(result.orderId);
-
       onSuccess?.(result.orderId);
     } catch (err) {
       console.error(err);
@@ -216,278 +248,524 @@ export function AlgerianCheckoutForm({
     }
   };
 
+  const resetAndClose = () => {
+    setSuccessOrderId(null);
+    setStep(0);
+    setFirstName("");
+    setLastName("");
+    setPhone("");
+    setWilaya("");
+    setCity("");
+    setDeliveryType("domicile");
+    setShippingPrice(null);
+    setErrors({});
+    setOpen(false);
+  };
+
+  const inputStyle: React.CSSProperties = {
+    backgroundColor: t.isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
+    color: t.fg,
+    border: `1px solid ${t.border}`,
+    borderRadius: Math.min(radius, 16),
+    transition: "border-color 0.2s",
+    width: "100%",
+    padding: "12px 14px",
+    fontSize: 14,
+    outline: "none",
+  };
+
+  const stepLabel = (i: number) => {
+    if (i === 0) return tr("storefront.checkout.section") || "Personal Info";
+    if (i === 1) return tr("storefront.checkout.deliveryType") || "Delivery";
+    return tr("storefront.checkout.summary") || "Confirm";
+  };
+
   return (
     <>
-      <Dialog open={!!successOrderId} onOpenChange={(open) => !open && setSuccessOrderId(null)}>
-        <DialogContent>
-          <DialogTitle>
-            {tr("storefront.success.title") || "Thank you for your order!"}
-          </DialogTitle>
-
-          <DialogDescription>
-            {tr("storefront.success.subtitle") || "Your order has been received."}
-          </DialogDescription>
-
-          {successOrderId && (
-            <div className="rounded-xl border border-orange-500/20 bg-orange-500/10 px-4 py-3 text-sm font-mono">
-              #{successOrderId.slice(0, 8).toUpperCase()}
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      <motion.form
-        onSubmit={handleSubmit}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35 }}
-        className="relative overflow-hidden rounded-3xl border p-6 sm:p-7 space-y-5 shadow-2xl backdrop-blur-xl"
-        style={{
-          background: t.isDark
-            ? `linear-gradient(135deg, ${t.surfaceStrong}, ${t.surface})`
-            : `linear-gradient(135deg, ${t.surface}, ${t.bg})`,
-          border: `1px solid ${t.border}`,
-          borderRadius: radius,
+      <Sheet
+        open={open}
+        onOpenChange={(v) => {
+          if (!v) resetAndClose();
+          else setOpen(true);
         }}
       >
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute -top-20 -right-20 h-60 w-60 rounded-full bg-orange-500/20 blur-3xl" />
-          <div className="absolute bottom-0 left-0 h-40 w-40 rounded-full bg-orange-400/10 blur-2xl" />
-        </div>
-
-        <div className="relative z-10">
-          <h2 className="text-2xl font-bold tracking-tight" style={{ color: t.fg }}>
-            {tr("storefront.cod.title")}
-          </h2>
-
-          <p className="mt-2 text-sm" style={{ color: t.muted }}>
-            {tr("storefront.cod.subtitle")}
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-10">
-          <Field
-            icon={<User className="h-4 w-4 text-orange-400" />}
-            label={tr("storefront.cod.firstName")}
-            error={errors.firstName}
-            mutedColor={t.muted}
-          >
-            <input
-              type="text"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              placeholder="Ahmed"
-              className="w-full rounded-2xl border px-4 py-3 text-sm outline-none transition"
-              style={{
-                borderColor: t.border,
-                backgroundColor: t.isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
-                color: t.fg,
-              }}
-            />
-          </Field>
-
-          <Field
-            icon={<User className="h-4 w-4 text-orange-400" />}
-            label={tr("storefront.cod.lastName")}
-            error={errors.lastName}
-            mutedColor={t.muted}
-          >
-            <input
-              type="text"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              placeholder="Benali"
-              className="w-full rounded-2xl border px-4 py-3 text-sm outline-none transition"
-              style={{
-                borderColor: t.border,
-                backgroundColor: t.isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
-                color: t.fg,
-              }}
-            />
-          </Field>
-        </div>
-
-        <div className="relative z-10">
-          <Field
-            icon={<Phone className="h-4 w-4 text-orange-400" />}
-            label={tr("storefront.cod.phone")}
-            error={errors.phone}
-            mutedColor={t.muted}
-          >
-            <input
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="0555 12 34 56"
-              inputMode="tel"
-              className="w-full rounded-2xl border px-4 py-3 text-sm outline-none transition"
-              style={{
-                borderColor: t.border,
-                backgroundColor: t.isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
-                color: t.fg,
-              }}
-            />
-          </Field>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-10">
-          <Field
-            icon={<MapPin className="h-4 w-4 text-orange-400" />}
-            label={tr("storefront.cod.wilaya")}
-            error={errors.wilaya}
-            mutedColor={t.muted}
-          >
-            <SearchableSelect
-              value={wilaya}
-              onChange={(v) => {
-                setWilaya(v);
-                setCity("");
-              }}
-              options={WILAYA_LIST}
-              placeholder={tr("storefront.cod.selectWilaya")}
-              searchPlaceholder={tr("storefront.cod.searchWilaya")}
-              emptyMessage={tr("storefront.cod.noWilaya")}
-              triggerStyle={{
-                backgroundColor: t.isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
-                border: `1px solid ${t.border}`,
-                borderRadius: 16,
-                color: t.fg,
-              }}
-            />
-          </Field>
-
-          <Field
-            icon={<MapPin className="h-4 w-4 text-orange-400" />}
-            label={tr("storefront.cod.city")}
-            error={errors.city}
-            mutedColor={t.muted}
-          >
-            <SearchableSelect
-              value={city}
-              onChange={setCity}
-              options={cities}
-              placeholder={
-                wilaya
-                  ? tr("storefront.cod.selectCity")
-                  : tr("storefront.cod.pickWilayaFirst")
-              }
-              searchPlaceholder={tr("storefront.cod.searchCity")}
-              emptyMessage={tr("storefront.cod.noCity")}
-              disabled={!wilaya}
-              triggerStyle={{
-                backgroundColor: t.isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
-                border: `1px solid ${t.border}`,
-                borderRadius: 16,
-                color: t.fg,
-              }}
-            />
-          </Field>
-        </div>
-
-        <div className="relative z-10">
-          <Field
-            label={tr("storefront.cod.deliveryType")}
-            mutedColor={t.muted}
-          >
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => setDeliveryType("domicile")}
-                className={`rounded-2xl border p-4 transition-all duration-300 ${
-                  deliveryType === "domicile"
-                    ? "text-white shadow-lg"
-                    : "hover:border-orange-400"
-                }`}
-                style={{
-                  borderColor: deliveryType === "domicile" ? t.primary : t.border,
-                  backgroundColor: deliveryType === "domicile" ? t.primary : t.surface,
-                  color: deliveryType === "domicile" ? t.onPrimary : t.muted,
-                }}
-              >
-                <div className="flex flex-col items-center gap-2">
-                  <Home className="h-5 w-5" />
-                  <span className="text-sm font-medium">
-                    {tr("storefront.cod.deliveryHome")}
-                  </span>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setDeliveryType("stopdesk")}
-                className={`rounded-2xl border p-4 transition-all duration-300 ${
-                  deliveryType === "stopdesk"
-                    ? "text-white shadow-lg"
-                    : "hover:border-orange-400"
-                }`}
-                style={{
-                  borderColor: deliveryType === "stopdesk" ? t.primary : t.border,
-                  backgroundColor: deliveryType === "stopdesk" ? t.primary : t.surface,
-                  color: deliveryType === "stopdesk" ? t.onPrimary : t.muted,
-                }}
-              >
-                <div className="flex flex-col items-center gap-2">
-                  <Building2 className="h-5 w-5" />
-                  <span className="text-sm font-medium">
-                    {tr("storefront.cod.deliveryStopdesk")}
-                  </span>
-                </div>
-              </button>
-            </div>
-          </Field>
-        </div>
-
-        <div className="relative z-10 rounded-2xl border p-5 backdrop-blur-sm" style={{ borderColor: t.border, backgroundColor: t.surface }}>
-          <div className="flex items-center justify-between text-sm" style={{ color: t.muted }}>
-            <span>{tr("storefront.cod.subtotal")}</span>
-            <span style={{ color: t.fg }}>{subtotal.toFixed(2)} DA</span>
-          </div>
-
-          <div className="mt-3 flex items-center justify-between text-sm" style={{ color: t.muted }}>
-            <span>{tr("storefront.cod.shipping")}</span>
-
-            <span style={{ color: t.fg }}>
-              {!wilaya
-                ? "—"
-                : shippingLoading
-                ? "…"
-                : shippingPrice === null
-                ? tr("storefront.cod.shippingUnavailable")
-                : `${shippingPrice.toFixed(2)} DA`}
-            </span>
-          </div>
-
-          <div className="mt-4 flex items-center justify-between border-t pt-4" style={{ borderColor: t.border }}>
-            <div className="text-sm" style={{ color: t.muted }}>
-              {tr("storefront.cod.totalLine", { count: quantity })}
-            </div>
-
-            <div className="text-2xl font-bold" style={{ color: t.fg }}>
-              {total.toFixed(2)} DA
-            </div>
-          </div>
-        </div>
-
-        <button
-          type="submit"
-          disabled={submitting}
-          className="relative z-10 inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 text-sm font-semibold text-white shadow-lg shadow-orange-500/30 transition-all duration-300 hover:scale-[1.01] hover:shadow-orange-500/50 disabled:opacity-50"
+        <SheetContent
+          side="bottom"
+          className="max-h-[90dvh] overflow-y-auto p-0"
+          style={{
+            borderRadius: `${Math.min(radius * 2, 24)}px ${Math.min(radius * 2, 24)}px 0 0`,
+          }}
         >
-          {submitting ? (
-            <Loader2 className="h-5 w-5 animate-spin" />
-          ) : (
-            <ShoppingBag className="h-5 w-5" />
-          )}
+          <SheetTitle className="sr-only">{tr("storefront.cod.title")}</SheetTitle>
+          <SheetDescription className="sr-only">{tr("storefront.cod.subtitle")}</SheetDescription>
 
-          {submitting
-            ? tr("storefront.cod.placing")
-            : tr("storefront.cod.orderNow")}
-        </button>
-      </motion.form>
+          {successOrderId ? (
+            <SuccessPanel
+              orderId={successOrderId}
+              slug={storeSlug}
+              tokens={t}
+              radius={radius}
+              onClose={resetAndClose}
+            />
+          ) : (
+            <div className="p-6 sm:p-8">
+              {/* Step indicators */}
+              <StepIndicator
+                steps={STEPS}
+                current={step}
+                label={stepLabel}
+                tokens={t}
+                radius={radius}
+              />
+
+              {/* Step 0: Personal info */}
+              {step === 0 && (
+                <div className="mt-6 space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <Field
+                      icon={<User className="h-4 w-4" style={{ color: t.primary }} />}
+                      label={tr("storefront.cod.firstName")}
+                      error={errors.firstName}
+                      mutedColor={t.muted}
+                    >
+                      <input
+                        type="text"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        placeholder="Ahmed"
+                        style={inputStyle}
+                      />
+                    </Field>
+
+                    <Field
+                      icon={<User className="h-4 w-4" style={{ color: t.primary }} />}
+                      label={tr("storefront.cod.lastName")}
+                      error={errors.lastName}
+                      mutedColor={t.muted}
+                    >
+                      <input
+                        type="text"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        placeholder="Benali"
+                        style={inputStyle}
+                      />
+                    </Field>
+                  </div>
+
+                  <Field
+                    icon={<Phone className="h-4 w-4" style={{ color: t.primary }} />}
+                    label={tr("storefront.cod.phone")}
+                    error={errors.phone}
+                    mutedColor={t.muted}
+                  >
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="0555 12 34 56"
+                      inputMode="tel"
+                      style={inputStyle}
+                    />
+                  </Field>
+                </div>
+              )}
+
+              {/* Step 1: Delivery */}
+              {step === 1 && (
+                <div className="mt-6 space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <Field
+                      icon={<MapPin className="h-4 w-4" style={{ color: t.primary }} />}
+                      label={tr("storefront.cod.wilaya")}
+                      error={errors.wilaya}
+                      mutedColor={t.muted}
+                    >
+                      <SearchableSelect
+                        value={wilaya}
+                        onChange={(v) => {
+                          setWilaya(v);
+                          setCity("");
+                        }}
+                        options={WILAYA_LIST}
+                        placeholder={tr("storefront.cod.selectWilaya")}
+                        searchPlaceholder={tr("storefront.cod.searchWilaya")}
+                        emptyMessage={tr("storefront.cod.noWilaya")}
+                        triggerStyle={{
+                          backgroundColor: t.isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
+                          border: `1px solid ${t.border}`,
+                          borderRadius: Math.min(radius, 16),
+                          color: t.fg,
+                        }}
+                      />
+                    </Field>
+
+                    <Field
+                      icon={<MapPin className="h-4 w-4" style={{ color: t.primary }} />}
+                      label={tr("storefront.cod.city")}
+                      error={errors.city}
+                      mutedColor={t.muted}
+                    >
+                      <SearchableSelect
+                        value={city}
+                        onChange={setCity}
+                        options={cities}
+                        placeholder={
+                          wilaya
+                            ? tr("storefront.cod.selectCity")
+                            : tr("storefront.cod.pickWilayaFirst")
+                        }
+                        searchPlaceholder={tr("storefront.cod.searchCity")}
+                        emptyMessage={tr("storefront.cod.noCity")}
+                        disabled={!wilaya}
+                        triggerStyle={{
+                          backgroundColor: t.isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
+                          border: `1px solid ${t.border}`,
+                          borderRadius: Math.min(radius, 16),
+                          color: t.fg,
+                        }}
+                      />
+                    </Field>
+                  </div>
+
+                  <Field label={tr("storefront.cod.deliveryType")} mutedColor={t.muted}>
+                    <div className="grid grid-cols-2 gap-3">
+                      {(["domicile", "stopdesk"] as const).map((type) => {
+                        const active = deliveryType === type;
+                        const Icon = type === "domicile" ? Home : Building2;
+                        return (
+                          <button
+                            type="button"
+                            key={type}
+                            onClick={() => setDeliveryType(type)}
+                            className="flex flex-col items-center gap-2 py-4 px-3 text-sm font-medium transition-all duration-200"
+                            style={{
+                              border: `2px solid ${active ? t.primary : t.border}`,
+                              backgroundColor: active ? t.primary + "15" : t.surface,
+                              color: active ? t.primary : t.muted,
+                              borderRadius: Math.min(radius, 16),
+                            }}
+                          >
+                            <Icon className="h-5 w-5" />
+                            <span>
+                              {type === "domicile"
+                                ? tr("storefront.cod.deliveryHome")
+                                : tr("storefront.cod.deliveryStopdesk")}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </Field>
+                </div>
+              )}
+
+              {/* Step 2: Confirm */}
+              {step === 2 && (
+                <div className="mt-6 space-y-4">
+                  {/* Product summary */}
+                  <div
+                    className="flex items-center gap-4 p-4"
+                    style={{
+                      borderRadius: Math.min(radius, 16),
+                      border: `1px solid ${t.border}`,
+                      backgroundColor: t.surface,
+                    }}
+                  >
+                    {product.image && (
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="h-16 w-16 shrink-0 object-cover"
+                        style={{ borderRadius: Math.min(radius / 2, 8) }}
+                      />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium truncate" style={{ color: t.fg }}>
+                        {product.name}
+                      </div>
+                      <div className="text-sm mt-0.5" style={{ color: t.muted }}>
+                        ×{quantity}
+                      </div>
+                    </div>
+                    <div className="font-semibold tabular-nums" style={{ color: t.fg }}>
+                      {subtotal.toFixed(2)} DA
+                    </div>
+                  </div>
+
+                  {/* Delivery details */}
+                  <div
+                    className="p-4 space-y-2 text-sm"
+                    style={{
+                      borderRadius: Math.min(radius, 16),
+                      border: `1px solid ${t.border}`,
+                      backgroundColor: t.surface,
+                    }}
+                  >
+                    <div className="flex items-center gap-2" style={{ color: t.muted }}>
+                      <User className="h-4 w-4" />
+                      <span style={{ color: t.fg }}>
+                        {firstName} {lastName}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2" style={{ color: t.muted }}>
+                      <Phone className="h-4 w-4" />
+                      <span style={{ color: t.fg }}>{phone}</span>
+                    </div>
+                    <div className="flex items-center gap-2" style={{ color: t.muted }}>
+                      <MapPin className="h-4 w-4" />
+                      <span style={{ color: t.fg }}>
+                        {wilaya}, {city}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2" style={{ color: t.muted }}>
+                      {deliveryType === "domicile" ? (
+                        <Home className="h-4 w-4" />
+                      ) : (
+                        <Building2 className="h-4 w-4" />
+                      )}
+                      <span style={{ color: t.fg }}>
+                        {deliveryType === "domicile"
+                          ? tr("storefront.cod.deliveryHome")
+                          : tr("storefront.cod.deliveryStopdesk")}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Totals */}
+                  <div
+                    className="p-4 space-y-2.5 text-sm"
+                    style={{
+                      borderRadius: Math.min(radius, 16),
+                      border: `1px solid ${t.border}`,
+                      backgroundColor: t.surface,
+                    }}
+                  >
+                    <div className="flex justify-between" style={{ color: t.muted }}>
+                      <span>{tr("storefront.cod.subtotal")}</span>
+                      <span className="tabular-nums" style={{ color: t.fg }}>
+                        {subtotal.toFixed(2)} DA
+                      </span>
+                    </div>
+                    <div className="flex justify-between" style={{ color: t.muted }}>
+                      <span>{tr("storefront.cod.shipping")}</span>
+                      <span className="tabular-nums" style={{ color: t.fg }}>
+                        {shippingLoading
+                          ? "…"
+                          : shippingPrice !== null
+                            ? `${shippingPrice.toFixed(2)} DA`
+                            : "—"}
+                      </span>
+                    </div>
+                    <div
+                      className="flex justify-between pt-2.5 text-base font-bold"
+                      style={{ borderTop: `1px solid ${t.border}`, color: t.fg }}
+                    >
+                      <span>{tr("storefront.cod.totalLine", { count: quantity })}</span>
+                      <span style={{ color: t.primary }}>{total.toFixed(2)} DA</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Navigation buttons */}
+              <div className="flex items-center gap-3 mt-6">
+                {step > 0 && (
+                  <button
+                    type="button"
+                    onClick={prevStep}
+                    className="inline-flex items-center gap-1.5 px-5 h-12 text-sm font-medium transition-opacity hover:opacity-80"
+                    style={{
+                      border: `1px solid ${t.border}`,
+                      color: t.fg,
+                      borderRadius: Math.min(radius, 16),
+                    }}
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    {tr("storefront.checkout.back")}
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={step < STEPS.length - 1 ? nextStep : handleSubmit}
+                  disabled={submitting || (step === 1 && shippingLoading)}
+                  className="flex-1 inline-flex items-center justify-center gap-2 h-12 text-sm font-semibold transition-all hover:opacity-90 disabled:opacity-50"
+                  style={{
+                    backgroundColor: t.primary,
+                    color: t.onPrimary,
+                    borderRadius: Math.min(radius, 16),
+                  }}
+                >
+                  {submitting ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : step < STEPS.length - 1 ? (
+                    <>{tr("storefront.checkout.next") || "Continue"}</>
+                  ) : (
+                    <>
+                      <ShoppingBag className="h-5 w-5" />
+                      {tr("storefront.cod.orderNow")}
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
+
+      {/* Trigger button — styled to match theme */}
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="w-full inline-flex items-center justify-center gap-2 px-6 h-11 text-sm font-semibold transition-all hover:opacity-90"
+        style={{
+          backgroundColor: t.primary,
+          color: t.onPrimary,
+          borderRadius: Math.min(radius, 16),
+        }}
+      >
+        <ShoppingBag className="h-4 w-4" />
+        {tr("storefront.cod.orderNow")}
+      </button>
     </>
   );
 }
 
+/* ---------- Step Indicator ---------- */
+function StepIndicator({
+  steps,
+  current,
+  label,
+  tokens: t,
+  radius,
+}: {
+  steps: readonly string[];
+  current: number;
+  label: (i: number) => string;
+  tokens: Tokens;
+  radius: number;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      {steps.map((key, i) => {
+        const active = i === current;
+        const done = i < current;
+        return (
+          <div key={key} className="flex items-center gap-2 flex-1">
+            <div
+              className="h-8 w-8 shrink-0 rounded-full flex items-center justify-center text-xs font-bold transition-colors"
+              style={{
+                backgroundColor: done || active ? t.primary : t.surface,
+                color: done || active ? t.onPrimary : t.muted,
+                border: `2px solid ${done || active ? t.primary : t.border}`,
+                borderRadius: radius,
+              }}
+            >
+              {done ? <CheckCircle2 className="h-4 w-4" /> : i + 1}
+            </div>
+            <span
+              className="text-xs font-medium hidden sm:block"
+              style={{ color: active ? t.fg : t.muted }}
+            >
+              {label(i)}
+            </span>
+            {i < steps.length - 1 && (
+              <div
+                className="flex-1 h-0.5 hidden sm:block"
+                style={{
+                  backgroundColor: done ? t.primary : t.border,
+                  borderRadius: 1,
+                }}
+              />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ---------- Success Panel ---------- */
+function SuccessPanel({
+  orderId,
+  slug,
+  tokens: t,
+  radius,
+  onClose,
+}: {
+  orderId: string;
+  slug: string;
+  tokens: Tokens;
+  radius: number;
+  onClose: () => void;
+}) {
+  const { t: tr } = useTranslation();
+  return (
+    <div className="p-8 text-center">
+      <div
+        className="mx-auto h-16 w-16 rounded-full flex items-center justify-center mb-5"
+        style={{ backgroundColor: t.primary + "22", color: t.primary }}
+      >
+        <CheckCircle2 className="h-8 w-8" />
+      </div>
+
+      <h3 className="text-xl font-bold" style={{ color: t.fg }}>
+        {tr("storefront.success.title")}
+      </h3>
+
+      <p className="mt-2 text-sm" style={{ color: t.muted }}>
+        {tr("storefront.success.subtitle")}
+      </p>
+
+      {orderId && (
+        <div
+          className="inline-block mt-4 px-4 py-2.5 text-sm font-mono"
+          style={{
+            backgroundColor: t.primary + "12",
+            color: t.primary,
+            borderRadius: Math.min(radius, 12),
+            border: `1px solid ${t.primary}30`,
+          }}
+        >
+          #{orderId.slice(0, 8).toUpperCase()}
+        </div>
+      )}
+
+      <div className="flex flex-col gap-3 mt-6">
+        <Link
+          to="/s/$slug/track"
+          params={{ slug }}
+          search={{ order: orderId }}
+          onClick={onClose}
+          className="inline-flex h-11 items-center justify-center px-6 text-sm font-semibold transition-opacity hover:opacity-90"
+          style={{
+            backgroundColor: t.primary,
+            color: t.onPrimary,
+            borderRadius: Math.min(radius, 16),
+          }}
+        >
+          {tr("storefront.success.track") || "Track Order"}
+        </Link>
+
+        <button
+          type="button"
+          onClick={onClose}
+          className="inline-flex h-11 items-center justify-center px-6 text-sm font-medium transition-opacity hover:opacity-80"
+          style={{
+            border: `1px solid ${t.border}`,
+            color: t.fg,
+            borderRadius: Math.min(radius, 16),
+          }}
+        >
+          {tr("storefront.success.continue") || "Continue Shopping"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Field ---------- */
 function Field({
   label,
   error,
@@ -510,14 +788,8 @@ function Field({
         {icon}
         {label}
       </label>
-
       {children}
-
-      {error && (
-        <p className="mt-2 text-xs text-red-500">
-          {error}
-        </p>
-      )}
+      {error && <p className="mt-1.5 text-xs text-red-500">{error}</p>}
     </div>
   );
 }

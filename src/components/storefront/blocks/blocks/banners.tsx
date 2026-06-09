@@ -10,6 +10,14 @@ export interface MarqueeProps {
 }
 export function Marquee({ props }: BlockComponentProps<MarqueeProps>) {
   const items = [...props.items, ...props.items];
+  useEffect(() => {
+    if (document.getElementById("marquee-keyframe")) return;
+    const style = document.createElement("style");
+    style.id = "marquee-keyframe";
+    style.textContent = `@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }`;
+    document.head.appendChild(style);
+    return () => { style.remove(); };
+  }, []);
   return (
     <div className="overflow-hidden border-y border-border bg-primary py-3 text-primary-foreground">
       <div
@@ -22,7 +30,6 @@ export function Marquee({ props }: BlockComponentProps<MarqueeProps>) {
           </span>
         ))}
       </div>
-      <style>{`@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }`}</style>
     </div>
   );
 }

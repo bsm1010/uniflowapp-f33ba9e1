@@ -47,11 +47,10 @@ function ThemeGalleryPage() {
 
       {/* Hero */}
       <section className="py-20 md:py-28 px-6 text-center">
-        <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight">
-          20 Premium Themes
-        </h1>
+        <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight">20 Premium Themes</h1>
         <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-          Each theme is a complete brand experience — unique layouts, typography, and visual identity. Click any theme to see it live.
+          Each theme is a complete brand experience — unique layouts, typography, and visual
+          identity. Click any theme to see it live.
         </p>
       </section>
 
@@ -59,11 +58,7 @@ function ThemeGalleryPage() {
       <section className="max-w-7xl mx-auto px-6 pb-24">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           {THEME_PRESETS.map((preset) => (
-            <ThemeCard
-              key={preset.id}
-              preset={preset}
-              onClick={() => setActiveTheme(preset.id)}
-            />
+            <ThemeCard key={preset.id} preset={preset} onClick={() => setActiveTheme(preset.id)} />
           ))}
         </div>
       </section>
@@ -90,10 +85,7 @@ function ThemeCard({ preset, onClick }: { preset: ThemePreset; onClick: () => vo
       className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-all duration-300 hover:shadow-xl hover:scale-[1.02] text-left"
     >
       {/* Color preview */}
-      <div
-        className="relative h-40 overflow-hidden"
-        style={{ backgroundColor: tokens.bg }}
-      >
+      <div className="relative h-40 overflow-hidden" style={{ backgroundColor: tokens.bg }}>
         {/* Mini storefront preview */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-[85%] flex flex-col items-center gap-2">
@@ -175,9 +167,12 @@ function ThemePreview({ preset, onBack }: { preset: ThemePreset; onBack: () => v
     } as Tables<"store_settings">);
   }, [preset]);
 
-  const handleAdd = useCallback((_p: import("@/components/storefront/layouts").ProductForLayout) => {
-    // Visual feedback only in preview
-  }, []);
+  const handleAdd = useCallback(
+    (_p: import("@/components/storefront/layouts").ProductForLayout) => {
+      // Visual feedback only in preview
+    },
+    [],
+  );
 
   const LayoutComponent = LAYOUT_COMPONENTS[preset.layout];
 
@@ -185,6 +180,7 @@ function ThemePreview({ preset, onBack }: { preset: ThemePreset; onBack: () => v
     products,
     tokens,
     currency: "DZD",
+    slug: "preview",
     brandName: preset.brandName,
     heroHeading: preset.heroHeading,
     heroSubheading: preset.heroSubheading,
@@ -242,10 +238,18 @@ function ThemePreview({ preset, onBack }: { preset: ThemePreset; onBack: () => v
       {/* Footer */}
       <footer
         className="px-6 py-12 text-center text-xs"
-        style={{ backgroundColor: tokens.surface, color: tokens.muted, borderTop: `1px solid ${tokens.border}` }}
+        style={{
+          backgroundColor: tokens.surface,
+          color: tokens.muted,
+          borderTop: `1px solid ${tokens.border}`,
+        }}
       >
-        <p className="font-semibold" style={{ color: tokens.fg }}>{preset.brandName}</p>
-        <p className="mt-2">This is a theme preview. Start building your store with this theme today.</p>
+        <p className="font-semibold" style={{ color: tokens.fg }}>
+          {preset.brandName}
+        </p>
+        <p className="mt-2">
+          This is a theme preview. Start building your store with this theme today.
+        </p>
         <Link
           to="/signup"
           className="mt-4 inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold transition-transform hover:scale-105"

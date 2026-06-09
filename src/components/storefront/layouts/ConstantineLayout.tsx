@@ -1,4 +1,5 @@
 import { ArrowRight, ShoppingBag } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { Img } from "@/components/ui/Img";
 import { formatPrice } from "@/lib/storeTheme";
 import type { LayoutProps } from "./index";
@@ -7,6 +8,7 @@ export default function ConstantineLayout({
   products,
   tokens: t,
   currency,
+  slug,
   brandName,
   heroHeading,
   heroSubheading,
@@ -70,10 +72,7 @@ export default function ConstantineLayout({
               className="text-center p-8"
               style={{ backgroundColor: t.fg, borderRadius: t.radius.sm }}
             >
-              <div
-                className="text-3xl md:text-5xl font-black mb-2"
-                style={{ color: t.primary }}
-              >
+              <div className="text-3xl md:text-5xl font-black mb-2" style={{ color: t.primary }}>
                 {s.num}
               </div>
               <div
@@ -91,10 +90,7 @@ export default function ConstantineLayout({
       {/* Products — Stark cards */}
       {featured.length > 0 && (
         <section id="shop" className="max-w-7xl mx-auto px-6 py-16">
-          <h2
-            className="text-2xl md:text-4xl font-black uppercase mb-12"
-            dir="auto"
-          >
+          <h2 className="text-2xl md:text-4xl font-black uppercase mb-12" dir="auto">
             Featured
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
@@ -108,11 +104,17 @@ export default function ConstantineLayout({
                     backgroundColor: t.fg,
                   }}
                 >
-                  <Img
-                    src={p.images[0]}
-                    alt={p.name}
-                    className="w-full h-full transition-transform duration-500 group-hover:scale-105"
-                  />
+                  <Link
+                    to="/s/$slug/p/$productId"
+                    params={{ slug, productId: p.id }}
+                    className="block"
+                  >
+                    <Img
+                      src={p.images[0]}
+                      alt={p.name}
+                      className="w-full h-full transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </Link>
                   <div
                     className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
                     style={{ backgroundColor: t.primary + "20" }}
@@ -122,13 +124,8 @@ export default function ConstantineLayout({
                       className="absolute top-3 left-3 text-[9px] font-black uppercase tracking-widest px-3 py-1"
                       style={{
                         backgroundColor:
-                          p.badge === "sale"
-                            ? t.primary
-                            : p.badge === "new"
-                            ? t.fg
-                            : t.accent,
-                        color:
-                          p.badge === "new" ? t.bg : "#fff",
+                          p.badge === "sale" ? t.primary : p.badge === "new" ? t.fg : t.accent,
+                        color: p.badge === "new" ? t.bg : "#fff",
                         borderRadius: t.radius.sm,
                       }}
                     >
@@ -136,16 +133,13 @@ export default function ConstantineLayout({
                     </span>
                   )}
                 </div>
-                <h3
-                  className="text-sm font-bold uppercase tracking-wide mb-1"
-                  dir="auto"
-                >
-                  {p.name}
-                </h3>
+                <Link to="/s/$slug/p/$productId" params={{ slug, productId: p.id }}>
+                  <h3 className="text-sm font-bold uppercase tracking-wide mb-1" dir="auto">
+                    {p.name}
+                  </h3>
+                </Link>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-black">
-                    {formatPrice(p.price, currency)}
-                  </span>
+                  <span className="text-sm font-black">{formatPrice(p.price, currency)}</span>
                   {onAddToCart && (
                     <button
                       onClick={() => onAddToCart(p)}
@@ -176,11 +170,7 @@ export default function ConstantineLayout({
           >
             Stay Connected
           </h2>
-          <p
-            className="text-sm mb-8"
-            dir="auto"
-            style={{ color: "rgba(255,255,255,0.5)" }}
-          >
+          <p className="text-sm mb-8" dir="auto" style={{ color: "rgba(255,255,255,0.5)" }}>
             Exclusive drops and early access.
           </p>
           <form

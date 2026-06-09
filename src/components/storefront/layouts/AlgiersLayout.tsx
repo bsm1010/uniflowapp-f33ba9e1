@@ -1,4 +1,5 @@
 import { ArrowRight, ShoppingBag } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { Img } from "@/components/ui/Img";
 import { formatPrice } from "@/lib/storeTheme";
 import type { LayoutProps } from "./index";
@@ -7,6 +8,7 @@ export default function AlgiersLayout({
   products,
   tokens: t,
   currency,
+  slug,
   brandName,
   heroHeading,
   heroSubheading,
@@ -83,11 +85,17 @@ export default function AlgiersLayout({
                     backgroundColor: t.surface,
                   }}
                 >
-                  <Img
-                    src={p.images[0]}
-                    alt={p.name}
-                    className="w-full h-full transition-transform duration-500 group-hover:scale-105"
-                  />
+                  <Link
+                    to="/s/$slug/p/$productId"
+                    params={{ slug, productId: p.id }}
+                    className="block"
+                  >
+                    <Img
+                      src={p.images[0]}
+                      alt={p.name}
+                      className="w-full h-full transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </Link>
                   <div
                     className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
                     style={{
@@ -100,8 +108,7 @@ export default function AlgiersLayout({
                       style={{
                         backgroundColor:
                           p.badge === "sale" ? t.accent : p.badge === "new" ? "#ffffff" : t.primary,
-                        color:
-                          p.badge === "new" ? "#0a0a0a" : "#fff",
+                        color: p.badge === "new" ? "#0a0a0a" : "#fff",
                         borderRadius: t.radius.sm,
                       }}
                     >
@@ -116,7 +123,11 @@ export default function AlgiersLayout({
                 >
                   {p.category}
                 </p>
-                <h3 className="text-sm font-semibold mb-1" dir="auto">{p.name}</h3>
+                <Link to="/s/$slug/p/$productId" params={{ slug, productId: p.id }}>
+                  <h3 className="text-sm font-semibold mb-1" dir="auto">
+                    {p.name}
+                  </h3>
+                </Link>
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-bold" style={{ color: t.accent }}>
                     {formatPrice(p.price, currency)}
@@ -157,19 +168,16 @@ export default function AlgiersLayout({
             dir="auto"
             style={{ color: t.muted }}
           >
-            Born from a passion for quality and heritage, we curate premium products
-            that reflect the spirit of modern Algeria. Every item is chosen with
-            care to deliver excellence to your doorstep.
+            Born from a passion for quality and heritage, we curate premium products that reflect
+            the spirit of modern Algeria. Every item is chosen with care to deliver excellence to
+            your doorstep.
           </p>
           <div className="w-16 h-px mx-auto" style={{ backgroundColor: t.accent }} />
         </div>
       </section>
 
       {/* Newsletter — Dark bg, gold text */}
-      <section
-        className="px-6 py-20"
-        style={{ backgroundColor: "#0a0a0a" }}
-      >
+      <section className="px-6 py-20" style={{ backgroundColor: "#0a0a0a" }}>
         <div className="max-w-xl mx-auto text-center">
           <h2
             className="text-2xl md:text-3xl font-bold mb-3"
@@ -178,11 +186,7 @@ export default function AlgiersLayout({
           >
             Join the Club
           </h2>
-          <p
-            className="text-sm mb-8"
-            dir="auto"
-            style={{ color: "rgba(255,255,255,0.45)" }}
-          >
+          <p className="text-sm mb-8" dir="auto" style={{ color: "rgba(255,255,255,0.45)" }}>
             Exclusive access to premium drops and offers.
           </p>
           <form

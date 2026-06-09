@@ -1,4 +1,5 @@
 import { ArrowRight, ShoppingBag, Truck, Shield, RotateCcw, Headphones } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { Img } from "@/components/ui/Img";
 import { formatPrice } from "@/lib/storeTheme";
 import type { LayoutProps } from "./index";
@@ -7,6 +8,7 @@ export default function OranLayout({
   products,
   tokens: t,
   currency,
+  slug,
   brandName,
   heroHeading,
   heroSubheading,
@@ -35,11 +37,7 @@ export default function OranLayout({
             >
               {heroHeading}
             </h1>
-            <p
-              className="text-base md:text-lg mb-8 max-w-lg"
-              dir="auto"
-              style={{ color: t.muted }}
-            >
+            <p className="text-base md:text-lg mb-8 max-w-lg" dir="auto" style={{ color: t.muted }}>
               {heroSubheading}
             </p>
             <a
@@ -74,7 +72,11 @@ export default function OranLayout({
       {/* Features */}
       <section
         className="px-6 py-12"
-        style={{ backgroundColor: t.surface, borderTop: `1px solid ${t.border}`, borderBottom: `1px solid ${t.border}` }}
+        style={{
+          backgroundColor: t.surface,
+          borderTop: `1px solid ${t.border}`,
+          borderBottom: `1px solid ${t.border}`,
+        }}
       >
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
           {[
@@ -90,7 +92,9 @@ export default function OranLayout({
               >
                 <Icon className="h-5 w-5" style={{ color: t.primary }} />
               </div>
-              <p className="text-xs font-semibold uppercase tracking-wider" dir="auto">{label}</p>
+              <p className="text-xs font-semibold uppercase tracking-wider" dir="auto">
+                {label}
+              </p>
             </div>
           ))}
         </div>
@@ -118,14 +122,21 @@ export default function OranLayout({
                     border: `2px solid ${t.border}`,
                   }}
                 >
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10"
+                  <div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10"
                     style={{ border: `2px solid ${t.primary}`, borderRadius: t.radius.lg }}
                   />
-                  <Img
-                    src={p.images[0]}
-                    alt={p.name}
-                    className="w-full h-full transition-transform duration-500 group-hover:scale-105"
-                  />
+                  <Link
+                    to="/s/$slug/p/$productId"
+                    params={{ slug, productId: p.id }}
+                    className="block"
+                  >
+                    <Img
+                      src={p.images[0]}
+                      alt={p.name}
+                      className="w-full h-full transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </Link>
                   {p.badge && (
                     <span
                       className="absolute top-3 left-3 text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 z-20"
@@ -147,11 +158,13 @@ export default function OranLayout({
                 >
                   {p.category}
                 </p>
-                <h3 className="text-sm font-semibold mb-1" dir="auto">{p.name}</h3>
+                <Link to="/s/$slug/p/$productId" params={{ slug, productId: p.id }}>
+                  <h3 className="text-sm font-semibold mb-1" dir="auto">
+                    {p.name}
+                  </h3>
+                </Link>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold">
-                    {formatPrice(p.price, currency)}
-                  </span>
+                  <span className="text-sm font-bold">{formatPrice(p.price, currency)}</span>
                   {onAddToCart && (
                     <button
                       onClick={() => onAddToCart(p)}
@@ -173,10 +186,7 @@ export default function OranLayout({
       )}
 
       {/* Newsletter — Light blue bg */}
-      <section
-        className="px-6 py-20"
-        style={{ backgroundColor: t.primary + "12" }}
-      >
+      <section className="px-6 py-20" style={{ backgroundColor: t.primary + "12" }}>
         <div className="max-w-xl mx-auto text-center">
           <h2
             className="text-2xl md:text-3xl font-bold mb-3"
@@ -185,11 +195,7 @@ export default function OranLayout({
           >
             Stay in the Loop
           </h2>
-          <p
-            className="text-sm mb-8"
-            dir="auto"
-            style={{ color: t.muted }}
-          >
+          <p className="text-sm mb-8" dir="auto" style={{ color: t.muted }}>
             Subscribe for new arrivals and exclusive offers.
           </p>
           <form

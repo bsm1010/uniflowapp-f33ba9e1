@@ -1,4 +1,5 @@
 import { ArrowRight, ShoppingBag, Heart, Star, Award } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { Img } from "@/components/ui/Img";
 import { formatPrice } from "@/lib/storeTheme";
 import type { LayoutProps } from "./index";
@@ -7,6 +8,7 @@ export default function KabyleLayout({
   products,
   tokens: t,
   currency,
+  slug,
   brandName,
   heroHeading,
   heroSubheading,
@@ -35,11 +37,7 @@ export default function KabyleLayout({
             >
               {heroHeading}
             </h1>
-            <p
-              className="text-base md:text-lg mb-8 max-w-lg"
-              dir="auto"
-              style={{ color: t.muted }}
-            >
+            <p className="text-base md:text-lg mb-8 max-w-lg" dir="auto" style={{ color: t.muted }}>
               {heroSubheading}
             </p>
             <a
@@ -58,7 +56,11 @@ export default function KabyleLayout({
           </div>
           <div
             className="relative overflow-hidden"
-            style={{ borderRadius: t.radius.lg, aspectRatio: "4/5", backgroundColor: t.surfaceStrong }}
+            style={{
+              borderRadius: t.radius.lg,
+              aspectRatio: "4/5",
+              backgroundColor: t.surfaceStrong,
+            }}
           >
             {products[0] && (
               <Img
@@ -83,14 +85,26 @@ export default function KabyleLayout({
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { icon: Heart, title: "Made with Heart", desc: "Each piece carries warmth and intention" },
-              { icon: Star, title: "Quality Materials", desc: "Sourced from trusted local artisans" },
+              {
+                icon: Heart,
+                title: "Made with Heart",
+                desc: "Each piece carries warmth and intention",
+              },
+              {
+                icon: Star,
+                title: "Quality Materials",
+                desc: "Sourced from trusted local artisans",
+              },
               { icon: Award, title: "Heritage Craft", desc: "Rooted in centuries of tradition" },
             ].map(({ icon: Icon, title, desc }) => (
               <div
                 key={title}
                 className="text-center p-8"
-                style={{ backgroundColor: t.surface, borderRadius: t.radius.lg, border: `1px solid ${t.border}` }}
+                style={{
+                  backgroundColor: t.surface,
+                  borderRadius: t.radius.lg,
+                  border: `1px solid ${t.border}`,
+                }}
               >
                 <div
                   className="w-14 h-14 mx-auto mb-4 flex items-center justify-center"
@@ -98,8 +112,12 @@ export default function KabyleLayout({
                 >
                   <Icon className="h-6 w-6" style={{ color: t.primary }} />
                 </div>
-                <h3 className="text-sm font-bold mb-2" dir="auto">{title}</h3>
-                <p className="text-xs" dir="auto" style={{ color: t.muted }}>{desc}</p>
+                <h3 className="text-sm font-bold mb-2" dir="auto">
+                  {title}
+                </h3>
+                <p className="text-xs" dir="auto" style={{ color: t.muted }}>
+                  {desc}
+                </p>
               </div>
             ))}
           </div>
@@ -128,11 +146,17 @@ export default function KabyleLayout({
                     border: `2px solid ${t.primary}30`,
                   }}
                 >
-                  <Img
-                    src={p.images[0]}
-                    alt={p.name}
-                    className="w-full h-full transition-transform duration-500 group-hover:scale-105"
-                  />
+                  <Link
+                    to="/s/$slug/p/$productId"
+                    params={{ slug, productId: p.id }}
+                    className="block"
+                  >
+                    <Img
+                      src={p.images[0]}
+                      alt={p.name}
+                      className="w-full h-full transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </Link>
                   {p.badge && (
                     <span
                       className="absolute top-3 left-3 text-[9px] font-bold uppercase tracking-wider px-2.5 py-1"
@@ -154,11 +178,13 @@ export default function KabyleLayout({
                 >
                   {p.category}
                 </p>
-                <h3 className="text-sm font-semibold mb-1" dir="auto">{p.name}</h3>
+                <Link to="/s/$slug/p/$productId" params={{ slug, productId: p.id }}>
+                  <h3 className="text-sm font-semibold mb-1" dir="auto">
+                    {p.name}
+                  </h3>
+                </Link>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold">
-                    {formatPrice(p.price, currency)}
-                  </span>
+                  <span className="text-sm font-bold">{formatPrice(p.price, currency)}</span>
                   {onAddToCart && (
                     <button
                       onClick={() => onAddToCart(p)}
@@ -189,11 +215,7 @@ export default function KabyleLayout({
           >
             Stay Connected
           </h2>
-          <p
-            className="text-sm mb-8"
-            dir="auto"
-            style={{ color: t.muted }}
-          >
+          <p className="text-sm mb-8" dir="auto" style={{ color: t.muted }}>
             Join our community and get exclusive offers.
           </p>
           <form

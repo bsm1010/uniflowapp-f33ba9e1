@@ -21,7 +21,7 @@ export const Route = createFileRoute("/s/$slug/p/$productId")({
     if (!settings) return { settings: null, product: null };
     const { data: product } = await supabase
       .from("products")
-      .select("id,name,description,price,images")
+      .select("id,name,description,price,images,stock")
       .eq("id", params.productId)
       .eq("user_id", settings.user_id)
       .maybeSingle();
@@ -43,6 +43,7 @@ export const Route = createFileRoute("/s/$slug/p/$productId")({
       { property: "og:title", content: title },
       { property: "og:description", content: description },
       { property: "og:type", content: "product" },
+      { name: "twitter:card", content: "summary_large_image" },
     ];
     if (image) {
       meta.push({ property: "og:image", content: image });
@@ -61,8 +62,11 @@ export const Route = createFileRoute("/s/$slug/p/$productId")({
               offers: {
                 "@type": "Offer",
                 price: String(product.price),
-                priceCurrency: "DZD",
-                availability: "https://schema.org/InStock",
+                priceCurrency: settings?.currency || "DZD",
+                availability:
+                  (product.stock ?? 0) > 0
+                    ? "https://schema.org/InStock"
+                    : "https://schema.org/OutOfStock",
               },
             }),
           },
@@ -289,22 +293,6 @@ function ProductPage() {
               </div>
             </div>
 
-            {!outOfStock && (
-              <AlgerianCheckoutForm
-                storeOwnerId={settings.user_id}
-                storeSlug={slug}
-                product={{
-                  id: product.id,
-                  name: product.name,
-                  price: Number(product.price),
-                  image: product.images[0] ?? null,
-                }}
-                quantity={qty}
-                tokens={t}
-                radius={radius}
-              />
-            )}
-
             <div className="flex gap-3">
               <button
                 onClick={handleAdd}
@@ -320,6 +308,24 @@ function ProductPage() {
                 <ShoppingBag className="h-4 w-4" />
                 {tr("storefront.product.addToCart")}
               </button>
+
+              {!outOfStock && (
+                <div className="flex-1">
+                  <AlgerianCheckoutForm
+                    storeOwnerId={settings.user_id}
+                    storeSlug={slug}
+                    product={{
+                      id: product.id,
+                      name: product.name,
+                      price: Number(product.price),
+                      image: product.images[0] ?? null,
+                    }}
+                    quantity={qty}
+                    tokens={t}
+                    radius={radius}
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>

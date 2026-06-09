@@ -19,7 +19,7 @@ const searchSchema = z.object({
 export const Route = createFileRoute("/s/$slug/checkout/success")({
   component: SuccessPage,
   validateSearch: searchSchema,
-  head: () => ({ meta: [{ title: "Order placed — Storely" }] }),
+  head: ({ params }) => ({ meta: [{ title: `Order Placed — ${params.slug}` }] }),
 });
 
 function SuccessPage() {

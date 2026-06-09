@@ -32,7 +32,7 @@ type Company = { id: string; name: string };
 
 export const Route = createFileRoute("/s/$slug/checkout")({
   component: CheckoutPage,
-  head: () => ({ meta: [{ title: "Checkout" }] }),
+  head: ({ params }) => ({ meta: [{ title: `Checkout — ${params.slug}` }] }),
 });
 
 const dzdFormatter = new Intl.NumberFormat("en-US", {
@@ -545,7 +545,7 @@ function CheckoutPage() {
                           borderRadius: r,
                         }}
                       >
-                        💡 {tr("storefront.checkout.deliveryStopdesk") ?? "Stop desk"} — économisez {formatDZD(stopdeskSavings)}
+                        💡 {tr("storefront.checkout.deliveryStopdesk") ?? "Stop desk"} — {tr("storefront.checkout.save", { defaultValue: "save" })} {formatDZD(stopdeskSavings)}
                       </button>
                     )}
                   </Field>
@@ -651,12 +651,12 @@ function CheckoutPage() {
                           ? <span style={{ color: t.muted }}>—</span>
                           : tariffAvailable
                             ? formatDZD(animatedDelivery)
-                            : <span style={{ color: "#ef4444" }}>Non disponible</span>}
+                            : <span style={{ color: "#ef4444" }}>{tr("storefront.checkout.unavailable", { defaultValue: "Unavailable" })}</span>}
                       </span>
                     </div>
                     {form.wilaya && form.city && !tariffAvailable && !fetchingPrice && (
                       <p className="text-xs px-3 py-2 rounded-lg" style={{ backgroundColor: "#ef444415", color: "#ef4444", borderRadius: r }}>
-                        Livraison non disponible pour cette sélection.
+                        {tr("storefront.checkout.deliveryUnavailable", { defaultValue: "Delivery unavailable for this selection." })}
                       </p>
                     )}
                     <div

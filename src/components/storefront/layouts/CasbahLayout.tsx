@@ -1,4 +1,5 @@
 import { ArrowRight, ShoppingBag, Truck, Shield, RotateCcw } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { Img } from "@/components/ui/Img";
 import { formatPrice } from "@/lib/storeTheme";
 import type { LayoutProps } from "./index";
@@ -7,6 +8,7 @@ export default function CasbahLayout({
   products,
   tokens: t,
   currency,
+  slug,
   brandName,
   heroHeading,
   heroSubheading,
@@ -71,7 +73,11 @@ export default function CasbahLayout({
       {/* Features */}
       <section
         className="px-6 py-12"
-        style={{ backgroundColor: t.surface, borderTop: `1px solid ${t.border}`, borderBottom: `1px solid ${t.border}` }}
+        style={{
+          backgroundColor: t.surface,
+          borderTop: `1px solid ${t.border}`,
+          borderBottom: `1px solid ${t.border}`,
+        }}
       >
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
           {[
@@ -90,8 +96,12 @@ export default function CasbahLayout({
               >
                 <Icon className="h-5 w-5" style={{ color: t.primary }} />
               </div>
-              <h3 className="text-sm font-bold mb-1" dir="auto">{title}</h3>
-              <p className="text-xs" dir="auto" style={{ color: t.muted }}>{desc}</p>
+              <h3 className="text-sm font-bold mb-1" dir="auto">
+                {title}
+              </h3>
+              <p className="text-xs" dir="auto" style={{ color: t.muted }}>
+                {desc}
+              </p>
             </div>
           ))}
         </div>
@@ -122,11 +132,17 @@ export default function CasbahLayout({
                   border: `2px solid ${t.border}`,
                 }}
               >
-                <Img
-                  src={p.images[0]}
-                  alt={p.name}
-                  className="w-full h-full transition-transform duration-500 group-hover:scale-105"
-                />
+                <Link
+                  to="/s/$slug/p/$productId"
+                  params={{ slug, productId: p.id }}
+                  className="block"
+                >
+                  <Img
+                    src={p.images[0]}
+                    alt={p.name}
+                    className="w-full h-full transition-transform duration-500 group-hover:scale-105"
+                  />
+                </Link>
                 {p.badge && (
                   <span
                     className="absolute top-3 left-3 text-[9px] font-bold uppercase tracking-wider px-2.5 py-1"
@@ -148,11 +164,13 @@ export default function CasbahLayout({
               >
                 {p.category}
               </p>
-              <h3 className="text-sm font-semibold mb-1" dir="auto">{p.name}</h3>
+              <Link to="/s/$slug/p/$productId" params={{ slug, productId: p.id }}>
+                <h3 className="text-sm font-semibold mb-1" dir="auto">
+                  {p.name}
+                </h3>
+              </Link>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-bold">
-                  {formatPrice(p.price, currency)}
-                </span>
+                <span className="text-sm font-bold">{formatPrice(p.price, currency)}</span>
                 {onAddToCart && (
                   <button
                     onClick={() => onAddToCart(p)}
@@ -173,10 +191,7 @@ export default function CasbahLayout({
       </section>
 
       {/* Newsletter — Blue background */}
-      <section
-        className="px-6 py-20"
-        style={{ backgroundColor: t.primary }}
-      >
+      <section className="px-6 py-20" style={{ backgroundColor: t.primary }}>
         <div className="max-w-xl mx-auto text-center">
           <h2
             className="text-2xl md:text-3xl font-bold mb-3"
@@ -185,11 +200,7 @@ export default function CasbahLayout({
           >
             Join the Community
           </h2>
-          <p
-            className="text-sm mb-8"
-            dir="auto"
-            style={{ color: t.onPrimary, opacity: 0.85 }}
-          >
+          <p className="text-sm mb-8" dir="auto" style={{ color: t.onPrimary, opacity: 0.85 }}>
             Get the latest news and exclusive deals.
           </p>
           <form

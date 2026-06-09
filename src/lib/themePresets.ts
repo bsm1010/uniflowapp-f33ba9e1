@@ -312,9 +312,9 @@ export function getPresetById(id: string): ThemePreset | undefined {
 }
 
 export function applyPreset(
-  current: Partial<StoreSettings>,
+  current: StoreSettings,
   preset: ThemePreset,
-): Partial<StoreSettings> {
+): StoreSettings {
   return {
     ...current,
     ...preset.patch,
