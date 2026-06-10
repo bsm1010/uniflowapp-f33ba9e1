@@ -50,7 +50,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 export const Route = createFileRoute("/dashboard/categories")({
   component: CategoriesPage,
-  head: () => ({ meta: [{ title: "Categories — Storely" }] }),
+  head: () => ({ meta: [{ title: "Categories — Fennecly" }] }),
 });
 
 type SortKey = "name-asc" | "name-desc" | "count-desc" | "count-asc";
@@ -89,41 +89,46 @@ function CategoriesPage() {
   const load = useCallback(async () => {
     if (!user) return;
     setLoading(true);
-    const [pRes, iRes] = await Promise.all([
-      supabase.from("products").select("category").eq("user_id", user.id),
-      supabase
-        .from("category_images")
-        .select("category_name,image_url,description")
-        .eq("user_id", user.id),
-    ]);
-    setLoading(false);
-    if (pRes.error) {
-      toast.error(pRes.error.message);
-      return;
+    try {
+      const [pRes, iRes] = await Promise.all([
+        supabase.from("products").select("category").eq("user_id", user.id),
+        supabase
+          .from("category_images")
+          .select("category_name,image_url,description")
+          .eq("user_id", user.id),
+      ]);
+      if (pRes.error) {
+        toast.error(pRes.error.message);
+        return;
+      }
+      const imageMap = new Map<string, { image_url: string; description?: string }>();
+      (iRes.data ?? []).forEach((r) =>
+        imageMap.set(r.category_name, { image_url: r.image_url, description: r.description ?? undefined })
+      );
+
+      const map = new Map<string, number>();
+      (pRes.data ?? []).forEach((p) => {
+        const c = (p.category ?? "").trim();
+        if (!c) return;
+        map.set(c, (map.get(c) ?? 0) + 1);
+      });
+      imageMap.forEach((_, name) => {
+        if (!map.has(name)) map.set(name, 0);
+      });
+
+      setRows(
+        Array.from(map.entries()).map(([name, count]) => ({
+          name,
+          count,
+          image_url: imageMap.get(name)?.image_url ?? null,
+          description: imageMap.get(name)?.description,
+        }))
+      );
+    } catch {
+      toast.error("Failed to load categories");
+    } finally {
+      setLoading(false);
     }
-    const imageMap = new Map<string, { image_url: string; description?: string }>();
-    (iRes.data ?? []).forEach((r) =>
-      imageMap.set(r.category_name, { image_url: r.image_url, description: r.description ?? undefined })
-    );
-
-    const map = new Map<string, number>();
-    (pRes.data ?? []).forEach((p) => {
-      const c = (p.category ?? "").trim();
-      if (!c) return;
-      map.set(c, (map.get(c) ?? 0) + 1);
-    });
-    imageMap.forEach((_, name) => {
-      if (!map.has(name)) map.set(name, 0);
-    });
-
-    setRows(
-      Array.from(map.entries()).map(([name, count]) => ({
-        name,
-        count,
-        image_url: imageMap.get(name)?.image_url ?? null,
-        description: imageMap.get(name)?.description,
-      }))
-    );
   }, [user]);
 
   useEffect(() => {
@@ -160,48 +165,59 @@ function CategoriesPage() {
     if (!next) { toast.error("Name can't be empty"); return; }
     if (next === renaming.name) { setRenaming(null); return; }
     if (rows.some((r) => r.name.toLowerCase() === next.toLowerCase() && r.name !== renaming.name)) {
-      toast.error(`"${next}" already exists. Rename will merge — continue?`);
+      toast.error(`"${next}" already exists and will merge the two categories.`);
+      return;
     }
     setBusy(true);
-    const { error } = await supabase
-      .from("products")
-      .update({ category: next })
-      .eq("user_id", user.id)
-      .eq("category", renaming.name);
-    if (!error) {
-      await supabase
-        .from("category_images")
-        .update({ category_name: next })
+    try {
+      const { error } = await supabase
+        .from("products")
+        .update({ category: next })
         .eq("user_id", user.id)
-        .eq("category_name", renaming.name);
+        .eq("category", renaming.name);
+      if (!error) {
+        await supabase
+          .from("category_images")
+          .update({ category_name: next })
+          .eq("user_id", user.id)
+          .eq("category_name", renaming.name);
+      }
+      if (error) { toast.error(error.message); return; }
+      toast.success(`Renamed to "${next}"`);
+      setRenaming(null);
+      load();
+    } catch {
+      toast.error("Failed to rename category");
+    } finally {
+      setBusy(false);
     }
-    setBusy(false);
-    if (error) { toast.error(error.message); return; }
-    toast.success(`Renamed to "${next}"`);
-    setRenaming(null);
-    load();
   };
 
   const confirmDelete = async () => {
     if (!user || !deleting) return;
     setBusy(true);
-    const { error } = await supabase
-      .from("products")
-      .update({ category: null })
-      .eq("user_id", user.id)
-      .eq("category", deleting.name);
-    if (!error) {
-      await supabase
-        .from("category_images")
-        .delete()
+    try {
+      const { error } = await supabase
+        .from("products")
+        .update({ category: null })
         .eq("user_id", user.id)
-        .eq("category_name", deleting.name);
+        .eq("category", deleting.name);
+      if (!error) {
+        await supabase
+          .from("category_images")
+          .delete()
+          .eq("user_id", user.id)
+          .eq("category_name", deleting.name);
+      }
+      if (error) { toast.error(error.message); return; }
+      toast.success(`"${deleting.name}" removed from ${deleting.count} product${deleting.count === 1 ? "" : "s"}`);
+      setDeleting(null);
+      load();
+    } catch {
+      toast.error("Failed to delete category");
+    } finally {
+      setBusy(false);
     }
-    setBusy(false);
-    if (error) { toast.error(error.message); return; }
-    toast.success(`"${deleting.name}" removed from ${deleting.count} product${deleting.count === 1 ? "" : "s"}`);
-    setDeleting(null);
-    load();
   };
 
   const uploadImageForCategory = async (categoryName: string, file: File): Promise<string | null> => {
@@ -217,41 +233,46 @@ function CategoriesPage() {
 
   const confirmCreate = async () => {
     const next = newName.trim();
-    if (!next) return;
+    if (!next || !user) return;
     if (rows.some((r) => r.name.toLowerCase() === next.toLowerCase())) {
       toast.error("Category already exists");
       return;
     }
     setBusy(true);
-    let imageUrl: string | null = null;
+    try {
+      let imageUrl: string | null = null;
 
-    if (newImageFile) {
-      imageUrl = await uploadImageForCategory(next, newImageFile);
-    }
+      if (newImageFile) {
+        imageUrl = await uploadImageForCategory(next, newImageFile);
+      }
 
-    if (imageUrl || newDescription.trim()) {
-      await supabase.from("category_images").upsert(
-        {
-          user_id: user!.id,
-          category_name: next,
-          image_url: imageUrl ?? "",
-          description: newDescription.trim() || null,
-        },
-        { onConflict: "user_id,category_name" }
+      if (imageUrl || newDescription.trim()) {
+        await supabase.from("category_images").upsert(
+          {
+            user_id: user.id,
+            category_name: next,
+            image_url: imageUrl ?? "",
+            description: newDescription.trim() || null,
+          },
+          { onConflict: "user_id,category_name" }
+        );
+      }
+
+      setRows((prev) =>
+        [...prev, { name: next, count: 0, image_url: imageUrl, description: newDescription.trim() || undefined }]
+          .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
       );
+      toast.success(`"${next}" created. Assign it to products to make it live.`);
+      setCreating(false);
+      setNewName("");
+      setNewDescription("");
+      setNewImageFile(null);
+      setNewImagePreview(null);
+    } catch {
+      toast.error("Failed to create category");
+    } finally {
+      setBusy(false);
     }
-
-    setBusy(false);
-    setRows((prev) =>
-      [...prev, { name: next, count: 0, image_url: imageUrl, description: newDescription.trim() || undefined }]
-        .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
-    );
-    toast.success(`"${next}" created. Assign it to products to make it live.`);
-    setCreating(false);
-    setNewName("");
-    setNewDescription("");
-    setNewImageFile(null);
-    setNewImagePreview(null);
   };
 
   const uploadImage = async (row: CategoryRow, file: File) => {
@@ -259,30 +280,40 @@ function CategoriesPage() {
     if (!file.type.startsWith("image/")) { toast.error("Please upload an image file."); return; }
     if (file.size > 4 * 1024 * 1024) { toast.error("Image must be smaller than 4 MB."); return; }
     setUploadingFor(row.name);
-    const imageUrl = await uploadImageForCategory(row.name, file);
-    if (!imageUrl) { setUploadingFor(null); return; }
-    const { error } = await supabase.from("category_images").upsert(
-      { user_id: user.id, category_name: row.name, image_url: imageUrl },
-      { onConflict: "user_id,category_name" }
-    );
-    setUploadingFor(null);
-    if (error) { toast.error(error.message); return; }
-    setRows((prev) => prev.map((r) => (r.name === row.name ? { ...r, image_url: imageUrl } : r)));
-    toast.success("Category image updated");
+    try {
+      const imageUrl = await uploadImageForCategory(row.name, file);
+      if (!imageUrl) { setUploadingFor(null); return; }
+      const { error } = await supabase.from("category_images").upsert(
+        { user_id: user.id, category_name: row.name, image_url: imageUrl },
+        { onConflict: "user_id,category_name" }
+      );
+      if (error) { toast.error(error.message); return; }
+      setRows((prev) => prev.map((r) => (r.name === row.name ? { ...r, image_url: imageUrl } : r)));
+      toast.success("Category image updated");
+    } catch {
+      toast.error("Failed to upload image");
+    } finally {
+      setUploadingFor(null);
+    }
   };
 
   const removeImage = async (row: CategoryRow) => {
     if (!user || !row.image_url) return;
     setUploadingFor(row.name);
-    const { error } = await supabase
-      .from("category_images")
-      .delete()
-      .eq("user_id", user.id)
-      .eq("category_name", row.name);
-    setUploadingFor(null);
-    if (error) { toast.error(error.message); return; }
-    setRows((prev) => prev.map((r) => (r.name === row.name ? { ...r, image_url: null } : r)));
-    toast.success("Image removed");
+    try {
+      const { error } = await supabase
+        .from("category_images")
+        .delete()
+        .eq("user_id", user.id)
+        .eq("category_name", row.name);
+      if (error) { toast.error(error.message); return; }
+      setRows((prev) => prev.map((r) => (r.name === row.name ? { ...r, image_url: null } : r)));
+      toast.success("Image removed");
+    } catch {
+      toast.error("Failed to remove image");
+    } finally {
+      setUploadingFor(null);
+    }
   };
 
   const handleNewImagePick = (file: File) => {
