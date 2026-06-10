@@ -471,7 +471,7 @@ export function useAdminUpdateOrderStatus() {
   return useMutation({
     mutationFn: async (args: {
       orderId: string;
-      status: Database["public"]["Tables"]["dropship_orders"]["Row"]["status"];
+      status: any;
       trackingNumber?: string;
       zrExpressId?: string;
     }) => {
