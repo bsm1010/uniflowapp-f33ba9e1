@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Bell, BellOff, Check, AlertTriangle, Smartphone, Volume2, Send, ExternalLink, CheckCircle2 } from "lucide-react";
+import { Bell, BellOff, Check, AlertTriangle, Smartphone, Volume2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -15,8 +15,6 @@ import {
   getPushStatus,
 } from "@/lib/push/push.functions";
 import { useCurrentStore } from "@/hooks/use-current-store";
-
-import { createTelegramLinkToken, getTelegramStatus, disconnectTelegram } from "@/lib/telegram-link.functions";
 
 export const Route = createFileRoute("/dashboard/notifications/settings")({
   component: NotificationsSettings,
@@ -46,8 +44,6 @@ const DEFAULT_PREFS: Prefs = {
   sound_enabled: true,
 };
 
-const TELEGRAM_BOT_USERNAME = "FenneclyBOT";
-
 function NotificationsSettings() {
   const { currentStore } = useCurrentStore();
   const { status, enable, disable, refresh } = usePushSubscription(currentStore?.id ?? null);
@@ -55,66 +51,29 @@ function NotificationsSettings() {
   const [subCount, setSubCount] = useState(0);
   const [saving, setSaving] = useState(false);
   const [testing, setTesting] = useState(false);
-  const [telegramConnected, setTelegramConnected] = useState(false);
 
   const loadPrefs = useServerFn(getNotificationPreferences);
   const savePrefs = useServerFn(saveNotificationPreferences);
   const loadStatus = useServerFn(getPushStatus);
   const sendTest = useServerFn(sendTestPush);
-  const generateLinkToken = useServerFn(createTelegramLinkToken);
-  const fetchTelegramStatus = useServerFn(getTelegramStatus);
-  const callDisconnectTelegram = useServerFn(disconnectTelegram);
-  const [linking, setLinking] = useState(false);
 
   useEffect(() => {
-    loadPrefs().then((p) =>
-      setPrefs({
-        new_order: p.new_order,
-        low_stock: p.low_stock,
-        order_status: p.order_status,
-        delivery_update: p.delivery_update,
-        payment: p.payment,
-        sound_enabled: p.sound_enabled,
-      }),
-    );
-    loadStatus().then((s) => setSubCount(s.subscriptionCount));
+    loadPrefs()
+      .then((p) =>
+        setPrefs({
+          new_order: p.new_order,
+          low_stock: p.low_stock,
+          order_status: p.order_status,
+          delivery_update: p.delivery_update,
+          payment: p.payment,
+          sound_enabled: p.sound_enabled,
+        }),
+      )
+      .catch(() => toast.error("Failed to load preferences"));
+    loadStatus()
+      .then((s) => setSubCount(s.subscriptionCount))
+      .catch(() => {});
   }, [loadPrefs, loadStatus, status]);
-
-  useEffect(() => {
-    if (!currentStore?.id) return;
-    fetchTelegramStatus({ data: { storeId: currentStore.id } })
-      .then((r) => setTelegramConnected(!!r?.connected))
-      .catch(() => setTelegramConnected(false));
-  }, [currentStore?.id, fetchTelegramStatus]);
-
-  const handleDisconnectTelegram = async () => {
-    if (!currentStore?.id) return;
-    try {
-      await callDisconnectTelegram({ data: { storeId: currentStore.id } });
-      setTelegramConnected(false);
-      toast.success("Telegram disconnected");
-    } catch {
-      toast.error("Failed to disconnect");
-    }
-  };
-
-  const handleConnectTelegram = async () => {
-    if (!currentStore?.id) {
-      toast.error("Store not loaded yet.");
-      return;
-    }
-    setLinking(true);
-    try {
-      const { token } = await generateLinkToken({ data: { storeId: currentStore.id } });
-      const url = `https://t.me/${TELEGRAM_BOT_USERNAME}?start=${token}`;
-      window.open(url, "_blank");
-      toast.success("Press Start in Telegram to finish linking (link valid 15 min).");
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Could not create link");
-    } finally {
-      setLinking(false);
-    }
-  };
 
   const togglePref = async (key: keyof Prefs, value: boolean) => {
     const next = { ...prefs, [key]: value };
@@ -131,18 +90,34 @@ function NotificationsSettings() {
   };
 
   const handleEnable = async () => {
-    const res = await enable();
-    if (res.ok) toast.success("Push notifications enabled");
-    else toast.error(res.error ?? "Could not enable notifications");
-    const s = await loadStatus();
-    setSubCount(s.subscriptionCount);
+    try {
+      const res = await enable();
+      if (res.ok) toast.success("Push notifications enabled");
+      else toast.error(res.error ?? "Could not enable notifications");
+    } catch {
+      toast.error("Could not enable notifications");
+    }
+    try {
+      const s = await loadStatus();
+      setSubCount(s.subscriptionCount);
+    } catch {
+      /* ignore */
+    }
   };
 
   const handleDisable = async () => {
-    await disable();
-    toast.success("Push notifications disabled");
-    const s = await loadStatus();
-    setSubCount(s.subscriptionCount);
+    try {
+      await disable();
+      toast.success("Push notifications disabled");
+    } catch {
+      /* ignore */
+    }
+    try {
+      const s = await loadStatus();
+      setSubCount(s.subscriptionCount);
+    } catch {
+      /* ignore */
+    }
   };
 
   const handleTest = async () => {
@@ -159,11 +134,11 @@ function NotificationsSettings() {
   };
 
   const items: Array<{ key: keyof Prefs; label: string; description: string }> = [
-    { key: "new_order", label: "New orders", description: "🛍️ When a new order is placed" },
-    { key: "low_stock", label: "Low stock alerts", description: "⚠️ When a product is running low" },
-    { key: "order_status", label: "Order status changes", description: "📦 When an order moves through fulfillment" },
-    { key: "delivery_update", label: "Delivery updates", description: "🚚 ZRExpress / shipment tracking changes" },
-    { key: "payment", label: "Payments", description: "💰 When a payment is received" },
+    { key: "new_order", label: "New orders", description: "When a new order is placed" },
+    { key: "low_stock", label: "Low stock alerts", description: "When a product is running low" },
+    { key: "order_status", label: "Order status changes", description: "When an order moves through fulfillment" },
+    { key: "delivery_update", label: "Delivery updates", description: "ZRExpress / shipment tracking changes" },
+    { key: "payment", label: "Payments", description: "When a payment is received" },
   ];
 
   return (
@@ -174,54 +149,6 @@ function NotificationsSettings() {
           Choose which push notifications you want on this device.
         </p>
       </div>
-
-      {/* Telegram Card */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <Send className="h-5 w-5 text-[#229ED9]" />
-                Telegram notifications
-              </CardTitle>
-              <CardDescription className="mt-1">
-                {telegramConnected
-                  ? "Your store is connected. You'll receive order alerts on Telegram."
-                  : "Get instant order notifications in your Telegram app."}
-              </CardDescription>
-            </div>
-            {telegramConnected ? (
-              <Button variant="outline" size="sm" onClick={handleDisconnectTelegram}>
-                Disconnect
-              </Button>
-            ) : (
-              <Button
-                size="sm"
-                className="bg-[#229ED9] hover:bg-[#1a8bbf] text-white"
-                onClick={handleConnectTelegram}
-                disabled={!currentStore?.id || linking}
-              >
-                <ExternalLink className="h-4 w-4 mr-1.5" />
-                {linking ? "Preparing…" : "Connect Telegram"}
-              </Button>
-            )}
-          </div>
-        </CardHeader>
-        <CardContent>
-          {telegramConnected ? (
-            <div className="flex items-center gap-2 text-sm text-green-500">
-              <CheckCircle2 className="h-4 w-4" />
-              Connected — new orders will be sent to your Telegram.
-            </div>
-          ) : (
-            <ol className="text-xs text-muted-foreground space-y-1 list-decimal list-inside">
-              <li>Click <strong>Connect Telegram</strong> above</li>
-              <li>Telegram opens — press <strong>Start</strong> in the bot chat</li>
-              <li>Come back here — status updates automatically</li>
-            </ol>
-          )}
-        </CardContent>
-      </Card>
 
       {/* Push notifications Card */}
       <Card>
