@@ -321,7 +321,7 @@ export const buySupplyProduct = createServerFn({ method: "POST" })
           .eq("id", data.user_id)
           .maybeSingle();
         const buyerName = buyer?.name ?? buyer?.email ?? "مستخدم";
-        const notifRows = admins.map((a) => ({
+        const notifRows = admins.map((a: any) => ({
           user_id: a.user_id,
           title: "طلبية توريد جديدة",
           message: `${buyerName} اشترى ${qty}x ${product.name} بقيمة ${total.toLocaleString("fr-DZ")} DA`,
