@@ -1,14 +1,32 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { Loader2, Bell, CheckCheck, Trash2, Inbox, Settings } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import {
+  Loader2,
+  Bell,
+  CheckCheck,
+  Trash2,
+  Inbox,
+  Settings,
+  AlertTriangle,
+  Send,
+  ExternalLink,
+  CheckCircle2,
+} from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { useCurrentStore } from "@/hooks/use-current-store";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, EmptyState } from "@/components/dashboard/PageHeader";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import {
+  createTelegramLinkToken,
+  getTelegramStatus,
+  disconnectTelegram,
+} from "@/lib/telegram-link.functions";
 
 interface Notification {
   id: string;
@@ -24,21 +42,32 @@ export const Route = createFileRoute("/dashboard/notifications/")({
   head: () => ({ meta: [{ title: "Notifications — Fennecly" }] }),
 });
 
+const TELEGRAM_BOT_USERNAME = "FenneclyBOT";
+
 function NotificationsPage() {
   const { user } = useAuth();
+  const { currentStore } = useCurrentStore();
   const navigate = useNavigate();
   const [items, setItems] = useState<Notification[] | null>(null);
+  const [error, setError] = useState(false);
   const [filter, setFilter] = useState<"all" | "unread">("all");
 
-  const load = async () => {
+  const load = useCallback(async () => {
     if (!user) return;
-    const { data } = await supabase
-      .from("notifications")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false });
-    setItems(data ?? []);
-  };
+    try {
+      const { data, error: dbErr } = await supabase
+        .from("notifications")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+      if (dbErr) throw dbErr;
+      setItems(data ?? []);
+      setError(false);
+    } catch {
+      setItems([]);
+      setError(true);
+    }
+  }, [user?.id]);
 
   useEffect(() => {
     if (!user) return;
@@ -54,27 +83,89 @@ function NotificationsPage() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user?.id]);
+  }, [user?.id, load]);
 
   const markAllRead = async () => {
-    if (!items?.some((n) => !n.read)) return;
-    await supabase.from("notifications").update({ read: true }).eq("user_id", user!.id).eq("read", false);
-    setItems((cur) => cur?.map((n) => ({ ...n, read: true })) ?? null);
-    toast.success("All marked as read");
+    if (!items?.some((n) => !n.read) || !user) return;
+    try {
+      const { error: dbErr } = await supabase
+        .from("notifications")
+        .update({ read: true })
+        .eq("user_id", user.id)
+        .eq("read", false);
+      if (dbErr) throw dbErr;
+      setItems((cur) => cur?.map((n) => ({ ...n, read: true })) ?? null);
+      toast.success("All marked as read");
+    } catch {
+      toast.error("Failed to mark as read");
+    }
   };
 
   const markRead = async (id: string) => {
-    await supabase.from("notifications").update({ read: true }).eq("id", id);
-    setItems((cur) => cur?.map((n) => (n.id === id ? { ...n, read: true } : n)) ?? null);
+    try {
+      const { error: dbErr } = await supabase.from("notifications").update({ read: true }).eq("id", id);
+      if (dbErr) throw dbErr;
+      setItems((cur) => cur?.map((n) => (n.id === id ? { ...n, read: true } : n)) ?? null);
+    } catch {
+      toast.error("Failed to mark as read");
+    }
   };
 
   const remove = async (id: string) => {
-    await supabase.from("notifications").delete().eq("id", id);
-    setItems((cur) => cur?.filter((n) => n.id !== id) ?? null);
+    try {
+      const { error: dbErr } = await supabase.from("notifications").delete().eq("id", id);
+      if (dbErr) throw dbErr;
+      setItems((cur) => cur?.filter((n) => n.id !== id) ?? null);
+    } catch {
+      toast.error("Failed to delete notification");
+    }
   };
 
   const list = items?.filter((n) => filter === "all" || !n.read) ?? [];
   const unread = items?.filter((n) => !n.read).length ?? 0;
+
+  /* ── Telegram card ── */
+  const [telegramConnected, setTelegramConnected] = useState(false);
+  const [linking, setLinking] = useState(false);
+  const generateLinkToken = useServerFn(createTelegramLinkToken);
+  const fetchTelegramStatus = useServerFn(getTelegramStatus);
+  const callDisconnectTelegram = useServerFn(disconnectTelegram);
+
+  useEffect(() => {
+    if (!currentStore?.id) return;
+    fetchTelegramStatus({ data: { storeId: currentStore.id } })
+      .then((r) => setTelegramConnected(!!r?.connected))
+      .catch(() => setTelegramConnected(false));
+  }, [currentStore?.id, fetchTelegramStatus]);
+
+  const handleDisconnectTelegram = async () => {
+    if (!currentStore?.id) return;
+    try {
+      await callDisconnectTelegram({ data: { storeId: currentStore.id } });
+      setTelegramConnected(false);
+      toast.success("Telegram disconnected");
+    } catch {
+      toast.error("Failed to disconnect");
+    }
+  };
+
+  const handleConnectTelegram = async () => {
+    if (!currentStore?.id) {
+      toast.error("Store not loaded yet.");
+      return;
+    }
+    setLinking(true);
+    try {
+      const { token } = await generateLinkToken({ data: { storeId: currentStore.id } });
+      const url = `https://t.me/${TELEGRAM_BOT_USERNAME}?start=${token}`;
+      window.open(url, "_blank");
+      toast.success("Press Start in Telegram to finish linking (link valid 15 min).");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not create link");
+    } finally {
+      setLinking(false);
+    }
+  };
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -85,6 +176,54 @@ function NotificationsPage() {
         icon={Bell}
         gradient="from-violet-500 via-indigo-500 to-blue-500"
       />
+
+      {/* Telegram Card */}
+      <Card className="mb-4">
+        <CardHeader>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Send className="h-5 w-5 text-[#229ED9]" />
+                Telegram notifications
+              </CardTitle>
+              <CardDescription className="mt-1">
+                {telegramConnected
+                  ? "Your store is connected. You'll receive order alerts on Telegram."
+                  : "Get instant order notifications in your Telegram app."}
+              </CardDescription>
+            </div>
+            {telegramConnected ? (
+              <Button variant="outline" size="sm" onClick={handleDisconnectTelegram}>
+                Disconnect
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                className="bg-[#229ED9] hover:bg-[#1a8bbf] text-white"
+                onClick={handleConnectTelegram}
+                disabled={!currentStore?.id || linking}
+              >
+                <ExternalLink className="h-4 w-4 mr-1.5" />
+                {linking ? "Preparing…" : "Connect Telegram"}
+              </Button>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent>
+          {telegramConnected ? (
+            <div className="flex items-center gap-2 text-sm text-green-500">
+              <CheckCircle2 className="h-4 w-4" />
+              Connected — new orders will be sent to your Telegram.
+            </div>
+          ) : (
+            <ol className="text-xs text-muted-foreground space-y-1 list-decimal list-inside">
+              <li>Click <strong>Connect Telegram</strong> above</li>
+              <li>Telegram opens — press <strong>Start</strong> in the bot chat</li>
+              <li>Come back here — status updates automatically</li>
+            </ol>
+          )}
+        </CardContent>
+      </Card>
 
       <div className="flex items-center justify-between mb-4">
         <Tabs value={filter} onValueChange={(v) => setFilter(v as "all" | "unread")}>
@@ -121,6 +260,16 @@ function NotificationsPage() {
         <div className="flex items-center justify-center py-20">
           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
         </div>
+      ) : error ? (
+        <Card className="border-destructive/30 bg-destructive/5">
+          <CardContent className="flex flex-col items-center gap-3 py-10">
+            <AlertTriangle className="h-8 w-8 text-destructive" />
+            <p className="text-sm text-destructive font-medium">Failed to load notifications.</p>
+            <Button variant="outline" size="sm" onClick={load}>
+              Retry
+            </Button>
+          </CardContent>
+        </Card>
       ) : list.length === 0 ? (
         <EmptyState icon={Inbox} title="Nothing to see" description="You're all caught up." />
       ) : (
