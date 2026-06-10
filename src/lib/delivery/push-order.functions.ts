@@ -69,12 +69,11 @@ export async function pushOrderInternal(
   }
 
   // Pull product name from first item for the provider label.
-  const { data: items } = await supabase
+  const { data: allItems } = await supabase
     .from("order_items")
-    .select("product_name, quantity")
-    .eq("order_id", orderId)
-    .limit(1);
-  const firstItem = items?.[0];
+    .select("product_name, quantity, unit_price, image_url")
+    .eq("order_id", orderId);
+  const firstItem = allItems?.[0];
   const productName = firstItem
     ? `${firstItem.product_name}${firstItem.quantity > 1 ? ` x${firstItem.quantity}` : ""}`
     : "Order";
@@ -149,6 +148,11 @@ export async function pushOrderInternal(
       totalPrice: Number(order.total),
       notes: order.notes ?? undefined,
       deliveryType: order.delivery_type ?? "domicile",
+      items: (allItems ?? []).map((it: { product_name: string; quantity: number; unit_price: number | null }) => ({
+        productName: it.product_name,
+        quantity: it.quantity,
+        unitPrice: Number(it.unit_price ?? order.total),
+      })),
     });
 
     // Upsert shipment row.

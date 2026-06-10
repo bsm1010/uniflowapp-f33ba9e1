@@ -106,20 +106,36 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
     const dt = (input.deliveryType ?? "").toLowerCase();
     const deliveryType =
       dt === "stopdesk" || dt === "stop-desk" || dt === "stop_desk" || dt === "pickup-point"
-        ? "stop-desk"
+        ? "pickup-point"
         : "home";
 
+    const items = input.items ?? [
+      { productName: input.productName ?? "Order", quantity: 1, unitPrice: Math.round(input.totalPrice) },
+    ];
+
     const body = {
-      customerName: input.customerName,
-      phone: input.customerPhone,
-      wilaya: input.wilaya,
-      commune: input.commune ?? input.wilaya,
-      address: input.address,
-      productName: input.productName ?? "Order",
-      price: Math.round(input.totalPrice),
+      customer: {
+        customerId: crypto.randomUUID(),
+        name: input.customerName,
+        phone: {
+          number1: input.customerPhone,
+        },
+      },
+      deliveryAddress: {
+        cityTerritoryId: input.wilaya,
+        districtTerritoryId: input.commune ?? input.wilaya,
+        street: input.address,
+      },
+      orderedProducts: items.map((it) => ({
+        productName: it.productName,
+        unitPrice: Math.round(it.unitPrice),
+        quantity: it.quantity,
+        stockType: "none",
+      })),
+      amount: Math.round(input.totalPrice),
+      description: items.map((it) => `${it.productName} x${it.quantity}`).join(", "),
       deliveryType,
       externalId: input.orderId,
-      notes: input.notes ?? "",
     };
 
     const url = `${ZR_BASE_URL}/parcels`;
@@ -146,11 +162,7 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
       );
     }
 
-    const inner = (data.data ?? data) as Record<string, unknown>;
-    const tracking =
-      pickStr(data, ["trackingNumber", "tracking", "tracking_number", "id"]) ||
-      pickStr(inner, ["trackingNumber", "tracking", "tracking_number", "id"]) ||
-      this.generateTrackingNumber("ZRE");
+    const tracking = (data.id as string) || this.generateTrackingNumber("ZRE");
     return { trackingNumber: tracking, status: "created", raw: data };
   }
 

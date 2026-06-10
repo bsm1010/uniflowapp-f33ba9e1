@@ -133,30 +133,34 @@ function OrdersPage() {
 
   const loadOrders = async () => {
     if (!user) return;
-    let q = supabase
-      .from("orders")
-      .select("*")
-      .eq("store_owner_id", user.id)
-      .order("created_at", { ascending: false });
-    if (currentStore?.id) q = q.eq("store_id", currentStore.id);
-    const { data: ords } = await q;
-    const list = ords ?? [];
-    setOrders(list);
-    if (list.length) {
-      const ids = list.map((o) => o.id);
-      const [{ data: its }, { data: ships }] = await Promise.all([
-        supabase.from("order_items").select("*").in("order_id", ids),
-        supabase.from("shipments").select("*").in("order_id", ids),
-      ]);
-      const grouped: Record<string, OrderItem[]> = {};
-      for (const it of its ?? []) (grouped[it.order_id] ??= []).push(it);
-      setItems(grouped);
-      const shipMap: Record<string, Shipment> = {};
-      for (const s of ships ?? []) shipMap[s.order_id] = s;
-      setShipments(shipMap);
-    } else {
-      setItems({});
-      setShipments({});
+    try {
+      let q = supabase
+        .from("orders")
+        .select("*")
+        .eq("store_owner_id", user.id)
+        .order("created_at", { ascending: false });
+      if (currentStore?.id) q = q.eq("store_id", currentStore.id);
+      const { data: ords } = await q;
+      const list = ords ?? [];
+      setOrders(list);
+      if (list.length) {
+        const ids = list.map((o) => o.id);
+        const [{ data: its }, { data: ships }] = await Promise.all([
+          supabase.from("order_items").select("*").in("order_id", ids),
+          supabase.from("shipments").select("*").in("order_id", ids),
+        ]);
+        const grouped: Record<string, OrderItem[]> = {};
+        for (const it of its ?? []) (grouped[it.order_id] ??= []).push(it);
+        setItems(grouped);
+        const shipMap: Record<string, Shipment> = {};
+        for (const s of ships ?? []) shipMap[s.order_id] = s;
+        setShipments(shipMap);
+      } else {
+        setItems({});
+        setShipments({});
+      }
+    } catch {
+      toast.error("Failed to load orders");
     }
   };
 
