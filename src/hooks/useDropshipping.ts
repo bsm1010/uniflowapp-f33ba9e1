@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryResult } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase as supabaseTyped } from "@/integrations/supabase/client";
+const supabase: any = supabaseTyped;
 import { useAuth } from "@/hooks/use-auth";
 import {
   listAllDropshipOrders,
