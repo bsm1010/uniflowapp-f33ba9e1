@@ -35,16 +35,26 @@ function StockAlertsPage() {
 
   const load = async () => {
     if (!user) return;
-    const { data } = await supabase
-      .from("products")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("stock", { ascending: true });
-    const list = data ?? [];
-    setProducts(list);
-    const map: Record<string, number> = {};
-    for (const p of list) map[p.id] = p.low_stock_threshold ?? 5;
-    setThresholds(map);
+    try {
+      const { data, error } = await supabase
+        .from("products")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("stock", { ascending: true });
+      if (error) {
+        toast.error("Failed to load products");
+        setProducts([]);
+        return;
+      }
+      const list = data ?? [];
+      setProducts(list);
+      const map: Record<string, number> = {};
+      for (const p of list) map[p.id] = p.low_stock_threshold ?? 5;
+      setThresholds(map);
+    } catch {
+      toast.error("Failed to load products");
+      setProducts([]);
+    }
   };
 
   useEffect(() => {
@@ -53,20 +63,30 @@ function StockAlertsPage() {
   }, [user?.id]);
 
   const saveThreshold = async (id: string) => {
-    setSavingId(id);
-    const { error } = await supabase
-      .from("products")
-      .update({ low_stock_threshold: thresholds[id] })
-      .eq("id", id);
-    setSavingId(null);
-    if (error) {
-      toast.error("Failed to save");
+    const val = thresholds[id];
+    if (val == null || Number.isNaN(val) || val < 0) {
+      toast.error("Please enter a valid threshold (0 or more)");
       return;
     }
-    toast.success("Threshold updated");
-    setProducts((cur) =>
-      cur ? cur.map((p) => (p.id === id ? { ...p, low_stock_threshold: thresholds[id] } : p)) : cur,
-    );
+    setSavingId(id);
+    try {
+      const { error } = await supabase
+        .from("products")
+        .update({ low_stock_threshold: val })
+        .eq("id", id);
+      if (error) {
+        toast.error("Failed to save");
+        return;
+      }
+      toast.success("Threshold updated");
+      setProducts((cur) =>
+        cur ? cur.map((p) => (p.id === id ? { ...p, low_stock_threshold: val } : p)) : cur,
+      );
+    } catch {
+      toast.error("Failed to save");
+    } finally {
+      setSavingId(null);
+    }
   };
 
   const lowStock = useMemo(
@@ -114,9 +134,12 @@ function StockAlertsPage() {
                         type="number"
                         min={0}
                         value={threshold}
-                        onChange={(e) =>
-                          setThresholds((m) => ({ ...m, [p.id]: Number(e.target.value) }))
-                        }
+                        onChange={(e) => {
+                          const v = Number(e.target.value);
+                          if (!Number.isNaN(v) && v >= 0) {
+                            setThresholds((m) => ({ ...m, [p.id]: v }));
+                          }
+                        }}
                         className="h-8 w-24"
                       />
                     </TableCell>
