@@ -1,6 +1,7 @@
 import { Loader2, Save, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useEditorStore } from "@/stores/editor-store";
 import { useAuth } from "@/hooks/use-auth";
@@ -8,6 +9,7 @@ import type { Tables, Json } from "@/integrations/supabase/types";
 
 export function PublishButton() {
   const { user } = useAuth();
+  const { t: tr } = useTranslation();
   const {
     settings,
     getSerializableSections,
@@ -44,9 +46,9 @@ export function PublishButton() {
       setDirty(false);
       setPublishStatus(publish ? "published" : "draft");
       updateSettings({ sections: sections as unknown as Json });
-      toast.success(publish ? "Published!" : "Draft saved.");
+      toast.success(publish ? tr("editor.publish.published") : tr("editor.publish.draftSaved"));
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Save failed";
+      const msg = err instanceof Error ? err.message : tr("editor.publish.saveFailed");
       toast.error(msg);
     } finally {
       setSaving(false);
@@ -68,7 +70,7 @@ export function PublishButton() {
           ) : (
             <Save className="h-3.5 w-3.5" />
           )}
-          {dirty ? "Publish" : "Published"}
+          {dirty ? tr("editor.publish.publish") : tr("editor.publish.publishedButton")}
         </button>
         <button
           type="button"
@@ -88,14 +90,14 @@ export function PublishButton() {
               onClick={() => save(false)}
               className="w-full px-3 py-2 text-left text-sm hover:bg-accent transition-colors rounded-t-md"
             >
-              Save as draft
+              {tr("editor.publish.saveAsDraft")}
             </button>
             <button
               type="button"
               onClick={() => save(true)}
               className="w-full px-3 py-2 text-left text-sm hover:bg-accent transition-colors rounded-b-md"
             >
-              Publish now
+              {tr("editor.publish.publishNow")}
             </button>
           </div>
         </>

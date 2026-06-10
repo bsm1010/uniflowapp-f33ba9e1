@@ -21,6 +21,63 @@ export const FONT_STACK: Record<string, string> = {
   Jakarta: '"Plus Jakarta Sans", system-ui, sans-serif',
 };
 
+// Reverse lookup: map raw CSS strings → FONT_STACK keys
+const RAW_TO_KEY: Record<string, string> = {};
+for (const [key, value] of Object.entries(FONT_STACK)) {
+  // Normalize by stripping quotes and comparing lowercase
+  RAW_TO_KEY[value.toLowerCase().replace(/['"]/g, "").trim()] = key;
+}
+
+// Also map common old formats that don't exactly match FONT_STACK values
+const LEGACY_FONT_MAP: Record<string, string> = {
+  "inter, sans-serif": "Inter",
+  "inter": "Inter",
+  "space grotesk, sans-serif": "Space Grotesk",
+  "'space grotesk', sans-serif": "Space Grotesk",
+  "playfair display, serif": "Playfair",
+  "'playfair display', serif": "Playfair",
+  "playfair": "Playfair",
+  "dm serif display, serif": "DM Serif",
+  "'dm serif display', serif": "DM Serif",
+  "jetbrains mono, monospace": "Mono",
+  "'jetbrains mono', monospace": "Mono",
+  "manrope, sans-serif": "Manrope",
+  "sora, sans-serif": "Sora",
+  "outfit, sans-serif": "Outfit",
+  "bricolage grotesque, sans-serif": "Bricolage",
+  "'bricolage grotesque', sans-serif": "Bricolage",
+  "fraunces, serif": "Fraunces",
+  "cormorant garamond, serif": "Cormorant",
+  "'cormorant garamond', serif": "Cormorant",
+  "ibm plex sans, sans-serif": "Plex Sans",
+  "'ibm plex sans', sans-serif": "Plex Sans",
+  "bebas neue, impact, sans-serif": "Bebas",
+  "'bebas neue', impact, sans-serif": "Bebas",
+  "archivo black, impact, sans-serif": "Archivo",
+  "'archivo black', impact, sans-serif": "Archivo",
+  "syne, sans-serif": "Syne",
+  "plus jakarta sans, sans-serif": "Jakarta",
+  "'plus jakarta sans', sans-serif": "Jakarta",
+  "poppins, sans-serif": "Inter",
+  "'poppins', sans-serif": "Inter",
+  "lora, serif": "Playfair",
+  "'libre baskerville', serif": "Playfair",
+  "dm sans, sans-serif": "Inter",
+  "'dm sans', sans-serif": "Inter",
+};
+
+export function normalizeFontFamily(raw: string): string {
+  const key = raw.trim();
+  // Already a valid key?
+  if (FONT_STACK[key]) return key;
+  // Try reverse lookup
+  const normalized = key.toLowerCase().replace(/['"]/g, "").trim();
+  if (RAW_TO_KEY[normalized]) return RAW_TO_KEY[normalized];
+  if (LEGACY_FONT_MAP[normalized]) return LEGACY_FONT_MAP[normalized];
+  // Fallback
+  return "Inter";
+}
+
 export function readableOn(hex: string): string {
   const h = (hex ?? "").replace("#", "");
   if (h.length !== 6) return "#0f172a";

@@ -2,6 +2,8 @@ import { create } from "zustand";
 import type { Tables } from "@/integrations/supabase/types";
 import type { SectionInstance } from "@/components/storefront/blocks/types";
 import { getBlock } from "@/components/storefront/blocks/registry";
+import { normalizeFontFamily } from "@/lib/storeTheme";
+import { SECTION_DEFAULTS } from "@/lib/sectionDefaults";
 
 type StoreSettings = Tables<"store_settings">;
 
@@ -103,7 +105,27 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       }
     }
 
-    set({ settings: s, pageSections: parsed, dirty: false, history: [], future: [], lastPropSnapshot: null });
+    // Seed empty templates with sensible defaults
+    for (const key of Object.keys(parsed) as TemplateKey[]) {
+      if (parsed[key].length === 0 && SECTION_DEFAULTS[key]) {
+        parsed[key] = SECTION_DEFAULTS[key].map((def) => ({
+          id: crypto.randomUUID(),
+          blockKey: def.blockKey,
+          props: { ...def.props },
+        }));
+      }
+    }
+
+    // Normalize old font values to FONT_STACK keys
+    const normalizedSettings = { ...s };
+    if (normalizedSettings.font_family) {
+      const normalized = normalizeFontFamily(normalizedSettings.font_family);
+      if (normalized !== normalizedSettings.font_family) {
+        normalizedSettings.font_family = normalized;
+      }
+    }
+
+    set({ settings: normalizedSettings, pageSections: parsed, dirty: false, history: [], future: [], lastPropSnapshot: null });
   },
 
   updateSettings: (partial) => {

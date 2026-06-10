@@ -1,8 +1,10 @@
 import { useEditorStore } from "@/stores/editor-store";
+import { useTranslation } from "react-i18next";
 import type { Json } from "@/integrations/supabase/types";
 
 export function PagesPanel() {
   const { settings, updateSettings } = useEditorStore();
+  const { t: tr } = useTranslation();
 
   if (!settings) return null;
 
@@ -11,24 +13,24 @@ export function PagesPanel() {
       {/* Store Info */}
       <section>
         <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-          Store Info
+          {tr("editor.pages.storeInfo")}
         </h3>
         <div className="space-y-3">
-          <Field label="Store name">
+          <Field label={tr("editor.pages.storeName")}>
             <input
               value={settings.store_name || ""}
               onChange={(e) => updateSettings({ store_name: e.target.value })}
               className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
             />
           </Field>
-          <Field label="Tagline">
+          <Field label={tr("editor.pages.tagline")}>
             <input
               value={settings.tagline || ""}
               onChange={(e) => updateSettings({ tagline: e.target.value })}
               className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
             />
           </Field>
-          <Field label="Currency">
+          <Field label={tr("editor.pages.currency")}>
             <select
               value={settings.currency || "DZD"}
               onChange={(e) => updateSettings({ currency: e.target.value })}
@@ -41,7 +43,7 @@ export function PagesPanel() {
               ))}
             </select>
           </Field>
-          <Field label="URL Slug">
+          <Field label={tr("editor.pages.urlSlug")}>
             <input
               value={settings.slug || ""}
               onChange={(e) =>
@@ -58,7 +60,7 @@ export function PagesPanel() {
       {/* Navigation Links */}
       <section>
         <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-          Navigation Links
+          {tr("editor.pages.navigationLinks")}
         </h3>
         <NavLinksEditor />
       </section>
@@ -66,10 +68,10 @@ export function PagesPanel() {
       {/* Footer */}
       <section>
         <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-          Footer
+          {tr("editor.pages.footer")}
         </h3>
         <div className="space-y-3">
-          <Field label="About text">
+          <Field label={tr("editor.pages.aboutText")}>
             <textarea
               rows={3}
               value={settings.footer_about || ""}
@@ -77,7 +79,7 @@ export function PagesPanel() {
               className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring resize-none"
             />
           </Field>
-          <Field label="Copyright">
+          <Field label={tr("editor.pages.copyright")}>
             <input
               value={settings.footer_copyright || ""}
               onChange={(e) => updateSettings({ footer_copyright: e.target.value })}
@@ -90,7 +92,7 @@ export function PagesPanel() {
       {/* Social Links */}
       <section>
         <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-          Social Links
+          {tr("editor.pages.socialLinks")}
         </h3>
         <SocialLinksEditor />
       </section>
@@ -100,6 +102,7 @@ export function PagesPanel() {
 
 function NavLinksEditor() {
   const { settings, updateSettings } = useEditorStore();
+  const { t: tr } = useTranslation();
   const links = (() => {
     const raw = settings?.nav_links;
     if (Array.isArray(raw)) return raw as unknown as Array<{ label: string; href: string }>;
@@ -146,10 +149,10 @@ function NavLinksEditor() {
       {links.length < 6 && (
         <button
           type="button"
-          onClick={() => update([...links, { label: "New", href: "/" }])}
+          onClick={() => update([...links, { label: tr("editor.pages.newLink"), href: "/" }])}
           className="text-xs text-primary hover:underline"
         >
-          + Add link
+          {tr("editor.pages.addLink")}
         </button>
       )}
     </div>

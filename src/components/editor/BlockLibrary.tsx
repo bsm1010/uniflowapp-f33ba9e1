@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Search, Plus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { BLOCK_LIST, BLOCK_CATEGORIES } from "@/components/storefront/blocks/registry";
@@ -13,6 +14,7 @@ interface Props {
 
 export function BlockLibrary({ onClose }: Props) {
   const addSection = useEditorStore((s) => s.addSection);
+  const { t: tr } = useTranslation();
   const [query, setQuery] = useState("");
   const [active, setActive] = useState<BlockCategory | "all">("all");
 
@@ -55,13 +57,13 @@ export function BlockLibrary({ onClose }: Props) {
           {/* Header */}
           <div className="p-4 border-b">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-semibold">Add a section</h2>
+              <h2 className="text-sm font-semibold">{tr("editor.library.title")}</h2>
               <button
                 type="button"
                 onClick={onClose}
                 className="text-xs text-muted-foreground hover:text-foreground"
               >
-                Close
+                {tr("editor.library.close")}
               </button>
             </div>
             <div className="relative">
@@ -69,13 +71,13 @@ export function BlockLibrary({ onClose }: Props) {
               <Input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search sections..."
+                placeholder={tr("editor.library.search")}
                 className="pl-8"
                 autoFocus
               />
             </div>
             <div className="mt-3 flex flex-wrap gap-1.5">
-              <Pill label="All" active={active === "all"} onClick={() => setActive("all")} />
+              <Pill label={tr("editor.library.all")} active={active === "all"} onClick={() => setActive("all")} />
               {BLOCK_CATEGORIES.map((c) => (
                 <Pill
                   key={c.key}
@@ -115,7 +117,7 @@ export function BlockLibrary({ onClose }: Props) {
               ))}
               {filtered.length === 0 && (
                 <div className="col-span-2 py-12 text-center text-sm text-muted-foreground">
-                  No sections match your search.
+                  {tr("editor.library.empty")}
                 </div>
               )}
             </div>

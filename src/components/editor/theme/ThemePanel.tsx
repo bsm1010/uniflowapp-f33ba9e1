@@ -3,6 +3,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useEditorStore } from "@/stores/editor-store";
 import { THEME_PRESETS } from "@/lib/themePresets";
 import { Label } from "@/components/ui/label";
+import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -34,6 +35,7 @@ const FONT_OPTIONS = [
 
 export function ThemePanel() {
   const { settings, updateSettings } = useEditorStore();
+  const { t: tr } = useTranslation();
 
   if (!settings) return null;
 
@@ -43,7 +45,7 @@ export function ThemePanel() {
         {/* Color presets */}
         <section>
           <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-            Color Presets
+            {tr("editor.theme.colorPresets")}
           </h3>
           <div className="grid grid-cols-2 gap-2">
             {THEME_PRESETS.map((preset) => (
@@ -84,26 +86,26 @@ export function ThemePanel() {
         {/* Individual colors */}
         <section>
           <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-            Colors
+            {tr("editor.theme.colors")}
           </h3>
           <div className="space-y-3">
             <ColorField
-              label="Primary"
+              label={tr("editor.theme.primary")}
               value={settings.primary_color || "#7c3aed"}
               onChange={(v) => updateSettings({ primary_color: v })}
             />
             <ColorField
-              label="Secondary"
+              label={tr("editor.theme.secondary")}
               value={settings.secondary_color || "#2563eb"}
               onChange={(v) => updateSettings({ secondary_color: v })}
             />
             <ColorField
-              label="Accent"
+              label={tr("editor.theme.accent")}
               value={settings.accent_color || "#f59e0b"}
               onChange={(v) => updateSettings({ accent_color: v })}
             />
             <ColorField
-              label="Background"
+              label={tr("editor.theme.background")}
               value={settings.background_color || "#ffffff"}
               onChange={(v) => updateSettings({ background_color: v })}
             />
@@ -113,11 +115,11 @@ export function ThemePanel() {
         {/* Typography */}
         <section>
           <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-            Typography
+            {tr("editor.theme.typography")}
           </h3>
           <div className="space-y-3">
             <div>
-              <Label className="text-xs mb-1.5 block">Font family</Label>
+              <Label className="text-xs mb-1.5 block">{tr("editor.theme.fontFamily")}</Label>
               <select
                 value={settings.font_family || "Inter"}
                 onChange={(e) => updateSettings({ font_family: e.target.value })}
@@ -133,9 +135,7 @@ export function ThemePanel() {
                 className="mt-2 p-3 rounded-md border bg-background text-center"
                 style={{ fontFamily: settings.font_family || "Inter" }}
               >
-                <span className="text-lg">The quick brown fox</span>
-                <br />
-                <span className="text-sm text-muted-foreground">jumps over the lazy dog</span>
+                <span className="text-lg">{tr("editor.theme.fontPreview")}</span>
               </div>
             </div>
           </div>
@@ -144,11 +144,11 @@ export function ThemePanel() {
         {/* Buttons & Shape */}
         <section>
           <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-            Buttons & Shape
+            {tr("editor.theme.buttonsShape")}
           </h3>
           <div className="space-y-3">
             <div>
-              <Label className="text-xs mb-1.5 block">Button style</Label>
+              <Label className="text-xs mb-1.5 block">{tr("editor.theme.buttonStyle")}</Label>
               <div className="grid grid-cols-3 gap-2">
                 {(["rounded", "pill", "square"] as const).map((style) => (
                   <button
@@ -170,7 +170,7 @@ export function ThemePanel() {
               </div>
             </div>
             <div>
-              <Label className="text-xs mb-1.5 block">Border radius</Label>
+              <Label className="text-xs mb-1.5 block">{tr("editor.theme.borderRadius")}</Label>
               <div className="grid grid-cols-4 gap-2">
                 {(["none", "small", "medium", "large"] as const).map((r) => (
                   <button
@@ -197,7 +197,7 @@ export function ThemePanel() {
         {/* Navbar */}
         <section>
           <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-            Navigation
+            {tr("editor.theme.navigation")}
           </h3>
           <div className="grid grid-cols-3 gap-2">
             {(["classic", "centered", "hamburger"] as const).map((style) => (
@@ -220,7 +220,7 @@ export function ThemePanel() {
         {/* Footer */}
         <section>
           <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-            Footer
+            {tr("editor.theme.footer")}
           </h3>
           <div className="grid grid-cols-3 gap-2">
             {(["simple", "columns", "branded"] as const).map((style) => (
@@ -243,30 +243,30 @@ export function ThemePanel() {
         {/* Hero */}
         <section>
           <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-            Hero Section
+            {tr("editor.theme.heroSection")}
           </h3>
           <div className="space-y-3">
-            <Field label="Heading">
+            <Field label={tr("editor.theme.heading")}>
               <Input
                 value={settings.hero_heading || ""}
                 onChange={(e) => updateSettings({ hero_heading: e.target.value })}
               />
             </Field>
-            <Field label="Subheading">
+            <Field label={tr("editor.theme.subheading")}>
               <Textarea
                 rows={2}
                 value={settings.hero_subheading || ""}
                 onChange={(e) => updateSettings({ hero_subheading: e.target.value })}
               />
             </Field>
-            <Field label="CTA Label">
+            <Field label={tr("editor.theme.ctaLabel")}>
               <Input
                 value={settings.hero_cta_label || ""}
                 onChange={(e) => updateSettings({ hero_cta_label: e.target.value })}
               />
             </Field>
             <div>
-              <Label className="text-xs mb-1.5 block">Layout</Label>
+              <Label className="text-xs mb-1.5 block">{tr("editor.theme.layout")}</Label>
               <div className="grid grid-cols-3 gap-2">
                 {(["centered", "split", "fullbleed"] as const).map((layout) => (
                   <button
@@ -285,17 +285,17 @@ export function ThemePanel() {
               </div>
             </div>
             <div>
-              <Label className="text-xs mb-1.5 block">Hero image</Label>
+              <Label className="text-xs mb-1.5 block">{tr("editor.theme.heroImage")}</Label>
               {settings.hero_image_url && (
                 <img
                   src={settings.hero_image_url}
-                  alt="Hero"
+                  alt={tr("editor.theme.heroSection")}
                   className="w-full h-32 object-cover rounded-md mb-2"
                 />
               )}
               <Input
                 value={settings.hero_image_url || ""}
-                placeholder="Image URL"
+                placeholder={tr("editor.theme.imageUrl")}
                 onChange={(e) => updateSettings({ hero_image_url: e.target.value })}
               />
             </div>
@@ -305,20 +305,20 @@ export function ThemePanel() {
         {/* Section visibility */}
         <section>
           <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-            Section Visibility
+            {tr("editor.theme.sectionVisibility")}
           </h3>
           <div className="space-y-2">
             {(
               [
-                ["show_hero", "Hero"],
-                ["show_categories", "Categories"],
-                ["show_featured", "Featured products"],
-                ["show_newsletter", "Newsletter"],
-                ["show_search", "Search bar"],
+                ["show_hero", "editor.theme.heroSection"],
+                ["show_categories", "editor.theme.categories"],
+                ["show_featured", "editor.theme.featuredProducts"],
+                ["show_newsletter", "editor.theme.newsletter"],
+                ["show_search", "editor.theme.searchBar"],
               ] as const
-            ).map(([key, label]) => (
+            ).map(([key, labelKey]) => (
               <div key={key} className="flex items-center justify-between">
-                <Label className="text-xs">{label}</Label>
+                <Label className="text-xs">{tr(labelKey)}</Label>
                 <Switch
                   checked={Boolean(settings[key])}
                   onCheckedChange={(v) => updateSettings({ [key]: v })}
@@ -331,7 +331,7 @@ export function ThemePanel() {
         {/* Custom CSS */}
         <section>
           <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-            Custom CSS
+            {tr("editor.theme.customCSS")}
           </h3>
           <textarea
             rows={6}
@@ -339,7 +339,7 @@ export function ThemePanel() {
             onChange={(e) =>
               updateSettings({ custom_css: e.target.value } as Record<string, unknown>)
             }
-            placeholder="/* Add custom CSS here */"
+            placeholder={tr("editor.theme.customCSSPlaceholder")}
             className="w-full rounded-md border bg-background px-3 py-2 text-xs font-mono outline-none focus:ring-2 focus:ring-ring resize-none"
           />
         </section>
