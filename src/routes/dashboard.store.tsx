@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   CircleDot,
   Copy,
@@ -54,7 +54,7 @@ interface RecentOrder {
 
 export const Route = createFileRoute("/dashboard/store")({
   component: StorePage,
-  head: () => ({ meta: [{ title: "My Store — Storely" }] }),
+  head: () => ({ meta: [{ title: "My Store — Fennecly" }] }),
 });
 
 function StorePage() {
@@ -70,19 +70,28 @@ function StorePage() {
   const [showQr, setShowQr] = useState(false);
   const [storeVisible, setStoreVisible] = useState(true);
   const [togglingVisibility, setTogglingVisibility] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const loadStore = useCallback(() => {
     if (!user) return;
     let active = true;
+
+    setError(null);
 
     Promise.all([
       supabase.from("store_settings").select("*").eq("user_id", user.id).maybeSingle(),
       supabase.from("products").select("id", { count: "exact", head: true }).eq("user_id", user.id),
       supabase.from("orders").select("id", { count: "exact", head: true }).eq("store_owner_id", user.id),
-      supabase.from("orders").select("total,customer_email").eq("store_owner_id", user.id).limit(1000),
+      supabase.from("orders").select("total,customer_email").eq("store_owner_id", user.id).limit(5000),
       supabase.from("orders").select("id,customer_name,total,status,created_at").eq("store_owner_id", user.id).order("created_at", { ascending: false }).limit(5),
     ]).then(([s, p, o, agg, recent]) => {
       if (!active) return;
+      if (s.error || p.error || o.error || agg.error || recent.error) {
+        console.error({ s: s.error, p: p.error, o: o.error, agg: agg.error, recent: recent.error });
+        setError("Failed to load store data. Please try again.");
+        setLoading(false);
+        return;
+      }
       setSettings(s.data);
       setStoreVisible(s.data?.is_active !== false);
       setProductCount(p.count ?? 0);
@@ -95,10 +104,19 @@ function StorePage() {
       );
       setRecentOrders(recent.data ?? []);
       setLoading(false);
+    }).catch((err) => {
+      if (!active) return;
+      console.error("Store page load failed:", err);
+      setError("Something went wrong loading your store.");
+      setLoading(false);
     });
 
     return () => { active = false; };
   }, [user]);
+
+  useEffect(() => {
+    return loadStore();
+  }, [loadStore]);
 
   if (loading) {
     return (
@@ -108,40 +126,60 @@ function StorePage() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 gap-4">
+        <AlertTriangle className="h-8 w-8 text-destructive" />
+        <p className="text-sm text-muted-foreground">{error}</p>
+        <Button onClick={() => { setLoading(true); loadStore(); }}>Retry</Button>
+      </div>
+    );
+  }
+
   const slug = settings?.slug;
-  const liveUrl = slug ? `${typeof window !== "undefined" ? window.location.origin : ""}/s/${slug}` : "";
-  const themePicked = settings != null && settings.store_name !== "My Store";
+  const liveUrl = slug ? `/s/${slug}` : "";
+  const themePicked = settings != null && (
+    settings.store_name !== "My Store" ||
+    settings.theme !== "default" ||
+    settings.hero_image_url != null
+  );
 
   const checklist = [
     { title: "Add your first product", done: productCount > 0, to: "/dashboard/products", external: false, icon: Package },
     { title: "Customize your storefront", done: themePicked, to: "/customize", external: true, icon: Palette },
-    { title: "Share your store URL", done: false, to: "/customize", external: true, icon: Globe },
+    { title: "Share your store URL", done: !!slug, to: "/customize", external: true, icon: Globe },
   ];
 
   const completedCount = checklist.filter((c) => c.done).length;
   const healthScore = Math.round((completedCount / checklist.length) * 100);
 
-  const copyUrl = () => {
+  const copyUrl = async () => {
     if (!liveUrl) return;
-    navigator.clipboard.writeText(liveUrl);
-    toast.success("Store URL copied");
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}${liveUrl}`);
+      toast.success("Store URL copied");
+    } catch {
+      toast.error("Failed to copy URL");
+    }
   };
 
   const toggleVisibility = async () => {
     if (!user || !settings) return;
     setTogglingVisibility(true);
     const newVal = !storeVisible;
-    const { error } = await supabase
-      .from("store_settings")
-      .update({ is_active: newVal })
-      .eq("user_id", user.id);
-    if (!error) {
+    try {
+      const { error: updateErr } = await supabase
+        .from("store_settings")
+        .update({ is_active: newVal })
+        .eq("user_id", user.id);
+      if (updateErr) throw updateErr;
       setStoreVisible(newVal);
       toast.success(newVal ? "Store is now visible" : "Store is now hidden");
-    } else {
+    } catch {
       toast.error("Failed to update store visibility");
+    } finally {
+      setTogglingVisibility(false);
     }
-    setTogglingVisibility(false);
   };
 
   const QR_URL = slug
@@ -151,7 +189,7 @@ function StorePage() {
   const stats = [
     { label: "Products", value: productCount, icon: Package, color: "from-violet-500/15 to-violet-500/5" },
     { label: "Orders", value: orderCount, icon: ShoppingBag, color: "from-fuchsia-500/15 to-fuchsia-500/5" },
-    { label: "Revenue", value: `$${revenue.toFixed(2)}`, icon: DollarSign, color: "from-emerald-500/15 to-emerald-500/5" },
+    { label: "Revenue", value: `${revenue.toLocaleString()} ${settings?.currency ?? "DZD"}`, icon: DollarSign, color: "from-emerald-500/15 to-emerald-500/5" },
     { label: "Customers", value: customerCount, icon: Users, color: "from-sky-500/15 to-sky-500/5" },
   ];
 
@@ -449,25 +487,19 @@ function StorePage() {
               </div>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="destructive" size="sm" className="shrink-0">
+                  <Button variant="destructive" size="sm" className="shrink-0" disabled>
                     <Trash2 className="h-4 w-4 mr-1.5" /> Delete store
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Delete your store?</AlertDialogTitle>
+                    <AlertDialogTitle>Coming soon</AlertDialogTitle>
                     <AlertDialogDescription>
-                      This will permanently delete your store, products, and all associated data. This action cannot be undone.
+                      Store deletion will be available in a future update.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction
-                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                      onClick={() => toast.error("Delete store — connect to your backend to implement this.")}
-                    >
-                      Yes, delete everything
-                    </AlertDialogAction>
+                    <AlertDialogCancel>Close</AlertDialogCancel>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
