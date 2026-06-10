@@ -69,6 +69,7 @@
     "react-email": "^6.0.0",
     "react-hook-form": "^7.71.2",
     "react-i18next": "^17.0.4",
+    "react-is": "^19.2.7",
     "react-markdown": "^10.1.0",
     "react-resizable-panels": "^4.6.5",
     "recharts": "^3.8.1",
