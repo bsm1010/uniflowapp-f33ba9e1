@@ -52,7 +52,7 @@ export async function pushOrderInternal(
   const { data: order, error: orderErr } = await supabase
     .from("orders")
     .select(
-      "id, store_owner_id, customer_name, shipping_address, shipping_city, shipping_postal_code, total, notes, delivery_type, tracking_number",
+      "id, store_owner_id, customer_name, customer_phone, shipping_address, shipping_city, shipping_postal_code, total, notes, delivery_type, tracking_number",
     )
     .eq("id", orderId)
     .maybeSingle();
@@ -140,7 +140,7 @@ export async function pushOrderInternal(
     const result = await adapter.createShipment({
       orderId: order.id,
       customerName: order.customer_name,
-      customerPhone: order.shipping_address, // checkout stores phone here
+      customerPhone: order.customer_phone || order.shipping_address, // fallback for legacy orders
       wilaya: order.shipping_postal_code,
       commune: order.shipping_city,
       address: order.shipping_address,
