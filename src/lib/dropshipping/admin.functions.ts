@@ -147,7 +147,7 @@ export const listWalletTopupRequests = createServerFn({ method: "POST" })
     if (data.status) q = q.eq("status", data.status);
     const { data: requests, error } = await q;
     if (error) throw new Error(error.message);
-    return { requests: (requests ?? []) as unknown as Database["public"]["Tables"]["wallet_topup_requests"]["Row"][] };
+    return { requests: (requests ?? []) as any[] };
   });
 
 // ------------------------------------------------------------
