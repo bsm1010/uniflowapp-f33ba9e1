@@ -8,13 +8,24 @@ import type {
 
 const ZR_BASE_URL = "https://api.zrexpress.app/api/v1";
 
+interface Territory {
+  id: string;
+  code: number;
+  name: string;
+  level: string; // "wilaya" | "commune"
+  parentId: string | null;
+}
+
 /**
- * Adapter for ZR Express (Procolis API).
- * Same fallback behavior as Yalidine when credentials are missing.
+ * Adapter for ZR Express (new platform — api.zrexpress.app).
+ * Resolves wilaya/commune names to territory UUIDs before creating parcels.
  */
 export class ZRExpressAdapter extends BaseDeliveryAdapter {
   readonly key = "zr_express";
   readonly label = "ZR Express";
+
+  /** In-memory territory cache (fetched once per adapter instance). */
+  private territoryCache: Territory[] | null = null;
 
   private authHeaders(): Record<string, string> {
     const token = (this.credentials.apiKey ?? "").trim();
@@ -26,6 +37,37 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
       "Content-Type": "application/json",
       Accept: "application/json",
     };
+  }
+
+  /** Fetch all territories from ZRExpress (cached per adapter instance). */
+  private async fetchTerritories(): Promise<Territory[]> {
+    if (this.territoryCache) return this.territoryCache;
+    const res = await fetch(`${ZR_BASE_URL}/territories/search`, {
+      method: "POST",
+      headers: this.authHeaders(),
+      body: JSON.stringify({ pageNumber: 1, pageSize: 5000, orderBy: ["code asc"] }),
+    });
+    if (!res.ok) throw new Error(`Failed to fetch ZRExpress territories: ${res.status}`);
+    const data = await res.json();
+    const items = (data.items ?? []) as Territory[];
+    this.territoryCache = items;
+    return items;
+  }
+
+  /** Find a territory by name (case-insensitive) and optional level/parentId. */
+  private findTerritory(
+    territories: Territory[],
+    name: string,
+    level?: string,
+    parentId?: string | null,
+  ): Territory | undefined {
+    const lower = name.toLowerCase().trim();
+    return territories.find((t) => {
+      const nameMatch = t.name.toLowerCase().trim() === lower || String(t.code) === lower;
+      const levelMatch = !level || t.level === level;
+      const parentMatch = parentId === undefined || t.parentId === parentId;
+      return nameMatch && levelMatch && parentMatch;
+    });
   }
 
   async validateCredentials(): Promise<ValidationResult> {
@@ -113,6 +155,22 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
       { productName: input.productName ?? "Order", quantity: 1, unitPrice: Math.round(input.totalPrice) },
     ];
 
+    // Resolve territory UUIDs from names.
+    const territories = await this.fetchTerritories();
+    const wilaya = this.findTerritory(territories, input.wilaya, "wilaya");
+    if (!wilaya) {
+      throw new Error(`ZR Express: wilaya "${input.wilaya}" not found. Check the shipping address.`);
+    }
+    const commune = this.findTerritory(
+      territories,
+      input.commune ?? input.wilaya,
+      "commune",
+      wilaya.id,
+    );
+    if (!commune) {
+      throw new Error(`ZR Express: commune "${input.commune ?? input.wilaya}" not found in ${wilaya.name}.`);
+    }
+
     const body = {
       customer: {
         customerId: crypto.randomUUID(),
@@ -122,8 +180,8 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
         },
       },
       deliveryAddress: {
-        cityTerritoryId: input.wilaya,
-        districtTerritoryId: input.commune ?? input.wilaya,
+        cityTerritoryId: wilaya.id,
+        districtTerritoryId: commune.id,
         street: input.address,
       },
       orderedProducts: items.map((it) => ({

@@ -224,6 +224,7 @@ export function AlgerianCheckoutForm({
           storeSlug,
           customerName: `${parsed.data.firstName} ${parsed.data.lastName}`,
           customerEmail: "",
+          customerPhone: phone,
           shippingAddress: `${parsed.data.wilaya}, ${parsed.data.city}`,
           shippingCity: parsed.data.city,
           shippingWilaya: parsed.data.wilaya,
