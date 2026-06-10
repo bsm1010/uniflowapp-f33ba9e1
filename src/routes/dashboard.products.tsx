@@ -62,15 +62,12 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Img } from "@/components/ui/Img";
+import { formatPrice as fmtPrice } from "@/lib/storeTheme";
 
 export const Route = createFileRoute("/dashboard/products")({
   component: ProductsPage,
-  head: () => ({ meta: [{ title: "Products — Storely" }] }),
+  head: () => ({ meta: [{ title: "Products — Fennecly" }] }),
 });
-
-function formatPrice(n: number) {
-  return `${Math.round(n).toLocaleString("fr-DZ")} DA`;
-}
 
 type SortField = "price" | "stock" | "sales_count";
 type SortDir = "asc" | "desc";
@@ -92,6 +89,8 @@ function ProductsPage() {
   const [deleting, setDeleting] = useState<Product | null>(null);
   const [bulkDeleting, setBulkDeleting] = useState(false);
 
+  const formatPrice = (n: number) => fmtPrice(n, currentStore?.currency ?? "DZD");
+
   const load = useCallback(async () => {
     if (!user || storeLoading) return;
     if (!currentStore?.id) {
@@ -100,45 +99,49 @@ function ProductsPage() {
       return;
     }
     setLoading(true);
-    const selectCols =
-      "id,name,description,price,sale_price,stock,category,images,sku,weight,tags,status,variants,sales_count,user_id,store_id";
-    const base = () =>
-      supabase.from("products").select(selectCols).order("created_at", { ascending: false });
-    const storeScoped = await base().eq("store_id", currentStore.id);
-    let data = storeScoped.data ?? [];
-    if (data.length === 0 && !storeScoped.error) {
-      const legacy = await base().eq("user_id", user.id);
-      if (legacy.error) {
-        setLoading(false);
+    try {
+      const selectCols =
+        "id,name,description,price,sale_price,stock,category,images,sku,weight,tags,status,variants,sales_count,user_id,store_id";
+      const base = () =>
+        supabase.from("products").select(selectCols).order("created_at", { ascending: false });
+      const storeScoped = await base().eq("store_id", currentStore.id);
+      let data = storeScoped.data ?? [];
+      if (data.length === 0 && !storeScoped.error) {
+        const legacy = await base().eq("user_id", user.id);
+        if (legacy.error) {
+          toast.error("Failed to load products. Please try again.");
+          return;
+        }
+        data = legacy.data ?? [];
+        if (import.meta.env.DEV && data.length > 0) {
+          console.warn(
+            `[products] ${data.length} product(s) loaded via user_id fallback (store_id is null/wrong on these rows). ` +
+              `Run: UPDATE public.products SET store_id = '${currentStore.id}' WHERE user_id = '${user.id}' AND store_id IS NULL;`,
+          );
+        }
+      }
+      if (storeScoped.error) {
         toast.error("Failed to load products. Please try again.");
         return;
       }
-      data = legacy.data ?? [];
-      if (import.meta.env.DEV && data.length > 0) {
-        console.warn(
-          `[products] ${data.length} product(s) loaded via user_id fallback (store_id is null/wrong on these rows). ` +
-            `Run: UPDATE public.products SET store_id = '${currentStore.id}' WHERE user_id = '${user.id}' AND store_id IS NULL;`,
-        );
-      }
-    }
-    setLoading(false);
-    if (storeScoped.error) {
+      setProducts(
+        data.map((p) => ({
+          ...p,
+          price: Number(p.price),
+          sale_price: p.sale_price != null ? Number(p.sale_price) : null,
+          images: p.images ?? [],
+          tags: p.tags ?? [],
+          status: (p.status ?? "draft") as "draft" | "published",
+          variants: (Array.isArray(p.variants) ? p.variants : []) as ProductVariant[],
+          sales_count: p.sales_count ?? 0,
+        })),
+      );
+      setSelected(new Set());
+    } catch {
       toast.error("Failed to load products. Please try again.");
-      return;
+    } finally {
+      setLoading(false);
     }
-    setProducts(
-      data.map((p) => ({
-        ...p,
-        price: Number(p.price),
-        sale_price: p.sale_price != null ? Number(p.sale_price) : null,
-        images: p.images ?? [],
-        tags: p.tags ?? [],
-        status: (p.status ?? "draft") as "draft" | "published",
-        variants: (Array.isArray(p.variants) ? p.variants : []) as ProductVariant[],
-        sales_count: p.sales_count ?? 0,
-      })),
-    );
-    setSelected(new Set());
   }, [user, currentStore?.id, storeLoading]);
 
   useEffect(() => {
@@ -218,6 +221,7 @@ function ProductsPage() {
       return;
     }
     toast.success(`${selected.size} product(s) deleted`);
+    setSelected(new Set());
     load();
   };
 
@@ -231,6 +235,7 @@ function ProductsPage() {
       return;
     }
     toast.success(`${selected.size} product(s) set to ${status}`);
+    setSelected(new Set());
     load();
   };
 
