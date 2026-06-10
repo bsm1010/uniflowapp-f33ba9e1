@@ -28,6 +28,13 @@ export interface CreateShipmentInput {
   weight?: number;
   notes?: string;
   deliveryType?: string;
+  /** Full order items — used by adapters that require itemized product data (e.g. ZRExpress). */
+  items?: Array<{
+    productName: string;
+    quantity: number;
+    unitPrice: number;
+    weight?: number;
+  }>;
 }
 
 export interface CreateShipmentResult {
