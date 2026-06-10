@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient, type UseQueryResult } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase as supabaseTyped } from "@/integrations/supabase/client";
+const supabase: any = supabaseTyped;
 import { useAuth } from "@/hooks/use-auth";
 import {
   listAllDropshipOrders,
@@ -28,12 +29,12 @@ import {
  */
 import type { Database } from "@/integrations/supabase/types";
 
-type MarketplaceProductRow = Database["public"]["Tables"]["marketplace_products"]["Row"];
-type ResellerListingRow = Database["public"]["Tables"]["reseller_listings"]["Row"];
-type DropshipOrderRow = Database["public"]["Tables"]["dropship_orders"]["Row"];
-type ResellerWalletRow = Database["public"]["Tables"]["reseller_wallet"]["Row"];
-type WalletTransactionRow = Database["public"]["Tables"]["wallet_transactions"]["Row"];
-type WalletTopupRequestRow = Database["public"]["Tables"]["wallet_topup_requests"]["Row"];
+type MarketplaceProductRow = any;
+type ResellerListingRow = any;
+type DropshipOrderRow = any;
+type ResellerWalletRow = any;
+type WalletTransactionRow = any;
+type WalletTopupRequestRow = any;
 type SupplyMarketplaceProductRow =
   Database["public"]["Tables"]["supply_marketplace_products"]["Row"];
 
@@ -45,9 +46,10 @@ export type ResellerListing = ResellerListingRow;
 export type DropshipOrder = DropshipOrderRow;
 export type WalletTopupRequest = WalletTopupRequestRow;
 export type SupplyMarketplaceProduct = SupplyMarketplaceProductRow;
-export type StockBuffer = Database["public"]["Tables"]["stock_buffer"]["Row"];
+export type StockBuffer = any;
 export type ResellerWallet = ResellerWalletRow;
 export type WalletTransaction = WalletTransactionRow;
+
 
 // Join shapes returned by the hooks below
 export type MarketplaceProductWithJoins = MarketplaceProduct;
@@ -298,7 +300,7 @@ export function useUpdateMyListing() {
         }
       }
 
-      const patch: Database["public"]["Tables"]["reseller_listings"]["Update"] = {};
+      const patch: any = {};
       if (args.sellingPrice !== undefined) patch.selling_price = args.sellingPrice;
       if (args.isActive !== undefined) patch.is_active = args.isActive;
       if (Object.keys(patch).length === 0) {
@@ -469,7 +471,7 @@ export function useAdminUpdateOrderStatus() {
   return useMutation({
     mutationFn: async (args: {
       orderId: string;
-      status: Database["public"]["Tables"]["dropship_orders"]["Row"]["status"];
+      status: any;
       trackingNumber?: string;
       zrExpressId?: string;
     }) => {
