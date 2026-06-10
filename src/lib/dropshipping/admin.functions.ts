@@ -84,7 +84,7 @@ export const updateDropshipOrderStatus = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     // Stamp the corresponding *_at timestamp based on the new status.
     const now = new Date().toISOString();
-    const timestampPatch: Partial<Database["public"]["Tables"]["dropship_orders"]["Update"]> = {};
+    const timestampPatch: any = {};
     switch (data.status) {
       case "shipped":
         timestampPatch.shipped_at = now;
