@@ -113,7 +113,7 @@ function NavLinksEditor() {
   return (
     <div className="space-y-2">
       {links.map((link, i) => (
-        <div key={i} className="flex items-center gap-2">
+        <div key={`${link.label}-${link.href}-${i}`} className="flex items-center gap-2">
           <input
             value={link.label}
             onChange={(e) => {
@@ -146,7 +146,7 @@ function NavLinksEditor() {
       {links.length < 6 && (
         <button
           type="button"
-          onClick={() => update([...links, { label: "New", href: "#" }])}
+          onClick={() => update([...links, { label: "New", href: "/" }])}
           className="text-xs text-primary hover:underline"
         >
           + Add link
@@ -172,11 +172,15 @@ function SocialLinksEditor() {
         <Field key={p} label={p.charAt(0).toUpperCase() + p.slice(1)}>
           <input
             value={socials[p] || ""}
-            onChange={(e) =>
-              updateSettings({
-                footer_socials: { ...socials, [p]: e.target.value },
-              })
-            }
+            onChange={(e) => {
+              const next = { ...socials };
+              if (e.target.value) {
+                next[p] = e.target.value;
+              } else {
+                delete next[p];
+              }
+              updateSettings({ footer_socials: next });
+            }}
             placeholder={`https://${p}.com/...`}
             className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
           />

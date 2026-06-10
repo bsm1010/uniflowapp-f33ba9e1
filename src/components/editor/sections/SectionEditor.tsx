@@ -248,11 +248,14 @@ function FieldRenderer({
           <Label className="text-xs">{field.label}</Label>
           <Input
             type="number"
-            value={Number(value ?? 0)}
+            value={value === undefined || value === null ? "" : Number(value)}
             min={field.min}
             max={field.max}
             step={field.step ?? 1}
-            onChange={(e) => onChange(Number(e.target.value))}
+            onChange={(e) => {
+              const raw = e.target.value;
+              onChange(raw === "" || raw === "-" ? 0 : Number(raw));
+            }}
           />
         </div>
       );
@@ -278,11 +281,12 @@ function FieldRenderer({
           </div>
         </div>
       );
-    case "select":
+    case "select": {
+      const currentVal = String(value ?? field.options[0]?.value ?? "");
       return (
         <div className="space-y-1.5">
           <Label className="text-xs">{field.label}</Label>
-          <Select value={String(value ?? "")} onValueChange={onChange}>
+          <Select value={currentVal} onValueChange={onChange}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
@@ -296,6 +300,7 @@ function FieldRenderer({
           </Select>
         </div>
       );
+    }
     case "list":
       return (
         <ListField

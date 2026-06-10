@@ -9,6 +9,11 @@ export type TemplateKey = "home" | "product" | "collection" | "cart" | "page";
 export type DeviceMode = "desktop" | "tablet" | "mobile";
 export type LeftTab = "sections" | "theme" | "pages";
 
+interface HistoryEntry {
+  template: TemplateKey;
+  sections: SectionInstance[];
+}
+
 interface EditorState {
   settings: StoreSettings | null;
   pageSections: Record<TemplateKey, SectionInstance[]>;
@@ -18,9 +23,10 @@ interface EditorState {
   leftTab: LeftTab;
   dirty: boolean;
   saving: boolean;
-  history: SectionInstance[][];
-  future: SectionInstance[][];
+  history: HistoryEntry[];
+  future: HistoryEntry[];
   publishStatus: "published" | "draft";
+  lastPropSnapshot: string | null;
 
   loadSettings: (s: StoreSettings) => void;
   updateSettings: (partial: Partial<StoreSettings>) => void;
@@ -52,6 +58,14 @@ interface EditorState {
 
 const EMPTY_SECTIONS: SectionInstance[] = [];
 
+function pushHistory(
+  history: HistoryEntry[],
+  template: TemplateKey,
+  sections: SectionInstance[],
+): HistoryEntry[] {
+  return [...history, { template, sections: [...sections] }].slice(-50);
+}
+
 export const useEditorStore = create<EditorState>((set, get) => ({
   settings: null,
   pageSections: { home: [], product: [], collection: [], cart: [], page: [] },
@@ -64,6 +78,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   history: [],
   future: [],
   publishStatus: "published",
+  lastPropSnapshot: null,
 
   loadSettings: (s) => {
     const raw = s.sections as unknown;
@@ -88,7 +103,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       }
     }
 
-    set({ settings: s, pageSections: parsed, dirty: false, history: [], future: [] });
+    set({ settings: s, pageSections: parsed, dirty: false, history: [], future: [], lastPropSnapshot: null });
   },
 
   updateSettings: (partial) => {
@@ -125,7 +140,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
         pageSections: { ...state.pageSections, [state.activeTemplate]: next },
         selectedId: instance.id,
         dirty: true,
-        history: [...state.history, current].slice(-50),
+        history: pushHistory(state.history, state.activeTemplate, current),
         future: [],
       };
     });
@@ -139,7 +154,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
         pageSections: { ...state.pageSections, [state.activeTemplate]: next },
         selectedId: state.selectedId === id ? null : state.selectedId,
         dirty: true,
-        history: [...state.history, current].slice(-50),
+        history: pushHistory(state.history, state.activeTemplate, current),
         future: [],
       };
     });
@@ -148,12 +163,14 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   moveSection: (fromIndex, toIndex) => {
     set((state) => {
       const current = [...state.pageSections[state.activeTemplate]];
+      if (fromIndex < 0 || fromIndex >= current.length) return state;
+      if (toIndex < 0 || toIndex >= current.length) return state;
       const [moved] = current.splice(fromIndex, 1);
       current.splice(toIndex, 0, moved);
       return {
         pageSections: { ...state.pageSections, [state.activeTemplate]: current },
         dirty: true,
-        history: [...state.history, state.pageSections[state.activeTemplate]].slice(-50),
+        history: pushHistory(state.history, state.activeTemplate, state.pageSections[state.activeTemplate]),
         future: [],
       };
     });
@@ -168,7 +185,9 @@ export const useEditorStore = create<EditorState>((set, get) => ({
         ...original,
         id: crypto.randomUUID(),
         props: { ...original.props },
-        styleOverrides: original.styleOverrides ? { ...original.styleOverrides } : undefined,
+        styleOverrides: original.styleOverrides
+          ? { ...original.styleOverrides }
+          : undefined,
       };
       const idx = current.findIndex((s) => s.id === id);
       const next = [...current];
@@ -177,7 +196,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
         pageSections: { ...state.pageSections, [state.activeTemplate]: next },
         selectedId: clone.id,
         dirty: true,
-        history: [...state.history, current].slice(-50),
+        history: pushHistory(state.history, state.activeTemplate, current),
         future: [],
       };
     });
@@ -186,12 +205,20 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   updateSectionProps: (id, props) => {
     set((state) => {
       const current = state.pageSections[state.activeTemplate];
+      const snapshot = JSON.stringify(current);
+      const shouldPush = state.lastPropSnapshot !== null && state.lastPropSnapshot !== snapshot;
+
       const next = current.map((s) =>
         s.id === id ? { ...s, props: { ...s.props, ...props } } : s,
       );
       return {
         pageSections: { ...state.pageSections, [state.activeTemplate]: next },
         dirty: true,
+        history: shouldPush
+          ? pushHistory(state.history, state.activeTemplate, current)
+          : state.history,
+        future: shouldPush ? [] : state.future,
+        lastPropSnapshot: JSON.stringify(next),
       };
     });
   },
@@ -200,11 +227,15 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     set((state) => {
       const current = state.pageSections[state.activeTemplate];
       const next = current.map((s) =>
-        s.id === id ? { ...s, styleOverrides: { ...s.styleOverrides, ...styles } } : s,
+        s.id === id
+          ? { ...s, styleOverrides: { ...s.styleOverrides, ...styles } }
+          : s,
       );
       return {
         pageSections: { ...state.pageSections, [state.activeTemplate]: next },
         dirty: true,
+        history: pushHistory(state.history, state.activeTemplate, current),
+        future: [],
       };
     });
   },
@@ -218,7 +249,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
               ...s,
               styleOverrides: {
                 ...s.styleOverrides,
-                fullWidth: (s.styleOverrides?.fullWidth ?? false) ? undefined : true,
+                hidden: !s.styleOverrides?.hidden,
               },
             }
           : s,
@@ -233,12 +264,14 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   undo: () => {
     set((state) => {
       if (state.history.length === 0) return state;
-      const prev = state.history[state.history.length - 1];
+      const entry = state.history[state.history.length - 1];
+      if (entry.template !== state.activeTemplate) return state;
+
       const current = state.pageSections[state.activeTemplate];
       return {
-        pageSections: { ...state.pageSections, [state.activeTemplate]: prev },
+        pageSections: { ...state.pageSections, [state.activeTemplate]: entry.sections },
         history: state.history.slice(0, -1),
-        future: [current, ...state.future].slice(0, 50),
+        future: [{ template: state.activeTemplate, sections: current }, ...state.future].slice(0, 50),
         dirty: true,
       };
     });
@@ -247,19 +280,27 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   redo: () => {
     set((state) => {
       if (state.future.length === 0) return state;
-      const next = state.future[0];
+      const entry = state.future[0];
+      if (entry.template !== state.activeTemplate) return state;
+
       const current = state.pageSections[state.activeTemplate];
       return {
-        pageSections: { ...state.pageSections, [state.activeTemplate]: next },
-        history: [...state.history, current].slice(-50),
+        pageSections: { ...state.pageSections, [state.activeTemplate]: entry.sections },
+        history: pushHistory(state.history, state.activeTemplate, current),
         future: state.future.slice(1),
         dirty: true,
       };
     });
   },
 
-  canUndo: () => get().history.length > 0,
-  canRedo: () => get().future.length > 0,
+  canUndo: () => {
+    const s = get();
+    return s.history.length > 0 && s.history[s.history.length - 1].template === s.activeTemplate;
+  },
+  canRedo: () => {
+    const s = get();
+    return s.future.length > 0 && s.future[0].template === s.activeTemplate;
+  },
 
   setSaving: (v) => set({ saving: v }),
   setDirty: (v) => set({ dirty: v }),

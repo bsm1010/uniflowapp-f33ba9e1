@@ -16,6 +16,7 @@ export function BlockRenderer({
   return (
     <>
       {sections.map((section) => {
+        if (section.styleOverrides?.hidden) return null;
         const def = getBlock(section.blockKey);
         if (!def) return null;
         const Component = def.component;

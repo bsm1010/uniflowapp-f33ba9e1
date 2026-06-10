@@ -14,19 +14,22 @@ import {
 } from "@/components/ui/select";
 
 const FONT_OPTIONS = [
-  { value: "Inter, sans-serif", label: "Inter" },
-  { value: "'Plus Jakarta Sans', sans-serif", label: "Plus Jakarta Sans" },
-  { value: "'DM Sans', sans-serif", label: "DM Sans" },
-  { value: "Outfit, sans-serif", label: "Outfit" },
-  { value: "Manrope, sans-serif", label: "Manrope" },
-  { value: "Sora, sans-serif", label: "Sora" },
-  { value: "'Space Grotesk', sans-serif", label: "Space Grotesk" },
-  { value: "Poppins, sans-serif", label: "Poppins" },
-  { value: "'Playfair Display', serif", label: "Playfair Display" },
-  { value: "Lora, serif", label: "Lora" },
-  { value: "'Cormorant Garamond', serif", label: "Cormorant Garamond" },
-  { value: "'Libre Baskerville', serif", label: "Libre Baskerville" },
-  { value: "'JetBrains Mono', monospace", label: "JetBrains Mono" },
+  { value: "Inter", label: "Inter" },
+  { value: "Space Grotesk", label: "Space Grotesk" },
+  { value: "Playfair", label: "Playfair Display" },
+  { value: "DM Serif", label: "DM Serif Display" },
+  { value: "Mono", label: "JetBrains Mono" },
+  { value: "Manrope", label: "Manrope" },
+  { value: "Sora", label: "Sora" },
+  { value: "Outfit", label: "Outfit" },
+  { value: "Bricolage", label: "Bricolage Grotesque" },
+  { value: "Fraunces", label: "Fraunces" },
+  { value: "Cormorant", label: "Cormorant Garamond" },
+  { value: "Plex Sans", label: "IBM Plex Sans" },
+  { value: "Bebas", label: "Bebas Neue" },
+  { value: "Archivo", label: "Archivo Black" },
+  { value: "Syne", label: "Syne" },
+  { value: "Jakarta", label: "Plus Jakarta Sans" },
 ];
 
 export function ThemePanel() {
@@ -116,7 +119,7 @@ export function ThemePanel() {
             <div>
               <Label className="text-xs mb-1.5 block">Font family</Label>
               <select
-                value={settings.font_family || "Inter, sans-serif"}
+                value={settings.font_family || "Inter"}
                 onChange={(e) => updateSettings({ font_family: e.target.value })}
                 className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
               >
@@ -128,7 +131,7 @@ export function ThemePanel() {
               </select>
               <div
                 className="mt-2 p-3 rounded-md border bg-background text-center"
-                style={{ fontFamily: settings.font_family || "Inter, sans-serif" }}
+                style={{ fontFamily: settings.font_family || "Inter" }}
               >
                 <span className="text-lg">The quick brown fox</span>
                 <br />
@@ -334,9 +337,7 @@ export function ThemePanel() {
             rows={6}
             value={((settings as Record<string, unknown>).custom_css as string) || ""}
             onChange={(e) =>
-              updateSettings({
-                ...(e.target.value !== undefined ? { custom_css: e.target.value } : {}),
-              } as Record<string, unknown>)
+              updateSettings({ custom_css: e.target.value } as Record<string, unknown>)
             }
             placeholder="/* Add custom CSS here */"
             className="w-full rounded-md border bg-background px-3 py-2 text-xs font-mono outline-none focus:ring-2 focus:ring-ring resize-none"

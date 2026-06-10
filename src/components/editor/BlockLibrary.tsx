@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search, Plus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/input";
@@ -22,6 +22,14 @@ export function BlockLibrary({ onClose }: Props) {
     const q = query.toLowerCase();
     return b.label.toLowerCase().includes(q) || b.description.toLowerCase().includes(q);
   });
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
 
   const handleAdd = (def: BlockDefinition) => {
     addSection(def.key);

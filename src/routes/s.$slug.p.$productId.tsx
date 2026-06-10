@@ -150,7 +150,7 @@ function ProductPage() {
   }
 
   const t = getStoreTokens(settings);
-  const outOfStock = product.stock <= 0;
+  const outOfStock = product.stock !== null && product.stock <= 0;
   const radius = settings.theme === "minimal" ? 0 : settings.theme === "grid" ? 8 : 16;
 
   const handleAdd = () => {

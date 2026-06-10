@@ -62,5 +62,6 @@ export interface SectionInstance {
     background?: string;
     radius?: number;
     fullWidth?: boolean;
+    hidden?: boolean;
   };
 }
