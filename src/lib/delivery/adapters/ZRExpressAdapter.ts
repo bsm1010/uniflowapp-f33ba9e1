@@ -137,6 +137,16 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
     }
   }
 
+  /** Normalize Algerian phone to international format (+213XXXXXXXXX). */
+  private normalizePhone(raw: string): string {
+    const digits = raw.replace(/[^\d+]/g, "");
+    if (digits.startsWith("+")) return digits;
+    if (digits.startsWith("00")) return "+" + digits.slice(2);
+    if (digits.startsWith("0")) return "+213" + digits.slice(1);
+    if (digits.startsWith("213")) return "+" + digits;
+    return "+213" + digits;
+  }
+
   async createShipment(input: CreateShipmentInput): Promise<CreateShipmentResult> {
     if (!this.hasCredentials()) {
       return {
@@ -176,7 +186,7 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
         customerId: crypto.randomUUID(),
         name: input.customerName,
         phone: {
-          number1: input.customerPhone,
+          number1: this.normalizePhone(input.customerPhone),
         },
       },
       deliveryAddress: {
