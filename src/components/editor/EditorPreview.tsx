@@ -1,4 +1,5 @@
 import React, { Suspense, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useEditorStore } from "@/stores/editor-store";
 import { BlockRenderer } from "@/components/storefront/blocks";
 import { getStoreTokens } from "@/components/storefront/StorefrontShell";
@@ -6,6 +7,7 @@ import type { BlockContext } from "@/components/storefront/blocks/types";
 
 export function EditorPreview() {
   const { settings, getSections, selectedId, selectSection, device } = useEditorStore();
+  const { t: tr } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
@@ -55,10 +57,10 @@ export function EditorPreview() {
             </svg>
           </div>
           <p className="text-sm font-medium" style={{ color: tokens.fg }}>
-            No sections yet
+            {tr("editor.preview.noSections")}
           </p>
           <p className="text-xs mt-1" style={{ color: tokens.muted }}>
-            Click "Add Section" in the left panel to get started.
+            {tr("editor.preview.addSectionPrompt")}
           </p>
         </div>
       ) : (
@@ -110,7 +112,7 @@ export function EditorPreview() {
                       if (idx > 0) store.moveSection(idx, idx - 1);
                     }}
                     className="h-6 w-6 flex items-center justify-center rounded bg-foreground/80 text-background text-xs hover:bg-foreground transition-colors"
-                    title="Move up"
+                    title={tr("editor.preview.moveUp")}
                   >
                     ↑
                   </button>
@@ -124,7 +126,7 @@ export function EditorPreview() {
                       if (idx < secs.length - 1) store.moveSection(idx, idx + 1);
                     }}
                     className="h-6 w-6 flex items-center justify-center rounded bg-foreground/80 text-background text-xs hover:bg-foreground transition-colors"
-                    title="Move down"
+                    title={tr("editor.preview.moveDown")}
                   >
                     ↓
                   </button>
@@ -135,7 +137,7 @@ export function EditorPreview() {
                       useEditorStore.getState().duplicateSection(section.id);
                     }}
                     className="h-6 w-6 flex items-center justify-center rounded bg-foreground/80 text-background text-xs hover:bg-foreground transition-colors"
-                    title="Duplicate"
+                    title={tr("editor.preview.duplicate")}
                   >
                     ⧉
                   </button>
@@ -146,7 +148,7 @@ export function EditorPreview() {
                       useEditorStore.getState().removeSection(section.id);
                     }}
                     className="h-6 w-6 flex items-center justify-center rounded bg-destructive text-destructive-foreground text-xs hover:opacity-90 transition-colors"
-                    title="Delete"
+                    title={tr("editor.preview.delete")}
                   >
                     ×
                   </button>

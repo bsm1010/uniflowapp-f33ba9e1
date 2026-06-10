@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Trash2, Sparkles, Loader2 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
+import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,6 +23,7 @@ import { toast } from "sonner";
 
 export function SectionEditor() {
   const { selectedId, getSections, updateSectionProps, removeSection, settings } = useEditorStore();
+  const { t: tr } = useTranslation();
   const aiFill = useServerFn(generateAISection);
   const [aiBrief, setAiBrief] = useState("");
   const [aiBusy, setAiBusy] = useState(false);
@@ -34,7 +36,7 @@ export function SectionEditor() {
       <div className="flex h-full items-center justify-center p-8 text-center text-sm text-muted-foreground">
         <div>
           <div className="text-3xl mb-2 opacity-30">🎨</div>
-          <p>Select a section from the canvas or left panel to edit its settings.</p>
+          <p>{tr("editor.sectionEditor.selectSection")}</p>
         </div>
       </div>
     );
@@ -43,7 +45,7 @@ export function SectionEditor() {
   const def = getBlock(section.blockKey);
   if (!def) {
     return (
-      <div className="p-6 text-sm text-destructive">Unknown section type: {section.blockKey}</div>
+      <div className="p-6 text-sm text-destructive">{tr("editor.sectionEditor.unknownType")}{section.blockKey}</div>
     );
   }
 
@@ -55,7 +57,7 @@ export function SectionEditor() {
 
   const runAI = async () => {
     if (!aiBrief.trim()) {
-      toast.error("Tell the AI what this section should say.");
+      toast.error(tr("editor.sectionEditor.aiError"));
       return;
     }
     setAiBusy(true);
@@ -70,7 +72,7 @@ export function SectionEditor() {
       });
       const filled = JSON.parse(res.propsJson) as Record<string, unknown>;
       updateSectionProps(section.id, filled);
-      toast.success("Section refreshed with AI copy.");
+      toast.success(tr("editor.sectionEditor.aiSuccess"));
       setAiBrief("");
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "AI failed";
@@ -85,7 +87,7 @@ export function SectionEditor() {
       {/* Header */}
       <div className="flex items-start justify-between gap-2 border-b p-4">
         <div className="min-w-0">
-          <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Editing</div>
+          <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{tr("editor.sectionEditor.editing")}</div>
           <div className="truncate text-sm font-semibold">{def.label}</div>
         </div>
         <Button
@@ -105,25 +107,25 @@ export function SectionEditor() {
           <div className="rounded-lg border border-dashed bg-accent/30 p-3">
             <div className="mb-2 flex items-center gap-2 text-xs font-medium">
               <Sparkles className="h-3.5 w-3.5 text-primary" />
-              AI section assistant
+              {tr("editor.sectionEditor.aiAssistant")}
             </div>
             <Textarea
               rows={2}
               value={aiBrief}
               onChange={(e) => setAiBrief(e.target.value)}
-              placeholder="e.g. Promote our new winter jackets, urgency tone."
+              placeholder={tr("editor.sectionEditor.aiPlaceholder")}
               className="text-xs"
             />
             <Button size="sm" className="mt-2 w-full" onClick={runAI} disabled={aiBusy}>
               {aiBusy ? (
                 <>
                   <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
-                  Generating...
+                  {tr("editor.sectionEditor.generating")}
                 </>
               ) : (
                 <>
                   <Sparkles className="mr-2 h-3.5 w-3.5" />
-                  Fill with AI
+                  {tr("editor.sectionEditor.fillWithAI")}
                 </>
               )}
             </Button>
@@ -141,9 +143,9 @@ export function SectionEditor() {
 
           {/* Style overrides */}
           <div className="pt-2 border-t">
-            <div className="text-xs font-medium text-muted-foreground mb-3">Style Overrides</div>
+            <div className="text-xs font-medium text-muted-foreground mb-3">{tr("editor.sectionEditor.styleOverrides")}</div>
             <div className="space-y-3">
-              <FieldInline label="Padding Y">
+              <FieldInline label={tr("editor.sectionEditor.paddingY")}>
                 <Input
                   type="number"
                   min={0}
@@ -157,7 +159,7 @@ export function SectionEditor() {
                   className="h-8 text-xs"
                 />
               </FieldInline>
-              <FieldInline label="Background">
+              <FieldInline label={tr("editor.sectionEditor.background")}>
                 <div className="flex items-center gap-2">
                   <input
                     type="color"
@@ -171,7 +173,7 @@ export function SectionEditor() {
                   />
                   <Input
                     value={section.styleOverrides?.background || ""}
-                    placeholder="transparent"
+                    placeholder={tr("editor.sectionEditor.transparent")}
                     onChange={(e) =>
                       useEditorStore.getState().updateSectionStyles(section.id, {
                         background: e.target.value,
@@ -182,7 +184,7 @@ export function SectionEditor() {
                 </div>
               </FieldInline>
               <div className="flex items-center justify-between">
-                <Label className="text-xs">Full width</Label>
+                <Label className="text-xs">{tr("editor.sectionEditor.fullWidth")}</Label>
                 <Switch
                   checked={section.styleOverrides?.fullWidth ?? false}
                   onCheckedChange={(v) =>

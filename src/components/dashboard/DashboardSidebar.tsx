@@ -177,12 +177,6 @@ export function DashboardSidebar() {
           icon: Palette,
           gradient: "from-violet-500 to-fuchsia-500",
         },
-        {
-          title: "Section Builder",
-          url: "/dashboard/builder",
-          icon: Layers,
-          gradient: "from-violet-500 to-fuchsia-500",
-        },
       ],
     },
     {

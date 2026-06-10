@@ -10,12 +10,12 @@ import { PagesPanel } from "./PagesPanel";
 import { EditorPreview } from "./EditorPreview";
 import { PublishButton } from "./PublishButton";
 
-const TEMPLATES: Array<{ key: TemplateKey; label: string }> = [
-  { key: "home", label: "Home" },
-  { key: "product", label: "Product" },
-  { key: "collection", label: "Collection" },
-  { key: "cart", label: "Cart" },
-  { key: "page", label: "Page" },
+const TEMPLATES: Array<{ key: TemplateKey; labelKey: string }> = [
+  { key: "home", labelKey: "editor.layout.home" },
+  { key: "product", labelKey: "editor.layout.product" },
+  { key: "collection", labelKey: "editor.layout.collection" },
+  { key: "cart", labelKey: "editor.layout.cart" },
+  { key: "page", labelKey: "editor.layout.page" },
 ];
 
 const DEVICES = [
@@ -83,7 +83,7 @@ export function EditorLayout() {
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
-          <span className="hidden sm:inline">Dashboard</span>
+          <span className="hidden sm:inline">{tr("editor.layout.dashboard")}</span>
         </Link>
 
         <div className="h-4 w-px bg-border" />
@@ -101,7 +101,7 @@ export function EditorLayout() {
                   : "text-muted-foreground hover:text-foreground hover:bg-accent"
               }`}
             >
-              {tpl.label}
+              {tr(tpl.labelKey)}
             </button>
           ))}
         </div>
@@ -110,7 +110,7 @@ export function EditorLayout() {
 
         {/* Status */}
         <span className="text-xs text-muted-foreground">
-          {saving ? "Saving..." : dirty ? "Unsaved changes" : "All changes saved"}
+          {saving ? tr("editor.layout.saving") : dirty ? tr("editor.layout.unsaved") : tr("editor.layout.allSaved")}
         </span>
 
         {/* Undo / Redo */}
@@ -120,7 +120,7 @@ export function EditorLayout() {
             onClick={undo}
             disabled={!canUndo()}
             className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent disabled:opacity-30 disabled:pointer-events-none transition-colors"
-            title="Undo (Ctrl+Z)"
+            title={tr("editor.layout.undo")}
           >
             <Undo2 className="h-4 w-4" />
           </button>
@@ -129,7 +129,7 @@ export function EditorLayout() {
             onClick={redo}
             disabled={!canRedo()}
             className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent disabled:opacity-30 disabled:pointer-events-none transition-colors"
-            title="Redo (Ctrl+Shift+Z)"
+            title={tr("editor.layout.redo")}
           >
             <Redo2 className="h-4 w-4" />
           </button>
@@ -168,7 +168,7 @@ export function EditorLayout() {
           rel="noopener noreferrer"
           className="text-xs text-muted-foreground hover:text-foreground transition-colors"
         >
-          View live
+          {tr("editor.layout.viewLive")}
         </a>
       </header>
 
@@ -180,9 +180,9 @@ export function EditorLayout() {
           <div className="flex border-b">
             {(
               [
-                { key: "sections", label: "Sections" },
-                { key: "theme", label: "Theme" },
-                { key: "pages", label: "Pages" },
+                { key: "sections", labelKey: "editor.layout.sections" },
+                { key: "theme", labelKey: "editor.layout.theme" },
+                { key: "pages", labelKey: "editor.layout.pages" },
               ] as const
             ).map((tab) => (
               <button
@@ -195,7 +195,7 @@ export function EditorLayout() {
                     : "border-transparent text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {tab.label}
+                {tr(tab.labelKey)}
               </button>
             ))}
           </div>
