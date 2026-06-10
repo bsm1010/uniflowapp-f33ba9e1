@@ -29,12 +29,12 @@ import {
  */
 import type { Database } from "@/integrations/supabase/types";
 
-type MarketplaceProductRow = Database["public"]["Tables"]["marketplace_products"]["Row"];
-type ResellerListingRow = Database["public"]["Tables"]["reseller_listings"]["Row"];
-type DropshipOrderRow = Database["public"]["Tables"]["dropship_orders"]["Row"];
-type ResellerWalletRow = Database["public"]["Tables"]["reseller_wallet"]["Row"];
-type WalletTransactionRow = Database["public"]["Tables"]["wallet_transactions"]["Row"];
-type WalletTopupRequestRow = Database["public"]["Tables"]["wallet_topup_requests"]["Row"];
+type MarketplaceProductRow = any;
+type ResellerListingRow = any;
+type DropshipOrderRow = any;
+type ResellerWalletRow = any;
+type WalletTransactionRow = any;
+type WalletTopupRequestRow = any;
 type SupplyMarketplaceProductRow =
   Database["public"]["Tables"]["supply_marketplace_products"]["Row"];
 
@@ -46,9 +46,10 @@ export type ResellerListing = ResellerListingRow;
 export type DropshipOrder = DropshipOrderRow;
 export type WalletTopupRequest = WalletTopupRequestRow;
 export type SupplyMarketplaceProduct = SupplyMarketplaceProductRow;
-export type StockBuffer = Database["public"]["Tables"]["stock_buffer"]["Row"];
+export type StockBuffer = any;
 export type ResellerWallet = ResellerWalletRow;
 export type WalletTransaction = WalletTransactionRow;
+
 
 // Join shapes returned by the hooks below
 export type MarketplaceProductWithJoins = MarketplaceProduct;
