@@ -132,23 +132,28 @@ export function TariffsSection() {
   const reloadTariffs = async () => {
     if (!user || !companyId) return;
     setLoading(true);
-    const { data, error } = await supabase
-      .from("delivery_tariffs")
-      .select("wilaya, city, delivery_type, price")
-      .eq("owner_id", user.id)
-      .eq("company_id", companyId);
-    if (error) {
-      toast.error("Failed to load delivery prices");
-    } else {
-      const map: PriceMap = {};
-      for (const row of data ?? []) {
-        const type = (row.delivery_type === "stopdesk" ? "stopdesk" : "domicile") as DeliveryType;
-        map[cellKey(row.wilaya, row.city ?? "", type)] = String(row.price);
+    try {
+      const { data, error } = await supabase
+        .from("delivery_tariffs")
+        .select("wilaya, city, delivery_type, price")
+        .eq("owner_id", user.id)
+        .eq("company_id", companyId);
+      if (error) {
+        toast.error("Failed to load delivery prices");
+      } else {
+        const map: PriceMap = {};
+        for (const row of data ?? []) {
+          const type = (row.delivery_type === "stopdesk" ? "stopdesk" : "domicile") as DeliveryType;
+          map[cellKey(row.wilaya, row.city ?? "", type)] = String(row.price);
+        }
+        setPrices(map);
+        setInitialPrices(map);
       }
-      setPrices(map);
-      setInitialPrices(map);
+    } catch {
+      toast.error("Failed to load delivery prices");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   useEffect(() => {
@@ -209,11 +214,11 @@ export function TariffsSection() {
 
   const configuredWilayas = useMemo(() => {
     const set = new Set<string>();
-    for (const k of Object.keys(initialPrices)) {
-      if ((initialPrices[k] ?? "").trim() !== "") set.add(k.split("|")[0]);
+    for (const k of Object.keys(prices)) {
+      if ((prices[k] ?? "").trim() !== "") set.add(k.split("|")[0]);
     }
     return set;
-  }, [initialPrices]);
+  }, [prices]);
 
   const wilayaCounts = (wilaya: string) => {
     const cities = getCitiesForWilaya(wilaya);

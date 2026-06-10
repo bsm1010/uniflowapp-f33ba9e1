@@ -5,7 +5,12 @@
  * domicile (home delivery) and stopdesk prices. We normalize that response
  * into a flat list of { wilaya, city, delivery_type, price } rows so the
  * rest of the app can treat it the same as manual tariffs.
+ *
+ * When `toTerritoryLevel === "wilaya"`, the entry covers the entire wilaya
+ * and we expand it to every city from our local ALGERIA_GEO lookup.
  */
+
+import { ALGERIA_GEO } from "@/lib/algeriaWilayas";
 
 const ZR_BASE_URL = "https://api.zrexpress.app/api/v1";
 
@@ -24,7 +29,7 @@ export interface FetchZRTariffsResult {
 
 /** Raw shape returned by ZR Express (legacy Procolis + new platform). */
 interface ZRDeliveryPriceEntry {
-  deliveryType?: string;
+  deliveryType?: string | null;
   price?: number | string;
   discountedPrice?: number | string | null;
 }
@@ -57,6 +62,62 @@ function toNumber(value: unknown): number {
   return 0;
 }
 
+/** Normalize a wilaya/territory name so we can fuzzy-match it against ALGERIA_GEO. */
+function normalizeWilayaName(raw: string): string {
+  const s = raw.toLowerCase().trim()
+    .replace(/[''`]/g, "'")
+    .replace(/[\s-]+/g, " ");
+  return s;
+}
+
+/** Find a matching wilaya entry from our local geo data, or null. */
+function findWilayaEntry(rawName: string) {
+  const norm = normalizeWilayaName(rawName);
+  return (
+    ALGERIA_GEO.find((e) => normalizeWilayaName(e.wilaya) === norm) ??
+    ALGERIA_GEO.find((e) => normalizeWilayaName(e.wilaya).startsWith(norm) || norm.startsWith(normalizeWilayaName(e.wilaya))) ??
+    null
+  );
+}
+
+/**
+ * Extract domicile and stopdesk prices from an entry's deliveryPrices array.
+ * Handles multiple deliveryType naming conventions from the ZR API.
+ */
+function extractDeliveryPrices(entry: ZRTariffApiEntry): {
+  domicile: number;
+  stopdesk: number;
+} {
+  let domicile = toNumber(entry.TarifLivraison ?? entry.Domicile ?? entry.homeDeliveryPrice);
+  let stopdesk = toNumber(entry.TarifStopDesk ?? entry.StopDesk ?? entry.stopDeskPrice);
+
+  const prices = entry.deliveryPrices ?? [];
+  for (const dp of prices) {
+    const t = (dp.deliveryType ?? "").toLowerCase();
+    const price = toNumber(dp.discountedPrice ?? dp.price);
+    if (price <= 0) continue;
+    if (
+      t === "home" ||
+      t.includes("domicile") ||
+      t === "home-delivery" ||
+      t === "homedelivery" ||
+      t === "delivery"
+    ) {
+      domicile = price;
+    } else if (
+      t === "pickup-point" ||
+      t.includes("stop") ||
+      t.includes("desk") ||
+      t === "pickup" ||
+      t === "pickuppoint"
+    ) {
+      stopdesk = price;
+    }
+  }
+
+  return { domicile, stopdesk };
+}
+
 /**
  * Fetch tariffs from ZR Express.
  *
@@ -87,7 +148,6 @@ export async function fetchZRTariffs(
     "Content-Type": "application/json",
     Accept: "application/json",
   } as Record<string, string>;
-
 
   const url = `${ZR_BASE_URL}/delivery-pricing/rates`;
 
@@ -129,9 +189,11 @@ export async function fetchZRTariffs(
       ? (json as ZRTariffApiEntry[])
       : Array.isArray((json as { data?: ZRTariffApiEntry[] }).data)
         ? (json as { data: ZRTariffApiEntry[] }).data
-        : Array.isArray((json as { rates?: ZRTariffApiEntry[] }).rates)
-          ? (json as { rates: ZRTariffApiEntry[] }).rates
-          : [];
+        : Array.isArray((json as { items?: ZRTariffApiEntry[] }).items)
+          ? (json as { items: ZRTariffApiEntry[] }).items
+          : Array.isArray((json as { rates?: ZRTariffApiEntry[] }).rates)
+            ? (json as { rates: ZRTariffApiEntry[] }).rates
+            : [];
 
     const tariffs: ZRTariffRow[] = [];
     for (const entry of rows) {
@@ -145,29 +207,39 @@ export async function fetchZRTariffs(
           "",
       ).trim();
       if (!wilaya) continue;
-      const city = String(
-        entry.Commune ?? entry.toTerritoryName ?? entry.toWilayaName ?? "",
-      ).trim();
 
-      let domicile = toNumber(entry.TarifLivraison ?? entry.Domicile ?? entry.homeDeliveryPrice);
-      let stopdesk = toNumber(entry.TarifStopDesk ?? entry.StopDesk ?? entry.stopDeskPrice);
+      const { domicile, stopdesk } = extractDeliveryPrices(entry);
 
-      // Current platform: deliveryPrices[] with deliveryType "home" | "pickup-point"
-      if (Array.isArray(entry.deliveryPrices)) {
-        for (const dp of entry.deliveryPrices) {
-          const t = (dp.deliveryType ?? "").toLowerCase();
-          const price = toNumber(dp.discountedPrice ?? dp.price);
-          if (price <= 0) continue;
-          if (t === "home" || t.includes("domicile")) domicile = price;
-          else if (t === "pickup-point" || t.includes("stop") || t.includes("desk")) stopdesk = price;
+      // The API returns entries at either wilaya or commune level.
+      // For commune-level entries, `toTerritoryLevel === "commune"` and
+      // `Commune` gives us the city name directly.
+      // For wilaya-level entries (`toTerritoryLevel === "wilaya"` or missing),
+      // we expand to every city in that wilaya using our local geo data.
+      const isCommuneLevel =
+        (entry.toTerritoryLevel ?? "").toLowerCase() === "commune" &&
+        entry.Commune;
+
+      if (isCommuneLevel && entry.Commune) {
+        // City-level entry: use the commune name directly.
+        const city = String(entry.Commune).trim();
+        if (domicile > 0) tariffs.push({ wilaya, city, delivery_type: "domicile", price: domicile });
+        if (stopdesk > 0) tariffs.push({ wilaya, city, delivery_type: "stopdesk", price: stopdesk });
+      } else {
+        // Wilaya-level entry: expand to all cities in the wilaya.
+        const entry_ = findWilayaEntry(wilaya);
+        const cities = entry_?.cities ?? [];
+        if (cities.length === 0) {
+          // Fallback: if we can't find the wilaya in our geo data,
+          // still create a single row with just the wilaya name as city
+          // so the price isn't lost.
+          if (domicile > 0) tariffs.push({ wilaya, city: "", delivery_type: "domicile", price: domicile });
+          if (stopdesk > 0) tariffs.push({ wilaya, city: "", delivery_type: "stopdesk", price: stopdesk });
+        } else {
+          for (const city of cities) {
+            if (domicile > 0) tariffs.push({ wilaya, city, delivery_type: "domicile", price: domicile });
+            if (stopdesk > 0) tariffs.push({ wilaya, city, delivery_type: "stopdesk", price: stopdesk });
+          }
         }
-      }
-
-      if (domicile > 0) {
-        tariffs.push({ wilaya, city, delivery_type: "domicile", price: domicile });
-      }
-      if (stopdesk > 0) {
-        tariffs.push({ wilaya, city, delivery_type: "stopdesk", price: stopdesk });
       }
     }
 
