@@ -300,7 +300,7 @@ export function useUpdateMyListing() {
         }
       }
 
-      const patch: Database["public"]["Tables"]["reseller_listings"]["Update"] = {};
+      const patch: any = {};
       if (args.sellingPrice !== undefined) patch.selling_price = args.sellingPrice;
       if (args.isActive !== undefined) patch.is_active = args.isActive;
       if (Object.keys(patch).length === 0) {
