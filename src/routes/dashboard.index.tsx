@@ -1,6 +1,6 @@
 import { IphoneShortcutBanner } from "@/components/dashboard/IphoneShortcutBanner";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import {
@@ -44,7 +44,7 @@ import { getZRExpressBalance, type ZRExpressBalanceResult } from "@/lib/delivery
 export const Route = createFileRoute("/dashboard/")({
   component: DashboardHome,
   head: () => ({
-    meta: [{ title: "Dashboard — Storely" }],
+    meta: [{ title: "Dashboard — Fennecly" }],
   }),
 });
 
@@ -90,6 +90,7 @@ function DashboardHome() {
   const loadDashboard = useCallback(() => {
     if (!user) return;
     const storeId = currentStore?.id ?? null;
+    let cancelled = false;
 
     supabase
       .from("profiles")
@@ -97,7 +98,7 @@ function DashboardHome() {
       .eq("id", user.id)
       .maybeSingle()
       .then(({ data }) => {
-        if (data?.name) setName(data.name);
+        if (!cancelled && data?.name) setName(data.name);
       });
 
     supabase
@@ -106,7 +107,9 @@ function DashboardHome() {
       .eq("user_id", user.id)
       .eq("status", "pending")
       .limit(1)
-      .then(({ data }) => setHasPendingPayment((data?.length ?? 0) > 0));
+      .then(({ data }) => {
+        if (!cancelled) setHasPendingPayment((data?.length ?? 0) > 0);
+      });
 
     const scopedProducts = () => {
       let q = supabase
@@ -130,7 +133,7 @@ function DashboardHome() {
         .select("customer_email,total")
         .eq("store_owner_id", user.id)
         .order("created_at", { ascending: false })
-        .limit(1000);
+        .limit(5000);
       if (storeId) q = q.eq("store_id", storeId);
       return q;
     };
@@ -151,6 +154,7 @@ function DashboardHome() {
       scopedOrdersForAgg(),
       scopedRecentOrders(),
     ]).then(async ([prodRes, ordersCountRes, ordersAggRes, recentRes]) => {
+      if (cancelled) return;
       const agg = ordersAggRes.data ?? [];
       const revenue = agg.reduce((n, o) => n + Number(o.total ?? 0), 0);
       const customers = new Set(
@@ -174,6 +178,7 @@ function DashboardHome() {
           .from("order_items")
           .select("order_id,product_name,image_url")
           .in("order_id", recentIds);
+        if (cancelled) return;
         for (const it of its ?? []) {
           const cur = itemsByOrder[it.order_id];
           if (cur) cur.count += 1;
@@ -197,25 +202,31 @@ function DashboardHome() {
           item_count: itemsByOrder[o.id]?.count ?? 0,
         })),
       );
+    }).catch((err) => {
+      if (!cancelled) console.error("Dashboard data load failed:", err);
     });
+
+    return () => { cancelled = true; };
   }, [user, currentStore?.id]);
 
   useEffect(() => {
-    loadDashboard();
+    return loadDashboard();
   }, [loadDashboard]);
 
   useEffect(() => {
+    let cancelled = false;
     const load = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { setGamiLoading(false); return; }
+      if (!session) { if (!cancelled) setGamiLoading(false); return; }
       try {
-        const result = await callGami({ data: { accessToken: session.access_token } });
-        setGamiData(result);
+        const result = await callGami({ data: { accessToken: session.access_token, storeId: currentStore?.id } });
+        if (!cancelled) setGamiData(result);
       } catch { /* ignore */ }
-      setGamiLoading(false);
+      if (!cancelled) setGamiLoading(false);
     };
     load();
-  }, [callGami]);
+    return () => { cancelled = true; };
+  }, [callGami, currentStore?.id]);
 
   useEffect(() => {
     let cancelled = false;
@@ -260,7 +271,9 @@ function DashboardHome() {
     };
   }, [user, loadDashboard]);
 
-  const stats = [
+  const currency = currentStore?.currency ?? "DZD";
+
+  const stats = useMemo(() => [
     {
       label: t("dashboard.home.stats.products"),
       raw: counts.products,
@@ -279,6 +292,7 @@ function DashboardHome() {
       isRevenue: true,
       icon: DollarSign,
       gradient: "bg-gradient-to-br from-emerald-500 to-teal-500",
+      currency,
     },
     {
       label: t("dashboard.home.stats.customers"),
@@ -286,7 +300,7 @@ function DashboardHome() {
       icon: Users,
       gradient: "bg-gradient-to-br from-orange-400 to-amber-500",
     },
-  ];
+  ], [t, counts.products, counts.orders, counts.revenue, counts.customers, currency]);
 
   const displayName = name || user?.email?.split("@")[0] || "—";
 
@@ -368,6 +382,7 @@ function DashboardHome() {
                 icon={s.icon}
                 gradient={s.gradient}
                 delay={i * 120}
+                currency={s.currency}
               />
             </motion.div>
           ))}
@@ -460,7 +475,17 @@ function DashboardHome() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.24 }}
         >
-          {gamiData && <GamificationHub data={gamiData} loading={gamiLoading} compact />}
+          {gamiLoading ? (
+            <Card className="border-border/50 shadow-sm overflow-hidden">
+              <CardContent className="p-5 animate-pulse space-y-3">
+                <div className="h-4 w-24 bg-muted rounded" />
+                <div className="h-2 bg-muted rounded w-full" />
+                <div className="h-2 bg-muted rounded w-3/4" />
+              </CardContent>
+            </Card>
+          ) : gamiData ? (
+            <GamificationHub data={gamiData} compact />
+          ) : null}
         </motion.div>
       </div>
 
@@ -619,6 +644,7 @@ function StatCard({
   icon: Icon,
   gradient,
   delay,
+  currency = "DZD",
 }: {
   label: string;
   rawValue: number;
@@ -626,10 +652,11 @@ function StatCard({
   icon: React.ComponentType<{ className?: string }>;
   gradient?: string;
   delay: number;
+  currency?: string;
 }) {
   const animated = useCountUp(rawValue, 1400, delay);
   const display = isRevenue
-    ? `${animated.toLocaleString()} DA`
+    ? `${animated.toLocaleString()} ${currency}`
     : animated.toLocaleString();
 
   const isFilled = !!gradient;
