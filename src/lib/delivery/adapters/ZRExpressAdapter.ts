@@ -248,39 +248,71 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
     } catch {
       // ignore
     }
+    console.log("[ZRExpress] trackShipment response", {
+      url,
+      status: res.status,
+      bodyPreview: text.slice(0, 800),
+    });
     if (!res.ok) {
       throw new Error(
         `ZR Express ${res.status}: ${text.slice(0, 300) || res.statusText}`,
       );
     }
+
+    // Unwrap: API may return { data: { ... } } or just the object directly.
     const inner = (data.data ?? data) as Record<string, unknown>;
+
+    // Extract the main status — try many possible field names.
     const stateObj = (inner.state ?? inner.status ?? {}) as Record<string, unknown>;
     const statusRaw =
-      pickStr(inner, ["status"]) ||
-      pickStr(stateObj, ["name", "description", "label"]);
+      pickStr(inner, ["status", "currentStatus", "currentState"]) ||
+      pickStr(stateObj, ["name", "description", "label", "status"]);
     const updatedAt =
-      pickStr(inner, ["updatedAt", "updated_at", "lastUpdate"]) || undefined;
+      pickStr(inner, ["updatedAt", "updated_at", "lastUpdate", "modifiedAt"]) || undefined;
 
-    const historyRaw =
-      (inner.history as unknown[]) ??
-      (inner.events as unknown[]) ??
-      (inner.timeline as unknown[]) ??
-      [];
+    // Extract history/events — try every possible key the API might use.
+    const historyRaw = findArrayField(inner, [
+      "history",
+      "events",
+      "timeline",
+      "trackingEvents",
+      "statusHistory",
+      "statuses",
+      "tracking",
+      "updates",
+      "activity",
+      "eventList",
+      "statusHistoryList",
+    ]);
+
+    console.log("[ZRExpress] trackShipment parsed", {
+      statusRaw,
+      historyLength: historyRaw.length,
+      innerKeys: Object.keys(inner),
+    });
+
     const history = Array.isArray(historyRaw)
       ? historyRaw
           .map((h) => {
             const e = (h ?? {}) as Record<string, unknown>;
-            const st = (e.state ?? {}) as Record<string, unknown>;
+            const st = (e.state ?? e.statusObj ?? {}) as Record<string, unknown>;
+            const statusText =
+              pickStr(e, ["status", "name", "label", "description", "statusText", "event", "action"]) ||
+              pickStr(st, ["name", "description", "label"]);
+            const dateText =
+              pickStr(e, ["date", "createdAt", "created_at", "at", "timestamp", "eventDate", "statusDate", "modifiedAt"]);
+            const locText =
+              pickStr(e, ["location", "address", "place"]) || undefined;
+            const cityText =
+              pickStr(e, ["city", "commune", "cityName"]) || undefined;
+            const wilayaText =
+              pickStr(e, ["wilaya", "wilayaName", "state", "region"]) || undefined;
             return {
-              status:
-                pickStr(e, ["status", "name", "label", "description"]) ||
-                pickStr(st, ["name", "description"]),
-              date:
-                pickStr(e, ["date", "createdAt", "created_at", "at", "timestamp"]) ||
-                "",
-              location: pickStr(e, ["location"]) || undefined,
-              city: pickStr(e, ["city", "commune"]) || undefined,
-              wilaya: pickStr(e, ["wilaya"]) || undefined,
+              status: statusText,
+              date: dateText || "",
+              location: locText,
+              city: cityText,
+              wilaya: wilayaText,
             };
           })
           .filter((h) => h.status || h.date)
@@ -304,6 +336,28 @@ function pickStr(obj: Record<string, unknown>, keys: string[]): string {
     if (typeof v === "number") return String(v);
   }
   return "";
+}
+
+/** Search for the first array among the given keys, including one level deep. */
+function findArrayField(
+  obj: Record<string, unknown>,
+  keys: string[],
+): unknown[] {
+  for (const k of keys) {
+    const v = obj[k];
+    if (Array.isArray(v)) return v;
+  }
+  // One level deeper: e.g. data.events might be under data.result.events
+  for (const k of Object.keys(obj)) {
+    const v = obj[k];
+    if (v && typeof v === "object" && !Array.isArray(v)) {
+      const nested = v as Record<string, unknown>;
+      for (const k2 of keys) {
+        if (Array.isArray(nested[k2])) return nested[k2] as unknown[];
+      }
+    }
+  }
+  return [];
 }
 
 function mapZRStatus(status?: string): TrackingResult["status"] {

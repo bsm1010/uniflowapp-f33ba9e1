@@ -23,6 +23,8 @@ export type TrackingDTO = {
   rawStatus?: string;
   lastUpdate?: string;
   history: TrackingHistoryEntry[];
+  /** Raw provider response JSON string for debugging / fallback display. */
+  providerResponseJson?: string;
 };
 
 export type TrackOrderResult =
@@ -78,7 +80,36 @@ export const trackOrderShipment = createServerFn({ method: "POST" })
         apiSecret: (link.api_secret ?? "").trim(),
       });
 
-      const tracking = await adapter.trackShipment(order.tracking_number);
+      let tracking = await adapter.trackShipment(order.tracking_number);
+      let providerResponse = (tracking.raw ?? null) as Record<string, unknown> | null;
+
+      // If the API returned no history, try to extract it from provider_response
+      // stored in the shipments table (from a previous successful sync).
+      if (!tracking.history || tracking.history.length === 0) {
+        const { data: shipment } = await supabaseAdmin
+          .from("shipments")
+          .select("provider_response")
+          .eq("order_id", data.orderId)
+          .maybeSingle();
+        if (shipment?.provider_response && typeof shipment.provider_response === "object") {
+          const savedResponse = shipment.provider_response as Record<string, unknown>;
+          providerResponse = providerResponse ?? savedResponse;
+          // Try to extract history from the saved response
+          const extracted = extractHistoryFromResponse(savedResponse);
+          if (extracted.length > 0) {
+            tracking = {
+              ...tracking,
+              history: extracted.map((h) => ({
+                status: h.status,
+                date: h.date,
+                location: h.location,
+                city: h.city,
+                wilaya: h.wilaya,
+              })),
+            };
+          }
+        }
+      }
 
       // Persist last status to shipments + orders.
       await supabaseAdmin
@@ -87,7 +118,7 @@ export const trackOrderShipment = createServerFn({ method: "POST" })
           status: tracking.status,
           last_sync_at: new Date().toISOString(),
           last_error: null,
-          provider_response: (tracking.raw ?? null) as never,
+          provider_response: (providerResponse ?? null) as never,
         })
         .eq("order_id", data.orderId);
 
@@ -103,6 +134,7 @@ export const trackOrderShipment = createServerFn({ method: "POST" })
           city: h.city,
           wilaya: h.wilaya,
         })),
+        providerResponseJson: providerResponse ? JSON.stringify(providerResponse) : undefined,
       };
       return { ok: true, tracking: dto, provider: zr!.name };
     } catch (e) {
@@ -112,3 +144,54 @@ export const trackOrderShipment = createServerFn({ method: "POST" })
       };
     }
   });
+
+/** Deep-search a response object for arrays that look like tracking history. */
+function extractHistoryFromResponse(
+  obj: Record<string, unknown>,
+): Array<{ status: string; date: string; location?: string; city?: string; wilaya?: string }> {
+  const results: Array<{ status: string; date: string; location?: string; city?: string; wilaya?: string }> = [];
+
+  function lookForArrays(o: Record<string, unknown>, depth: number) {
+    if (depth > 4) return;
+    for (const [key, val] of Object.entries(o)) {
+      if (Array.isArray(val) && val.length > 0 && typeof val[0] === "object" && val[0] !== null) {
+        // This looks like it could be a history array — check if items have status/date fields
+        const first = val[0] as Record<string, unknown>;
+        const hasStatus = "status" in first || "name" in first || "label" in first || "description" in first;
+        const hasDate = "date" in first || "createdAt" in first || "created_at" in first || "at" in first || "timestamp" in first;
+        if (hasStatus || hasDate) {
+          for (const item of val) {
+            const e = (item ?? {}) as Record<string, unknown>;
+            const st = (e.state ?? {}) as Record<string, unknown>;
+            const status =
+              pickStr(e, ["status", "name", "label", "description", "statusText", "event"]) ||
+              pickStr(st, ["name", "description"]);
+            const date = pickStr(e, ["date", "createdAt", "created_at", "at", "timestamp", "eventDate", "statusDate"]);
+            const location = pickStr(e, ["location", "address"]) || undefined;
+            const city = pickStr(e, ["city", "commune", "cityName"]) || undefined;
+            const wilaya = pickStr(e, ["wilaya", "wilayaName", "state", "region"]) || undefined;
+            if (status || date) {
+              results.push({ status, date: date || "", location, city, wilaya });
+            }
+          }
+          return;
+        }
+      }
+      if (val && typeof val === "object" && !Array.isArray(val)) {
+        lookForArrays(val as Record<string, unknown>, depth + 1);
+      }
+    }
+  }
+
+  lookForArrays(obj, 0);
+  return results;
+}
+
+function pickStr(obj: Record<string, unknown>, keys: string[]): string {
+  for (const k of keys) {
+    const v = obj[k];
+    if (typeof v === "string" && v.trim()) return v.trim();
+    if (typeof v === "number") return String(v);
+  }
+  return "";
+}

@@ -13,7 +13,7 @@ import {
   User,
   ClipboardCheck,
   PackageCheck,
-  Circle,
+  Code2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -69,6 +69,7 @@ function TrackingPage() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
+  const [showRaw, setShowRaw] = useState(false);
 
   const loadOrder = async () => {
     if (!user) return;
@@ -96,12 +97,12 @@ function TrackingPage() {
     setRefreshing(true);
     setErrorMsg(null);
     try {
-      const res = await trackFn({ data: { accessToken, orderId } });
-      if (res.ok) {
+      const res = await trackFn({ data: { accessToken, orderId } }) as { ok: boolean; tracking?: TrackingDTO; message?: string };
+      if (res.ok && res.tracking) {
         setTracking(res.tracking);
         setLastRefreshed(new Date());
       } else {
-        setErrorMsg(res.message);
+        setErrorMsg(res.message ?? "Tracking failed.");
       }
     } catch (e) {
       setErrorMsg(e instanceof Error ? e.message : "Failed to fetch status.");
@@ -331,10 +332,31 @@ function TrackingPage() {
         {/* History — ZRExpress exact statements */}
         <Card className="border-border/60 shadow-soft">
           <CardHeader>
-            <CardTitle className="text-base">Tracking history</CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base">Tracking history</CardTitle>
+              {tracking?.providerResponseJson && (
+                <button
+                  onClick={() => setShowRaw(!showRaw)}
+                  className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+                >
+                  <Code2 className="h-3 w-3" />
+                  {showRaw ? "Hide" : "Show"} raw
+                </button>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
-            {refreshing && !tracking ? (
+            {showRaw && tracking?.providerResponseJson ? (
+              <pre className="max-h-[50vh] overflow-auto rounded-md bg-muted p-3 text-xs font-mono whitespace-pre-wrap break-all">
+                {(() => {
+                  try {
+                    return JSON.stringify(JSON.parse(tracking.providerResponseJson), null, 2);
+                  } catch {
+                    return tracking.providerResponseJson;
+                  }
+                })()}
+              </pre>
+            ) : refreshing && !tracking ? (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Loader2 className="h-4 w-4 animate-spin" /> Loading…
               </div>
