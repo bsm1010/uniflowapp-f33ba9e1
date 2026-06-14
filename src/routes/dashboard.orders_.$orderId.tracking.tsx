@@ -13,6 +13,7 @@ import {
   User,
   ClipboardCheck,
   PackageCheck,
+  Circle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -35,22 +36,25 @@ export const Route = createFileRoute("/dashboard/orders_/$orderId/tracking")({
   head: () => ({ meta: [{ title: "Order tracking — Fennecly" }] }),
 });
 
-const STEPS = [
-  { key: "created", label: "Order Created", icon: ClipboardCheck },
-  { key: "picked_up", label: "Picked Up", icon: Package },
-  { key: "in_transit", label: "In Transit", icon: Truck },
-  { key: "out_for_delivery", label: "Out for Delivery", icon: PackageCheck },
-  { key: "delivered", label: "Delivered", icon: CheckCircle2 },
-] as const;
+const STATUS_FLOW = ["created", "picked_up", "in_transit", "out_for_delivery", "delivered"] as const;
+type StatusFlow = (typeof STATUS_FLOW)[number];
 
-function stepIndex(status: string): number {
-  const s = (status || "").toLowerCase();
-  if (s.includes("deliver") && !s.includes("out")) return 4;
-  if (s.includes("out") || s.includes("livraison")) return 3;
-  if (s.includes("transit") || s.includes("route") || s.includes("expedi") || s.includes("shipped")) return 2;
-  if (s.includes("pick") || s.includes("ramass") || s.includes("collect")) return 1;
-  return 0;
+function mapToFlowStatus(raw: string): StatusFlow {
+  const s = (raw || "").toLowerCase();
+  if (s.includes("livr")) return "delivered";
+  if (s.includes("out") || s.includes("livraison") || s.includes("distribution")) return "out_for_delivery";
+  if (s.includes("transit") || s.includes("route") || s.includes("expedi") || s.includes("shipped") || s.includes("envoy")) return "in_transit";
+  if (s.includes("pick") || s.includes("ramass") || s.includes("collect") || s.includes("pris")) return "picked_up";
+  return "created";
 }
+
+const FLOW_LABELS: Record<StatusFlow, string> = {
+  created: "Order Created",
+  picked_up: "Picked Up",
+  in_transit: "In Transit",
+  out_for_delivery: "Out for Delivery",
+  delivered: "Delivered",
+};
 
 function TrackingPage() {
   const { orderId } = Route.useParams();
@@ -68,13 +72,18 @@ function TrackingPage() {
 
   const loadOrder = async () => {
     if (!user) return;
-    const { data } = await supabase
-      .from("orders")
-      .select("*")
-      .eq("id", orderId)
-      .maybeSingle();
-    setOrder(data ?? null);
-    setLoading(false);
+    try {
+      const { data } = await supabase
+        .from("orders")
+        .select("*")
+        .eq("id", orderId)
+        .maybeSingle();
+      setOrder(data ?? null);
+    } catch {
+      // ignore
+    } finally {
+      setLoading(false);
+    }
   };
 
   const refreshTracking = async () => {
@@ -105,7 +114,7 @@ function TrackingPage() {
   useEffect(() => {
     if (!autoRefresh || !order?.tracking_number) return;
     const id = setInterval(() => {
-      refreshTracking();
+      void refreshTracking();
     }, 30_000);
     return () => clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -113,12 +122,12 @@ function TrackingPage() {
 
   useEffect(() => {
     if (!user) return;
-    loadOrder();
+    void loadOrder();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id, orderId]);
 
   useEffect(() => {
-    if (order?.tracking_number) refreshTracking();
+    if (order?.tracking_number) void refreshTracking();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [order?.tracking_number]);
 
@@ -141,7 +150,9 @@ function TrackingPage() {
     );
   }
 
-  const currentStep = tracking ? stepIndex(tracking.status) : -1;
+  const flowStatus = tracking ? mapToFlowStatus(tracking.rawStatus ?? tracking.status) : null;
+  const flowIdx = flowStatus ? STATUS_FLOW.indexOf(flowStatus) : -1;
+  const displayStatus = tracking?.rawStatus ?? tracking?.status ?? order.status;
 
   return (
     <div className="max-w-5xl mx-auto pb-24">
@@ -174,7 +185,7 @@ function TrackingPage() {
               />
               Auto-refresh 30s
             </label>
-            <Button onClick={refreshTracking} disabled={refreshing || !order.tracking_number}>
+            <Button onClick={() => void refreshTracking()} disabled={refreshing || !order.tracking_number}>
               {refreshing ? (
                 <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
               ) : (
@@ -199,59 +210,85 @@ function TrackingPage() {
         </Card>
       )}
 
-      {/* Timeline */}
-      <Card className="border-border/60 shadow-soft mb-6">
-        <CardHeader>
-          <CardTitle className="text-base">Delivery progress</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="relative">
-            <div className="flex justify-between gap-2 relative">
-              {/* Connector line */}
-              <div className="absolute top-5 left-5 right-5 h-0.5 bg-border" />
-              <div
-                className="absolute top-5 left-5 h-0.5 bg-primary transition-all"
-                style={{
-                  width:
-                    currentStep <= 0
-                      ? "0%"
-                      : `calc(${(currentStep / (STEPS.length - 1)) * 100}% - ${currentStep === STEPS.length - 1 ? "2.5rem" : "0rem"})`,
-                }}
-              />
-              {STEPS.map((step, idx) => {
-                const Icon = step.icon;
-                const completed = idx <= currentStep;
-                return (
-                  <div
-                    key={step.key}
-                    className="flex flex-col items-center gap-2 relative z-10 flex-1 min-w-0"
-                  >
-                    <div
-                      className={`h-10 w-10 rounded-full flex items-center justify-center border-2 transition-colors ${
-                        completed
-                          ? "bg-primary border-primary text-primary-foreground"
-                          : "bg-card border-border text-muted-foreground"
-                      }`}
-                    >
-                      <Icon className="h-4 w-4" />
-                    </div>
-                    <span
-                      className={`text-[11px] text-center font-medium ${
-                        completed ? "text-foreground" : "text-muted-foreground"
-                      }`}
-                    >
-                      {step.label}
-                    </span>
-                  </div>
-                );
-              })}
+      {errorMsg && (
+        <div className="mb-6 flex items-center gap-2 rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          <span>{errorMsg}</span>
+        </div>
+      )}
+
+      {/* Provider status banner */}
+      {tracking && (
+        <Card className="mb-6 border-border/60 shadow-soft">
+          <CardContent className="p-4">
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-2">
+                <Truck className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm font-medium">Current Status</span>
+              </div>
+              <Badge variant="outline" className="text-sm font-medium capitalize px-3 py-1">
+                {displayStatus}
+              </Badge>
+              {tracking.trackingNumber && (
+                <span className="text-xs text-muted-foreground font-mono">
+                  #{tracking.trackingNumber}
+                </span>
+              )}
             </div>
-          </div>
-          {errorMsg && (
-            <p className="text-xs text-rose-600 dark:text-rose-400 mt-4">{errorMsg}</p>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Progress stepper */}
+      {flowIdx >= 0 && (
+        <Card className="border-border/60 shadow-soft mb-6">
+          <CardHeader>
+            <CardTitle className="text-base">Delivery progress</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="relative">
+              <div className="flex justify-between gap-2 relative">
+                <div className="absolute top-5 left-5 right-5 h-0.5 bg-border" />
+                <div
+                  className="absolute top-5 left-5 h-0.5 bg-primary transition-all"
+                  style={{
+                    width:
+                      flowIdx <= 0
+                        ? "0%"
+                        : `calc(${(flowIdx / (STATUS_FLOW.length - 1)) * 100}% - ${flowIdx === STATUS_FLOW.length - 1 ? "2.5rem" : "0rem"})`,
+                  }}
+                />
+                {STATUS_FLOW.map((step, idx) => {
+                  const completed = idx <= flowIdx;
+                  const Icon = idx === 0 ? ClipboardCheck : idx === 1 ? Package : idx === 2 ? Truck : idx === 3 ? PackageCheck : CheckCircle2;
+                  return (
+                    <div
+                      key={step}
+                      className="flex flex-col items-center gap-2 relative z-10 flex-1 min-w-0"
+                    >
+                      <div
+                        className={`h-10 w-10 rounded-full flex items-center justify-center border-2 transition-colors ${
+                          completed
+                            ? "bg-primary border-primary text-primary-foreground"
+                            : "bg-card border-border text-muted-foreground"
+                        }`}
+                      >
+                        <Icon className="h-4 w-4" />
+                      </div>
+                      <span
+                        className={`text-[11px] text-center font-medium ${
+                          completed ? "text-foreground" : "text-muted-foreground"
+                        }`}
+                      >
+                        {FLOW_LABELS[step]}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Order info */}
@@ -267,8 +304,8 @@ function TrackingPage() {
               {order.customer_name}
             </InfoRow>
             <InfoRow icon={Phone} label="Phone">
-              <a href={`tel:${order.shipping_address}`} className="hover:text-primary">
-                {order.shipping_address}
+              <a href={`tel:${order.customer_phone || order.shipping_address}`} className="hover:text-primary">
+                {order.customer_phone || order.shipping_address}
               </a>
             </InfoRow>
             <InfoRow icon={MapPin} label="Wilaya">
@@ -285,16 +322,16 @@ function TrackingPage() {
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Current status</span>
               <Badge variant="outline" className="capitalize">
-                {tracking?.status ?? order.status}
+                {displayStatus}
               </Badge>
             </div>
           </CardContent>
         </Card>
 
-        {/* History */}
+        {/* History — ZRExpress exact statements */}
         <Card className="border-border/60 shadow-soft">
           <CardHeader>
-            <CardTitle className="text-base">Status history</CardTitle>
+            <CardTitle className="text-base">Tracking history</CardTitle>
           </CardHeader>
           <CardContent>
             {refreshing && !tracking ? (
@@ -302,28 +339,48 @@ function TrackingPage() {
                 <Loader2 className="h-4 w-4 animate-spin" /> Loading…
               </div>
             ) : tracking?.history && tracking.history.length > 0 ? (
-              <ol className="space-y-4">
-                {tracking.history.map((h, i) => (
-                  <li key={i} className="flex gap-3">
-                    <div className="flex flex-col items-center">
-                      <div className="h-2.5 w-2.5 rounded-full bg-primary mt-1.5" />
-                      {i < tracking.history.length - 1 && (
-                        <div className="w-px flex-1 bg-border mt-1" />
-                      )}
-                    </div>
-                    <div className="flex-1 pb-3">
-                      <div className="text-sm font-medium capitalize">{h.status || "—"}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {h.date ? new Date(h.date).toLocaleString() : ""}
-                        {h.location ? ` · ${h.location}` : ""}
+              <ol className="space-y-0">
+                {tracking.history.map((h, i) => {
+                  const isFirst = i === 0;
+                  const locParts = [h.location, h.city, h.wilaya].filter(Boolean);
+                  const locationStr = locParts.join(", ");
+                  return (
+                    <li key={i} className="flex gap-3">
+                      <div className="flex flex-col items-center">
+                        <div
+                          className={`h-3 w-3 rounded-full mt-1 ${
+                            isFirst
+                              ? "bg-primary ring-2 ring-primary/20"
+                              : "bg-muted-foreground/40"
+                          }`}
+                        />
+                        {i < tracking.history.length - 1 && (
+                          <div className="w-px flex-1 bg-border mt-1" />
+                        )}
                       </div>
-                    </div>
-                  </li>
-                ))}
+                      <div className={`flex-1 pb-4 ${isFirst ? "" : "opacity-80"}`}>
+                        <div className={`text-sm font-medium ${isFirst ? "" : "text-muted-foreground"}`}>
+                          {h.status || "—"}
+                        </div>
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground mt-0.5">
+                          {h.date && (
+                            <span>{new Date(h.date).toLocaleString()}</span>
+                          )}
+                          {locationStr && (
+                            <span className="inline-flex items-center gap-1">
+                              <MapPin className="h-3 w-3" />
+                              {locationStr}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })}
               </ol>
             ) : (
               <p className="text-sm text-muted-foreground">
-                No history available yet.
+                No tracking history available yet.
                 {tracking?.lastUpdate && (
                   <> Last update: {new Date(tracking.lastUpdate).toLocaleString()}.</>
                 )}
