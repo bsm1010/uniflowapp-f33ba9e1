@@ -47,8 +47,10 @@ export interface CreateShipmentResult {
 export interface TrackingResult {
   trackingNumber: string;
   status: ShipmentStatus;
+  /** Original status text from the provider (e.g. "Livré", "En transit"). */
+  rawStatus?: string;
   lastUpdate?: string;
-  history?: Array<{ status: string; date: string; location?: string }>;
+  history?: Array<{ status: string; date: string; location?: string; city?: string; wilaya?: string }>;
   raw?: unknown;
 }
 

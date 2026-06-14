@@ -10,10 +10,17 @@ const InputSchema = z.object({
   orderId: z.string().uuid(),
 });
 
-export type TrackingHistoryEntry = { status: string; date: string; location?: string };
+export type TrackingHistoryEntry = {
+  status: string;
+  date: string;
+  location?: string;
+  city?: string;
+  wilaya?: string;
+};
 export type TrackingDTO = {
   trackingNumber: string;
   status: string;
+  rawStatus?: string;
   lastUpdate?: string;
   history: TrackingHistoryEntry[];
 };
@@ -87,8 +94,15 @@ export const trackOrderShipment = createServerFn({ method: "POST" })
       const dto: TrackingDTO = {
         trackingNumber: tracking.trackingNumber,
         status: tracking.status,
+        rawStatus: tracking.rawStatus,
         lastUpdate: tracking.lastUpdate,
-        history: tracking.history ?? [],
+        history: (tracking.history ?? []).map((h) => ({
+          status: h.status,
+          date: h.date,
+          location: h.location,
+          city: h.city,
+          wilaya: h.wilaya,
+        })),
       };
       return { ok: true, tracking: dto, provider: zr!.name };
     } catch (e) {

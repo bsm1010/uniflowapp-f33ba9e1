@@ -278,7 +278,9 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
               date:
                 pickStr(e, ["date", "createdAt", "created_at", "at", "timestamp"]) ||
                 "",
-              location: pickStr(e, ["location", "city", "wilaya"]) || undefined,
+              location: pickStr(e, ["location"]) || undefined,
+              city: pickStr(e, ["city", "commune"]) || undefined,
+              wilaya: pickStr(e, ["wilaya"]) || undefined,
             };
           })
           .filter((h) => h.status || h.date)
@@ -287,6 +289,7 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
     return {
       trackingNumber,
       status: mapZRStatus(statusRaw),
+      rawStatus: statusRaw || undefined,
       lastUpdate: updatedAt,
       history,
       raw: data,

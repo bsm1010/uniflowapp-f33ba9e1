@@ -248,6 +248,8 @@ export const importZRExpressOrders = createServerFn({ method: "POST" })
 
       console.log(`[importZR] toInsert=${toInsert.length} toUpdate=${toUpdate.length}`);
 
+      const insertedOrderIds: string[] = [];
+
       if (toInsert.length) {
         const CHUNK = 500;
         for (let i = 0; i < toInsert.length; i += CHUNK) {
@@ -260,6 +262,58 @@ export const importZRExpressOrders = createServerFn({ method: "POST" })
             return { ok: false, message: `Insert failed: ${insErr.message}` };
           }
           imported += count ?? slice.length;
+        }
+      }
+
+      // Fetch all orders that were just imported or updated to get their IDs + tracking numbers.
+      const allImportedOrders = await supabaseAdmin
+        .from("orders")
+        .select("id, tracking_number, status, delivery_type")
+        .eq("store_owner_id", userId)
+        .eq("source", "zrexpress");
+
+      const ordersList = allImportedOrders.data ?? [];
+
+      // Auto-create shipments for orders that don't have one yet.
+      const existingShipments = await supabaseAdmin
+        .from("shipments")
+        .select("order_id")
+        .eq("store_id", userId);
+      const existingShipOrderIds = new Set(
+        (existingShipments.data ?? []).map((s) => s.order_id),
+      );
+
+      const shipmentsToInsert: Array<{
+        store_id: string;
+        order_id: string;
+        company_id: string;
+        tracking_number: string;
+        status: string;
+        delivery_type: string;
+      }> = [];
+
+      for (const order of ordersList) {
+        if (
+          order.tracking_number &&
+          !existingShipOrderIds.has(order.id)
+        ) {
+          shipmentsToInsert.push({
+            store_id: userId,
+            order_id: order.id,
+            company_id: data.companyId,
+            tracking_number: order.tracking_number,
+            status: order.status || "pending",
+            delivery_type: order.delivery_type || "domicile",
+          });
+        }
+      }
+
+      if (shipmentsToInsert.length) {
+        const { error: shipErr } = await supabaseAdmin
+          .from("shipments")
+          .insert(shipmentsToInsert);
+        if (shipErr) {
+          console.error("[importZR] shipment insert error", shipErr);
         }
       }
 
