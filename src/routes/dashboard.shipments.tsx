@@ -62,45 +62,57 @@ function ShipmentsPage() {
   const [orders, setOrders] = useState<Record<string, Order>>({});
   const [companies, setCompanies] = useState<Record<string, Company>>({});
   const [query, setQuery] = useState("");
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const load = async () => {
     if (!user) return;
-    const { data: ships } = await supabase
-      .from("shipments")
-      .select("*")
-      .eq("store_id", user.id)
-      .order("created_at", { ascending: false });
-    const list = ships ?? [];
-    setShipments(list);
-    if (list.length) {
-      const orderIds = Array.from(new Set(list.map((s) => s.order_id)));
-      const companyIds = Array.from(
-        new Set(list.map((s) => s.company_id).filter(Boolean) as string[]),
-      );
-      const [{ data: ords }, { data: comps }] = await Promise.all([
-        supabase.from("orders").select("*").in("id", orderIds),
-        companyIds.length
-          ? supabase
-              .from("delivery_companies")
-              .select("id, name")
-              .in("id", companyIds)
-          : Promise.resolve({ data: [] as Company[] }),
-      ]);
-      const oMap: Record<string, Order> = {};
-      for (const o of ords ?? []) oMap[o.id] = o;
-      setOrders(oMap);
-      const cMap: Record<string, Company> = {};
-      for (const c of (comps as Company[]) ?? []) cMap[c.id] = c;
-      setCompanies(cMap);
-    } else {
-      setOrders({});
-      setCompanies({});
+    try {
+      const { data: ships, error: shipErr } = await supabase
+        .from("shipments")
+        .select("*")
+        .eq("store_id", user.id)
+        .order("created_at", { ascending: false });
+      if (shipErr) {
+        setLoadError(shipErr.message);
+        setShipments([]);
+        return;
+      }
+      const list = ships ?? [];
+      setShipments(list);
+      setLoadError(null);
+      if (list.length) {
+        const orderIds = Array.from(new Set(list.map((s) => s.order_id)));
+        const companyIds = Array.from(
+          new Set(list.map((s) => s.company_id).filter(Boolean) as string[]),
+        );
+        const [{ data: ords }, { data: comps }] = await Promise.all([
+          supabase.from("orders").select("*").in("id", orderIds),
+          companyIds.length
+            ? supabase
+                .from("delivery_companies")
+                .select("id, name")
+                .in("id", companyIds)
+            : Promise.resolve({ data: [] as Company[] }),
+        ]);
+        const oMap: Record<string, Order> = {};
+        for (const o of ords ?? []) oMap[o.id] = o;
+        setOrders(oMap);
+        const cMap: Record<string, Company> = {};
+        for (const c of (comps as Company[]) ?? []) cMap[c.id] = c;
+        setCompanies(cMap);
+      } else {
+        setOrders({});
+        setCompanies({});
+      }
+    } catch {
+      setLoadError("Failed to load shipments");
+      setShipments([]);
     }
   };
 
   useEffect(() => {
     if (!user) return;
-    load();
+    void load();
     const channel = supabase
       .channel(`shipments-${user.id}`)
       .on(
@@ -111,7 +123,7 @@ function ShipmentsPage() {
           table: "shipments",
           filter: `store_id=eq.${user.id}`,
         },
-        () => load(),
+        () => void load(),
       )
       .subscribe();
     return () => {
@@ -125,15 +137,20 @@ function ShipmentsPage() {
     setShipments((cur) =>
       cur ? cur.map((s) => (s.id === id ? { ...s, status } : s)) : cur,
     );
-    const { error } = await supabase
-      .from("shipments")
-      .update({ status })
-      .eq("id", id);
-    if (error) {
+    try {
+      const { error } = await supabase
+        .from("shipments")
+        .update({ status })
+        .eq("id", id);
+      if (error) {
+        setShipments(prev);
+        toast.error("Failed to update status");
+      } else {
+        toast.success(`Marked as ${STATUS_VARIANT[status]?.label ?? status}`);
+      }
+    } catch {
       setShipments(prev);
       toast.error("Failed to update status");
-    } else {
-      toast.success(`Marked as ${STATUS_VARIANT[status]?.label ?? status}`);
     }
   };
 
@@ -144,9 +161,9 @@ function ShipmentsPage() {
         if (!q) return true;
         const o = orders[s.order_id];
         return (
-          s.tracking_number.toLowerCase().includes(q) ||
-          o?.customer_name.toLowerCase().includes(q) ||
-          o?.shipping_address.toLowerCase().includes(q) ||
+          (s.tracking_number ?? "").toLowerCase().includes(q) ||
+          o?.customer_name?.toLowerCase().includes(q) ||
+          o?.shipping_address?.toLowerCase().includes(q) ||
           s.id.toLowerCase().startsWith(q)
         );
       }),
@@ -209,6 +226,15 @@ function ShipmentsPage() {
         `}</style>
       </section>
 
+      {loadError && (
+        <div className="my-4 flex items-center gap-2 rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          <span>{loadError}</span>
+          <button onClick={() => void load()} className="ml-auto underline hover:no-underline">
+            Retry
+          </button>
+        </div>
+      )}
+
       {shipments === null ? (
         <div className="flex items-center justify-center py-20">
           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -261,8 +287,12 @@ function ShipmentsPage() {
                         <TableCell>
                           <button
                             onClick={() => {
-                              navigator.clipboard.writeText(s.tracking_number);
-                              toast.success("Tracking copied");
+                              try {
+                                navigator.clipboard.writeText(s.tracking_number ?? "");
+                                toast.success("Tracking copied");
+                              } catch {
+                                toast.error("Failed to copy");
+                              }
                             }}
                             className="inline-flex items-center gap-1.5 font-mono text-xs hover:text-primary"
                           >
