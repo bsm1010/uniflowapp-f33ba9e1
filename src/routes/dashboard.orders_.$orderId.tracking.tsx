@@ -39,13 +39,31 @@ export const Route = createFileRoute("/dashboard/orders_/$orderId/tracking")({
 const STATUS_FLOW = ["created", "picked_up", "in_transit", "out_for_delivery", "delivered"] as const;
 type StatusFlow = (typeof STATUS_FLOW)[number];
 
-function mapToFlowStatus(raw: string): StatusFlow {
-  const s = (raw || "").toLowerCase();
-  if (s.includes("livr")) return "delivered";
-  if (s.includes("out") || s.includes("livraison") || s.includes("distribution")) return "out_for_delivery";
-  if (s.includes("transit") || s.includes("route") || s.includes("expedi") || s.includes("shipped") || s.includes("envoy")) return "in_transit";
-  if (s.includes("pick") || s.includes("ramass") || s.includes("collect") || s.includes("pris")) return "picked_up";
-  return "created";
+/**
+ * Map raw ZRExpress status to our flow step.
+ * ZRExpress uses French statuses — we match broadly.
+ */
+function mapToFlowIndex(raw: string): number {
+  const s = (raw || "").toLowerCase().trim();
+  // Delivered
+  if (s.includes("livr") || s.includes("deliv") || s.includes("remis")) return 4;
+  // Out for delivery
+  if (s.includes("distribution") || s.includes("out_for") || s.includes("out for")) return 3;
+  // In transit (broad match — most ZR statuses land here)
+  if (
+    s.includes("transit") || s.includes("route") || s.includes("expedi") || s.includes("envoi") ||
+    s.includes("shipped") || s.includes("envoy") || s.includes("acheminement") || s.includes("charg") ||
+    s.includes("depart") || s.includes("départ") || s.includes("sorti") || s.includes("pickup") ||
+    s.includes("recup") || s.includes("récup") || s.includes("pris") || s.includes("ramass")
+  ) return 2;
+  // Created / pending / preparing
+  if (
+    s.includes("cree") || s.includes("créé") || s.includes("created") || s.includes("pret") ||
+    s.includes("prêt") || s.includes("prepar") || s.includes("attente") || s.includes("pending") ||
+    s.includes("enregistr") || s.includes("register")
+  ) return 1;
+  // If we have a status but can't map it, put it at step 1 (at least created)
+  return s ? 1 : 0;
 }
 
 const FLOW_LABELS: Record<StatusFlow, string> = {
@@ -151,8 +169,7 @@ function TrackingPage() {
     );
   }
 
-  const flowStatus = tracking ? mapToFlowStatus(tracking.rawStatus ?? tracking.status) : null;
-  const flowIdx = flowStatus ? STATUS_FLOW.indexOf(flowStatus) : -1;
+  const flowIdx = tracking ? mapToFlowIndex(tracking.rawStatus ?? tracking.status) : -1;
   const displayStatus = tracking?.rawStatus ?? tracking?.status ?? order.status;
 
   return (
@@ -240,56 +257,59 @@ function TrackingPage() {
       )}
 
       {/* Progress stepper */}
-      {flowIdx >= 0 && (
-        <Card className="border-border/60 shadow-soft mb-6">
-          <CardHeader>
-            <CardTitle className="text-base">Delivery progress</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="relative">
-              <div className="flex justify-between gap-2 relative">
-                <div className="absolute top-5 left-5 right-5 h-0.5 bg-border" />
-                <div
-                  className="absolute top-5 left-5 h-0.5 bg-primary transition-all"
-                  style={{
-                    width:
-                      flowIdx <= 0
-                        ? "0%"
-                        : `calc(${(flowIdx / (STATUS_FLOW.length - 1)) * 100}% - ${flowIdx === STATUS_FLOW.length - 1 ? "2.5rem" : "0rem"})`,
-                  }}
-                />
-                {STATUS_FLOW.map((step, idx) => {
-                  const completed = idx <= flowIdx;
-                  const Icon = idx === 0 ? ClipboardCheck : idx === 1 ? Package : idx === 2 ? Truck : idx === 3 ? PackageCheck : CheckCircle2;
-                  return (
+      <Card className="border-border/60 shadow-soft mb-6">
+        <CardHeader>
+          <CardTitle className="text-base">Delivery progress</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="relative">
+            <div className="flex justify-between gap-2 relative">
+              <div className="absolute top-5 left-5 right-5 h-0.5 bg-border" />
+              <div
+                className="absolute top-5 left-5 h-0.5 bg-primary transition-all"
+                style={{
+                  width:
+                    flowIdx <= 0
+                      ? "0%"
+                      : `calc(${(flowIdx / (STATUS_FLOW.length - 1)) * 100}% - ${flowIdx === STATUS_FLOW.length - 1 ? "2.5rem" : "0rem"})`,
+                }}
+              />
+              {STATUS_FLOW.map((step, idx) => {
+                const completed = idx <= flowIdx;
+                const isCurrent = idx === flowIdx;
+                const Icon = idx === 0 ? ClipboardCheck : idx === 1 ? Package : idx === 2 ? Truck : idx === 3 ? PackageCheck : CheckCircle2;
+                // Show the raw ZRExpress status text for the current step
+                const label = isCurrent && displayStatus
+                  ? displayStatus
+                  : FLOW_LABELS[step];
+                return (
+                  <div
+                    key={step}
+                    className="flex flex-col items-center gap-2 relative z-10 flex-1 min-w-0"
+                  >
                     <div
-                      key={step}
-                      className="flex flex-col items-center gap-2 relative z-10 flex-1 min-w-0"
+                      className={`h-10 w-10 rounded-full flex items-center justify-center border-2 transition-colors ${
+                        completed
+                          ? "bg-primary border-primary text-primary-foreground"
+                          : "bg-card border-border text-muted-foreground"
+                      }`}
                     >
-                      <div
-                        className={`h-10 w-10 rounded-full flex items-center justify-center border-2 transition-colors ${
-                          completed
-                            ? "bg-primary border-primary text-primary-foreground"
-                            : "bg-card border-border text-muted-foreground"
-                        }`}
-                      >
-                        <Icon className="h-4 w-4" />
-                      </div>
-                      <span
-                        className={`text-[11px] text-center font-medium ${
-                          completed ? "text-foreground" : "text-muted-foreground"
-                        }`}
-                      >
-                        {FLOW_LABELS[step]}
-                      </span>
+                      <Icon className="h-4 w-4" />
                     </div>
-                  );
-                })}
-              </div>
+                    <span
+                      className={`text-[11px] text-center font-medium leading-tight ${
+                        isCurrent ? "text-primary font-bold" : completed ? "text-foreground" : "text-muted-foreground"
+                      }`}
+                    >
+                      {label}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
-          </CardContent>
-        </Card>
-      )}
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Order info */}
