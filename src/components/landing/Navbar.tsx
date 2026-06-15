@@ -36,7 +36,7 @@ function DarkModeToggle() {
       variant="ghost"
       size="icon"
       onClick={toggle}
-      className="h-9 w-9 rounded-xl text-white/60 hover:text-white hover:bg-white/10"
+      className="h-9 w-9 rounded-xl text-muted-foreground hover:text-foreground"
       aria-label="Toggle dark mode"
     >
       {isDark ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4" />}
@@ -82,8 +82,8 @@ export function Navbar() {
           className={cn(
             "flex items-center justify-between rounded-2xl px-5 py-3 transition-all duration-300",
             scrolled
-              ? "border border-white/10 bg-white/10 backdrop-blur-2xl shadow-2xl shadow-black/10"
-              : "border border-transparent bg-white/5 backdrop-blur-xl",
+              ? "border border-border/40 bg-background/75 backdrop-blur-xl shadow-sm"
+              : "border border-transparent bg-background/50 backdrop-blur-md",
           )}
         >
           <a href="#" className="flex items-center gap-2 shrink-0">
@@ -96,7 +96,7 @@ export function Navbar() {
                 <Link
                   key={l.href}
                   to={l.href}
-                  className="relative px-3 py-2 text-sm font-medium text-white/60 hover:text-white transition-colors"
+                  className="relative px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors after:absolute after:bottom-0.5 after:left-3 after:right-3 after:h-[2px] after:rounded-full after:bg-foreground after:scale-x-0 after:origin-center after:transition-transform hover:after:scale-x-100"
                 >
                   {l.label}
                 </Link>
@@ -104,7 +104,7 @@ export function Navbar() {
                 <a
                   key={l.href}
                   href={l.href}
-                  className="relative px-3 py-2 text-sm font-medium text-white/60 hover:text-white transition-colors"
+                  className="relative px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors after:absolute after:bottom-0.5 after:left-3 after:right-3 after:h-[2px] after:rounded-full after:bg-foreground after:scale-x-0 after:origin-center after:transition-transform hover:after:scale-x-100"
                 >
                   {l.label}
                 </a>
@@ -117,20 +117,20 @@ export function Navbar() {
               <LanguageSwitcher />
             </span>
             <DarkModeToggle />
-            <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex h-9 text-white/60 hover:text-white hover:bg-white/10">
+            <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex h-9">
               <Link to="/login">{t("nav.signIn")}</Link>
             </Button>
             <Button
               size="sm"
               asChild
-              className="h-9 bg-white text-violet-900 hover:bg-white/90 shadow-lg shadow-white/10 rounded-xl px-4 font-semibold"
+              className="h-9 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white hover:from-violet-500 hover:to-fuchsia-500 shadow-sm hover:shadow-md transition-all duration-200"
             >
               <Link to="/signup">{t("nav.getStarted")}</Link>
             </Button>
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden h-9 w-9 rounded-xl text-white/60 hover:text-white"
+              className="md:hidden h-9 w-9 rounded-xl text-muted-foreground"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label="Toggle menu"
             >
@@ -143,14 +143,14 @@ export function Navbar() {
       {/* Mobile drawer */}
       <div
         className={cn(
-          "fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden transition-opacity duration-200",
+          "fixed inset-0 z-40 bg-background/60 backdrop-blur-sm md:hidden transition-opacity duration-200",
           mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none",
         )}
         onClick={() => setMobileOpen(false)}
       >
         <div
           className={cn(
-            "fixed top-0 right-0 h-full w-72 max-w-[85vw] bg-background border-l border-border/40 shadow-2xl transition-transform duration-300",
+            "fixed top-0 right-0 h-full w-72 max-w-[85vw] bg-background border-l border-border/40 shadow-xl transition-transform duration-300",
             mobileOpen ? "translate-x-0" : "translate-x-full",
           )}
           onClick={(e) => e.stopPropagation()}

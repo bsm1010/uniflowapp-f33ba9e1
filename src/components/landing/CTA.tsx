@@ -15,12 +15,9 @@ export function CTA() {
           transition={{ duration: 0.6 }}
           className="relative overflow-hidden rounded-[2rem] p-12 md:p-20 text-center"
         >
-          {/* Animated mesh gradient background */}
           <div className="absolute inset-0 bg-gradient-to-br from-violet-600 via-fuchsia-600 to-cyan-600" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.2),transparent_50%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(0,0,0,0.15),transparent_50%)]" />
-
-          {/* Floating orbs */}
           <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
           <div className="absolute bottom-10 right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl" />
 

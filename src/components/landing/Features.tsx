@@ -14,9 +14,8 @@ export function Features() {
   const { t } = useTranslation();
   return (
     <section id="features" className="py-20 md:py-28 relative">
-      {/* Background accents */}
-      <div className="absolute top-1/2 left-0 w-72 h-72 bg-violet-500/10 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute top-1/3 right-0 w-72 h-72 bg-fuchsia-500/10 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-1/2 left-0 w-72 h-72 bg-violet-400/10 dark:bg-violet-500/10 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-1/3 right-0 w-72 h-72 bg-fuchsia-400/10 dark:bg-fuchsia-500/10 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="relative mx-auto max-w-6xl px-4">
         <div className="mx-auto max-w-2xl text-center">
@@ -24,7 +23,7 @@ export function Features() {
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-violet-300"
+            className="inline-flex items-center gap-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-violet-600 dark:text-violet-300"
           >
             {t("features.kicker")}
           </motion.span>
@@ -36,7 +35,7 @@ export function Features() {
             className="mt-5 text-3xl md:text-5xl font-bold tracking-tight"
           >
             {t("features.titleA")}{" "}
-            <span className="bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
               {t("features.titleB")}
             </span>
           </motion.h2>
@@ -51,7 +50,6 @@ export function Features() {
           </motion.p>
         </div>
 
-        {/* Bento grid */}
         <div className="mt-16 grid gap-5 sm:grid-cols-3">
           {featureKeys.map((f, i) => (
             <motion.div
@@ -60,9 +58,8 @@ export function Features() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.5, delay: i * 0.08 }}
-              className={`group relative rounded-3xl border border-white/10 bg-white/5 backdrop-blur-sm p-8 hover:bg-white/10 hover:border-white/20 hover:shadow-2xl hover:shadow-violet-500/5 hover:-translate-y-1 transition-all duration-500 ${f.span}`}
+              className={`group relative rounded-3xl border border-border/60 bg-card/60 p-8 hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 ${f.span}`}
             >
-              {/* Gradient glow on hover */}
               <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
                 <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${f.color} opacity-5`} />
               </div>

@@ -112,39 +112,39 @@ export function Pricing() {
   const getCardClass = (style: Tier["style"]) => {
     switch (style) {
       case "beginner":
-        return "border-cyan-500/20 bg-gradient-to-b from-cyan-500/5 to-transparent";
+        return "border-cyan-400/20 dark:border-cyan-500/20 bg-gradient-to-b from-cyan-500/5 to-transparent";
       case "pro":
-        return "border-violet-500/40 bg-gradient-to-b from-violet-500/10 to-transparent shadow-2xl shadow-violet-500/10 scale-[1.02]";
+        return "border-violet-400/40 dark:border-violet-500/40 bg-gradient-to-b from-violet-500/10 to-transparent shadow-2xl shadow-violet-500/10 scale-[1.02]";
       case "business":
-        return "border-amber-500/20 bg-gradient-to-b from-amber-500/5 to-transparent";
+        return "border-amber-400/20 dark:border-amber-500/20 bg-gradient-to-b from-amber-500/5 to-transparent";
       case "agency":
-        return "border-white/15 bg-gradient-to-br from-white/10 to-white/[0.02] backdrop-blur-xl";
+        return "border-border/60 bg-gradient-to-b from-muted/50 to-card/50";
     }
   };
 
   const getCheckClass = (style: Tier["style"]) => {
     switch (style) {
       case "beginner":
-        return "text-cyan-400";
+        return "text-cyan-500";
       case "pro":
-        return "text-violet-400";
+        return "text-violet-500";
       case "business":
-        return "text-amber-400";
+        return "text-amber-500";
       case "agency":
-        return "text-fuchsia-400";
+        return "text-fuchsia-500";
     }
   };
 
   const getPriceClass = (style: Tier["style"]) => {
     switch (style) {
       case "beginner":
-        return "text-cyan-400";
+        return "text-cyan-600 dark:text-cyan-400";
       case "pro":
-        return "text-violet-300";
+        return "text-violet-600 dark:text-violet-300";
       case "business":
-        return "text-amber-300";
+        return "text-amber-600 dark:text-amber-300";
       case "agency":
-        return "bg-gradient-to-r from-fuchsia-300 via-violet-300 to-cyan-300 bg-clip-text text-transparent";
+        return "bg-gradient-to-r from-fuchsia-500 via-violet-500 to-cyan-500 bg-clip-text text-transparent";
     }
   };
 
@@ -185,9 +185,8 @@ export function Pricing() {
 
   return (
     <section id="pricing" className="py-20 md:py-28 relative">
-      {/* Background accents */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-violet-500/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-violet-400/10 dark:bg-violet-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-fuchsia-400/10 dark:bg-fuchsia-500/10 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="relative mx-auto max-w-7xl px-4">
         <div className="mx-auto max-w-2xl text-center">
@@ -195,7 +194,7 @@ export function Pricing() {
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-violet-300"
+            className="inline-flex items-center gap-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-violet-600 dark:text-violet-300"
           >
             Pricing
           </motion.span>
@@ -207,7 +206,7 @@ export function Pricing() {
             className="mt-5 text-3xl md:text-5xl font-bold tracking-tight"
           >
             Simple,{" "}
-            <span className="bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
               transparent
             </span>{" "}
             pricing
@@ -230,25 +229,25 @@ export function Pricing() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="relative rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6"
+            className="relative rounded-3xl border border-border/60 bg-muted/30 backdrop-blur-xl p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6"
           >
             <div>
               <div className="flex items-center gap-3">
-                <span className="text-xl font-bold text-white">Free Trial</span>
-                <span className="text-xs bg-white/10 text-white/70 px-3 py-1 rounded-full border border-white/10">
+                <span className="text-xl font-bold">Free Trial</span>
+                <span className="text-xs bg-muted text-muted-foreground px-3 py-1 rounded-full border border-border/60">
                   No credit card
                 </span>
               </div>
-              <p className="text-sm text-white/50 mt-2">
+              <p className="text-sm text-muted-foreground mt-2">
                 Try Fennecly with 20 free credits — no commitment.
               </p>
             </div>
             <div className="flex items-center gap-8">
               <div className="flex items-baseline gap-1.5">
-                <span className="text-3xl font-bold text-white">20</span>
-                <span className="text-white/40 text-sm">credits</span>
+                <span className="text-3xl font-bold">20</span>
+                <span className="text-muted-foreground text-sm">credits</span>
               </div>
-              <Button variant="outline" className="border-white/20 text-white hover:bg-white/10 rounded-xl px-6">
+              <Button variant="outline" className="rounded-xl px-6">
                 Start free
               </Button>
             </div>
@@ -267,17 +266,15 @@ export function Pricing() {
               className={`relative rounded-3xl border p-8 flex flex-col hover:-translate-y-1 transition-all duration-500 ${getCardClass(tier.style)}`}
             >
               {getBadge(tier.style)}
-              <h3 className={`text-lg font-semibold ${tier.style === "agency" ? "text-white" : ""}`}>
-                {tier.name}
-              </h3>
-              <p className={`mt-1.5 text-sm ${tier.style === "agency" ? "text-white/60" : "text-muted-foreground"}`}>
+              <h3 className="text-lg font-semibold">{tier.name}</h3>
+              <p className="mt-1.5 text-sm text-muted-foreground">
                 {tier.desc}
               </p>
               <div className="mt-6 flex items-baseline gap-1">
                 <span className={`text-4xl font-bold font-display ${getPriceClass(tier.style)}`}>
                   {tier.price}
                 </span>
-                <span className={`text-sm ${tier.style === "agency" ? "text-white/50" : "text-muted-foreground"}`}>
+                <span className="text-sm text-muted-foreground">
                   {tier.period}
                 </span>
               </div>
@@ -286,7 +283,7 @@ export function Pricing() {
                 {tier.features.map((f) => (
                   <li key={f} className="flex items-start gap-2.5 text-sm">
                     <Check className={`h-4 w-4 mt-0.5 shrink-0 ${getCheckClass(tier.style)}`} />
-                    <span className={tier.style === "agency" ? "text-white/70" : "text-foreground/80"}>
+                    <span className="text-foreground/80">
                       {f}
                     </span>
                   </li>
