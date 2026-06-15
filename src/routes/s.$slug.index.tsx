@@ -29,6 +29,7 @@ import {
 } from "@/lib/storeTheme";
 import { useCart } from "@/hooks/use-cart";
 import { fetchSettings, getCachedSettings, setCachedSettings } from "@/lib/storefrontCache";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 
 type Product = Pick<
   Tables<"products">,
@@ -502,7 +503,7 @@ function StorefrontHome() {
                 e.preventDefault();
                 if (!newsletterEmail.trim()) return;
                 setNewsletterLoading(true);
-                const { error } = await supabase.from("newsletter_subscribers").insert({
+                const { error } = await (supabase as any).from("newsletter_subscribers").insert({
                   email: newsletterEmail.trim(),
                   store_id: settings?.user_id,
                   subscribed_at: new Date().toISOString(),
@@ -565,7 +566,7 @@ function StorefrontHome() {
       {/* ── TikTok Pixel (injected if seller has set a pixel ID) ── */}
       {tiktokPixelId && <TikTokPixel pixelId={tiktokPixelId} />}
 
-      <div className={isBold ? "bg-black text-white" : isMinimal ? "bg-white" : "bg-background"}>
+      <div style={{ backgroundColor: t.bg, color: t.fg }}>
         {sectionOrder.map((key) => sectionRenderers[key]())}
 
         {/* All products */}
@@ -614,48 +615,31 @@ function StorefrontHome() {
               )}
               <div className="flex items-center gap-3 flex-wrap">
                 {categories.length > 1 && (
-                  <select
+                  <SearchableSelect
                     value={activeCategory}
-                    onChange={(e) => setActiveCategory(e.target.value)}
-                    className="text-sm px-4 py-3 outline-none cursor-pointer font-medium"
-                    style={{
+                    onChange={setActiveCategory}
+                    options={categories}
+                    placeholder={tr("storefront.home.allCategories", { defaultValue: "All Categories" })}
+                    triggerStyle={{
                       border: `2px solid ${t.border}`,
                       borderRadius: t.radius.md + 4,
                       backgroundColor: t.surface,
                       color: t.fg,
                     }}
-                  >
-                    {categories.map((c) => (
-                      <option key={c} value={c} style={{ backgroundColor: t.bg }}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 )}
-                <select
+                <SearchableSelect
                   value={sort}
-                  onChange={(e) => setSort(e.target.value as SortKey)}
-                  className="text-sm px-4 py-3 outline-none cursor-pointer font-medium"
-                  style={{
+                  onChange={(v) => setSort(v as SortKey)}
+                  options={["newest", "price-asc", "price-desc", "name"]}
+                  placeholder={tr("storefront.home.sort.placeholder", { defaultValue: "Sort by" })}
+                  triggerStyle={{
                     border: `2px solid ${t.border}`,
                     borderRadius: t.radius.md + 4,
                     backgroundColor: t.surface,
                     color: t.fg,
                   }}
-                >
-                  <option value="newest" style={{ backgroundColor: t.bg }}>
-                    {tr("storefront.home.sort.newest")}
-                  </option>
-                  <option value="price-asc" style={{ backgroundColor: t.bg }}>
-                    {tr("storefront.home.sort.priceAsc")}
-                  </option>
-                  <option value="price-desc" style={{ backgroundColor: t.bg }}>
-                    {tr("storefront.home.sort.priceDesc")}
-                  </option>
-                  <option value="name" style={{ backgroundColor: t.bg }}>
-                    {tr("storefront.home.sort.name")}
-                  </option>
-                </select>
+                />
               </div>
             </div>
           </div>

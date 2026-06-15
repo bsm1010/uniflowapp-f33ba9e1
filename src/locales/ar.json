@@ -191,7 +191,11 @@
       "referrals": "الإحالات",
       "appStore": "متجر التطبيقات",
       "settings": "الإعدادات",
-      "payments": "المدفوعات"
+      "payments": "المدفوعات",
+      "marketplace": "سوق التوريد",
+      "dropshipOrders": "طلبات التوريد",
+      "supplyOrders": "سوق التوريد",
+      "supplyListings": "منتجات التوريد في متجرك"
     },
     "home": {
       "kicker": "لوحة التحكم",

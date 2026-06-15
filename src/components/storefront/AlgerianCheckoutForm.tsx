@@ -328,12 +328,16 @@ export function AlgerianCheckoutForm({
                       label={tr("storefront.cod.firstName")}
                       error={errors.firstName}
                       mutedColor={t.muted}
+                      fieldId="firstName"
                     >
                       <input
+                        id="firstName"
                         type="text"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
                         placeholder="Ahmed"
+                        aria-required="true"
+                        aria-describedby={errors.firstName ? "firstName-error" : undefined}
                         style={inputStyle}
                       />
                     </Field>
@@ -343,12 +347,16 @@ export function AlgerianCheckoutForm({
                       label={tr("storefront.cod.lastName")}
                       error={errors.lastName}
                       mutedColor={t.muted}
+                      fieldId="lastName"
                     >
                       <input
+                        id="lastName"
                         type="text"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
                         placeholder="Benali"
+                        aria-required="true"
+                        aria-describedby={errors.lastName ? "lastName-error" : undefined}
                         style={inputStyle}
                       />
                     </Field>
@@ -359,13 +367,17 @@ export function AlgerianCheckoutForm({
                     label={tr("storefront.cod.phone")}
                     error={errors.phone}
                     mutedColor={t.muted}
+                    fieldId="phone"
                   >
                     <input
+                      id="phone"
                       type="tel"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="0555 12 34 56"
                       inputMode="tel"
+                      aria-required="true"
+                      aria-describedby={errors.phone ? "phone-error" : undefined}
                       style={inputStyle}
                     />
                   </Field>
@@ -381,6 +393,7 @@ export function AlgerianCheckoutForm({
                       label={tr("storefront.cod.wilaya")}
                       error={errors.wilaya}
                       mutedColor={t.muted}
+                      fieldId="wilaya"
                     >
                       <SearchableSelect
                         value={wilaya}
@@ -406,6 +419,7 @@ export function AlgerianCheckoutForm({
                       label={tr("storefront.cod.city")}
                       error={errors.city}
                       mutedColor={t.muted}
+                      fieldId="city"
                     >
                       <SearchableSelect
                         value={city}
@@ -429,7 +443,7 @@ export function AlgerianCheckoutForm({
                     </Field>
                   </div>
 
-                  <Field label={tr("storefront.cod.deliveryType")} mutedColor={t.muted}>
+                  <Field label={tr("storefront.cod.deliveryType")} mutedColor={t.muted} fieldId="deliveryType">
                     <div className="grid grid-cols-2 gap-3">
                       {(["domicile", "stopdesk"] as const).map((type) => {
                         const active = deliveryType === type;
@@ -773,16 +787,19 @@ function Field({
   mutedColor,
   children,
   icon,
+  fieldId,
 }: {
   label: string;
   error?: string;
   mutedColor: string;
   children: React.ReactNode;
   icon?: React.ReactNode;
+  fieldId?: string;
 }) {
   return (
     <div>
       <label
+        htmlFor={fieldId}
         className="mb-2 flex items-center gap-2 text-sm font-medium"
         style={{ color: mutedColor }}
       >
@@ -790,7 +807,11 @@ function Field({
         {label}
       </label>
       {children}
-      {error && <p className="mt-1.5 text-xs text-red-500">{error}</p>}
+      {error && (
+        <p id={fieldId ? `${fieldId}-error` : undefined} className="mt-1.5 text-xs text-red-500" role="alert">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

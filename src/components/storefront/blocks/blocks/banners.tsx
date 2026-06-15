@@ -83,7 +83,7 @@ export function PromoBanner({ props }: BlockComponentProps<PromoBannerProps>) {
         {props.imageUrl ? (
           <img
             src={props.imageUrl}
-            alt=""
+            alt={props.title || "Promo banner background"}
             className="absolute inset-0 h-full w-full object-cover opacity-30 mix-blend-overlay"
           />
         ) : null}

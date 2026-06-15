@@ -16,7 +16,7 @@ export function StoreSwitcherButton() {
     >
       <div className="h-7 w-7 rounded-md bg-muted overflow-hidden flex items-center justify-center shrink-0">
         {currentStore?.logo_url ? (
-          <img src={currentStore.logo_url} alt="" className="h-full w-full object-cover" />
+          <img src={currentStore.logo_url} alt={(currentStore?.name || "Store") + " logo"} className="h-full w-full object-cover" />
         ) : (
           <StoreIcon className="h-4 w-4 text-muted-foreground" />
         )}

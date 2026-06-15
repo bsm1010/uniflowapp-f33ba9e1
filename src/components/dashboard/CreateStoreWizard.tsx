@@ -178,7 +178,7 @@ export function CreateStoreWizard({ open, onClose, onCreated }: Props) {
               <div className="mt-1 flex items-center gap-3">
                 <div className="h-16 w-16 rounded-xl bg-muted overflow-hidden flex items-center justify-center">
                   {logoUrl ? (
-                    <img src={logoUrl} alt="" className="h-full w-full object-cover" />
+                    <img src={logoUrl} alt="Store logo preview" className="h-full w-full object-cover" />
                   ) : (
                     <StoreIcon className="h-6 w-6 text-muted-foreground" />
                   )}
@@ -221,7 +221,7 @@ export function CreateStoreWizard({ open, onClose, onCreated }: Props) {
               <div className="flex items-center gap-3 mb-3">
                 <div className="h-14 w-14 rounded-xl bg-muted overflow-hidden flex items-center justify-center">
                   {logoUrl ? (
-                    <img src={logoUrl} alt="" className="h-full w-full object-cover" />
+                    <img src={logoUrl} alt="Store logo preview" className="h-full w-full object-cover" />
                   ) : (
                     <StoreIcon className="h-6 w-6 text-muted-foreground" />
                   )}

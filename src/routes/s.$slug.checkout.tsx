@@ -659,7 +659,7 @@ function CheckoutPage() {
                           }}
                         >
                           {item.image && (
-                            <img src={item.image} alt="" className="h-full w-full object-cover" />
+                            <img src={item.image} alt={item.name || "Cart item"} className="h-full w-full object-cover" />
                           )}
                         </div>
                         <div className="flex-1 min-w-0">

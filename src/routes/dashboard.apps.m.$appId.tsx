@@ -172,7 +172,7 @@ function MarketplaceAppPage() {
         <div className="space-y-6 min-w-0">
           {hero && (
             <div className="rounded-2xl overflow-hidden bg-muted aspect-video">
-              <img src={hero} alt="" className="w-full h-full object-cover" />
+              <img src={hero} alt={app?.title || "App screenshot"} className="w-full h-full object-cover" />
             </div>
           )}
           {app.screenshots.length > 1 && (
@@ -187,7 +187,7 @@ function MarketplaceAppPage() {
                       : "border-transparent opacity-70 hover:opacity-100"
                   }`}
                 >
-                  <img src={s} alt="" className="w-full h-full object-cover" />
+                  <img src={s} alt={(app?.title || "App") + " screenshot " + (i + 1)} className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>

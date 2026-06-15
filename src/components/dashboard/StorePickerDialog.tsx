@@ -62,7 +62,7 @@ export function StorePickerDialog() {
                 <div className="flex items-start gap-3 mb-3">
                   <div className="h-12 w-12 rounded-xl bg-gray-100 dark:bg-white/5 overflow-hidden flex items-center justify-center shrink-0">
                     {s.logo_url ? (
-                      <img src={s.logo_url} alt="" className="h-full w-full object-cover" />
+                      <img src={s.logo_url} alt={(s.name || "Store") + " logo"} className="h-full w-full object-cover" />
                     ) : (
                       <StoreIcon className="h-5 w-5 text-gray-400" />
                     )}

@@ -164,7 +164,7 @@ export function DashboardSidebar() {
           gradient: "from-amber-500 to-orange-500",
         },
         {
-          title: "سوق التوريد",
+          title: t("dashboard.nav.marketplace", { defaultValue: "سوق التوريد" }),
           url: "/dashboard/marketplace",
           icon: PackageOpen,
           gradient: "from-orange-500 to-rose-500",
@@ -194,19 +194,19 @@ export function DashboardSidebar() {
           tourId: "orders",
         },
         {
-          title: "طلبات التوريد",
+          title: t("dashboard.nav.dropshipOrders", { defaultValue: "طلبات التوريد" }),
           url: "/dashboard/dropship-orders",
           icon: Banknote,
           gradient: "from-sky-500 to-indigo-500",
         },
         {
-          title: "سوق التوريد",
+          title: t("dashboard.nav.supplyOrders", { defaultValue: "سوق التوريد" }),
           url: "/dashboard/supply-orders",
           icon: Store,
           gradient: "from-amber-500 to-orange-500",
         },
         {
-          title: "منتجات التوريد في متجرك",
+          title: t("dashboard.nav.supplyListings", { defaultValue: "منتجات التوريد في متجرك" }),
           url: "/dashboard/supply-listings",
           icon: Tag,
           gradient: "from-orange-500 to-amber-500",

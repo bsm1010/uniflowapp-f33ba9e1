@@ -200,7 +200,11 @@
       "referrals": "Referrals",
       "appStore": "App Store",
       "settings": "Settings",
-      "payments": "Payments"
+      "payments": "Payments",
+      "marketplace": "Supply Market",
+      "dropshipOrders": "Dropship Orders",
+      "supplyOrders": "Supply Orders",
+      "supplyListings": "Supply Listings in Your Store"
     },
     "home": {
       "kicker": "Dashboard",

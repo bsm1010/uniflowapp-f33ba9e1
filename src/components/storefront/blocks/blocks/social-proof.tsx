@@ -25,7 +25,7 @@ export function Testimonials({ props }: BlockComponentProps<TestimonialsProps>) 
             <blockquote className="text-foreground">&ldquo;{t.quote}&rdquo;</blockquote>
             <figcaption className="mt-4 flex items-center gap-3">
               {t.avatarUrl ? (
-                <img src={t.avatarUrl} alt="" className="h-10 w-10 rounded-full object-cover" />
+                <img src={t.avatarUrl} alt={t.name || "Reviewer avatar"} className="h-10 w-10 rounded-full object-cover" />
               ) : (
                 <div className="h-10 w-10 rounded-full bg-muted" />
               )}

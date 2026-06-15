@@ -206,7 +206,11 @@
       "referrals": "Parrainages",
       "appStore": "Boutique d'applications",
       "settings": "Paramètres",
-      "payments": "Paiements"
+      "payments": "Paiements",
+      "marketplace": "Marché d'approvisionnement",
+      "dropshipOrders": "Commandes dropshipping",
+      "supplyOrders": "Commandes fournisseur",
+      "supplyListings": "Produits fournisseurs dans votre boutique"
     },
     "home": {
       "kicker": "Tableau de bord",

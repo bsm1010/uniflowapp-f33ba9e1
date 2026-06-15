@@ -218,7 +218,7 @@ function ProductPage() {
                       opacity: i === activeImage ? 1 : 0.7,
                     }}
                   >
-                    <Img src={img} alt="" objectFit="cover" className="h-full w-full" />
+                    <Img src={img} alt={product?.name || "Product image"} objectFit="cover" className="h-full w-full" />
                   </button>
                 ))}
               </div>

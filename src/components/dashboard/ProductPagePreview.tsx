@@ -128,7 +128,7 @@ export function ProductPagePreview({ settings, products = [] }: Props) {
                 }}
               >
                 {product.images?.[i] && (
-                  <img src={product.images[i]} alt="" className="h-full w-full object-cover" />
+                  <img src={product.images[i]} alt={product.name ? product.name + " image " + (i + 1) : "Product image"} className="h-full w-full object-cover" />
                 )}
               </div>
             ))}

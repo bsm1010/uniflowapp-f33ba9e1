@@ -248,7 +248,7 @@ function AboutEditor() {
                   {imageUrl && (
                     <img
                       src={imageUrl}
-                      alt=""
+                      alt={title || "About page image"}
                       className="w-full rounded-xl object-cover max-h-72"
                       style={{ borderRadius: tokens?.radius.lg }}
                     />

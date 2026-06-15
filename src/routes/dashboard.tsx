@@ -65,39 +65,6 @@ function AnimatedOutlet() {
   }, [location, displayLocation]);
 
   return (
-    <>
-      <style>{`
-        @keyframes pageFadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(6px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes pageFadeOut {
-          from {
-            opacity: 1;
-            transform: translateY(0);
-          }
-          to {
-            opacity: 0;
-            transform: translateY(-6px);
-          }
-        }
-
-        .page-fade-in {
-          animation: pageFadeIn 0.22s ease forwards;
-        }
-
-        .page-fade-out {
-          animation: pageFadeOut 0.15s ease forwards;
-        }
-      `}</style>
-
       <div
         className={transitionStage === "fadeIn" ? "page-fade-in" : "page-fade-out"}
         onAnimationEnd={() => {
@@ -109,7 +76,6 @@ function AnimatedOutlet() {
       >
         <Outlet />
       </div>
-    </>
   );
 }
 
@@ -237,7 +203,7 @@ function DashboardLayout() {
 
                 <DashboardTopbar name={name} avatarUrl={avatarUrl} />
 
-                <main className="flex-1 p-4 md:p-8 min-h-0 overflow-y-scroll overflow-x-hidden">
+                <main className="flex-1 p-4 md:p-8 min-h-0 overflow-y-auto overflow-x-hidden">
                   <AnimatedOutlet />
                 </main>
               </SidebarInset>
