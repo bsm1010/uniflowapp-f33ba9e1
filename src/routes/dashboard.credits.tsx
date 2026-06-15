@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
@@ -15,19 +15,20 @@ import {
   Star,
   TrendingUp,
   ShieldCheck,
+  Loader2,
 } from "lucide-react";
-import { PageHeader } from "@/components/dashboard/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/use-auth";
 import { useCredits, PLAN_LABELS } from "@/hooks/use-credits";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/dashboard/credits")({
   component: CreditsPage,
-  head: () => ({ meta: [{ title: "Credits — Storely" }] }),
+  head: () => ({ meta: [{ title: "شحن الرصيد — Fennecly" }] }),
 });
 
 const PACK_DEFS = [
@@ -42,11 +43,11 @@ const PLAN_DEFS = [
   { id: "business", credits: 2000, price: 9000, perks: ["biz1", "biz2", "biz3"] as const, highlight: false, icon: Crown, gradient: "from-amber-400 via-yellow-500 to-orange-500" },
 ];
 
-const CCP = "0012345678 91 — STORELY SARL";
+const CCP = "0012345678 91 — FENNACELY SARL";
 
 function CreditsPage() {
   const { user } = useAuth();
-  const { credits, plan, refresh } = useCredits();
+  const { credits, plan, refresh, loading: creditsLoading } = useCredits();
   const { t } = useTranslation();
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -62,36 +63,40 @@ function CreditsPage() {
     setSelected(tab === "packs" ? "pack_150" : "pro");
   }, [tab]);
 
-  const submit = async () => {
+  const submit = useCallback(async () => {
     if (!user) return;
     if (!file) return toast.error(t("dashboard.credits.errors.needScreenshot"));
     if (!file.type.startsWith("image/")) return toast.error(t("dashboard.credits.errors.mustBeImage"));
     if (file.size > 5 * 1024 * 1024) return toast.error(t("dashboard.credits.errors.tooLarge"));
 
     setSubmitting(true);
-    const ext = file.name.split(".").pop()?.toLowerCase() || "png";
-    const path = `${user.id}/${Date.now()}-${choice.id}.${ext}`;
-    const { error: upErr } = await supabase.storage
-      .from("payment-proofs")
-      .upload(path, file, { contentType: file.type, upsert: false });
-    if (upErr) {
+    try {
+      const ext = file.name.split(".").pop()?.toLowerCase() || "png";
+      const path = `${user.id}/${Date.now()}-${choice.id}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("payment-proofs")
+        .upload(path, file, { contentType: file.type, upsert: false });
+      if (upErr) return toast.error(upErr.message);
+
+      const { error } = await supabase.from("payment_submissions").insert({
+        user_id: user.id,
+        plan: choice.id,
+        amount: choice.price,
+        payment_method: "ccp",
+        proof_url: path,
+      });
+      if (error) return toast.error(error.message);
+
+      toast.success(t("dashboard.credits.submitted"));
+      setFile(null);
+      if (fileRef.current) fileRef.current.value = "";
+      refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "حدث خطأ غير متوقع");
+    } finally {
       setSubmitting(false);
-      return toast.error(upErr.message);
     }
-    const { error } = await supabase.from("payment_submissions").insert({
-      user_id: user.id,
-      plan: choice.id,
-      amount: choice.price,
-      payment_method: "ccp",
-      proof_url: path,
-    });
-    setSubmitting(false);
-    if (error) return toast.error(error.message);
-    toast.success(t("dashboard.credits.submitted"));
-    setFile(null);
-    if (fileRef.current) fileRef.current.value = "";
-    refresh();
-  };
+  }, [user, file, choice, t, refresh]);
 
   const planName = (id: string) => {
     if (id === "basic") return t("dashboard.credits.planBasic");
@@ -99,6 +104,28 @@ function CreditsPage() {
     if (id === "business") return t("dashboard.credits.planBusiness");
     return id;
   };
+
+  if (creditsLoading) {
+    return (
+      <div className="relative max-w-6xl mx-auto space-y-10 pb-12">
+        <Skeleton className="h-48 w-full rounded-3xl" />
+        <div className="grid sm:grid-cols-3 gap-4">
+          <Skeleton className="h-24 rounded-xl" />
+          <Skeleton className="h-24 rounded-xl" />
+          <Skeleton className="h-24 rounded-xl" />
+        </div>
+        <div className="flex justify-center">
+          <Skeleton className="h-12 w-64 rounded-full" />
+        </div>
+        <div className="grid md:grid-cols-3 gap-5">
+          <Skeleton className="h-64 rounded-3xl" />
+          <Skeleton className="h-64 rounded-3xl" />
+          <Skeleton className="h-64 rounded-3xl" />
+        </div>
+        <Skeleton className="h-96 rounded-3xl" />
+      </div>
+    );
+  }
 
   return (
     <div className="relative max-w-6xl mx-auto space-y-10 pb-12">
@@ -129,8 +156,8 @@ function CreditsPage() {
             </div>
             <div>
               <div className="text-xs uppercase tracking-wider text-white/70">{t("dashboard.credits.yourCredits")}</div>
-              <div className="text-3xl font-bold leading-tight">{plan === "business" ? "∞" : credits}</div>
-              <div className="text-xs text-white/70 mt-0.5">{PLAN_LABELS[plan]}</div>
+              <div className="text-3xl font-bold leading-tight">{plan === "business" ? "∞" : (credits ?? 0)}</div>
+              <div className="text-xs text-white/70 mt-0.5">{PLAN_LABELS[plan ?? "free"]}</div>
             </div>
           </div>
         </div>
@@ -146,7 +173,7 @@ function CreditsPage() {
             </div>
             <div>
               <div className="text-xs uppercase tracking-wider text-muted-foreground">{t("dashboard.credits.yourCredits")}</div>
-              <div className="text-2xl font-bold">{plan === "business" ? "∞" : credits}</div>
+              <div className="text-2xl font-bold">{plan === "business" ? "∞" : (credits ?? 0)}</div>
             </div>
           </CardContent>
         </Card>
@@ -158,7 +185,7 @@ function CreditsPage() {
             </div>
             <div>
               <div className="text-xs uppercase tracking-wider text-muted-foreground">{t("dashboard.credits.yourPlan")}</div>
-              <div className="text-2xl font-bold">{PLAN_LABELS[plan]}</div>
+              <div className="text-2xl font-bold">{PLAN_LABELS[plan ?? "free"]}</div>
             </div>
           </CardContent>
         </Card>
@@ -394,12 +421,15 @@ function CreditsPage() {
 
           <Button
             onClick={submit}
-            disabled={submitting}
+            disabled={submitting || !file}
             size="lg"
             className="w-full bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 hover:from-violet-700 hover:via-fuchsia-700 hover:to-pink-700 text-white border-0 shadow-lg shadow-violet-500/30 hover:shadow-xl hover:shadow-violet-500/40 transition-all h-12 text-base font-semibold"
           >
             {submitting ? (
-              <>{t("dashboard.credits.submitting")}</>
+              <>
+                <Loader2 className="size-5 animate-spin" />
+                {t("dashboard.credits.submitting")}
+              </>
             ) : (
               <>
                 <Sparkles className="size-5" />
