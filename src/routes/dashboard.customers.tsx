@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Users, Mail, Phone, ShoppingCart, TrendingUp, DollarSign, Search, MapPin, CalendarDays } from "lucide-react";
+import { Users, Mail, Phone, ShoppingCart, TrendingUp, DollarSign, Search, MapPin, CalendarDays, ExternalLink } from "lucide-react";
 import { PageHeader, EmptyState } from "@/components/dashboard/PageHeader";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -19,11 +19,14 @@ type CustomerProfile = {
   email: string;
   name: string;
   phone: string;
+  address: string;
   orderCount: number;
   totalSpent: number;
+  avgOrderValue: number;
   lastOrderDate: string | null;
   firstOrderDate: string | null;
   wilaya: string;
+  city: string;
   orders: Array<{
     id: string;
     total: number;
@@ -51,7 +54,7 @@ function CustomersPage() {
       setLoadError(null);
       const { data: orders, error } = await supabase
         .from("orders")
-        .select("id, customer_name, customer_email, customer_phone, shipping_wilaya, total, status, delivery_type, created_at")
+        .select("id, customer_name, customer_email, customer_phone, shipping_address, shipping_city, shipping_wilaya, total, status, delivery_type, created_at")
         .eq("store_owner_id", user.id)
         .order("created_at", { ascending: false });
       if (error) {
@@ -86,18 +89,24 @@ function CustomersPage() {
             created_at: o.created_at ?? "",
             delivery_type: o.delivery_type ?? "",
           });
+          existing.avgOrderValue = existing.totalSpent / existing.orderCount;
           if (o.shipping_wilaya && !existing.wilaya) existing.wilaya = o.shipping_wilaya;
+          if (o.shipping_city && !existing.city) existing.city = o.shipping_city;
           if (o.customer_phone && !existing.phone) existing.phone = o.customer_phone;
+          if (o.shipping_address && !existing.address) existing.address = o.shipping_address;
         } else {
           map.set(key, {
             email: o.customer_email ?? "",
             name: o.customer_name ?? "Unknown",
             phone: o.customer_phone ?? "",
+            address: o.shipping_address ?? "",
             orderCount: 1,
             totalSpent: Number(o.total) || 0,
+            avgOrderValue: Number(o.total) || 0,
             lastOrderDate: o.created_at ?? null,
             firstOrderDate: o.created_at ?? null,
             wilaya: o.shipping_wilaya ?? "",
+            city: o.shipping_city ?? "",
             orders: [{
               id: o.id,
               total: Number(o.total) || 0,
@@ -279,28 +288,42 @@ function CustomersPage() {
                   <div className="space-y-1.5 text-sm">
                     {selected.email && (
                       <div className="flex items-center gap-2 text-muted-foreground">
-                        <Mail className="h-3.5 w-3.5" /> {selected.email}
+                        <Mail className="h-3.5 w-3.5 shrink-0" /> <span className="truncate">{selected.email}</span>
                       </div>
                     )}
                     {selected.phone && (
                       <div className="flex items-center gap-2 text-muted-foreground">
-                        <Phone className="h-3.5 w-3.5" /> {selected.phone}
+                        <Phone className="h-3.5 w-3.5 shrink-0" />
+                        <a href={`tel:${selected.phone}`} className="hover:text-primary truncate">{selected.phone}</a>
                       </div>
                     )}
-                    {selected.wilaya && (
+                    {(selected.wilaya || selected.city) && (
                       <div className="flex items-center gap-2 text-muted-foreground">
-                        <MapPin className="h-3.5 w-3.5" /> {selected.wilaya}
+                        <MapPin className="h-3.5 w-3.5 shrink-0" />
+                        <span className="truncate">
+                          {selected.city}{selected.city && selected.wilaya ? ", " : ""}{selected.wilaya}
+                        </span>
+                      </div>
+                    )}
+                    {selected.address && (
+                      <div className="flex items-start gap-2 text-muted-foreground">
+                        <MapPin className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+                        <span className="text-xs leading-relaxed">{selected.address}</span>
                       </div>
                     )}
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                  <div className="grid grid-cols-3 gap-2 text-sm">
                     <div className="rounded-lg bg-muted/30 p-3">
-                      <p className="text-xs text-muted-foreground">Total spent</p>
+                      <p className="text-[11px] text-muted-foreground">Total spent</p>
                       <p className="mt-0.5 font-bold">{formatPrice(selected.totalSpent)}</p>
                     </div>
                     <div className="rounded-lg bg-muted/30 p-3">
-                      <p className="text-xs text-muted-foreground">Orders</p>
+                      <p className="text-[11px] text-muted-foreground">Orders</p>
                       <p className="mt-0.5 font-bold">{selected.orderCount}</p>
+                    </div>
+                    <div className="rounded-lg bg-muted/30 p-3">
+                      <p className="text-[11px] text-muted-foreground">Avg. order</p>
+                      <p className="mt-0.5 font-bold">{formatPrice(selected.avgOrderValue)}</p>
                     </div>
                   </div>
                   {selected.firstOrderDate && (
@@ -315,20 +338,35 @@ function CustomersPage() {
                 </div>
                 <div className="p-5">
                   <p className="mb-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">Order history</p>
-                  <div className="space-y-2 max-h-64 overflow-auto">
+                  <div className="space-y-2 max-h-72 overflow-auto">
                     {selected.orders.map((o) => (
-                      <div key={o.id} className="flex items-center justify-between rounded-md border bg-card px-3 py-2 text-sm">
+                      <Link
+                        key={o.id}
+                        to="/dashboard/orders/$orderId/tracking"
+                        params={{ orderId: o.id }}
+                        className="flex items-center justify-between rounded-md border bg-card px-3 py-2 text-sm hover:bg-accent/50 transition-colors"
+                      >
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-xs font-mono text-muted-foreground">{o.id.slice(0, 8)}…</p>
+                          <div className="flex items-center gap-1.5">
+                            <p className="truncate text-xs font-mono text-muted-foreground">{o.id.slice(0, 8)}…</p>
+                            <ExternalLink className="h-3 w-3 shrink-0 text-muted-foreground/50" />
+                          </div>
                           <p className="text-xs text-muted-foreground">{new Date(o.created_at).toLocaleDateString()}</p>
                         </div>
-                        <div className="text-right">
+                        <div className="text-right shrink-0 ml-2">
                           <p className="font-medium">{formatPrice(o.total)}</p>
-                          <Badge className={`text-[10px] ${statusColor(o.status)}`}>
-                            {o.status || "pending"}
-                          </Badge>
+                          <div className="flex items-center gap-1 justify-end">
+                            <Badge className={`text-[10px] ${statusColor(o.status)}`}>
+                              {o.status || "pending"}
+                            </Badge>
+                            {o.delivery_type && (
+                              <Badge variant="outline" className="text-[10px] text-muted-foreground">
+                                {o.delivery_type === "stopdesk" ? "Stop Desk" : "Home"}
+                              </Badge>
+                            )}
+                          </div>
                         </div>
-                      </div>
+                      </Link>
                     ))}
                   </div>
                 </div>
