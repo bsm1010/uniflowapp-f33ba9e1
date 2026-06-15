@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { CheckCircle2, Circle, ArrowRight, Sparkles, Package, Palette, ShoppingBag, Store, Rocket } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
@@ -28,6 +29,7 @@ const ITEM_ACTIONS: Record<string, string> = {
 
 export function StoreProgressCard() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { currentStore } = useCurrentStore();
   const callGetProgress = useServerFn(getProgress);
   const [items, setItems] = useState<SetupItem[]>([]);
@@ -64,14 +66,14 @@ export function StoreProgressCard() {
             <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center">
               <Sparkles className="h-3.5 w-3.5 text-white" />
             </div>
-            <span className="text-sm font-semibold text-foreground">إعداد المتجر</span>
+            <span className="text-sm font-semibold text-foreground">{t("progress.setup.title")}</span>
           </div>
           {allDone ? (
             <span className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
-              <CheckCircle2 className="h-3.5 w-3.5" /> مكتمل
+              <CheckCircle2 className="h-3.5 w-3.5" /> {t("progress.setup.complete")}
             </span>
           ) : (
-            <span className="text-xs text-muted-foreground font-medium">{progress}%</span>
+            <span className="text-xs text-muted-foreground font-medium">{t("progress.setup.percent", { percent: progress })}</span>
           )}
         </div>
 
@@ -86,7 +88,7 @@ export function StoreProgressCard() {
         </div>
 
         {allDone ? (
-          <p className="text-xs text-muted-foreground text-center py-1">تم الإعداد بالكامل!</p>
+          <p className="text-xs text-muted-foreground text-center py-1">{t("progress.setup.completeAll")}</p>
         ) : nextIncomplete ? (
           <>
             <div className="space-y-1.5">
@@ -100,7 +102,7 @@ export function StoreProgressCard() {
                       <Circle className="h-4 w-4 text-muted-foreground/30 shrink-0" />
                     )}
                     <span className={cn(item.completed ? "text-muted-foreground line-through opacity-60" : "text-foreground")}>
-                      {item.label}
+                      {t(item.label)}
                     </span>
                   </div>
                 );
@@ -112,7 +114,7 @@ export function StoreProgressCard() {
               className="w-full gap-1.5"
               onClick={() => navigate({ to: ITEM_ACTIONS[nextIncomplete.key] || "/dashboard" })}
             >
-              {nextIncomplete.label}
+              {t(nextIncomplete.label)}
               <ArrowRight className="h-3 w-3" />
             </Button>
           </>

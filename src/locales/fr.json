@@ -652,5 +652,41 @@
       "errWilaya": "La wilaya est obligatoire",
       "errCity": "La ville est obligatoire"
     }
+  },
+  "progress": {
+    "setup": {
+      "title": "Configuration de la boutique",
+      "product": "Ajouter un produit",
+      "published": "Publier un produit",
+      "store_customized": "Personnaliser la boutique",
+      "first_order": "Recevoir la première commande",
+      "store_launched": "Lancer la boutique",
+      "complete": "Terminé",
+      "completeAll": "Tout est configuré !",
+      "percent": "{{percent}}%"
+    },
+    "guide": {
+      "title": "Configurez votre boutique",
+      "ready": "Votre boutique est prête !",
+      "stepsComplete": "{{completed}}/{{total}} étapes terminées",
+      "later": "Plus tard",
+      "startNow": "Commencer",
+      "close": "Fermer",
+      "addProduct": "Ajoutez votre premier produit au catalogue",
+      "publishProduct": "Publiez un produit pour que les clients puissent le voir",
+      "customizeStore": "Définissez les couleurs, l'image et le thème de votre boutique",
+      "receiveOrder": "Recevez votre première commande client",
+      "activateStore": "Activez votre boutique pour la rendre publique"
+    },
+    "milestones": {
+      "first_product": { "label": "Premier produit", "description": "Ajoutez votre premier produit" },
+      "first_published": { "label": "Premier produit publié", "description": "Publiez votre premier produit" },
+      "ten_products": { "label": "10 produits", "description": "Ajoutez 10 produits" },
+      "first_sale": { "label": "Première vente", "description": "Recevez votre première commande" },
+      "ten_orders": { "label": "10 commandes", "description": "Recevez 10 commandes" },
+      "hundred_orders": { "label": "100 commandes", "description": "Recevez 100 commandes" },
+      "first_revenue": { "label": "Premiers revenus", "description": "Gagnez vos premiers revenus" },
+      "revenue_100k": { "label": "100 000 DA", "description": "Gagnez 100 000 DA de revenus" }
+    }
   }
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { useServerFn } from "@tanstack/react-start";
 import {
   CheckCircle2,
@@ -9,7 +10,6 @@ import {
   Palette,
   ShoppingBag,
   Store,
-  Truck,
   ArrowRight,
   Sparkles,
 } from "lucide-react";
@@ -36,12 +36,12 @@ const STEP_ROUTES: Record<string, string> = {
   store_launched: "/dashboard/store",
 };
 
-const STEP_DESCRIPTIONS: Record<string, string> = {
-  product: "أضف منتجك الأول إلى الكتالوج",
-  published: "انشر منتج حتى يتمكن العملاء من رؤيته",
-  store_customized: "اختر ألوان المتجر وصورة البانر والسمة",
-  first_order: "استقبل أول طلب من عميل",
-  store_launched: "فعّل متجرك ليكون مرئياً للجميع",
+const STEP_DESCRIPTION_KEYS: Record<string, string> = {
+  product: "progress.guide.addProduct",
+  published: "progress.guide.publishProduct",
+  store_customized: "progress.guide.customizeStore",
+  first_order: "progress.guide.receiveOrder",
+  store_launched: "progress.guide.activateStore",
 };
 
 interface Props {
@@ -50,6 +50,7 @@ interface Props {
 
 export function SetupGuideDialog({ userId }: Props) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { currentStore } = useCurrentStore();
   const callGetProgress = useServerFn(getProgress);
   const [open, setOpen] = useState(false);
@@ -147,11 +148,11 @@ export function SetupGuideDialog({ userId }: Props) {
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm mb-3">
               <Sparkles className="h-7 w-7" />
             </div>
-            <h2 className="text-xl font-bold">إعداد متجرك</h2>
+            <h2 className="text-xl font-bold">{t("progress.guide.title")}</h2>
             <p className="text-sm text-white/80 mt-1">
               {allDone
-                ? "متجرك جاهز! 🎉"
-                : `${completedCount}/${items.length} خطوات مكتملة`}
+                ? t("progress.guide.ready")
+                : t("progress.guide.stepsComplete", { completed: completedCount, total: items.length })}
             </p>
           </div>
         </div>
@@ -164,14 +165,14 @@ export function SetupGuideDialog({ userId }: Props) {
               style={{ width: `${progress}%` }}
             />
           </div>
-          <p className="text-xs text-muted-foreground text-center mt-2">{progress}% مكتمل</p>
+          <p className="text-xs text-muted-foreground text-center mt-2">{t("progress.setup.percent", { percent: progress })}</p>
         </div>
 
         {/* Checklist */}
         <div className="px-6 py-4 space-y-1.5">
           {items.map((item) => {
             const Icon = STEP_ICONS[item.key] || Circle;
-            const description = STEP_DESCRIPTIONS[item.key] || "";
+            const descriptionKey = STEP_DESCRIPTION_KEYS[item.key] || "";
             return (
               <button
                 key={item.key}
@@ -198,11 +199,11 @@ export function SetupGuideDialog({ userId }: Props) {
                         item.completed ? "text-muted-foreground line-through" : "text-foreground",
                       )}
                     >
-                      {item.label}
+                      {t(item.label)}
                     </span>
                   </div>
-                  {!item.completed && description && (
-                    <p className="text-xs text-muted-foreground mt-0.5 mr-6">{description}</p>
+                  {!item.completed && descriptionKey && (
+                    <p className="text-xs text-muted-foreground mt-0.5 mr-6">{t(descriptionKey)}</p>
                   )}
                 </div>
                 {!item.completed && (
@@ -216,12 +217,12 @@ export function SetupGuideDialog({ userId }: Props) {
         {/* Actions */}
         <div className="px-6 pb-6 flex gap-3">
           <Button variant="outline" onClick={handleClose} className="flex-1">
-            {allDone ? "إغلاق" : "لاحقاً"}
+            {allDone ? t("progress.guide.close") : t("progress.guide.later")}
           </Button>
           {!allDone && (
             <Button onClick={handleStart} className="flex-1 gap-2">
               <Rocket className="h-4 w-4" />
-              {items.find((i) => !i.completed) ? "ابدأ الآن" : "إغلاق"}
+              {items.find((i) => !i.completed) ? t("progress.guide.startNow") : t("progress.guide.close")}
             </Button>
           )}
         </div>

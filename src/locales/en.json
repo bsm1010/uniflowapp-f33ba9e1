@@ -652,5 +652,41 @@
       "errWilaya": "Wilaya is required",
       "errCity": "City is required"
     }
+  },
+  "progress": {
+    "setup": {
+      "title": "Store Setup",
+      "product": "Add a product",
+      "published": "Publish a product",
+      "store_customized": "Customize your store",
+      "first_order": "Receive first order",
+      "store_launched": "Launch your store",
+      "complete": "Complete",
+      "completeAll": "Everything is set up!",
+      "percent": "{{percent}}%"
+    },
+    "guide": {
+      "title": "Set up your store",
+      "ready": "Your store is ready!",
+      "stepsComplete": "{{completed}}/{{total}} steps completed",
+      "later": "Later",
+      "startNow": "Start now",
+      "close": "Close",
+      "addProduct": "Add your first product to the catalog",
+      "publishProduct": "Publish a product so customers can see it",
+      "customizeStore": "Set your store colors, hero image, and theme",
+      "receiveOrder": "Receive your first customer order",
+      "activateStore": "Activate your store so it's publicly visible"
+    },
+    "milestones": {
+      "first_product": { "label": "First product", "description": "Add your first product" },
+      "first_published": { "label": "First published product", "description": "Publish your first product" },
+      "ten_products": { "label": "10 products", "description": "Add 10 products" },
+      "first_sale": { "label": "First sale", "description": "Receive your first order" },
+      "ten_orders": { "label": "10 orders", "description": "Receive 10 orders" },
+      "hundred_orders": { "label": "100 orders", "description": "Receive 100 orders" },
+      "first_revenue": { "label": "First revenue", "description": "Earn your first revenue" },
+      "revenue_100k": { "label": "100,000 DA", "description": "Earn 100,000 DA in revenue" }
+    }
   }
 }

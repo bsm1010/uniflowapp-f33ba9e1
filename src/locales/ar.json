@@ -767,5 +767,41 @@
       "redo": "إعادة (Ctrl+Shift+Z)",
       "viewLive": "عرض مباشر"
     }
+  },
+  "progress": {
+    "setup": {
+      "title": "إعداد المتجر",
+      "product": "إضافة منتج",
+      "published": "نشر منتج",
+      "store_customized": "تخصيص المتجر",
+      "first_order": "استقبال أول طلب",
+      "store_launched": "إطلاق المتجر",
+      "complete": "مكتمل",
+      "completeAll": "تم الإعداد بالكامل!",
+      "percent": "{{percent}}%"
+    },
+    "guide": {
+      "title": "إعداد متجرك",
+      "ready": "متجرك جاهز!",
+      "stepsComplete": "{{completed}}/{{total}} خطوات مكتملة",
+      "later": "لاحقاً",
+      "startNow": "ابدأ الآن",
+      "close": "إغلاق",
+      "addProduct": "أضف منتجك الأول إلى الكتالوج",
+      "publishProduct": "انشر منتج حتى يتمكن العملاء من رؤيته",
+      "customizeStore": "اختر ألوان المتجر وصورة البانر والسمة",
+      "receiveOrder": "استقبل أول طلب من عميل",
+      "activateStore": "فعّل متجرك ليكون مرئياً للجميع"
+    },
+    "milestones": {
+      "first_product": { "label": "أول منتج", "description": "أضف منتجك الأول" },
+      "first_published": { "label": "أول منتج منشور", "description": "انشر منتجك الأول" },
+      "ten_products": { "label": "10 منتجات", "description": "أضف 10 منتجات" },
+      "first_sale": { "label": "أول عملية بيع", "description": "استقبل أول طلب" },
+      "ten_orders": { "label": "10 طلبات", "description": "استقبل 10 طلبات" },
+      "hundred_orders": { "label": "100 طلب", "description": "استقبل 100 طلب" },
+      "first_revenue": { "label": "أول أرباح", "description": "حق أول أرباح" },
+      "revenue_100k": { "label": "100,000 د.ج", "description": "حق 100,000 د.ج أرباح" }
+    }
   }
 }
