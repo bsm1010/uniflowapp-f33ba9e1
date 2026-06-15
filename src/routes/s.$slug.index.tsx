@@ -141,6 +141,8 @@ function StorefrontHome() {
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const [sort, setSort] = useState<SortKey>("newest");
+  const [newsletterEmail, setNewsletterEmail] = useState("");
+  const [newsletterLoading, setNewsletterLoading] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -486,16 +488,44 @@ function StorefrontHome() {
             <p className="mt-3 text-base md:text-lg leading-relaxed" style={{ color: t.muted }}>
               {titles.newsletter_sub}
             </p>
+            {/* ── Newsletter subscriber table (create if missing):
+                CREATE TABLE newsletter_subscribers (
+                  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+                  store_id uuid REFERENCES store_settings(user_id),
+                  email text NOT NULL,
+                  subscribed_at timestamptz DEFAULT now(),
+                  UNIQUE(store_id, email)
+                );
+            ── */}
             <form
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault();
-                toast.success(tr("storefront.home.subscribed"));
+                if (!newsletterEmail.trim()) return;
+                setNewsletterLoading(true);
+                const { error } = await supabase.from("newsletter_subscribers").insert({
+                  email: newsletterEmail.trim(),
+                  store_id: settings?.user_id,
+                  subscribed_at: new Date().toISOString(),
+                });
+                setNewsletterLoading(false);
+                if (error) {
+                  if (error.code === "23505") {
+                    toast.success(tr("storefront.home.alreadySubscribed", { defaultValue: "You're already subscribed!" }));
+                  } else {
+                    toast.error(tr("storefront.home.subscribeError", { defaultValue: "Something went wrong. Please try again." }));
+                  }
+                } else {
+                  toast.success(tr("storefront.home.subscribed"));
+                  setNewsletterEmail("");
+                }
               }}
               className="mt-8 flex flex-col sm:flex-row max-w-lg mx-auto gap-3"
             >
               <input
                 type="email"
                 required
+                value={newsletterEmail}
+                onChange={(e) => setNewsletterEmail(e.target.value)}
                 placeholder={tr("storefront.home.emailPh")}
                 className="flex-1 px-5 py-4 text-base outline-none transition-all duration-200 focus:shadow-lg"
                 style={{
@@ -507,7 +537,8 @@ function StorefrontHome() {
               />
               <button
                 type="submit"
-                className="px-8 py-4 text-base font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-lg active:scale-[0.98]"
+                disabled={newsletterLoading}
+                className="px-8 py-4 text-base font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-lg active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
                 style={{
                   backgroundColor: t.primary,
                   color: t.onPrimary,
@@ -515,7 +546,11 @@ function StorefrontHome() {
                   boxShadow: `0 8px 30px -8px ${t.primary}44`,
                 }}
               >
-                {labels.subscribe}
+                {newsletterLoading ? (
+                  <Loader2 className="h-5 w-5 animate-spin mx-auto" />
+                ) : (
+                  labels.subscribe
+                )}
               </button>
             </form>
           </div>
