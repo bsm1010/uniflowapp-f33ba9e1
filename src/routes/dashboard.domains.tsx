@@ -31,6 +31,7 @@ function DomainsPage() {
   const [open, setOpen] = useState(false);
   const [domains, setDomains] = useState<DomainRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const listFn = useServerFn(listCustomDomains);
   const verifyFn = useServerFn(verifyCustomDomain);
@@ -38,10 +39,11 @@ function DomainsPage() {
 
   const refresh = async () => {
     try {
+      setLoadError(null);
       const rows = await listFn();
       setDomains(rows as unknown as DomainRow[]);
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed to load domains");
+      setLoadError(e instanceof Error ? e.message : "Failed to load domains");
     } finally { setLoading(false); }
   };
 
@@ -53,14 +55,21 @@ function DomainsPage() {
       const r = await verifyFn({ data: { id } });
       toast[r.verified ? "success" : "info"](r.verified ? "Domain verified!" : "Still propagating…");
       await refresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Verification failed");
     } finally { setBusyId(null); }
   };
 
   const remove = async (id: string) => {
     if (!confirm("Remove this domain?")) return;
     setBusyId(id);
-    try { await removeFn({ data: { id } }); await refresh(); }
-    finally { setBusyId(null); }
+    try {
+      await removeFn({ data: { id } });
+      toast.success("Domain removed");
+      await refresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to remove domain");
+    } finally { setBusyId(null); }
   };
 
   return (
@@ -83,6 +92,11 @@ function DomainsPage() {
         <CardContent className="p-0">
           {loading ? (
             <div className="p-10 grid place-items-center"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>
+          ) : loadError ? (
+            <div className="p-10 text-center">
+              <p className="text-sm text-destructive mb-3">{loadError}</p>
+              <Button variant="outline" size="sm" onClick={() => void refresh()}>Retry</Button>
+            </div>
           ) : domains.length === 0 ? (
             <div className="p-10 text-center">
               <div className="mx-auto h-14 w-14 rounded-full bg-muted grid place-items-center mb-3">
