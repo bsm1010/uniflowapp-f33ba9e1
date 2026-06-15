@@ -26,7 +26,7 @@ export const Route = createFileRoute("/dashboard/apps/chatbot")({
       <ChatbotPage />
     </RequireApp>
   ),
-  head: () => ({ meta: [{ title: "Chatbot — Storely" }] }),
+  head: () => ({ meta: [{ title: "Chatbot — Fennecly" }] }),
 });
 
 function ChatbotPage() {

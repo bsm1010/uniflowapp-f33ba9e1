@@ -26,7 +26,7 @@ import { getStoreTokens, type StoreSettings } from "@/lib/storeTheme";
 
 export const Route = createFileRoute("/dashboard/contact")({
   component: ContactEditor,
-  head: () => ({ meta: [{ title: "Contact Page — Storely" }] }),
+  head: () => ({ meta: [{ title: "Contact Page — Fennecly" }] }),
 });
 
 function ContactEditor() {

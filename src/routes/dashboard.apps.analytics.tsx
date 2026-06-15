@@ -17,7 +17,7 @@ export const Route = createFileRoute("/dashboard/apps/analytics")({
       <AnalyticsIntegrationPage />
     </RequireApp>
   ),
-  head: () => ({ meta: [{ title: "Analytics Integration — Storely" }] }),
+  head: () => ({ meta: [{ title: "Analytics Integration — Fennecly" }] }),
 });
 
 function AnalyticsIntegrationPage() {

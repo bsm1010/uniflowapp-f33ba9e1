@@ -25,7 +25,7 @@ import {
 
 export const Route = createFileRoute("/dashboard/theme-presets")({
   component: PresetsPage,
-  head: () => ({ meta: [{ title: "Theme Presets — Storely" }] }),
+  head: () => ({ meta: [{ title: "Theme Presets — Fennecly" }] }),
 });
 
 function PresetsPage() {

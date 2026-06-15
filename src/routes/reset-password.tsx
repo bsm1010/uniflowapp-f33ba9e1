@@ -13,7 +13,7 @@ export const Route = createFileRoute("/reset-password")({
   component: ResetPasswordPage,
   head: () => ({
     meta: [
-      { title: "Set a new password — Storely" },
+      { title: "Set a new password — Fennecly" },
       { name: "description", content: "Choose a new password for your account." },
     ],
   }),

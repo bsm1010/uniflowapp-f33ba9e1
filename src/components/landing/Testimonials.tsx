@@ -5,7 +5,7 @@ import { Star } from "lucide-react";
 const testimonials = [
   {
     quote:
-      "Storely got my boutique online in a single weekend. The drag-and-drop builder is genuinely magical.",
+      "Fennecly got my boutique online in a single weekend. The drag-and-drop builder is genuinely magical.",
     name: "Sara Mansour",
     role: "Founder, Maison Lila",
   },

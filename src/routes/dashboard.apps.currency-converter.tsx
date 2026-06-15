@@ -25,7 +25,7 @@ export const Route = createFileRoute("/dashboard/apps/currency-converter")({
       <CurrencyPage />
     </RequireApp>
   ),
-  head: () => ({ meta: [{ title: "Currency Converter — Storely" }] }),
+  head: () => ({ meta: [{ title: "Currency Converter — Fennecly" }] }),
 });
 
 const ALL = ["USD", "EUR", "GBP", "DZD", "MAD", "TND", "AED", "SAR", "JPY", "CAD", "AUD"];

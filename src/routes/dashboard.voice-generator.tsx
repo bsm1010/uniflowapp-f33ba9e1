@@ -29,7 +29,7 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/dashboard/voice-generator")({
   component: VoiceGeneratorPage,
   head: () => ({
-    meta: [{ title: "AI Voice Generator — Storely" }],
+    meta: [{ title: "AI Voice Generator — Fennecly" }],
   }),
 });
 

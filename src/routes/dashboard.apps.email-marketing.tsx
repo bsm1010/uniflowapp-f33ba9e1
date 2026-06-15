@@ -48,7 +48,7 @@ export const Route = createFileRoute("/dashboard/apps/email-marketing")({
   ),
   head: () => ({
     meta: [
-      { title: "Email Marketing — Storely" },
+      { title: "Email Marketing — Fennecly" },
       {
         name: "description",
         content: "Create and send email campaigns to your customers.",

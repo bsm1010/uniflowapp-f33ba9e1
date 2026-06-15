@@ -35,7 +35,7 @@ export const Route = createFileRoute("/signup")({
   component: SignUpPage,
   head: () => ({
     meta: [
-      { title: "Create your store — Storely" },
+      { title: "Create your store — Fennecly" },
       { name: "description", content: "Sign up free and launch your e-commerce store in minutes." },
     ],
   }),

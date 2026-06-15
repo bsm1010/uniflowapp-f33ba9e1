@@ -23,7 +23,7 @@ export function Footer() {
           <div className="md:col-span-2">
             <div className="flex items-center gap-2">
               <div className="h-8 w-8 rounded-lg bg-gradient-brand shadow-glow" />
-              <span className="font-display font-semibold text-lg">Storely</span>
+              <span className="font-display font-semibold text-lg">Fennecly</span>
             </div>
             <p className="mt-4 text-sm text-muted-foreground max-w-xs">{t("footer.tagline")}</p>
             <div className="mt-6 flex gap-2">
@@ -61,7 +61,7 @@ export function Footer() {
 
         <div className="mt-12 pt-8 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} Storely, Inc. {t("footer.rights")}
+            © {new Date().getFullYear()} Fennecly, Inc. {t("footer.rights")}
           </p>
           <p className="text-xs text-muted-foreground">{t("footer.made")}</p>
         </div>

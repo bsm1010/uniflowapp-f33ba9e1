@@ -27,7 +27,7 @@ export const Route = createFileRoute("/dashboard/apps/ai-descriptions")({
       <AiDescPage />
     </RequireApp>
   ),
-  head: () => ({ meta: [{ title: "AI Descriptions — Storely" }] }),
+  head: () => ({ meta: [{ title: "AI Descriptions — Fennecly" }] }),
 });
 
 function AiDescPage() {

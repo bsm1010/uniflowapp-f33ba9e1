@@ -19,7 +19,7 @@ export const Route = createFileRoute("/dashboard/apps/seo-optimizer")({
       <SeoPage />
     </RequireApp>
   ),
-  head: () => ({ meta: [{ title: "SEO Optimizer — Storely" }] }),
+  head: () => ({ meta: [{ title: "SEO Optimizer — Fennecly" }] }),
 });
 
 function SeoPage() {

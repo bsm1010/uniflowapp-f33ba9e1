@@ -190,7 +190,7 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
   const steps = [
     {
       title: "Where did you hear about us?",
-      subtitle: "Help us understand how you found Storely.",
+      subtitle: "Help us understand how you found Fennecly.",
       icon: Sparkles,
       valid: source.length > 0,
     },

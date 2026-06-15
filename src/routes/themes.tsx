@@ -11,7 +11,7 @@ export const Route = createFileRoute("/themes")({
   component: ThemeGalleryPage,
   head: () => ({
     meta: [
-      { title: "Theme Gallery — 20 Premium Store Themes | Storely" },
+      { title: "Theme Gallery — 20 Premium Store Themes | Fennecly" },
       {
         name: "description",
         content:

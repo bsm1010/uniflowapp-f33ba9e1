@@ -17,7 +17,7 @@ import { getStoreTokens } from "@/lib/storeTheme";
 
 export const Route = createFileRoute("/dashboard/about")({
   component: AboutEditor,
-  head: () => ({ meta: [{ title: "About Page — Storely" }] }),
+  head: () => ({ meta: [{ title: "About Page — Fennecly" }] }),
 });
 
 const DEFAULT_TITLE = "About us";

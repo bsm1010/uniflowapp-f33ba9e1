@@ -26,7 +26,7 @@ export const Route = createFileRoute("/dashboard/apps/popup-builder")({
       <PopupBuilderPage />
     </RequireApp>
   ),
-  head: () => ({ meta: [{ title: "Popup Builder — Storely" }] }),
+  head: () => ({ meta: [{ title: "Popup Builder — Fennecly" }] }),
 });
 
 type Popup = {

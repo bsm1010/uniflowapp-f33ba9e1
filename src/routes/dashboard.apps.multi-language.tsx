@@ -25,7 +25,7 @@ export const Route = createFileRoute("/dashboard/apps/multi-language")({
       <MultiLangPage />
     </RequireApp>
   ),
-  head: () => ({ meta: [{ title: "Multi-language — Storely" }] }),
+  head: () => ({ meta: [{ title: "Multi-language — Fennecly" }] }),
 });
 
 const ALL_LANGS = [

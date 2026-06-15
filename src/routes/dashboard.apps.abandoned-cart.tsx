@@ -16,7 +16,7 @@ export const Route = createFileRoute("/dashboard/apps/abandoned-cart")({
       <AbandonedCartPage />
     </RequireApp>
   ),
-  head: () => ({ meta: [{ title: "Abandoned Cart Recovery — Storely" }] }),
+  head: () => ({ meta: [{ title: "Abandoned Cart Recovery — Fennecly" }] }),
 });
 
 type Cart = {

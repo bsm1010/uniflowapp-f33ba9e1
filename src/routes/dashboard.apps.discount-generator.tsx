@@ -27,7 +27,7 @@ export const Route = createFileRoute("/dashboard/apps/discount-generator")({
     </RequireApp>
   ),
   head: () => ({
-    meta: [{ title: "Discount Generator — Storely" }],
+    meta: [{ title: "Discount Generator — Fennecly" }],
   }),
 });
 

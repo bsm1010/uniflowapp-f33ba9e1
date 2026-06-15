@@ -28,7 +28,7 @@ import {
 
 export const Route = createFileRoute("/dashboard/settings")({
   component: SettingsPage,
-  head: () => ({ meta: [{ title: "Settings — Storely" }] }),
+  head: () => ({ meta: [{ title: "Settings — Fennecly" }] }),
 });
 
 function SettingsPage() {
