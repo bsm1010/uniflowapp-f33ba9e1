@@ -37,11 +37,11 @@ const STEP_ROUTES: Record<string, string> = {
 };
 
 const STEP_DESCRIPTIONS: Record<string, string> = {
-  product: "Add your first product to the catalog",
-  published: "Publish a product so customers can see it",
-  store_customized: "Set your store colors, hero image, and theme",
-  first_order: "Receive your first customer order",
-  store_launched: "Activate your store so it's publicly visible",
+  product: "أضف منتجك الأول إلى الكتالوج",
+  published: "انشر منتج حتى يتمكن العملاء من رؤيته",
+  store_customized: "اختر ألوان المتجر وصورة البانر والسمة",
+  first_order: "استقبل أول طلب من عميل",
+  store_launched: "فعّل متجرك ليكون مرئياً للجميع",
 };
 
 interface Props {

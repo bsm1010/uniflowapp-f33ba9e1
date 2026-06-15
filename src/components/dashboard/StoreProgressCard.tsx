@@ -62,11 +62,11 @@ export function StoreProgressCard() {
             <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center">
               <Sparkles className="h-3.5 w-3.5 text-white" />
             </div>
-            <span className="text-sm font-semibold text-foreground">Store Setup</span>
+            <span className="text-sm font-semibold text-foreground">إعداد المتجر</span>
           </div>
           {allDone ? (
             <span className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
-              <CheckCircle2 className="h-3.5 w-3.5" /> Complete
+              <CheckCircle2 className="h-3.5 w-3.5" /> مكتمل
             </span>
           ) : (
             <span className="text-xs text-muted-foreground font-medium">{progress}%</span>
@@ -84,7 +84,7 @@ export function StoreProgressCard() {
         </div>
 
         {allDone ? (
-          <p className="text-xs text-muted-foreground text-center py-1">Everything is set up!</p>
+          <p className="text-xs text-muted-foreground text-center py-1">تم الإعداد بالكامل!</p>
         ) : nextIncomplete ? (
           <>
             <div className="space-y-1.5">

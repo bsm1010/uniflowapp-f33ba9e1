@@ -36,22 +36,22 @@ export type ProgressData = {
 };
 
 const CHECKLIST: SetupItem[] = [
-  { key: "product", label: "", completed: false },
-  { key: "published", label: "", completed: false },
-  { key: "store_customized", label: "", completed: false },
-  { key: "first_order", label: "", completed: false },
-  { key: "store_launched", label: "", completed: false },
+  { key: "product", label: "إضافة منتج", completed: false },
+  { key: "published", label: "نشر منتج", completed: false },
+  { key: "store_customized", label: "تخصيص المتجر", completed: false },
+  { key: "first_order", label: "استقبال أول طلب", completed: false },
+  { key: "store_launched", label: "إطلاق المتجر", completed: false },
 ];
 
 const MILESTONES: (Omit<Milestone, "unlocked"> & { check: (stats: any) => boolean | number })[] = [
-  { key: "first_product", label: "", description: "", icon: "Package", check: (s) => s.products >= 1 },
-  { key: "first_published", label: "", description: "", icon: "CheckCircle2", check: (s) => s.published >= 1 },
-  { key: "ten_products", label: "", description: "", icon: "Layers", check: (s) => Math.min(s.products / 10, 1) },
-  { key: "first_sale", label: "", description: "", icon: "ShoppingBag", check: (s) => s.orders >= 1 },
-  { key: "ten_orders", label: "", description: "", icon: "TrendingUp", check: (s) => Math.min(s.orders / 10, 1) },
-  { key: "hundred_orders", label: "", description: "", icon: "Award", check: (s) => Math.min(s.orders / 100, 1) },
-  { key: "first_revenue", label: "", description: "", icon: "DollarSign", check: (s) => s.revenue >= 1 },
-  { key: "revenue_100k", label: "", description: "", icon: "Zap", check: (s) => Math.min(s.revenue / 100000, 1) },
+  { key: "first_product", label: "أول منتج", description: "أضف منتجك الأول", icon: "Package", check: (s) => s.products >= 1 },
+  { key: "first_published", label: "أول منتج منشور", description: "انشر منتجك الأول", icon: "CheckCircle2", check: (s) => s.published >= 1 },
+  { key: "ten_products", label: "10 منتجات", description: "أضف 10 منتجات", icon: "Layers", check: (s) => Math.min(s.products / 10, 1) },
+  { key: "first_sale", label: "أول عملية بيع", description: "استقبل أول طلب", icon: "ShoppingBag", check: (s) => s.orders >= 1 },
+  { key: "ten_orders", label: "10 طلبات", description: "استقبل 10 طلبات", icon: "TrendingUp", check: (s) => Math.min(s.orders / 10, 1) },
+  { key: "hundred_orders", label: "100 طلب", description: "استقبل 100 طلب", icon: "Award", check: (s) => Math.min(s.orders / 100, 1) },
+  { key: "first_revenue", label: "أول أرباح", description: "حق أول أرباح", icon: "DollarSign", check: (s) => s.revenue >= 1 },
+  { key: "revenue_100k", label: "100,000 د.ج", description: "حق 100,000 د.ج أرباح", icon: "Zap", check: (s) => Math.min(s.revenue / 100000, 1) },
 ];
 
 const Schema = z.object({
