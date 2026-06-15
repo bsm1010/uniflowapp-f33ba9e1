@@ -216,7 +216,7 @@ function DeveloperPage() {
               <Card key={app.id} className="p-4 flex items-center gap-4">
                 <div className="h-14 w-14 rounded-xl bg-muted overflow-hidden flex items-center justify-center shrink-0">
                   {app.icon_url ? (
-                    <img src={app.icon_url} alt="" className="h-full w-full object-cover" />
+                    <img src={app.icon_url} alt={(app.title || "App") + " icon"} className="h-full w-full object-cover" />
                   ) : (
                     <Code2 className="h-6 w-6 text-muted-foreground" />
                   )}

@@ -520,7 +520,7 @@ function AdminSupplyMarketplacePage() {
                                 {o.supply_product?.images?.[0] ? (
                                   <Img
                                     src={o.supply_product.images[0]}
-                                    alt=""
+                                    alt={o.supply_product?.name || "Supply product"}
                                     objectFit="cover"
                                     className="h-full w-full"
                                   />
@@ -908,7 +908,7 @@ function SupplyProductFormDialog({
                   key={i}
                   className="relative h-28 w-28 rounded-lg overflow-hidden border border-border/60 group bg-muted/30"
                 >
-                  <Img src={src} alt="" objectFit="cover" className="h-full w-full" />
+                  <Img src={src} alt={"Uploaded image " + (i + 1)} objectFit="cover" className="h-full w-full" />
                   <button
                     type="button"
                     onClick={() => setImages((prev) => prev.filter((_, j) => j !== i))}

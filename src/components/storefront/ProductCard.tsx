@@ -75,6 +75,7 @@ export function ProductCard({
           <Img
             src={product.images[1]}
             alt=""
+            role="presentation"
             objectFit="cover"
             className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
           />

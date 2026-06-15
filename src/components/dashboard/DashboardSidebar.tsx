@@ -650,7 +650,7 @@ export function DashboardSidebar() {
                   <SidebarMenuButton
                     asChild
                     isActive={isActive("/dashboard/admin/supply-marketplace")}
-                    tooltip="سوق التوريد"
+                    tooltip={t("dashboard.nav.adminSupplyMarketplace", { defaultValue: "سوق التوريد" })}
                     className="h-9"
                   >
                     <Link
@@ -666,7 +666,7 @@ export function DashboardSidebar() {
                         "from-amber-500 to-orange-500",
                         isActive("/dashboard/admin/supply-marketplace"),
                       )}
-                      <span className="text-sm">سوق التوريد</span>
+                      <span className="text-sm">{t("dashboard.nav.adminSupplyMarketplace", { defaultValue: "سوق التوريد" })}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

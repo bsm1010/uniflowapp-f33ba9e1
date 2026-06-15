@@ -210,7 +210,8 @@
       "marketplace": "Marché d'approvisionnement",
       "dropshipOrders": "Commandes dropshipping",
       "supplyOrders": "Commandes fournisseur",
-      "supplyListings": "Produits fournisseurs dans votre boutique"
+      "supplyListings": "Produits fournisseurs dans votre boutique",
+      "adminSupplyMarketplace": "Marché d'approvisionnement"
     },
     "home": {
       "kicker": "Tableau de bord",

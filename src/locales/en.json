@@ -204,7 +204,8 @@
       "marketplace": "Supply Market",
       "dropshipOrders": "Dropship Orders",
       "supplyOrders": "Supply Orders",
-      "supplyListings": "Supply Listings in Your Store"
+      "supplyListings": "Supply Listings in Your Store",
+      "adminSupplyMarketplace": "Supply Market"
     },
     "home": {
       "kicker": "Dashboard",

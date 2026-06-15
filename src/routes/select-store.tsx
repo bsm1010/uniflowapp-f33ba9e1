@@ -116,7 +116,7 @@ function SelectStorePage() {
             >
               <div className="w-14 h-14 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center text-lg font-bold mb-5 overflow-hidden">
                 {store.logo_url ? (
-                  <img src={store.logo_url} alt="" className="h-full w-full object-cover" />
+                  <img src={store.logo_url} alt={(store.name || "Store") + " logo"} className="h-full w-full object-cover" />
                 ) : (
                   store.name.charAt(0).toUpperCase()
                 )}

@@ -325,7 +325,7 @@ function SubmitAppPage() {
             <Label>Icon</Label>
             <div className="flex items-center gap-4">
               {iconUrl ? (
-                <img src={iconUrl} alt="" className="h-16 w-16 rounded-xl object-cover border" />
+                <img src={iconUrl} alt="App icon preview" className="h-16 w-16 rounded-xl object-cover border" />
               ) : (
                 <div className="h-16 w-16 rounded-xl border border-dashed flex items-center justify-center text-muted-foreground">
                   <Upload className="h-5 w-5" />
@@ -350,7 +350,7 @@ function SubmitAppPage() {
                   <div key={url} className="relative group">
                     <img
                       src={url}
-                      alt=""
+                      alt={"Screenshot " + (i + 1)}
                       className="w-full aspect-video rounded-lg object-cover border"
                     />
                     <button

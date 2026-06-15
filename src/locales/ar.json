@@ -195,7 +195,8 @@
       "marketplace": "سوق التوريد",
       "dropshipOrders": "طلبات التوريد",
       "supplyOrders": "سوق التوريد",
-      "supplyListings": "منتجات التوريد في متجرك"
+      "supplyListings": "منتجات التوريد في متجرك",
+      "adminSupplyMarketplace": "سوق التوريد"
     },
     "home": {
       "kicker": "لوحة التحكم",

@@ -394,6 +394,7 @@ function StorefrontHome() {
                       <img
                         src={productInCat.images[0]}
                         alt=""
+                        role="presentation"
                         className="h-full w-full object-cover"
                       />
                     </div>

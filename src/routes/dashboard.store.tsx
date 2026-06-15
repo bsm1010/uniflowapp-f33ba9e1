@@ -296,7 +296,7 @@ function StorePage() {
         <CardContent className="p-6 -mt-10 relative">
           <div className="h-20 w-20 rounded-2xl bg-background border-4 border-background shadow-soft flex items-center justify-center overflow-hidden">
             {settings?.logo_url ? (
-              <img src={settings.logo_url} alt="" className="h-full w-full object-cover" />
+              <img src={settings.logo_url} alt="Store logo" className="h-full w-full object-cover" />
             ) : (
               <div
                 className="h-12 w-12 rounded-xl"

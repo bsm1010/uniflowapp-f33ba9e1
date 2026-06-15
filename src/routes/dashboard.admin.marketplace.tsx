@@ -349,7 +349,7 @@ function AdminMarketplacePage() {
                     <img
                       key={s}
                       src={s}
-                      alt=""
+                      alt={(previewApp?.title || "App") + " screenshot"}
                       className="w-full rounded-md border object-cover aspect-video"
                     />
                   ))}
