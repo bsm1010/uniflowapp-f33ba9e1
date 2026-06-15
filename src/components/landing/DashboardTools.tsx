@@ -14,70 +14,111 @@ import {
   Globe,
   Layers,
 } from "lucide-react";
+import { motion } from "framer-motion";
 
 const tools = [
-  { icon: Package, key: "products" },
-  { icon: ShoppingCart, key: "orders" },
-  { icon: Truck, key: "delivery" },
-  { icon: Palette, key: "themes" },
-  { icon: BarChart3, key: "analytics" },
-  { icon: MessageCircle, key: "chatbot" },
-  { icon: Mail, key: "email" },
-  { icon: Tag, key: "discounts" },
-  { icon: Search, key: "seo" },
-  { icon: Sparkles, key: "ai" },
-  { icon: Globe, key: "multilang" },
-  { icon: Layers, key: "database" },
+  { icon: Package, key: "products", color: "from-emerald-400 to-teal-400" },
+  { icon: ShoppingCart, key: "orders", color: "from-violet-400 to-purple-400" },
+  { icon: Truck, key: "delivery", color: "from-blue-400 to-cyan-400" },
+  { icon: Palette, key: "themes", color: "from-fuchsia-400 to-pink-400" },
+  { icon: BarChart3, key: "analytics", color: "from-amber-400 to-orange-400" },
+  { icon: MessageCircle, key: "chatbot", color: "from-rose-400 to-red-400" },
+  { icon: Mail, key: "email", color: "from-sky-400 to-blue-400" },
+  { icon: Tag, key: "discounts", color: "from-lime-400 to-green-400" },
+  { icon: Search, key: "seo", color: "from-indigo-400 to-violet-400" },
+  { icon: Sparkles, key: "ai", color: "from-fuchsia-400 to-violet-400" },
+  { icon: Globe, key: "multilang", color: "from-teal-400 to-cyan-400" },
+  { icon: Layers, key: "database", color: "from-purple-400 to-fuchsia-400" },
 ] as const;
 
 export function DashboardTools() {
   const { t } = useTranslation();
 
   return (
-    <section className="relative overflow-hidden py-20 md:py-28">
+    <section className="relative py-24 md:py-32 overflow-hidden">
+      {/* Subtle background accent */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-violet-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-[120px] pointer-events-none" />
+
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+        <div className="grid items-center gap-16 lg:grid-cols-2">
           {/* Left — Image */}
-          <div className="flex justify-center lg:justify-start">
-            <img
-              src={deliveryMan}
-              alt={t("dashTools.imageAlt")}
-              width={640}
-              height={640}
-              className="w-full max-w-md lg:max-w-lg xl:max-w-xl drop-shadow-2xl"
-              loading="eager"
-              decoding="async"
-              fetchPriority="high"
-            />
-          </div>
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+            className="relative flex justify-center lg:justify-start"
+          >
+            <div className="relative">
+              <div className="absolute -inset-4 bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 rounded-3xl blur-2xl" />
+              <img
+                src={deliveryMan}
+                alt={t("dashTools.imageAlt")}
+                width={640}
+                height={640}
+                className="relative w-full max-w-md lg:max-w-lg xl:max-w-xl rounded-3xl"
+                loading="eager"
+                decoding="async"
+                fetchPriority="high"
+              />
+            </div>
+          </motion.div>
 
           {/* Right — Tools */}
           <div>
-            <span className="inline-block rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-primary">
-              {t("dashTools.kicker")}
-            </span>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <span className="inline-flex items-center gap-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-violet-300">
+                {t("dashTools.kicker")}
+              </span>
+            </motion.div>
 
-            <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-              {t("dashTools.titleA")} <span className="text-primary">{t("dashTools.titleB")}</span>
-            </h2>
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="mt-6 text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight"
+            >
+              {t("dashTools.titleA")}{" "}
+              <span className="bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
+                {t("dashTools.titleB")}
+              </span>
+            </motion.h2>
 
-            <p className="mt-4 max-w-lg text-base text-muted-foreground sm:text-lg">
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.15 }}
+              className="mt-4 max-w-lg text-base text-muted-foreground sm:text-lg"
+            >
               {t("dashTools.subtitle")}
-            </p>
+            </motion.p>
 
-            <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
-              {tools.map(({ icon: Icon, key }) => (
-                <div
+            {/* Bento grid of tools */}
+            <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {tools.map(({ icon: Icon, key, color }, i) => (
+                <motion.div
                   key={key}
-                  className="group flex items-center gap-2.5 rounded-xl border border-border/60 bg-card/60 px-3 py-3 transition-colors hover:border-primary/40"
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: 0.05 * i }}
+                  className="group flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm px-4 py-3.5 transition-all duration-300 hover:border-white/20 hover:bg-white/10 hover:shadow-lg hover:shadow-violet-500/5 hover:-translate-y-0.5"
                 >
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary/20">
-                    <Icon className="h-4.5 w-4.5" />
+                  <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${color} shadow-lg`}>
+                    <Icon className="h-4.5 w-4.5 text-white" />
                   </div>
-                  <span className="text-sm font-medium text-foreground">
+                  <span className="text-sm font-medium text-foreground/90">
                     {t(`dashTools.items.${key}`)}
                   </span>
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>

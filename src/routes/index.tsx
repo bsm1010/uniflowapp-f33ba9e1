@@ -101,7 +101,7 @@ function SectionFallback() {
 }
 function Index() {
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen bg-[#0a0a14] text-white">
       <Navbar />
       <Hero />
       <Suspense fallback={<SectionFallback />}>
