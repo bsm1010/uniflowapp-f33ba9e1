@@ -6,8 +6,9 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
+import { useCurrentStore } from "@/hooks/use-current-store";
 import { supabase } from "@/integrations/supabase/client";
-import { formatPrice } from "@/lib/formatPrice";
+import { formatPrice as fmtPrice } from "@/lib/storeTheme";
 
 export const Route = createFileRoute("/dashboard/customers")({
   component: CustomersPage,
@@ -34,33 +35,50 @@ type CustomerProfile = {
 
 function CustomersPage() {
   const { user } = useAuth();
+  const { currentStore } = useCurrentStore();
+  const currency = currentStore?.currency ?? "DZD";
+  const formatPrice = (n: number) => fmtPrice(n, currency);
   const [customers, setCustomers] = useState<CustomerProfile[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [q, setQ] = useState("");
   const [selected, setSelected] = useState<CustomerProfile | null>(null);
 
-  useEffect(() => {
+  const load = async () => {
     if (!user) return;
-    let cancelled = false;
-    (async () => {
+    try {
       setLoading(true);
+      setLoadError(null);
       const { data: orders, error } = await supabase
         .from("orders")
         .select("id, customer_name, customer_email, customer_phone, shipping_wilaya, total, status, delivery_type, created_at")
         .eq("store_owner_id", user.id)
         .order("created_at", { ascending: false });
-      if (cancelled || error) {
+      if (error) {
+        setLoadError(error.message);
         setLoading(false);
         return;
       }
       const map = new Map<string, CustomerProfile>();
       for (const o of orders ?? []) {
-        const key = (o.customer_email ?? o.customer_name ?? "unknown").toLowerCase().trim();
+        // Group by email > phone > name (more unique than name alone)
+        const key = (
+          o.customer_email?.trim() ||
+          o.customer_phone?.trim() ||
+          o.customer_name?.trim() ||
+          "unknown"
+        ).toLowerCase();
         const existing = map.get(key);
         if (existing) {
           existing.orderCount++;
           existing.totalSpent += Number(o.total) || 0;
-          existing.lastOrderDate = existing.lastOrderDate && o.created_at > existing.lastOrderDate ? o.created_at : existing.lastOrderDate;
+          if (o.created_at && (!existing.lastOrderDate || o.created_at > existing.lastOrderDate)) {
+            existing.lastOrderDate = o.created_at;
+          }
+          // Orders are desc — last encounter is the oldest, so keep updating firstOrderDate
+          if (o.created_at) {
+            existing.firstOrderDate = o.created_at;
+          }
           existing.orders.push({
             id: o.id,
             total: Number(o.total) || 0,
@@ -69,6 +87,7 @@ function CustomersPage() {
             delivery_type: o.delivery_type ?? "",
           });
           if (o.shipping_wilaya && !existing.wilaya) existing.wilaya = o.shipping_wilaya;
+          if (o.customer_phone && !existing.phone) existing.phone = o.customer_phone;
         } else {
           map.set(key, {
             email: o.customer_email ?? "",
@@ -90,10 +109,17 @@ function CustomersPage() {
         }
       }
       setCustomers(Array.from(map.values()).sort((a, b) => b.totalSpent - a.totalSpent));
+    } catch {
+      setLoadError("Failed to load customers");
+    } finally {
       setLoading(false);
-    })();
-    return () => { cancelled = true; };
-  }, [user]);
+    }
+  };
+
+  useEffect(() => {
+    if (!user) return;
+    void load();
+  }, [user?.id]);
 
   const filtered = useMemo(() => {
     const needle = q.toLowerCase().trim();
@@ -130,6 +156,15 @@ function CustomersPage() {
         icon={Users}
         gradient="from-cyan-500 via-sky-500 to-blue-500"
       />
+
+      {loadError && (
+        <div className="flex items-center gap-2 rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          <span>{loadError}</span>
+          <button onClick={() => void load()} className="ml-auto underline hover:no-underline">
+            Retry
+          </button>
+        </div>
+      )}
 
       {/* Stats */}
       <div className="grid gap-4 md:grid-cols-4">
