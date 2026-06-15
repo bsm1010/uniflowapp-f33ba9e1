@@ -4,8 +4,9 @@ import { BarChart3, TrendingUp, ShoppingCart, DollarSign, Users, Package, Loader
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
+import { useCurrentStore } from "@/hooks/use-current-store";
 import { supabase } from "@/integrations/supabase/client";
-import { formatPrice } from "@/lib/formatPrice";
+import { formatPrice as fmtPrice } from "@/lib/storeTheme";
 import { AlgeriaOrdersMap } from "@/components/dashboard/AlgeriaOrdersMap";
 
 export const Route = createFileRoute("/dashboard/analytics")({
@@ -19,7 +20,7 @@ type Stats = {
   totalProducts: number;
   totalCustomers: number;
   avgOrderValue: number;
-  conversionRate: string;
+  deliveryRate: string;
   pendingOrders: number;
   deliveredOrders: number;
   revenue7d: number;
@@ -28,19 +29,24 @@ type Stats = {
 
 function AnalyticsPage() {
   const { user } = useAuth();
+  const { currentStore } = useCurrentStore();
+  const currency = currentStore?.currency ?? "DZD";
+  const formatPrice = (n: number) => fmtPrice(n, currency);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const load = async () => {
     if (!user) return;
-    (async () => {
+    try {
       setLoading(true);
+      setLoadError(null);
       const sevenDaysAgo = new Date(Date.now() - 7 * 86400000).toISOString();
 
-      const [ordersRes, productsRes, customersRes, recentRes] = await Promise.all([
+      const [ordersRes, productsRes, recentRes] = await Promise.all([
         supabase
           .from("orders")
-          .select("id, total, status, created_at")
+          .select("id, total, status, customer_email, customer_phone, customer_name, created_at")
           .eq("store_owner_id", user.id),
         supabase
           .from("products")
@@ -48,45 +54,80 @@ function AnalyticsPage() {
           .eq("user_id", user.id),
         supabase
           .from("orders")
-          .select("customer_email")
-          .eq("store_owner_id", user.id),
-        supabase
-          .from("orders")
-          .select("id, total")
+          .select("id, total, status")
           .eq("store_owner_id", user.id)
           .gte("created_at", sevenDaysAgo),
       ]);
 
+      if (ordersRes.error || productsRes.error || recentRes.error) {
+        setLoadError("Failed to load analytics data");
+        setLoading(false);
+        return;
+      }
+
       const orders = ordersRes.data ?? [];
+      const recent = recentRes.data ?? [];
       const totalOrders = orders.length;
       const totalRevenue = orders.reduce((s, o) => s + (Number(o.total) || 0), 0);
       const deliveredOrders = orders.filter((o) => o.status?.toLowerCase() === "delivered").length;
       const pendingOrders = orders.filter((o) => o.status?.toLowerCase() === "pending").length;
       const avgOrderValue = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0;
-      const uniqueCustomers = new Set((customersRes.data ?? []).map((o) => o.customer_email ?? "")).size;
-      const revenue7d = (recentRes.data ?? []).reduce((s, o) => s + (Number(o.total) || 0), 0);
-      const orders7d = (recentRes.data ?? []).length;
+
+      // Unique customers: email > phone > name (same logic as customers page)
+      const customerKeys = new Set<string>();
+      for (const o of orders) {
+        const key = (
+          o.customer_email?.trim() ||
+          o.customer_phone?.trim() ||
+          o.customer_name?.trim() ||
+          ""
+        ).toLowerCase();
+        if (key) customerKeys.add(key);
+      }
+
+      const revenue7d = recent.reduce((s, o) => s + (Number(o.total) || 0), 0);
+      const orders7d = recent.length;
+      const delivered7d = recent.filter((o) => o.status?.toLowerCase() === "delivered").length;
 
       setStats({
         totalOrders,
         totalRevenue,
         totalProducts: productsRes.count ?? 0,
-        totalCustomers: uniqueCustomers,
+        totalCustomers: customerKeys.size,
         avgOrderValue,
-        conversionRate: orders7d > 0 ? `${Math.min(100, Math.round((deliveredOrders / Math.max(totalOrders, 1)) * 100))}%` : "0%",
+        deliveryRate: orders7d > 0 ? `${Math.round((delivered7d / orders7d) * 100)}%` : "0%",
         pendingOrders,
         deliveredOrders,
         revenue7d,
         orders7d,
       });
+    } catch {
+      setLoadError("Failed to load analytics data");
+    } finally {
       setLoading(false);
-    })();
-  }, [user]);
+    }
+  };
+
+  useEffect(() => {
+    if (!user) return;
+    void load();
+  }, [user?.id]);
 
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto flex items-center justify-center py-24">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="max-w-7xl mx-auto py-24 text-center">
+        <p className="text-muted-foreground mb-4">{loadError}</p>
+        <button onClick={() => void load()} className="text-sm underline hover:no-underline">
+          Retry
+        </button>
       </div>
     );
   }
@@ -145,8 +186,8 @@ function AnalyticsPage() {
                 <p className="mt-1 text-2xl font-bold">{formatPrice(stats?.revenue7d ?? 0)}</p>
               </div>
               <div className="rounded-lg bg-muted/30 p-4">
-                <p className="text-xs text-muted-foreground">Delivery rate</p>
-                <p className="mt-1 text-2xl font-bold">{stats?.conversionRate ?? "0%"}</p>
+                <p className="text-xs text-muted-foreground">Delivery rate (7d)</p>
+                <p className="mt-1 text-2xl font-bold">{stats?.deliveryRate ?? "0%"}</p>
               </div>
               <div className="rounded-lg bg-muted/30 p-4">
                 <p className="text-xs text-muted-foreground">Order/product ratio</p>
