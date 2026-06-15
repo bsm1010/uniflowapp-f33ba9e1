@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin as supabaseAdminTyped } from "@/integrations/supabase/client.server";
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- service_role client bypasses RLS; types are intentionally loose
 const supabaseAdmin: any = supabaseAdminTyped;
 import type { Database } from "@/integrations/supabase/types";
 
@@ -218,7 +219,12 @@ export const updateSupplyOrderStatus = createServerFn({ method: "POST" })
           user_id: existing.user_id,
           title: "تحديث حالة طلبية التوريد",
           message: `تم تحديث حالة طلبتك إلى "${statusLabel}".`,
-          type: data.status === "delivered" ? "success" : data.status === "cancelled" ? "error" : "info",
+          type:
+            data.status === "delivered"
+              ? "success"
+              : data.status === "cancelled"
+                ? "error"
+                : "info",
         });
       } catch {
         // Non-critical
@@ -321,7 +327,7 @@ export const buySupplyProduct = createServerFn({ method: "POST" })
           .eq("id", data.user_id)
           .maybeSingle();
         const buyerName = buyer?.name ?? buyer?.email ?? "مستخدم";
-        const notifRows = admins.map((a: any) => ({
+        const notifRows = admins.map((a: { user_id: string }) => ({
           user_id: a.user_id,
           title: "طلبية توريد جديدة",
           message: `${buyerName} اشترى ${qty}x ${product.name} بقيمة ${total.toLocaleString("fr-DZ")} DA`,

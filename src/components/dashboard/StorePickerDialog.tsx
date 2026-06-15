@@ -35,9 +35,7 @@ export function StorePickerDialog() {
   return (
     <>
       <Dialog open={pickerOpen} onOpenChange={(o) => (o ? null : closePicker())}>
-        <DialogContent
-          className="max-w-4xl border border-gray-200 bg-white dark:bg-background dark:border-border/60 shadow-2xl"
-        >
+        <DialogContent className="max-w-4xl border border-gray-200 bg-white dark:bg-background dark:border-border/60 shadow-2xl">
           <div className="flex flex-col items-center text-center mb-6">
             <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center mb-3 shadow-soft">
               <StoreIcon className="h-6 w-6 text-primary-foreground" />
@@ -71,7 +69,9 @@ export function StorePickerDialog() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="font-semibold truncate">{s.name}</div>
-                    <div className="text-xs text-gray-500 dark:text-white/50 capitalize truncate">{s.category}</div>
+                    <div className="text-xs text-gray-500 dark:text-white/50 capitalize truncate">
+                      {s.category}
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center justify-between text-xs">
@@ -82,7 +82,6 @@ export function StorePickerDialog() {
                   <span className="text-gray-400 dark:text-white/50">{s.currency}</span>
                 </div>
               </button>
-
             ))}
 
             <button

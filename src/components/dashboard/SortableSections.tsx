@@ -42,10 +42,7 @@ export function SortableSections({ order, onChange }: Props) {
   const dndId = useId();
 
   // Ensure we always render every section (in case DB is missing some)
-  const safeOrder: SectionKey[] = [
-    ...order,
-    ...ALL_SECTIONS.filter((s) => !order.includes(s)),
-  ];
+  const safeOrder: SectionKey[] = [...order, ...ALL_SECTIONS.filter((s) => !order.includes(s))];
 
   const handleDragEnd = (e: DragEndEvent) => {
     const { active, over } = e;
@@ -75,8 +72,9 @@ export function SortableSections({ order, onChange }: Props) {
 }
 
 function SortableRow({ sectionKey, index }: { sectionKey: SectionKey; index: number }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id: sectionKey });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: sectionKey,
+  });
   const meta = META[sectionKey];
   const Icon = meta.Icon;
 

@@ -148,11 +148,13 @@ export async function pushOrderInternal(
       totalPrice: Number(order.total),
       notes: order.notes ?? undefined,
       deliveryType: order.delivery_type ?? "domicile",
-      items: (allItems ?? []).map((it: { product_name: string; quantity: number; unit_price: number | null }) => ({
-        productName: it.product_name,
-        quantity: it.quantity,
-        unitPrice: Number(it.unit_price ?? order.total),
-      })),
+      items: (allItems ?? []).map(
+        (it: { product_name: string; quantity: number; unit_price: number | null }) => ({
+          productName: it.product_name,
+          quantity: it.quantity,
+          unitPrice: Number(it.unit_price ?? order.total),
+        }),
+      ),
     });
 
     // Upsert shipment row.

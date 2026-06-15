@@ -9,11 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import type { DBField, DBRecord } from "./TableViews";
 
@@ -77,14 +73,7 @@ function opsForField(field: DBField | undefined): FilterOp[] {
     case "multi_select":
       return ["contains", "not_contains", "is_empty", "is_not_empty"];
     default:
-      return [
-        "contains",
-        "not_contains",
-        "equals",
-        "not_equals",
-        "is_empty",
-        "is_not_empty",
-      ];
+      return ["contains", "not_contains", "equals", "not_equals", "is_empty", "is_not_empty"];
   }
 }
 
@@ -118,9 +107,7 @@ export function FilterSortBar({
   function updateFilter(id: string, patch: Partial<FilterRule>) {
     onChange({
       ...config,
-      filters: config.filters.map((f) =>
-        f.id === id ? { ...f, ...patch } : f,
-      ),
+      filters: config.filters.map((f) => (f.id === id ? { ...f, ...patch } : f)),
     });
   }
 
@@ -292,10 +279,7 @@ export function FilterSortBar({
           ) : (
             config.sorts.map((s) => (
               <div key={s.id} className="flex items-center gap-1.5">
-                <Select
-                  value={s.fieldId}
-                  onValueChange={(v) => updateSort(s.id, { fieldId: v })}
-                >
+                <Select value={s.fieldId} onValueChange={(v) => updateSort(s.id, { fieldId: v })}>
                   <SelectTrigger className="h-8 flex-1 min-w-0">
                     <SelectValue />
                   </SelectTrigger>
@@ -309,9 +293,7 @@ export function FilterSortBar({
                 </Select>
                 <Select
                   value={s.direction}
-                  onValueChange={(v) =>
-                    updateSort(s.id, { direction: v as "asc" | "desc" })
-                  }
+                  onValueChange={(v) => updateSort(s.id, { direction: v as "asc" | "desc" })}
                 >
                   <SelectTrigger className="h-8 w-[100px]">
                     <SelectValue />
@@ -367,11 +349,7 @@ function FilterValueInput({
 }) {
   if (!field) {
     return (
-      <Input
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="h-8 w-[140px]"
-      />
+      <Input value={value} onChange={(e) => onChange(e.target.value)} className="h-8 w-[140px]" />
     );
   }
   if (field.field_type === "boolean") {
@@ -407,11 +385,7 @@ function FilterValueInput({
   return (
     <Input
       type={
-        field.field_type === "number"
-          ? "number"
-          : field.field_type === "date"
-            ? "date"
-            : "text"
+        field.field_type === "number" ? "number" : field.field_type === "date" ? "date" : "text"
       }
       value={value}
       onChange={(e) => onChange(e.target.value)}
@@ -437,29 +411,27 @@ function evaluateFilter(rec: DBRecord, rule: FilterRule, field: DBField | undefi
       return !isEmpty(cell);
     case "equals":
       if (field?.field_type === "boolean") return !!cell === (rule.value === "true");
-      if (field?.field_type === "number")
-        return Number(cell) === Number(rule.value);
+      if (field?.field_type === "number") return Number(cell) === Number(rule.value);
       return String(cell ?? "") === rule.value;
     case "not_equals":
       if (field?.field_type === "boolean") return !!cell !== (rule.value === "true");
-      if (field?.field_type === "number")
-        return Number(cell) !== Number(rule.value);
+      if (field?.field_type === "number") return Number(cell) !== Number(rule.value);
       return String(cell ?? "") !== rule.value;
     case "contains":
-      if (Array.isArray(cell))
-        return (cell as unknown[]).map(String).includes(rule.value);
-      return String(cell ?? "").toLowerCase().includes(rule.value.toLowerCase());
+      if (Array.isArray(cell)) return (cell as unknown[]).map(String).includes(rule.value);
+      return String(cell ?? "")
+        .toLowerCase()
+        .includes(rule.value.toLowerCase());
     case "not_contains":
-      if (Array.isArray(cell))
-        return !(cell as unknown[]).map(String).includes(rule.value);
-      return !String(cell ?? "").toLowerCase().includes(rule.value.toLowerCase());
+      if (Array.isArray(cell)) return !(cell as unknown[]).map(String).includes(rule.value);
+      return !String(cell ?? "")
+        .toLowerCase()
+        .includes(rule.value.toLowerCase());
     case "gt":
-      if (field?.field_type === "date")
-        return String(cell ?? "") > rule.value;
+      if (field?.field_type === "date") return String(cell ?? "") > rule.value;
       return Number(cell) > Number(rule.value);
     case "lt":
-      if (field?.field_type === "date")
-        return String(cell ?? "") < rule.value;
+      if (field?.field_type === "date") return String(cell ?? "") < rule.value;
       return Number(cell) < Number(rule.value);
     default:
       return true;
@@ -480,9 +452,7 @@ export function applyFilterSort(
         const field = fields.find((f) => f.id === rule.fieldId);
         return evaluateFilter(rec, rule, field);
       });
-      return config.filterCombinator === "AND"
-        ? results.every(Boolean)
-        : results.some(Boolean);
+      return config.filterCombinator === "AND" ? results.every(Boolean) : results.some(Boolean);
     });
   }
 

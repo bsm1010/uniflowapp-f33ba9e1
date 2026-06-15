@@ -1,7 +1,19 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Tag, Pencil, Trash2, Plus, Loader2, Search, Package, ImageIcon, Upload, X, ArrowUpDown } from "lucide-react";
+import {
+  Tag,
+  Pencil,
+  Trash2,
+  Plus,
+  Loader2,
+  Search,
+  Package,
+  ImageIcon,
+  Upload,
+  X,
+  ArrowUpDown,
+} from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -64,7 +76,13 @@ interface CategoryRow {
 
 /** Converts a category name to a URL-friendly slug preview */
 function toSlug(name: string) {
-  return "/" + name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  return (
+    "/" +
+    name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "")
+  );
 }
 
 function CategoriesPage() {
@@ -103,7 +121,10 @@ function CategoriesPage() {
       }
       const imageMap = new Map<string, { image_url: string; description?: string }>();
       (iRes.data ?? []).forEach((r) =>
-        imageMap.set(r.category_name, { image_url: r.image_url, description: r.description ?? undefined })
+        imageMap.set(r.category_name, {
+          image_url: r.image_url,
+          description: r.description ?? undefined,
+        }),
       );
 
       const map = new Map<string, number>();
@@ -122,7 +143,7 @@ function CategoriesPage() {
           count,
           image_url: imageMap.get(name)?.image_url ?? null,
           description: imageMap.get(name)?.description,
-        }))
+        })),
       );
     } catch {
       toast.error("Failed to load categories");
@@ -138,11 +159,15 @@ function CategoriesPage() {
   const sorted = useMemo(() => {
     const copy = [...rows];
     switch (sortKey) {
-      case "name-asc":  return copy.sort((a, b) => a.name.localeCompare(b.name));
-      case "name-desc": return copy.sort((a, b) => b.name.localeCompare(a.name));
-      case "count-asc": return copy.sort((a, b) => a.count - b.count || a.name.localeCompare(b.name));
+      case "name-asc":
+        return copy.sort((a, b) => a.name.localeCompare(b.name));
+      case "name-desc":
+        return copy.sort((a, b) => b.name.localeCompare(a.name));
+      case "count-asc":
+        return copy.sort((a, b) => a.count - b.count || a.name.localeCompare(b.name));
       case "count-desc":
-      default:          return copy.sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+      default:
+        return copy.sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
     }
   }, [rows, sortKey]);
 
@@ -162,8 +187,14 @@ function CategoriesPage() {
   const confirmRename = async () => {
     if (!user || !renaming) return;
     const next = renameValue.trim();
-    if (!next) { toast.error("Name can't be empty"); return; }
-    if (next === renaming.name) { setRenaming(null); return; }
+    if (!next) {
+      toast.error("Name can't be empty");
+      return;
+    }
+    if (next === renaming.name) {
+      setRenaming(null);
+      return;
+    }
     if (rows.some((r) => r.name.toLowerCase() === next.toLowerCase() && r.name !== renaming.name)) {
       toast.error(`"${next}" already exists and will merge the two categories.`);
       return;
@@ -182,7 +213,10 @@ function CategoriesPage() {
           .eq("user_id", user.id)
           .eq("category_name", renaming.name);
       }
-      if (error) { toast.error(error.message); return; }
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
       toast.success(`Renamed to "${next}"`);
       setRenaming(null);
       load();
@@ -209,8 +243,13 @@ function CategoriesPage() {
           .eq("user_id", user.id)
           .eq("category_name", deleting.name);
       }
-      if (error) { toast.error(error.message); return; }
-      toast.success(`"${deleting.name}" removed from ${deleting.count} product${deleting.count === 1 ? "" : "s"}`);
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+      toast.success(
+        `"${deleting.name}" removed from ${deleting.count} product${deleting.count === 1 ? "" : "s"}`,
+      );
       setDeleting(null);
       load();
     } catch {
@@ -220,13 +259,22 @@ function CategoriesPage() {
     }
   };
 
-  const uploadImageForCategory = async (categoryName: string, file: File): Promise<string | null> => {
+  const uploadImageForCategory = async (
+    categoryName: string,
+    file: File,
+  ): Promise<string | null> => {
     if (!user) return null;
     const ext = file.name.split(".").pop() ?? "png";
-    const safe = categoryName.toLowerCase().replace(/[^a-z0-9-]+/g, "-").slice(0, 40);
+    const safe = categoryName
+      .toLowerCase()
+      .replace(/[^a-z0-9-]+/g, "-")
+      .slice(0, 40);
     const path = `${user.id}/categories/${safe}-${Date.now()}.${ext}`;
     const up = await supabase.storage.from("store-assets").upload(path, file, { upsert: true });
-    if (up.error) { toast.error(up.error.message); return null; }
+    if (up.error) {
+      toast.error(up.error.message);
+      return null;
+    }
     const { data: pub } = supabase.storage.from("store-assets").getPublicUrl(path);
     return pub.publicUrl;
   };
@@ -254,13 +302,20 @@ function CategoriesPage() {
             image_url: imageUrl ?? "",
             description: newDescription.trim() || null,
           },
-          { onConflict: "user_id,category_name" }
+          { onConflict: "user_id,category_name" },
         );
       }
 
       setRows((prev) =>
-        [...prev, { name: next, count: 0, image_url: imageUrl, description: newDescription.trim() || undefined }]
-          .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
+        [
+          ...prev,
+          {
+            name: next,
+            count: 0,
+            image_url: imageUrl,
+            description: newDescription.trim() || undefined,
+          },
+        ].sort((a, b) => b.count - a.count || a.name.localeCompare(b.name)),
       );
       toast.success(`"${next}" created. Assign it to products to make it live.`);
       setCreating(false);
@@ -277,17 +332,31 @@ function CategoriesPage() {
 
   const uploadImage = async (row: CategoryRow, file: File) => {
     if (!user) return;
-    if (!file.type.startsWith("image/")) { toast.error("Please upload an image file."); return; }
-    if (file.size > 4 * 1024 * 1024) { toast.error("Image must be smaller than 4 MB."); return; }
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file.");
+      return;
+    }
+    if (file.size > 4 * 1024 * 1024) {
+      toast.error("Image must be smaller than 4 MB.");
+      return;
+    }
     setUploadingFor(row.name);
     try {
       const imageUrl = await uploadImageForCategory(row.name, file);
-      if (!imageUrl) { setUploadingFor(null); return; }
-      const { error } = await supabase.from("category_images").upsert(
-        { user_id: user.id, category_name: row.name, image_url: imageUrl },
-        { onConflict: "user_id,category_name" }
-      );
-      if (error) { toast.error(error.message); return; }
+      if (!imageUrl) {
+        setUploadingFor(null);
+        return;
+      }
+      const { error } = await supabase
+        .from("category_images")
+        .upsert(
+          { user_id: user.id, category_name: row.name, image_url: imageUrl },
+          { onConflict: "user_id,category_name" },
+        );
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
       setRows((prev) => prev.map((r) => (r.name === row.name ? { ...r, image_url: imageUrl } : r)));
       toast.success("Category image updated");
     } catch {
@@ -306,7 +375,10 @@ function CategoriesPage() {
         .delete()
         .eq("user_id", user.id)
         .eq("category_name", row.name);
-      if (error) { toast.error(error.message); return; }
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
       setRows((prev) => prev.map((r) => (r.name === row.name ? { ...r, image_url: null } : r)));
       toast.success("Image removed");
     } catch {
@@ -317,8 +389,14 @@ function CategoriesPage() {
   };
 
   const handleNewImagePick = (file: File) => {
-    if (!file.type.startsWith("image/")) { toast.error("Please upload an image file."); return; }
-    if (file.size > 4 * 1024 * 1024) { toast.error("Image must be smaller than 4 MB."); return; }
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file.");
+      return;
+    }
+    if (file.size > 4 * 1024 * 1024) {
+      toast.error("Image must be smaller than 4 MB.");
+      return;
+    }
     setNewImageFile(file);
     setNewImagePreview(URL.createObjectURL(file));
   };
@@ -333,7 +411,16 @@ function CategoriesPage() {
         icon={Tag}
         gradient="from-amber-500 via-orange-500 to-rose-500"
         actions={
-          <Button onClick={() => { setNewName(""); setNewDescription(""); setNewImageFile(null); setNewImagePreview(null); setCreating(true); }} disabled={isExpired}>
+          <Button
+            onClick={() => {
+              setNewName("");
+              setNewDescription("");
+              setNewImageFile(null);
+              setNewImagePreview(null);
+              setCreating(true);
+            }}
+            disabled={isExpired}
+          >
             <Plus className="h-4 w-4" /> New category
           </Button>
         }
@@ -345,13 +432,22 @@ function CategoriesPage() {
           title="No categories yet"
           description="Add a category to a product, or create one here to get started."
           action={
-            <Button onClick={() => { setNewName(""); setCreating(true); }}>
+            <Button
+              onClick={() => {
+                setNewName("");
+                setCreating(true);
+              }}
+            >
               <Plus className="h-4 w-4" /> Create category
             </Button>
           }
         />
       ) : (
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
           <Card className="border-border/60 shadow-soft overflow-hidden">
             {/* Toolbar */}
             <div className="p-4 border-b border-border/60 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
@@ -380,7 +476,8 @@ function CategoriesPage() {
                 </Select>
               </div>
               <p className="text-sm text-muted-foreground whitespace-nowrap">
-                {rows.length} {rows.length === 1 ? "category" : "categories"} · {totalProducts} product{totalProducts === 1 ? "" : "s"}
+                {rows.length} {rows.length === 1 ? "category" : "categories"} · {totalProducts}{" "}
+                product{totalProducts === 1 ? "" : "s"}
               </p>
             </div>
 
@@ -418,7 +515,11 @@ function CategoriesPage() {
                               {isUploading ? (
                                 <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                               ) : r.image_url ? (
-                                <img src={r.image_url} alt={r.name} className="h-full w-full object-cover" />
+                                <img
+                                  src={r.image_url}
+                                  alt={r.name}
+                                  className="h-full w-full object-cover"
+                                />
                               ) : (
                                 <ImageIcon className="h-4 w-4 text-muted-foreground" />
                               )}
@@ -444,12 +545,20 @@ function CategoriesPage() {
                           <TableCell className="text-right">
                             {r.count === 0 ? (
                               <div className="flex flex-col items-end gap-1">
-                                <Badge variant="outline" className="font-normal text-muted-foreground">
+                                <Badge
+                                  variant="outline"
+                                  className="font-normal text-muted-foreground"
+                                >
                                   <Package className="h-3 w-3 mr-1" /> Empty
                                 </Badge>
                                 {/* CTA to jump to products page filtered by this category */}
                                 <button
-                                  onClick={() => navigate({ to: "/dashboard/products", search: { category: r.name } })}
+                                  onClick={() =>
+                                    navigate({
+                                      to: "/dashboard/products",
+                                      search: { category: r.name },
+                                    })
+                                  }
                                   className="text-xs text-primary hover:underline"
                                 >
                                   Add products →
@@ -537,7 +646,8 @@ function CategoriesPage() {
           <DialogHeader>
             <DialogTitle>Rename category</DialogTitle>
             <DialogDescription>
-              All {renaming?.count} product{renaming?.count === 1 ? "" : "s"} in "{renaming?.name}" will move to the new name.
+              All {renaming?.count} product{renaming?.count === 1 ? "" : "s"} in "{renaming?.name}"
+              will move to the new name.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2">
@@ -551,7 +661,9 @@ function CategoriesPage() {
             />
           </div>
           <DialogFooter>
-            <Button variant="ghost" onClick={() => setRenaming(null)}>Cancel</Button>
+            <Button variant="ghost" onClick={() => setRenaming(null)}>
+              Cancel
+            </Button>
             <Button onClick={confirmRename} disabled={busy}>
               {busy && <Loader2 className="h-4 w-4 animate-spin" />} Save
             </Button>
@@ -589,7 +701,9 @@ function CategoriesPage() {
             <div className="space-y-1.5">
               <Label>
                 Description{" "}
-                <span className="text-muted-foreground font-normal text-xs">(optional — shown in SEO)</span>
+                <span className="text-muted-foreground font-normal text-xs">
+                  (optional — shown in SEO)
+                </span>
               </Label>
               <Textarea
                 value={newDescription}
@@ -604,14 +718,16 @@ function CategoriesPage() {
             {/* Image upload */}
             <div className="space-y-1.5">
               <Label>
-                Image{" "}
-                <span className="text-muted-foreground font-normal text-xs">(optional)</span>
+                Image <span className="text-muted-foreground font-normal text-xs">(optional)</span>
               </Label>
               {newImagePreview ? (
                 <div className="relative w-full h-32 rounded-lg overflow-hidden border border-border/60">
                   <img src={newImagePreview} alt="Preview" className="w-full h-full object-cover" />
                   <button
-                    onClick={() => { setNewImageFile(null); setNewImagePreview(null); }}
+                    onClick={() => {
+                      setNewImageFile(null);
+                      setNewImagePreview(null);
+                    }}
                     className="absolute top-2 right-2 bg-background/80 rounded-full p-1 hover:bg-background"
                     aria-label="Remove image"
                   >
@@ -624,17 +740,25 @@ function CategoriesPage() {
                     type="file"
                     accept="image/*"
                     className="hidden"
-                    onChange={(e) => { const f = e.target.files?.[0]; if (f) handleNewImagePick(f); e.target.value = ""; }}
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) handleNewImagePick(f);
+                      e.target.value = "";
+                    }}
                   />
                   <Upload className="h-5 w-5 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">Click to upload or drag & drop</span>
+                  <span className="text-sm text-muted-foreground">
+                    Click to upload or drag & drop
+                  </span>
                 </label>
               )}
             </div>
           </div>
 
           <DialogFooter>
-            <Button variant="ghost" onClick={() => setCreating(false)}>Cancel</Button>
+            <Button variant="ghost" onClick={() => setCreating(false)}>
+              Cancel
+            </Button>
             <Button onClick={confirmCreate} disabled={busy || !newName.trim()}>
               {busy && <Loader2 className="h-4 w-4 animate-spin" />} Create
             </Button>

@@ -12,19 +12,17 @@ export const SUPPORTED_LANGUAGES = [
 ] as const;
 
 if (!i18n.isInitialized) {
-  i18n
-    .use(initReactI18next)
-    .init({
-      resources: {
-        en: { translation: en },
-        fr: { translation: fr },
-        ar: { translation: ar },
-      },
-      lng: "en",
-      fallbackLng: "en",
-      supportedLngs: ["en", "fr", "ar"],
-      interpolation: { escapeValue: false },
-    });
+  i18n.use(initReactI18next).init({
+    resources: {
+      en: { translation: en },
+      fr: { translation: fr },
+      ar: { translation: ar },
+    },
+    lng: "en",
+    fallbackLng: "en",
+    supportedLngs: ["en", "fr", "ar"],
+    interpolation: { escapeValue: false },
+  });
 }
 
 export function applyDirection(lng: string) {
@@ -47,4 +45,3 @@ export function getSavedLanguage() {
 }
 
 export default i18n;
-

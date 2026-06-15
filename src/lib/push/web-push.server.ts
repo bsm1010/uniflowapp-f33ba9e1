@@ -32,8 +32,15 @@ function concat(...parts: Uint8Array[]): Uint8Array {
   return out;
 }
 
-async function hkdf(salt: Uint8Array, ikm: Uint8Array, info: Uint8Array, length: number): Promise<Uint8Array> {
-  const key = await crypto.subtle.importKey("raw", ikm as BufferSource, "HKDF", false, ["deriveBits"]);
+async function hkdf(
+  salt: Uint8Array,
+  ikm: Uint8Array,
+  info: Uint8Array,
+  length: number,
+): Promise<Uint8Array> {
+  const key = await crypto.subtle.importKey("raw", ikm as BufferSource, "HKDF", false, [
+    "deriveBits",
+  ]);
   const bits = await crypto.subtle.deriveBits(
     { name: "HKDF", hash: "SHA-256", salt: salt as BufferSource, info: info as BufferSource },
     key,
@@ -49,11 +56,9 @@ async function encryptPayload(
   authSecret: Uint8Array,
 ): Promise<{ body: Uint8Array; asPublicRaw: Uint8Array }> {
   // 1) Ephemeral server (application server) ECDH keypair
-  const asKeyPair = await crypto.subtle.generateKey(
-    { name: "ECDH", namedCurve: "P-256" },
-    true,
-    ["deriveBits"],
-  );
+  const asKeyPair = await crypto.subtle.generateKey({ name: "ECDH", namedCurve: "P-256" }, true, [
+    "deriveBits",
+  ]);
   const asPublicRaw = new Uint8Array(await crypto.subtle.exportKey("raw", asKeyPair.publicKey));
 
   // 2) Import UA public key
@@ -89,14 +94,25 @@ async function encryptPayload(
   const padded = concat(payload, new Uint8Array([0x02]));
 
   // 9) AES-128-GCM encrypt
-  const aesKey = await crypto.subtle.importKey("raw", cek as BufferSource, "AES-GCM", false, ["encrypt"]);
+  const aesKey = await crypto.subtle.importKey("raw", cek as BufferSource, "AES-GCM", false, [
+    "encrypt",
+  ]);
   const ciphertext = new Uint8Array(
-    await crypto.subtle.encrypt({ name: "AES-GCM", iv: nonce as BufferSource }, aesKey, padded as BufferSource),
+    await crypto.subtle.encrypt(
+      { name: "AES-GCM", iv: nonce as BufferSource },
+      aesKey,
+      padded as BufferSource,
+    ),
   );
 
   // 10) Header: salt(16) || rs(4 BE = 4096) || idlen(1 = 65) || keyid(65)
   const rs = new Uint8Array([0, 0, 0x10, 0x00]); // 4096
-  const header = concat(salt, rs, new Uint8Array([uaPublicRaw.length === 65 ? 65 : asPublicRaw.length]), asPublicRaw);
+  const header = concat(
+    salt,
+    rs,
+    new Uint8Array([uaPublicRaw.length === 65 ? 65 : asPublicRaw.length]),
+    asPublicRaw,
+  );
   const body = concat(header, ciphertext);
   return { body, asPublicRaw };
 }
@@ -136,7 +152,11 @@ async function buildVapidJwt(audience: string): Promise<string> {
   );
 
   const sig = new Uint8Array(
-    await crypto.subtle.sign({ name: "ECDSA", hash: "SHA-256" }, key, enc.encode(signingInput) as BufferSource),
+    await crypto.subtle.sign(
+      { name: "ECDSA", hash: "SHA-256" },
+      key,
+      enc.encode(signingInput) as BufferSource,
+    ),
   );
   return `${signingInput}.${b64uEncode(sig)}`;
 }
@@ -149,7 +169,13 @@ export interface PushSub {
 
 export async function sendWebPush(
   sub: PushSub,
-  payload: { title: string; body: string; url?: string; tag?: string; data?: Record<string, unknown> },
+  payload: {
+    title: string;
+    body: string;
+    url?: string;
+    tag?: string;
+    data?: Record<string, unknown>;
+  },
 ): Promise<{ ok: boolean; status: number; gone: boolean }> {
   const audience = new URL(sub.endpoint).origin;
   const jwt = await buildVapidJwt(audience);

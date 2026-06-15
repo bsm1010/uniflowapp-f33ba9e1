@@ -1,27 +1,30 @@
 @import "tailwindcss" source(none);
 
 @keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 @utility animate-shimmer {
   animation: shimmer 2s infinite;
 }
 
 @keyframes aurora {
-  0%   { background-position:   0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position:   0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 @utility aurora-text {
-  background-image: linear-gradient(
-    90deg,
-    #a855f7,
-    #d946ef,
-    #8b5cf6,
-    #6366f1,
-    #a855f7
-  );
+  background-image: linear-gradient(90deg, #a855f7, #d946ef, #8b5cf6, #6366f1, #a855f7);
   background-size: 200% 100%;
   background-clip: text;
   -webkit-background-clip: text;
@@ -31,8 +34,12 @@
 }
 
 @keyframes shine {
-  0%   { transform: translateX(-100%) skewX(-20deg); }
-  100% { transform: translateX(400%) skewX(-20deg); }
+  0% {
+    transform: translateX(-100%) skewX(-20deg);
+  }
+  100% {
+    transform: translateX(400%) skewX(-20deg);
+  }
 }
 @utility animate-shine {
   animation: shine 3s ease-in-out infinite;
@@ -223,10 +230,10 @@
 @theme inline {
   --gradient-brand: linear-gradient(135deg, var(--brand) 0%, var(--brand) 100%);
   --gradient-soft: radial-gradient(
-      900px 500px at 50% 0%,
-      color-mix(in oklch, var(--foreground) 4%, transparent),
-      transparent 60%
-    );
+    900px 500px at 50% 0%,
+    color-mix(in oklch, var(--foreground) 4%, transparent),
+    transparent 60%
+  );
   --bg-grid: radial-gradient(
     circle at 1px 1px,
     color-mix(in oklch, var(--foreground) 8%, transparent) 1px,
@@ -253,7 +260,10 @@
     font-feature-settings: "cv11", "ss01";
   }
 
-  h1, h2, h3, h4 {
+  h1,
+  h2,
+  h3,
+  h4 {
     font-family: var(--font-display);
     letter-spacing: -0.02em;
   }
@@ -306,7 +316,9 @@
     inherits: false;
   }
   @keyframes led-spin {
-    to { --led-angle: 360deg; }
+    to {
+      --led-angle: 360deg;
+    }
   }
   .led-border {
     position: relative;
@@ -335,11 +347,13 @@
       linear-gradient(#000 0 0) content-box,
       linear-gradient(#000 0 0);
     -webkit-mask-composite: xor;
-            mask-composite: exclude;
+    mask-composite: exclude;
     animation: led-spin 3s linear infinite;
   }
   @supports not (background: conic-gradient(from 0deg, red, blue)) {
-    .led-border::before { display: none; }
+    .led-border::before {
+      display: none;
+    }
   }
 }
 
@@ -350,27 +364,29 @@
 }
 
 ::-webkit-scrollbar-track {
-  background:
-    linear-gradient(180deg, hsl(var(--background) / 0.4), hsl(var(--muted) / 0.3));
+  background: linear-gradient(180deg, hsl(var(--background) / 0.4), hsl(var(--muted) / 0.3));
   border-radius: 999px;
   margin: 4px;
   box-shadow: inset 0 0 0 1px hsl(var(--border) / 0.25);
 }
 
 ::-webkit-scrollbar-thumb {
-  background:
-    linear-gradient(180deg,
-      oklch(0.62 0.22 295), /* violet */
-      oklch(0.55 0.25 305), /* purple */
-      oklch(0.5 0.23 270)   /* indigo */
-    );
+  background: linear-gradient(
+    180deg,
+    oklch(0.62 0.22 295),
+    /* violet */ oklch(0.55 0.25 305),
+    /* purple */ oklch(0.5 0.23 270) /* indigo */
+  );
   border-radius: 999px;
   border: 2px solid transparent;
   background-clip: padding-box;
   box-shadow:
     inset 0 0 0 1px hsl(0 0% 100% / 0.18),
     0 0 8px oklch(0.55 0.25 295 / 0.45);
-  transition: filter 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
+  transition:
+    filter 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.2s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -403,9 +419,7 @@
   margin: 6px 2px;
 }
 [data-sidebar="content"]::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg,
-    oklch(0.7 0.18 295 / 0.55),
-    oklch(0.55 0.22 270 / 0.55));
+  background: linear-gradient(180deg, oklch(0.7 0.18 295 / 0.55), oklch(0.55 0.22 270 / 0.55));
   border-radius: 999px;
   border: none;
   box-shadow:
@@ -413,9 +427,7 @@
     0 0 6px oklch(0.6 0.22 295 / 0.4);
 }
 [data-sidebar="content"]::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg,
-    oklch(0.75 0.2 295 / 0.8),
-    oklch(0.6 0.24 270 / 0.8));
+  background: linear-gradient(180deg, oklch(0.75 0.2 295 / 0.8), oklch(0.6 0.24 270 / 0.8));
   box-shadow:
     inset 0 0 0 1px hsl(0 0% 100% / 0.25),
     0 0 10px oklch(0.65 0.25 295 / 0.6);
@@ -426,4 +438,3 @@
   scrollbar-width: thin;
   scrollbar-color: oklch(0.58 0.23 295 / 0.65) transparent;
 }
-

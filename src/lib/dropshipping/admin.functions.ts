@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin as supabaseAdminTyped } from "@/integrations/supabase/client.server";
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- service_role client bypasses RLS; types are intentionally loose
 const supabaseAdmin: any = supabaseAdminTyped;
 import { createAuthenticatedDeliveryClient } from "@/lib/delivery/authenticated-client";
 import type { Database } from "@/integrations/supabase/types";
@@ -84,7 +85,7 @@ export const updateDropshipOrderStatus = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     // Stamp the corresponding *_at timestamp based on the new status.
     const now = new Date().toISOString();
-    const timestampPatch: any = {};
+    const timestampPatch: Record<string, string> = {};
     switch (data.status) {
       case "shipped":
         timestampPatch.shipped_at = now;
@@ -105,12 +106,8 @@ export const updateDropshipOrderStatus = createServerFn({ method: "POST" })
       .from("dropship_orders")
       .update({
         status: data.status,
-        ...(data.tracking_number !== undefined
-          ? { tracking_number: data.tracking_number }
-          : {}),
-        ...(data.zr_express_id !== undefined
-          ? { zr_express_id: data.zr_express_id }
-          : {}),
+        ...(data.tracking_number !== undefined ? { tracking_number: data.tracking_number } : {}),
+        ...(data.zr_express_id !== undefined ? { zr_express_id: data.zr_express_id } : {}),
         ...timestampPatch,
       })
       .eq("id", data.order_id)
@@ -147,7 +144,19 @@ export const listWalletTopupRequests = createServerFn({ method: "POST" })
     if (data.status) q = q.eq("status", data.status);
     const { data: requests, error } = await q;
     if (error) throw new Error(error.message);
-    return { requests: (requests ?? []) as any[] };
+    return {
+      requests: (requests ?? []) as Array<{
+        id: string;
+        reseller_id: string;
+        amount: number;
+        payment_reference: string | null;
+        status: string;
+        admin_note: string | null;
+        processed_at: string | null;
+        processed_by: string | null;
+        created_at: string;
+      }>,
+    };
   });
 
 // ------------------------------------------------------------

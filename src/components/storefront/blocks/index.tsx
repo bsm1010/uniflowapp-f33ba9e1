@@ -32,4 +32,12 @@ export function BlockRenderer({
 }
 
 export { BLOCK_REGISTRY, BLOCK_LIST, BLOCK_CATEGORIES, getBlock } from "./registry";
-export type { BlockDefinition, SectionInstance, BlockCategory, BlockSchema, SchemaField, BlockComponentProps, BlockContext } from "./types";
+export type {
+  BlockDefinition,
+  SectionInstance,
+  BlockCategory,
+  BlockSchema,
+  SchemaField,
+  BlockComponentProps,
+  BlockContext,
+} from "./types";

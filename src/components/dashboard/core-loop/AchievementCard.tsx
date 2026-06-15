@@ -1,7 +1,25 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
-import { CheckCircle2, Lock, Share2, Sparkles, Package, ShoppingBag, Palette, Layers, TrendingUp, Award, DollarSign, Star, Zap, Users, Flame, Rocket, type LucideIcon } from "lucide-react";
+import {
+  CheckCircle2,
+  Lock,
+  Share2,
+  Sparkles,
+  Package,
+  ShoppingBag,
+  Palette,
+  Layers,
+  TrendingUp,
+  Award,
+  DollarSign,
+  Star,
+  Zap,
+  Users,
+  Flame,
+  Rocket,
+  type LucideIcon,
+} from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { shareAchievement } from "@/lib/core-loop/share-achievement";
@@ -11,7 +29,19 @@ import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 const ICON_MAP: Record<string, LucideIcon> = {
-  Package, Rocket, ShoppingBag, Layers, TrendingUp, Award, Star, DollarSign, Zap, Users, Flame, Palette, Sparkles,
+  Package,
+  Rocket,
+  ShoppingBag,
+  Layers,
+  TrendingUp,
+  Award,
+  Star,
+  DollarSign,
+  Zap,
+  Users,
+  Flame,
+  Palette,
+  Sparkles,
 };
 
 interface AchievementCardProps {
@@ -28,39 +58,49 @@ export function AchievementCard({ achievement, onShared }: AchievementCardProps)
   const handleShare = async () => {
     setSharing(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) return;
-      await callShare({ data: { accessToken: session.access_token, achievementId: achievement.id } });
+      await callShare({
+        data: { accessToken: session.access_token, achievementId: achievement.id },
+      });
       onShared?.();
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
     setSharing(false);
   };
 
   return (
-    <Card className={cn(
-      "border-border/60 shadow-soft transition-all",
-      achievement.earned ? "bg-gradient-to-br from-emerald-500/[0.04] to-transparent" : "opacity-60",
-    )}>
+    <Card
+      className={cn(
+        "border-border/60 shadow-soft transition-all",
+        achievement.earned
+          ? "bg-gradient-to-br from-emerald-500/[0.04] to-transparent"
+          : "opacity-60",
+      )}
+    >
       <CardContent className="p-4 flex items-start gap-3">
-        <div className={cn(
-          "h-10 w-10 rounded-xl flex items-center justify-center shrink-0",
-          achievement.earned
-            ? "bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-lg shadow-amber-500/20"
-            : "bg-muted text-muted-foreground/50",
-        )}>
-          {achievement.earned ? (
-            <Icon className="h-5 w-5" />
-          ) : (
-            <Lock className="h-4 w-4" />
+        <div
+          className={cn(
+            "h-10 w-10 rounded-xl flex items-center justify-center shrink-0",
+            achievement.earned
+              ? "bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-lg shadow-amber-500/20"
+              : "bg-muted text-muted-foreground/50",
           )}
+        >
+          {achievement.earned ? <Icon className="h-5 w-5" /> : <Lock className="h-4 w-4" />}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">
             <div>
-              <p className={cn(
-                "text-sm font-semibold",
-                achievement.earned ? "text-foreground" : "text-muted-foreground",
-              )}>
+              <p
+                className={cn(
+                  "text-sm font-semibold",
+                  achievement.earned ? "text-foreground" : "text-muted-foreground",
+                )}
+              >
                 {achievement.title}
               </p>
               <p className="text-xs text-muted-foreground mt-0.5">{achievement.description}</p>
@@ -84,7 +124,9 @@ export function AchievementCard({ achievement, onShared }: AchievementCardProps)
                   disabled={sharing}
                 >
                   <Share2 className="h-3 w-3" />
-                  {sharing ? t("dashboard.gamification.sharing") : t("dashboard.gamification.share")}
+                  {sharing
+                    ? t("dashboard.gamification.sharing")
+                    : t("dashboard.gamification.share")}
                 </Button>
               )}
               {achievement.shared && (

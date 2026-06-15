@@ -64,7 +64,9 @@ function toNumber(value: unknown): number {
 
 /** Normalize a wilaya/territory name so we can fuzzy-match it against ALGERIA_GEO. */
 function normalizeWilayaName(raw: string): string {
-  const s = raw.toLowerCase().trim()
+  const s = raw
+    .toLowerCase()
+    .trim()
     .replace(/[''`]/g, "'")
     .replace(/[\s-]+/g, " ");
   return s;
@@ -75,7 +77,11 @@ function findWilayaEntry(rawName: string) {
   const norm = normalizeWilayaName(rawName);
   return (
     ALGERIA_GEO.find((e) => normalizeWilayaName(e.wilaya) === norm) ??
-    ALGERIA_GEO.find((e) => normalizeWilayaName(e.wilaya).startsWith(norm) || norm.startsWith(normalizeWilayaName(e.wilaya))) ??
+    ALGERIA_GEO.find(
+      (e) =>
+        normalizeWilayaName(e.wilaya).startsWith(norm) ||
+        norm.startsWith(normalizeWilayaName(e.wilaya)),
+    ) ??
     null
   );
 }
@@ -216,14 +222,15 @@ export async function fetchZRTariffs(
       // For wilaya-level entries (`toTerritoryLevel === "wilaya"` or missing),
       // we expand to every city in that wilaya using our local geo data.
       const isCommuneLevel =
-        (entry.toTerritoryLevel ?? "").toLowerCase() === "commune" &&
-        entry.Commune;
+        (entry.toTerritoryLevel ?? "").toLowerCase() === "commune" && entry.Commune;
 
       if (isCommuneLevel && entry.Commune) {
         // City-level entry: use the commune name directly.
         const city = String(entry.Commune).trim();
-        if (domicile > 0) tariffs.push({ wilaya, city, delivery_type: "domicile", price: domicile });
-        if (stopdesk > 0) tariffs.push({ wilaya, city, delivery_type: "stopdesk", price: stopdesk });
+        if (domicile > 0)
+          tariffs.push({ wilaya, city, delivery_type: "domicile", price: domicile });
+        if (stopdesk > 0)
+          tariffs.push({ wilaya, city, delivery_type: "stopdesk", price: stopdesk });
       } else {
         // Wilaya-level entry: expand to all cities in the wilaya.
         const entry_ = findWilayaEntry(wilaya);
@@ -232,12 +239,16 @@ export async function fetchZRTariffs(
           // Fallback: if we can't find the wilaya in our geo data,
           // still create a single row with just the wilaya name as city
           // so the price isn't lost.
-          if (domicile > 0) tariffs.push({ wilaya, city: "", delivery_type: "domicile", price: domicile });
-          if (stopdesk > 0) tariffs.push({ wilaya, city: "", delivery_type: "stopdesk", price: stopdesk });
+          if (domicile > 0)
+            tariffs.push({ wilaya, city: "", delivery_type: "domicile", price: domicile });
+          if (stopdesk > 0)
+            tariffs.push({ wilaya, city: "", delivery_type: "stopdesk", price: stopdesk });
         } else {
           for (const city of cities) {
-            if (domicile > 0) tariffs.push({ wilaya, city, delivery_type: "domicile", price: domicile });
-            if (stopdesk > 0) tariffs.push({ wilaya, city, delivery_type: "stopdesk", price: stopdesk });
+            if (domicile > 0)
+              tariffs.push({ wilaya, city, delivery_type: "domicile", price: domicile });
+            if (stopdesk > 0)
+              tariffs.push({ wilaya, city, delivery_type: "stopdesk", price: stopdesk });
           }
         }
       }

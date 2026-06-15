@@ -56,9 +56,7 @@ export const Route = createFileRoute("/dashboard")({
 function AnimatedOutlet() {
   const location = useLocation();
   const [displayLocation, setDisplayLocation] = useState(location);
-  const [transitionStage, setTransitionStage] = useState<"fadeIn" | "fadeOut">(
-    "fadeIn",
-  );
+  const [transitionStage, setTransitionStage] = useState<"fadeIn" | "fadeOut">("fadeIn");
 
   useEffect(() => {
     if (location.pathname !== displayLocation.pathname) {
@@ -101,11 +99,7 @@ function AnimatedOutlet() {
       `}</style>
 
       <div
-        className={
-          transitionStage === "fadeIn"
-            ? "page-fade-in"
-            : "page-fade-out"
-        }
+        className={transitionStage === "fadeIn" ? "page-fade-in" : "page-fade-out"}
         onAnimationEnd={() => {
           if (transitionStage === "fadeOut") {
             setDisplayLocation(location);
@@ -139,9 +133,7 @@ function DashboardLayout() {
 
   const [name, setName] = useState<string>("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [onboardingCompleted, setOnboardingCompleted] = useState<
-    boolean | null
-  >(null);
+  const [onboardingCompleted, setOnboardingCompleted] = useState<boolean | null>(null);
 
   const [selectedStore, setSelectedStore] = useState<string | null>(null);
   const [storeHydrated, setStoreHydrated] = useState(false);
@@ -149,7 +141,9 @@ function DashboardLayout() {
   useEffect(() => {
     try {
       setSelectedStore(localStorage.getItem("selectedStore"));
-    } catch {}
+    } catch (error) {
+      console.warn(error);
+    }
     setStoreHydrated(true);
   }, []);
 
@@ -241,10 +235,7 @@ function DashboardLayout() {
               <SidebarInset className="flex-1 flex flex-col min-w-0">
                 <IOSInstallBanner />
 
-                <DashboardTopbar
-                  name={name}
-                  avatarUrl={avatarUrl}
-                />
+                <DashboardTopbar name={name} avatarUrl={avatarUrl} />
 
                 <main className="flex-1 p-4 md:p-8 min-h-0 overflow-y-scroll overflow-x-hidden">
                   <AnimatedOutlet />

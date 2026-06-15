@@ -14,9 +14,6 @@ export function optimizeImageUrl(
   if (opts.quality) params.push(`quality=${opts.quality}`);
   if (params.length === 0) return url;
   const qs = params.join("&");
-  const base = url.replace(
-    /\/storage\/v1\/object\/public\//,
-    "/storage/v1/render/image/public/",
-  );
+  const base = url.replace(/\/storage\/v1\/object\/public\//, "/storage/v1/render/image/public/");
   return `${base}?${qs}`;
 }

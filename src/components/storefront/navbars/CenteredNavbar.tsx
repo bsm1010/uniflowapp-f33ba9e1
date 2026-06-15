@@ -13,7 +13,15 @@ interface CenteredNavbarProps {
   onCartOpen: () => void;
 }
 
-export function CenteredNavbar({ tokens: t, logo, brand, links, cartCount, slug, onCartOpen }: CenteredNavbarProps) {
+export function CenteredNavbar({
+  tokens: t,
+  logo,
+  brand,
+  links,
+  cartCount,
+  slug,
+  onCartOpen,
+}: CenteredNavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -39,7 +47,12 @@ export function CenteredNavbar({ tokens: t, logo, brand, links, cartCount, slug,
             {logo ? (
               <img src={logo} alt={brand} className="h-8 w-auto" />
             ) : (
-              <span className="text-xl font-bold font-display tracking-tight" style={{ color: t.fg }}>{brand}</span>
+              <span
+                className="text-xl font-bold font-display tracking-tight"
+                style={{ color: t.fg }}
+              >
+                {brand}
+              </span>
             )}
           </Link>
           <div className="flex items-center gap-2 w-20 md:w-32 justify-end">

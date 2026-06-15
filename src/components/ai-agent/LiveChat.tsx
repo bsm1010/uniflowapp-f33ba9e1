@@ -6,7 +6,11 @@ import { Input } from "@/components/ui/input";
 import { useAIAgent } from "@/hooks/use-ai-agent";
 import { useAuth } from "@/hooks/use-auth";
 import { useServerFn } from "@tanstack/react-start";
-import { sendMerchantMessage, toggleConversationMode, generateAIReply } from "@/lib/ai-agent/ai-reply.functions";
+import {
+  sendMerchantMessage,
+  toggleConversationMode,
+  generateAIReply,
+} from "@/lib/ai-agent/ai-reply.functions";
 import { cn } from "@/lib/utils";
 import type { Conversation, Message } from "@/lib/ai-agent/types";
 
@@ -17,7 +21,7 @@ function ConversationList() {
   const filtered = conversations.filter(
     (c) =>
       c.customer_name.toLowerCase().includes(search.toLowerCase()) ||
-      c.customer_username.toLowerCase().includes(search.toLowerCase())
+      c.customer_username.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
@@ -38,7 +42,9 @@ function ConversationList() {
           <div className="p-8 text-center text-sm text-muted-foreground">
             <Bot className="h-10 w-10 mx-auto mb-3 opacity-30" />
             <p>No conversations yet</p>
-            <p className="text-xs mt-1">Messages will appear here when customers DM your Instagram</p>
+            <p className="text-xs mt-1">
+              Messages will appear here when customers DM your Instagram
+            </p>
           </div>
         )}
         <AnimatePresence>
@@ -51,12 +57,14 @@ function ConversationList() {
               onClick={() => setActiveConversationId(conv.id)}
               className={cn(
                 "w-full p-3 flex items-start gap-3 hover:bg-muted/50 transition-colors border-b border-border/30",
-                activeConversation?.id === conv.id && "bg-primary/5 border-l-2 border-l-primary"
+                activeConversation?.id === conv.id && "bg-primary/5 border-l-2 border-l-primary",
               )}
             >
               <div className="relative shrink-0">
                 <div className="h-10 w-10 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
-                  {conv.customer_name?.[0]?.toUpperCase() || conv.customer_username?.[0]?.toUpperCase() || "?"}
+                  {conv.customer_name?.[0]?.toUpperCase() ||
+                    conv.customer_username?.[0]?.toUpperCase() ||
+                    "?"}
                 </div>
                 {conv.mode === "ai" && (
                   <div className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full bg-violet-500 border-2 border-background flex items-center justify-center">
@@ -84,14 +92,17 @@ function ConversationList() {
                       "text-[10px] px-1.5 py-0.5 rounded-full font-medium",
                       conv.mode === "ai"
                         ? "bg-violet-500/10 text-violet-600"
-                        : "bg-blue-500/10 text-blue-600"
+                        : "bg-blue-500/10 text-blue-600",
                     )}
                   >
                     {conv.mode === "ai" ? "AI" : "Human"}
                   </span>
                   {conv.last_message_at && (
                     <span className="text-[10px] text-muted-foreground">
-                      {new Date(conv.last_message_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                      {new Date(conv.last_message_at).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                     </span>
                   )}
                 </div>
@@ -112,7 +123,10 @@ function MessageBubble({ msg }: { msg: Message }) {
     <motion.div
       initial={{ opacity: 0, y: 10, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      className={cn("flex gap-2 max-w-[80%]", isCustomer ? "self-start" : "self-end flex-row-reverse")}
+      className={cn(
+        "flex gap-2 max-w-[80%]",
+        isCustomer ? "self-start" : "self-end flex-row-reverse",
+      )}
     >
       <div
         className={cn(
@@ -121,10 +135,16 @@ function MessageBubble({ msg }: { msg: Message }) {
             ? "bg-gradient-to-br from-pink-500 to-purple-600 text-white"
             : isAI
               ? "bg-gradient-to-br from-violet-500 to-indigo-600 text-white"
-              : "bg-gradient-to-br from-blue-500 to-cyan-600 text-white"
+              : "bg-gradient-to-br from-blue-500 to-cyan-600 text-white",
         )}
       >
-        {isCustomer ? <User className="h-3.5 w-3.5" /> : isAI ? <Bot className="h-3.5 w-3.5" /> : <UserCheck className="h-3.5 w-3.5" />}
+        {isCustomer ? (
+          <User className="h-3.5 w-3.5" />
+        ) : isAI ? (
+          <Bot className="h-3.5 w-3.5" />
+        ) : (
+          <UserCheck className="h-3.5 w-3.5" />
+        )}
       </div>
       <div
         className={cn(
@@ -133,7 +153,7 @@ function MessageBubble({ msg }: { msg: Message }) {
             ? "bg-muted rounded-tl-sm"
             : isAI
               ? "bg-gradient-to-br from-violet-500 to-indigo-600 text-white rounded-tr-sm"
-              : "bg-gradient-to-br from-blue-500 to-cyan-600 text-white rounded-tr-sm"
+              : "bg-gradient-to-br from-blue-500 to-cyan-600 text-white rounded-tr-sm",
         )}
       >
         <p className="whitespace-pre-wrap">{msg.content}</p>
@@ -144,7 +164,10 @@ function MessageBubble({ msg }: { msg: Message }) {
         )}
         <div className="flex items-center gap-1.5 mt-1.5">
           <span className={cn("text-[10px]", isCustomer ? "text-muted-foreground" : "opacity-60")}>
-            {new Date(msg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+            {new Date(msg.created_at).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
           </span>
           {isAI && <span className="text-[10px] opacity-60">• AI</span>}
         </div>
@@ -206,7 +229,10 @@ function ChatArea() {
       {/* Chat header */}
       <div className="h-14 border-b flex items-center justify-between px-4 bg-background/80 backdrop-blur-sm">
         <div className="flex items-center gap-3">
-          <button className="md:hidden mr-2 text-muted-foreground" onClick={() => setActiveConversationId(null)}>
+          <button
+            className="md:hidden mr-2 text-muted-foreground"
+            onClick={() => setActiveConversationId(null)}
+          >
             ←
           </button>
           <div className="h-8 w-8 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center text-white text-sm font-semibold">
@@ -226,9 +252,7 @@ function ChatArea() {
             onClick={handleToggleMode}
             className={cn(
               "gap-1.5 h-8 text-xs rounded-full",
-              activeConversation.mode === "ai"
-                ? "bg-violet-500 hover:bg-violet-600"
-                : ""
+              activeConversation.mode === "ai" ? "bg-violet-500 hover:bg-violet-600" : "",
             )}
           >
             {activeConversation.mode === "ai" ? (
@@ -276,7 +300,11 @@ function ChatArea() {
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder={activeConversation.mode === "human" ? "Type a message..." : "AI is responding — switch to manual to type"}
+            placeholder={
+              activeConversation.mode === "human"
+                ? "Type a message..."
+                : "AI is responding — switch to manual to type"
+            }
             disabled={activeConversation.mode === "ai"}
             className="flex-1 bg-muted/50 border-0 h-10 rounded-xl"
           />

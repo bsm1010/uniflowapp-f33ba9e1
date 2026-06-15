@@ -2,7 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Shield } from "lucide-react";
 import { StorefrontShell } from "@/components/storefront/StorefrontShell";
-import { getPrivacyPolicyBySlug, type PrivacyPolicySettings } from "@/lib/gdpr/privacy-policy.functions";
+import {
+  getPrivacyPolicyBySlug,
+  type PrivacyPolicySettings,
+} from "@/lib/gdpr/privacy-policy.functions";
 import { type StoreSettings } from "@/lib/storeTheme";
 import { fetchSettings } from "@/lib/storefrontCache";
 
@@ -10,9 +13,7 @@ export const Route = createFileRoute("/s/$slug/privacy")({
   component: PrivacyPolicyPage,
   loader: ({ params }) => fetchSettings(params.slug),
   head: ({ params, loaderData }) => ({
-    meta: [
-      { title: `Privacy Policy — ${loaderData?.store_name ?? params.slug}` },
-    ],
+    meta: [{ title: `Privacy Policy — ${loaderData?.store_name ?? params.slug}` }],
   }),
 });
 
@@ -47,7 +48,8 @@ function PrivacyPolicyPage() {
           <div>
             <h1 className="text-2xl font-bold">Privacy Policy</h1>
             <p className="text-sm text-muted-foreground">
-              Last updated: {policy?.last_updated ? new Date(policy.last_updated).toLocaleDateString() : "N/A"}
+              Last updated:{" "}
+              {policy?.last_updated ? new Date(policy.last_updated).toLocaleDateString() : "N/A"}
             </p>
           </div>
         </div>

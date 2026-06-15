@@ -17,9 +17,7 @@ export const Route = createFileRoute("/s/$slug/contact")({
   head: ({ loaderData }) => ({
     meta: [
       {
-        title: loaderData
-          ? `Contact — ${loaderData.settings.store_name}`
-          : "Contact",
+        title: loaderData ? `Contact — ${loaderData.settings.store_name}` : "Contact",
       },
       {
         name: "description",
@@ -52,17 +50,22 @@ function ContactPage() {
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
-  const [contactInfo, setContactInfo] = useState<{ contact_email: string; contact_phone: string } | null>(null);
+  const [contactInfo, setContactInfo] = useState<{
+    contact_email: string;
+    contact_phone: string;
+  } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-    supabase
-      .rpc("get_store_contact_info", { _slug: settings.slug })
-      .then(({ data }) => {
-        if (cancelled) return;
-        const row = Array.isArray(data) ? data[0] : data;
-        if (row) setContactInfo({ contact_email: row.contact_email ?? "", contact_phone: row.contact_phone ?? "" });
-      });
+    supabase.rpc("get_store_contact_info", { _slug: settings.slug }).then(({ data }) => {
+      if (cancelled) return;
+      const row = Array.isArray(data) ? data[0] : data;
+      if (row)
+        setContactInfo({
+          contact_email: row.contact_email ?? "",
+          contact_phone: row.contact_phone ?? "",
+        });
+    });
     return () => {
       cancelled = true;
     };
@@ -340,10 +343,7 @@ function FormField({
 }) {
   return (
     <div className="space-y-1.5">
-      <label
-        className="text-xs uppercase tracking-wider font-medium"
-        style={{ color: t.muted }}
-      >
+      <label className="text-xs uppercase tracking-wider font-medium" style={{ color: t.muted }}>
         {label}
       </label>
       {children}

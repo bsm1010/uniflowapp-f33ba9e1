@@ -4,7 +4,6 @@ import { createAuthenticatedDeliveryClient } from "./authenticated-client";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { getAdapterCtor, normalizeProviderKey } from "./registry";
 
-
 const InputSchema = z.object({
   accessToken: z.string().min(1).max(4096),
   orderId: z.string().uuid(),
@@ -54,12 +53,8 @@ export const trackOrderShipment = createServerFn({ method: "POST" })
       }
 
       // Resolve company: prefer ZRExpress if order is from zrexpress, else any enabled.
-      const { data: companies } = await supabase
-        .from("delivery_companies")
-        .select("id, name");
-      const zr = (companies ?? []).find(
-        (c) => normalizeProviderKey(c.name) === "zr_express",
-      );
+      const { data: companies } = await supabase.from("delivery_companies").select("id, name");
+      const zr = (companies ?? []).find((c) => normalizeProviderKey(c.name) === "zr_express");
       const companyId = zr?.id;
       if (!companyId) return { ok: false, message: "ZRExpress is not configured." };
 
@@ -149,7 +144,13 @@ export const trackOrderShipment = createServerFn({ method: "POST" })
 function extractHistoryFromResponse(
   obj: Record<string, unknown>,
 ): Array<{ status: string; date: string; location?: string; city?: string; wilaya?: string }> {
-  const results: Array<{ status: string; date: string; location?: string; city?: string; wilaya?: string }> = [];
+  const results: Array<{
+    status: string;
+    date: string;
+    location?: string;
+    city?: string;
+    wilaya?: string;
+  }> = [];
 
   function lookForArrays(o: Record<string, unknown>, depth: number) {
     if (depth > 4) return;
@@ -157,8 +158,14 @@ function extractHistoryFromResponse(
       if (Array.isArray(val) && val.length > 0 && typeof val[0] === "object" && val[0] !== null) {
         // This looks like it could be a history array — check if items have status/date fields
         const first = val[0] as Record<string, unknown>;
-        const hasStatus = "status" in first || "name" in first || "label" in first || "description" in first;
-        const hasDate = "date" in first || "createdAt" in first || "created_at" in first || "at" in first || "timestamp" in first;
+        const hasStatus =
+          "status" in first || "name" in first || "label" in first || "description" in first;
+        const hasDate =
+          "date" in first ||
+          "createdAt" in first ||
+          "created_at" in first ||
+          "at" in first ||
+          "timestamp" in first;
         if (hasStatus || hasDate) {
           for (const item of val) {
             const e = (item ?? {}) as Record<string, unknown>;
@@ -166,7 +173,15 @@ function extractHistoryFromResponse(
             const status =
               pickStr(e, ["status", "name", "label", "description", "statusText", "event"]) ||
               pickStr(st, ["name", "description"]);
-            const date = pickStr(e, ["date", "createdAt", "created_at", "at", "timestamp", "eventDate", "statusDate"]);
+            const date = pickStr(e, [
+              "date",
+              "createdAt",
+              "created_at",
+              "at",
+              "timestamp",
+              "eventDate",
+              "statusDate",
+            ]);
             const location = pickStr(e, ["location", "address"]) || undefined;
             const city = pickStr(e, ["city", "commune", "cityName"]) || undefined;
             const wilaya = pickStr(e, ["wilaya", "wilayaName", "state", "region"]) || undefined;

@@ -31,12 +31,12 @@ for (const [key, value] of Object.entries(FONT_STACK)) {
 // Also map common old formats that don't exactly match FONT_STACK values
 const LEGACY_FONT_MAP: Record<string, string> = {
   "inter, sans-serif": "Inter",
-  "inter": "Inter",
+  inter: "Inter",
   "space grotesk, sans-serif": "Space Grotesk",
   "'space grotesk', sans-serif": "Space Grotesk",
   "playfair display, serif": "Playfair",
   "'playfair display', serif": "Playfair",
-  "playfair": "Playfair",
+  playfair: "Playfair",
   "dm serif display, serif": "DM Serif",
   "'dm serif display', serif": "DM Serif",
   "jetbrains mono, monospace": "Mono",
@@ -210,8 +210,7 @@ export function getNavLinks(s: StoreSettings): NavLink[] {
   const raw = s.nav_links as unknown;
   if (Array.isArray(raw)) {
     return raw.filter(
-      (l): l is NavLink =>
-        l && typeof l === "object" && "label" in l && "href" in l,
+      (l): l is NavLink => l && typeof l === "object" && "label" in l && "href" in l,
     );
   }
   return [];
@@ -246,12 +245,7 @@ export function getFooterSocials(s: StoreSettings): FooterSocials {
 }
 
 export type SectionKey = "hero" | "categories" | "featured" | "newsletter";
-export const ALL_SECTIONS: SectionKey[] = [
-  "hero",
-  "categories",
-  "featured",
-  "newsletter",
-];
+export const ALL_SECTIONS: SectionKey[] = ["hero", "categories", "featured", "newsletter"];
 
 export function getSectionOrder(s: StoreSettings): SectionKey[] {
   const raw = (s as { section_order?: unknown }).section_order;

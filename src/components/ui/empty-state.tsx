@@ -38,9 +38,7 @@ export function EmptyState({
           <Icon className="h-8 w-8" />
         </div>
         <h3 className="mt-4 text-lg font-semibold">{title}</h3>
-        <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
-          {description}
-        </p>
+        <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">{description}</p>
         {action && (
           <div className="mt-6 flex justify-center">
             <Button variant={action.variant ?? "default"} onClick={action.onClick}>

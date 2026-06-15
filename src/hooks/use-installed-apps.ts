@@ -21,10 +21,7 @@ export function useInstalledApps() {
       setLoading(false);
       return;
     }
-    const { data } = await supabase
-      .from("installed_apps")
-      .select("app_key")
-      .eq("user_id", user.id);
+    const { data } = await supabase.from("installed_apps").select("app_key").eq("user_id", user.id);
     setInstalled(new Set((data ?? []).map((r) => r.app_key)));
     setLoading(false);
   }, [user]);
@@ -78,8 +75,12 @@ export function useInstalledApps() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email: user.email, app_name: appName }),
             mode: "no-cors",
-          }).catch(() => {});
-        } catch {}
+          }).catch((err) => {
+            console.warn(err);
+          });
+        } catch (error) {
+          console.warn(error);
+        }
       }
       return { error };
     },
@@ -107,10 +108,7 @@ export function useInstalledApps() {
     [user],
   );
 
-  const isInstalled = useCallback(
-    (appKey: string) => installed.has(appKey),
-    [installed],
-  );
+  const isInstalled = useCallback((appKey: string) => installed.has(appKey), [installed]);
 
   return { installed, isInstalled, install, uninstall, loading, refresh };
 }

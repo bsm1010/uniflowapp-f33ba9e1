@@ -23,7 +23,9 @@ export const generateAd = createServerFn({ method: "POST" })
       reason: "ai_ad_generator",
     });
     if (!credit.ok) {
-      throw new Error(credit.reason === "insufficient" ? INSUFFICIENT_CREDITS_ERROR : "Unauthorized");
+      throw new Error(
+        credit.reason === "insufficient" ? INSUFFICIENT_CREDITS_ERROR : "Unauthorized",
+      );
     }
 
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {

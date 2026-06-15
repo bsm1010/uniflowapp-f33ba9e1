@@ -16,10 +16,7 @@ export function useBuiltinAppEdits() {
 
   const load = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("builtin_app_edits")
-      .select("*")
-      .order("app_key");
+    const { data, error } = await supabase.from("builtin_app_edits").select("*").order("app_key");
 
     if (error) {
       console.error("Failed to load builtin_app_edits:", error.message);
@@ -68,10 +65,7 @@ export function useBuiltinAppEdits() {
   };
 
   const remove = async (appKey: string) => {
-    const { error } = await supabase
-      .from("builtin_app_edits")
-      .delete()
-      .eq("app_key", appKey);
+    const { error } = await supabase.from("builtin_app_edits").delete().eq("app_key", appKey);
     if (error) throw error;
     setEdits((prev) => {
       const next = { ...prev };

@@ -29,9 +29,13 @@ export function Testimonials() {
     <section id="testimonials" className="py-14 md:py-20 bg-muted/30">
       <div className="mx-auto max-w-6xl px-4">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-sm font-medium text-primary uppercase tracking-wider">{t("testimonials.kicker")}</p>
+          <p className="text-sm font-medium text-primary uppercase tracking-wider">
+            {t("testimonials.kicker")}
+          </p>
           <h2 className="mt-3 text-3xl md:text-5xl font-bold">
-            {t("testimonials.titleA")} <span className="text-gradient-brand">{t("testimonials.titleB")}</span> {t("testimonials.titleC")}
+            {t("testimonials.titleA")}{" "}
+            <span className="text-gradient-brand">{t("testimonials.titleB")}</span>{" "}
+            {t("testimonials.titleC")}
           </h2>
         </div>
 

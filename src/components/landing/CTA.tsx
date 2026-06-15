@@ -13,9 +13,7 @@ export function CTA() {
             <h2 className="text-3xl md:text-5xl font-bold text-brand-foreground">
               {t("cta.title")}
             </h2>
-            <p className="mt-4 text-brand-foreground/80 max-w-xl mx-auto">
-              {t("cta.subtitle")}
-            </p>
+            <p className="mt-4 text-brand-foreground/80 max-w-xl mx-auto">{t("cta.subtitle")}</p>
             <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
               <Button size="lg" variant="secondary" className="group">
                 {t("cta.primary")}

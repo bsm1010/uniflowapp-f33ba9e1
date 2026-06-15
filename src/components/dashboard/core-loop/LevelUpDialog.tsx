@@ -14,7 +14,14 @@ interface LevelUpDialogProps {
   onClose: () => void;
 }
 
-export function LevelUpDialog({ open, level, xp, xpForCurrent, xpForNext, onClose }: LevelUpDialogProps) {
+export function LevelUpDialog({
+  open,
+  level,
+  xp,
+  xpForCurrent,
+  xpForNext,
+  onClose,
+}: LevelUpDialogProps) {
   const { t } = useTranslation();
   return (
     <AnimatePresence>
@@ -62,7 +69,11 @@ export function LevelUpDialog({ open, level, xp, xpForCurrent, xpForNext, onClos
                   transition={{ delay: 0.4 }}
                   className="text-white/80 text-sm mt-1"
                 >
-                  {t("dashboard.gamification.youReached")} <span className="font-bold text-white">{t("dashboard.gamification.levelPrefix")}{level}</span>
+                  {t("dashboard.gamification.youReached")}{" "}
+                  <span className="font-bold text-white">
+                    {t("dashboard.gamification.levelPrefix")}
+                    {level}
+                  </span>
                 </motion.p>
               </div>
               <div className="p-5 space-y-4">

@@ -124,19 +124,27 @@ export function Pricing() {
 
   const getCheckClass = (style: Tier["style"]) => {
     switch (style) {
-      case "beginner": return "text-blue-500";
-      case "pro": return "text-violet-500";
-      case "business": return "text-amber-500";
-      case "agency": return "text-pink-500";
+      case "beginner":
+        return "text-blue-500";
+      case "pro":
+        return "text-violet-500";
+      case "business":
+        return "text-amber-500";
+      case "agency":
+        return "text-pink-500";
     }
   };
 
   const getPriceClass = (style: Tier["style"]) => {
     switch (style) {
-      case "beginner": return "text-blue-500";
-      case "pro": return "text-violet-400";
-      case "business": return "text-amber-400";
-      case "agency": return "bg-gradient-to-r from-pink-500 via-violet-500 to-blue-500 bg-clip-text text-transparent";
+      case "beginner":
+        return "text-blue-500";
+      case "pro":
+        return "text-violet-400";
+      case "business":
+        return "text-amber-400";
+      case "agency":
+        return "bg-gradient-to-r from-pink-500 via-violet-500 to-blue-500 bg-clip-text text-transparent";
     }
   };
 
@@ -169,8 +177,10 @@ export function Pricing() {
     const cls: Record<Tier["style"], string> = {
       beginner: "bg-blue-500 hover:bg-blue-600 text-white",
       pro: "bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:opacity-90 text-white border-0",
-      business: "bg-gradient-to-r from-amber-500 to-orange-500 hover:opacity-90 text-white border-0",
-      agency: "bg-gradient-to-r from-pink-500 via-violet-500 to-blue-500 hover:opacity-90 text-white border-0",
+      business:
+        "bg-gradient-to-r from-amber-500 to-orange-500 hover:opacity-90 text-white border-0",
+      agency:
+        "bg-gradient-to-r from-pink-500 via-violet-500 to-blue-500 hover:opacity-90 text-white border-0",
     };
     return <Button className={`mt-6 w-full ${cls[tier.style]}`}>{tier.cta}</Button>;
   };
@@ -179,9 +189,7 @@ export function Pricing() {
     <section id="pricing" className="py-14 md:py-20">
       <div className="mx-auto max-w-7xl px-4">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-sm font-medium text-primary uppercase tracking-wider">
-            Pricing
-          </p>
+          <p className="text-sm font-medium text-primary uppercase tracking-wider">Pricing</p>
           <h2 className="mt-3 text-3xl md:text-5xl font-bold">
             Simple, <span className="text-gradient-brand">transparent</span> pricing
           </h2>
@@ -232,17 +240,23 @@ export function Pricing() {
               className={`relative rounded-2xl border p-8 flex flex-col ${getCardClass(tier.style)}`}
             >
               {getBadge(tier.style)}
-              <h3 className={`text-lg font-semibold ${tier.style === "agency" ? "text-white" : ""}`}>
+              <h3
+                className={`text-lg font-semibold ${tier.style === "agency" ? "text-white" : ""}`}
+              >
                 {tier.name}
               </h3>
-              <p className={`mt-1 text-sm ${tier.style === "agency" ? "text-white/60" : "text-muted-foreground"}`}>
+              <p
+                className={`mt-1 text-sm ${tier.style === "agency" ? "text-white/60" : "text-muted-foreground"}`}
+              >
                 {tier.desc}
               </p>
               <div className="mt-6 flex items-baseline gap-1">
                 <span className={`text-4xl font-bold font-display ${getPriceClass(tier.style)}`}>
                   {tier.price}
                 </span>
-                <span className={`text-sm ${tier.style === "agency" ? "text-white/50" : "text-muted-foreground"}`}>
+                <span
+                  className={`text-sm ${tier.style === "agency" ? "text-white/50" : "text-muted-foreground"}`}
+                >
                   {tier.period}
                 </span>
               </div>
@@ -251,7 +265,9 @@ export function Pricing() {
                 {tier.features.map((f) => (
                   <li key={f} className="flex items-start gap-2.5 text-sm">
                     <Check className={`h-4 w-4 mt-0.5 shrink-0 ${getCheckClass(tier.style)}`} />
-                    <span className={tier.style === "agency" ? "text-white/70" : "text-foreground/80"}>
+                    <span
+                      className={tier.style === "agency" ? "text-white/70" : "text-foreground/80"}
+                    >
                       {f}
                     </span>
                   </li>

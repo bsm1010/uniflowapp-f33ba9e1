@@ -16,9 +16,7 @@ export const Route = createFileRoute("/s/$slug/gdpr/export")({
   component: DataExportRequestPage,
   loader: ({ params }) => fetchSettings(params.slug),
   head: ({ params, loaderData }) => ({
-    meta: [
-      { title: `Data Export — ${loaderData?.store_name ?? params.slug}` },
-    ],
+    meta: [{ title: `Data Export — ${loaderData?.store_name ?? params.slug}` }],
   }),
 });
 
@@ -124,7 +122,10 @@ function DataExportRequestPage() {
                 </div>
                 <div className="space-y-3">
                   <Label>Delivery Method</Label>
-                  <RadioGroup value={deliveryMethod} onValueChange={(v) => setDeliveryMethod(v as any)}>
+                  <RadioGroup
+                    value={deliveryMethod}
+                    onValueChange={(v) => setDeliveryMethod(v as any)}
+                  >
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="download" id="dl" />
                       <Label htmlFor="dl" className="flex items-center gap-2 cursor-pointer">

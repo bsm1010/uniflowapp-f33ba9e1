@@ -85,7 +85,10 @@ function AdminWalletTopupsPage() {
           setIsAdmin(!!data && data.length > 0);
         }
       } catch (e) {
-        console.error("[AdminWalletTopups] Admin check failed:", e instanceof Error ? e.message : e);
+        console.error(
+          "[AdminWalletTopups] Admin check failed:",
+          e instanceof Error ? e.message : e,
+        );
         setIsAdmin(false);
       }
     })();
@@ -275,9 +278,7 @@ function AdminWalletTopupsPage() {
                               <div className="flex items-center gap-1.5">
                                 <Button
                                   size="sm"
-                                  onClick={() =>
-                                    setDecideTarget({ req: r, action: "approve" })
-                                  }
+                                  onClick={() => setDecideTarget({ req: r, action: "approve" })}
                                   disabled={approve.isPending}
                                 >
                                   <Check className="h-3.5 w-3.5 ms-1" /> موافقة
@@ -285,9 +286,7 @@ function AdminWalletTopupsPage() {
                                 <Button
                                   size="sm"
                                   variant="destructive"
-                                  onClick={() =>
-                                    setDecideTarget({ req: r, action: "reject" })
-                                  }
+                                  onClick={() => setDecideTarget({ req: r, action: "reject" })}
                                   disabled={reject.isPending}
                                 >
                                   <X className="h-3.5 w-3.5 ms-1" /> رفض
@@ -295,9 +294,7 @@ function AdminWalletTopupsPage() {
                               </div>
                             ) : (
                               <span className="text-xs text-muted-foreground">
-                                {r.processed_at
-                                  ? formatDate(r.processed_at)
-                                  : "—"}
+                                {r.processed_at ? formatDate(r.processed_at) : "—"}
                               </span>
                             )}
                           </TableCell>
@@ -313,10 +310,7 @@ function AdminWalletTopupsPage() {
       </Tabs>
 
       {/* Approve / Reject dialog */}
-      <Dialog
-        open={!!decideTarget}
-        onOpenChange={(o) => !o && setDecideTarget(null)}
-      >
+      <Dialog open={!!decideTarget} onOpenChange={(o) => !o && setDecideTarget(null)}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
@@ -327,7 +321,8 @@ function AdminWalletTopupsPage() {
             <DialogDescription>
               {decideTarget && (
                 <>
-                  الوكيل: <code className="text-xs">{decideTarget.req.reseller_id.slice(0, 8)}</code>
+                  الوكيل:{" "}
+                  <code className="text-xs">{decideTarget.req.reseller_id.slice(0, 8)}</code>
                   {" • "}
                   المبلغ:{" "}
                   <strong className="font-bold">
@@ -343,9 +338,7 @@ function AdminWalletTopupsPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">
-              ملاحظة (اختياري)
-            </label>
+            <label className="text-sm font-medium">ملاحظة (اختياري)</label>
             <Input
               placeholder={
                 decideTarget?.action === "approve"
@@ -374,11 +367,7 @@ function AdminWalletTopupsPage() {
                 تأكيد الموافقة
               </Button>
             ) : (
-              <Button
-                onClick={handleDecide}
-                variant="destructive"
-                disabled={reject.isPending}
-              >
+              <Button onClick={handleDecide} variant="destructive" disabled={reject.isPending}>
                 {reject.isPending ? (
                   <Loader2 className="h-4 w-4 animate-spin ms-2" />
                 ) : (

@@ -17,8 +17,10 @@ function preferenceKeyFor(title: string): keyof PreferenceShape | null {
   const t = title.toLowerCase();
   if (t.includes("order received") || t.includes("new order")) return "new_order";
   if (t.includes("low stock") || t.includes("stock alert")) return "low_stock";
-  if (t.includes("order") && (t.includes("status") || t.includes("tracking"))) return "order_status";
-  if (t.includes("delivered") || t.includes("delivery") || t.includes("shipment")) return "delivery_update";
+  if (t.includes("order") && (t.includes("status") || t.includes("tracking")))
+    return "order_status";
+  if (t.includes("delivered") || t.includes("delivery") || t.includes("shipment"))
+    return "delivery_update";
   if (t.includes("payment")) return "payment";
   return null;
 }
@@ -105,10 +107,7 @@ export const Route = createFileRoute("/api/public/hooks/push-dispatch")({
         }
 
         if (removeGone.length > 0) {
-          await supabaseAdmin
-            .from("push_subscriptions")
-            .delete()
-            .in("endpoint", removeGone);
+          await supabaseAdmin.from("push_subscriptions").delete().in("endpoint", removeGone);
         }
 
         return Response.json({ sent, failed, total: subs.length });

@@ -1,6 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
-import { Users, Mail, Phone, ShoppingCart, TrendingUp, DollarSign, Search, MapPin, CalendarDays, ExternalLink } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  Users,
+  Mail,
+  Phone,
+  ShoppingCart,
+  TrendingUp,
+  DollarSign,
+  Search,
+  MapPin,
+  CalendarDays,
+  ExternalLink,
+} from "lucide-react";
 import { PageHeader, EmptyState } from "@/components/dashboard/PageHeader";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -47,14 +58,16 @@ function CustomersPage() {
   const [q, setQ] = useState("");
   const [selected, setSelected] = useState<CustomerProfile | null>(null);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     if (!user) return;
     try {
       setLoading(true);
       setLoadError(null);
       const { data: orders, error } = await supabase
         .from("orders")
-        .select("id, customer_name, customer_email, customer_phone, shipping_address, shipping_city, shipping_wilaya, total, status, delivery_type, created_at")
+        .select(
+          "id, customer_name, customer_email, customer_phone, shipping_address, shipping_city, shipping_wilaya, total, status, delivery_type, created_at",
+        )
         .eq("store_owner_id", user.id)
         .order("created_at", { ascending: false });
       if (error) {
@@ -107,13 +120,15 @@ function CustomersPage() {
             firstOrderDate: o.created_at ?? null,
             wilaya: o.shipping_wilaya ?? "",
             city: o.shipping_city ?? "",
-            orders: [{
-              id: o.id,
-              total: Number(o.total) || 0,
-              status: o.status ?? "",
-              created_at: o.created_at ?? "",
-              delivery_type: o.delivery_type ?? "",
-            }],
+            orders: [
+              {
+                id: o.id,
+                total: Number(o.total) || 0,
+                status: o.status ?? "",
+                created_at: o.created_at ?? "",
+                delivery_type: o.delivery_type ?? "",
+              },
+            ],
           });
         }
       }
@@ -123,12 +138,12 @@ function CustomersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
     void load();
-  }, [user?.id]);
+  }, [user, load]);
 
   const filtered = useMemo(() => {
     const needle = q.toLowerCase().trim();
@@ -144,8 +159,14 @@ function CustomersPage() {
 
   const totalCustomers = customers.length;
   const totalRevenue = customers.reduce((s, c) => s + c.totalSpent, 0);
-  const avgOrderValue = totalCustomers > 0 ? Math.round(totalRevenue / customers.reduce((s, c) => s + c.orderCount, 0)) : 0;
-  const repeatRate = totalCustomers > 0 ? Math.round((customers.filter((c) => c.orderCount > 1).length / totalCustomers) * 100) : 0;
+  const avgOrderValue =
+    totalCustomers > 0
+      ? Math.round(totalRevenue / customers.reduce((s, c) => s + c.orderCount, 0))
+      : 0;
+  const repeatRate =
+    totalCustomers > 0
+      ? Math.round((customers.filter((c) => c.orderCount > 1).length / totalCustomers) * 100)
+      : 0;
 
   const statusColor = (s: string) => {
     const st = s?.toLowerCase() ?? "";
@@ -227,12 +248,18 @@ function CustomersPage() {
           </CardHeader>
           <CardContent className="p-0">
             {loading ? (
-              <div className="flex items-center justify-center py-16 text-muted-foreground">Loading…</div>
+              <div className="flex items-center justify-center py-16 text-muted-foreground">
+                Loading…
+              </div>
             ) : filtered.length === 0 ? (
               <EmptyState
                 icon={Users}
                 title={q ? "No matches" : "No customers yet"}
-                description={q ? "Try a different search term." : "Customers appear here after their first order."}
+                description={
+                  q
+                    ? "Try a different search term."
+                    : "Customers appear here after their first order."
+                }
               />
             ) : (
               <ul className="divide-y">
@@ -249,11 +276,15 @@ function CustomersPage() {
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-medium">{c.name}</p>
-                      <p className="truncate text-xs text-muted-foreground">{c.email || c.phone || "No contact"}</p>
+                      <p className="truncate text-xs text-muted-foreground">
+                        {c.email || c.phone || "No contact"}
+                      </p>
                     </div>
                     <div className="text-right">
                       <p className="text-sm font-semibold">{formatPrice(c.totalSpent)}</p>
-                      <p className="text-xs text-muted-foreground">{c.orderCount} order{c.orderCount !== 1 ? "s" : ""}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {c.orderCount} order{c.orderCount !== 1 ? "s" : ""}
+                      </p>
                     </div>
                   </li>
                 ))}
@@ -265,7 +296,9 @@ function CustomersPage() {
         {/* Customer detail */}
         <Card>
           <CardHeader className="border-b px-5 py-3">
-            <span className="font-medium text-sm">{selected ? "Customer details" : "Select a customer"}</span>
+            <span className="font-medium text-sm">
+              {selected ? "Customer details" : "Select a customer"}
+            </span>
           </CardHeader>
           <CardContent className="p-0">
             {!selected ? (
@@ -282,26 +315,33 @@ function CustomersPage() {
                     </div>
                     <div>
                       <p className="font-semibold">{selected.name}</p>
-                      <p className="text-xs text-muted-foreground">{selected.orderCount} order{selected.orderCount !== 1 ? "s" : ""}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {selected.orderCount} order{selected.orderCount !== 1 ? "s" : ""}
+                      </p>
                     </div>
                   </div>
                   <div className="space-y-1.5 text-sm">
                     {selected.email && (
                       <div className="flex items-center gap-2 text-muted-foreground">
-                        <Mail className="h-3.5 w-3.5 shrink-0" /> <span className="truncate">{selected.email}</span>
+                        <Mail className="h-3.5 w-3.5 shrink-0" />{" "}
+                        <span className="truncate">{selected.email}</span>
                       </div>
                     )}
                     {selected.phone && (
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <Phone className="h-3.5 w-3.5 shrink-0" />
-                        <a href={`tel:${selected.phone}`} className="hover:text-primary truncate">{selected.phone}</a>
+                        <a href={`tel:${selected.phone}`} className="hover:text-primary truncate">
+                          {selected.phone}
+                        </a>
                       </div>
                     )}
                     {(selected.wilaya || selected.city) && (
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <MapPin className="h-3.5 w-3.5 shrink-0" />
                         <span className="truncate">
-                          {selected.city}{selected.city && selected.wilaya ? ", " : ""}{selected.wilaya}
+                          {selected.city}
+                          {selected.city && selected.wilaya ? ", " : ""}
+                          {selected.wilaya}
                         </span>
                       </div>
                     )}
@@ -330,14 +370,17 @@ function CustomersPage() {
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <CalendarDays className="h-3 w-3" />
                       First order: {new Date(selected.firstOrderDate).toLocaleDateString()}
-                      {selected.lastOrderDate && selected.lastOrderDate !== selected.firstOrderDate && (
-                        <> · Last: {new Date(selected.lastOrderDate).toLocaleDateString()}</>
-                      )}
+                      {selected.lastOrderDate &&
+                        selected.lastOrderDate !== selected.firstOrderDate && (
+                          <> · Last: {new Date(selected.lastOrderDate).toLocaleDateString()}</>
+                        )}
                     </div>
                   )}
                 </div>
                 <div className="p-5">
-                  <p className="mb-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">Order history</p>
+                  <p className="mb-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Order history
+                  </p>
                   <div className="space-y-2 max-h-72 overflow-auto">
                     {selected.orders.map((o) => (
                       <Link
@@ -348,10 +391,14 @@ function CustomersPage() {
                       >
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1.5">
-                            <p className="truncate text-xs font-mono text-muted-foreground">{o.id.slice(0, 8)}…</p>
+                            <p className="truncate text-xs font-mono text-muted-foreground">
+                              {o.id.slice(0, 8)}…
+                            </p>
                             <ExternalLink className="h-3 w-3 shrink-0 text-muted-foreground/50" />
                           </div>
-                          <p className="text-xs text-muted-foreground">{new Date(o.created_at).toLocaleDateString()}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(o.created_at).toLocaleDateString()}
+                          </p>
                         </div>
                         <div className="text-right shrink-0 ml-2">
                           <p className="font-medium">{formatPrice(o.total)}</p>
@@ -360,7 +407,10 @@ function CustomersPage() {
                               {o.status || "pending"}
                             </Badge>
                             {o.delivery_type && (
-                              <Badge variant="outline" className="text-[10px] text-muted-foreground">
+                              <Badge
+                                variant="outline"
+                                className="text-[10px] text-muted-foreground"
+                              >
                                 {o.delivery_type === "stopdesk" ? "Stop Desk" : "Home"}
                               </Badge>
                             )}

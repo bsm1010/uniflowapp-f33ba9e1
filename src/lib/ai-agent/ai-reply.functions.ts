@@ -56,12 +56,13 @@ export const generateAIReply = createServerFn({ method: "POST" })
     const currency = storeSettings?.currency ?? "DZD";
 
     const productList = (products ?? [])
-      .map((p) => `- ${p.name}: ${p.price} ${currency} (stock: ${p.stock}) [${p.category ?? "general"}]`)
+      .map(
+        (p) =>
+          `- ${p.name}: ${p.price} ${currency} (stock: ${p.stock}) [${p.category ?? "general"}]`,
+      )
       .join("\n");
 
-    const faqText = faqEntries
-      .map((f: any) => `Q: ${f.question}\nA: ${f.answer}`)
-      .join("\n\n");
+    const faqText = faqEntries.map((f: any) => `Q: ${f.question}\nA: ${f.answer}`).join("\n\n");
 
     const systemPrompt = `You are a friendly AI sales assistant for "${storeName}".
 
@@ -126,7 +127,9 @@ RULES:
 export const sendMerchantMessage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
-    z.object({ conversationId: z.string().uuid(), content: z.string().min(1).max(5000) }).parse(input)
+    z
+      .object({ conversationId: z.string().uuid(), content: z.string().min(1).max(5000) })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
@@ -153,7 +156,7 @@ export const sendMerchantMessage = createServerFn({ method: "POST" })
 export const toggleConversationMode = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
-    z.object({ conversationId: z.string().uuid(), mode: z.enum(["ai", "human"]) }).parse(input)
+    z.object({ conversationId: z.string().uuid(), mode: z.enum(["ai", "human"]) }).parse(input),
   )
   .handler(async ({ data, context }) => {
     const { supabase } = context;
@@ -168,7 +171,7 @@ export const toggleConversationMode = createServerFn({ method: "POST" })
 export const testAIReply = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
-    z.object({ testMessage: z.string().min(1).max(2000) }).parse(input)
+    z.object({ testMessage: z.string().min(1).max(2000) }).parse(input),
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;

@@ -1,5 +1,17 @@
 import { useEffect, useState } from "react";
-import { Truck, Loader2, Star, ShieldCheck, AlertCircle, CheckCircle2, XCircle, Lock, Plug, PlugZap, Trash2 } from "lucide-react";
+import {
+  Truck,
+  Loader2,
+  Star,
+  ShieldCheck,
+  AlertCircle,
+  CheckCircle2,
+  XCircle,
+  Lock,
+  Plug,
+  PlugZap,
+  Trash2,
+} from "lucide-react";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { Card, CardContent } from "@/components/ui/card";
@@ -56,8 +68,20 @@ const COMPANY_LOGOS: Record<string, string> = {
 };
 
 function getCompanyLogo(name: string): string | undefined {
-  const key = name.toLowerCase().trim().replace(/[\s-]+/g, "_").replace(/_/g, "");
-  return COMPANY_LOGOS[key] ?? COMPANY_LOGOS[name.toLowerCase().trim().replace(/[\s-]+/g, "_")];
+  const key = name
+    .toLowerCase()
+    .trim()
+    .replace(/[\s-]+/g, "_")
+    .replace(/_/g, "");
+  return (
+    COMPANY_LOGOS[key] ??
+    COMPANY_LOGOS[
+      name
+        .toLowerCase()
+        .trim()
+        .replace(/[\s-]+/g, "_")
+    ]
+  );
 }
 
 /**
@@ -129,7 +153,9 @@ export function ShippingCompaniesSection() {
     }
     setBusyId(companyId);
     try {
-      const res = await setEnabledFn({ data: { accessToken: session.access_token, companyId, enabled } });
+      const res = await setEnabledFn({
+        data: { accessToken: session.access_token, companyId, enabled },
+      });
       if (!res.ok) {
         toast.error(res.message);
         return;
@@ -294,7 +320,11 @@ export function ShippingCompaniesSection() {
       toast.error("Please sign in again.");
       return;
     }
-    if (!window.confirm("Clear all saved credentials for this carrier? You will need to paste new credentials to reconnect.")) {
+    if (
+      !window.confirm(
+        "Clear all saved credentials for this carrier? You will need to paste new credentials to reconnect.",
+      )
+    ) {
       return;
     }
     setBusyId(companyId);
@@ -360,16 +390,15 @@ export function ShippingCompaniesSection() {
               const status = validationStatus[c.id];
               const isValidating = validatingId === c.id;
               // Connection state: error > connecting > connected > not_connected
-              const connState: "not_connected" | "connecting" | "connected" | "error" =
-                isValidating
-                  ? "connecting"
-                  : status
-                    ? status.ok
-                      ? "connected"
-                      : "error"
-                    : r?.has_key && !draftHasJson
-                      ? "connected"
-                      : "not_connected";
+              const connState: "not_connected" | "connecting" | "connected" | "error" = isValidating
+                ? "connecting"
+                : status
+                  ? status.ok
+                    ? "connected"
+                    : "error"
+                  : r?.has_key && !draftHasJson
+                    ? "connected"
+                    : "not_connected";
               const canEnable = connState === "connected";
               const textareaBorder =
                 connState === "error"
@@ -460,9 +489,7 @@ export function ShippingCompaniesSection() {
                         onClick={() => setAsDefault(c.id)}
                         className="gap-1.5"
                       >
-                        <Star
-                          className={`h-3.5 w-3.5 ${r?.is_default ? "fill-current" : ""}`}
-                        />
+                        <Star className={`h-3.5 w-3.5 ${r?.is_default ? "fill-current" : ""}`} />
                         {r?.is_default ? "Default" : "Set default"}
                       </Button>
                       <Switch
@@ -470,9 +497,7 @@ export function ShippingCompaniesSection() {
                         disabled={!r?.enabled && !canEnable}
                         onCheckedChange={(v) => setEnabled(c.id, v)}
                         aria-label={
-                          !r?.enabled && !canEnable
-                            ? "Validate API key first"
-                            : "Toggle company"
+                          !r?.enabled && !canEnable ? "Validate API key first" : "Toggle company"
                         }
                       />
                     </div>

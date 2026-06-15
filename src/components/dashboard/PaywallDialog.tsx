@@ -1,6 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { Sparkles, Zap } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useCredits } from "@/hooks/use-credits";
 
@@ -14,9 +21,7 @@ export function PaywallDialog() {
           <div className="mx-auto mb-3 grid size-14 place-items-center rounded-2xl bg-gradient-brand text-brand-foreground">
             <Zap className="size-6" />
           </div>
-          <DialogTitle className="text-center text-2xl">
-            لقد انتهى رصيدك
-          </DialogTitle>
+          <DialogTitle className="text-center text-2xl">لقد انتهى رصيدك</DialogTitle>
           <DialogDescription className="text-center text-base">
             قم بالشحن للمتابعة واستخدام جميع ميزات الذكاء الاصطناعي.
           </DialogDescription>

@@ -1,5 +1,14 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { ShoppingBag, Instagram, Facebook, Twitter, Music2, Menu, X, ChevronRight } from "lucide-react";
+import {
+  ShoppingBag,
+  Instagram,
+  Facebook,
+  Twitter,
+  Music2,
+  Menu,
+  X,
+  ChevronRight,
+} from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { loadStorefrontFonts } from "@/lib/load-storefront-fonts";
@@ -31,7 +40,9 @@ function isArabic(str: string): boolean {
 }
 
 export function StorefrontShell({ settings, children }: Props) {
-  useEffect(() => { loadStorefrontFonts(); }, []);
+  useEffect(() => {
+    loadStorefrontFonts();
+  }, []);
   const { t: tr } = useTranslation();
   const t = getStoreTokens(settings);
   const { count } = useCart(settings.slug);
@@ -51,8 +62,9 @@ export function StorefrontShell({ settings, children }: Props) {
     { key: "tiktok", url: socials.tiktok ?? "", Icon: Music2 },
   ].filter((s) => s.url.trim().length > 0);
 
-  const copyright = settings.footer_copyright?.trim()
-    || `© ${new Date().getFullYear()} ${storeName}. ${tr("storefront.footer.rights")}`;
+  const copyright =
+    settings.footer_copyright?.trim() ||
+    `© ${new Date().getFullYear()} ${storeName}. ${tr("storefront.footer.rights")}`;
 
   const navbarProps = {
     tokens: t,
@@ -74,13 +86,19 @@ export function StorefrontShell({ settings, children }: Props) {
     slug: settings.slug,
   };
 
-  const NavbarComponent = navbarStyle === "centered" ? CenteredNavbar
-    : navbarStyle === "hamburger" ? HamburgerNavbar
-    : ClassicNavbar;
+  const NavbarComponent =
+    navbarStyle === "centered"
+      ? CenteredNavbar
+      : navbarStyle === "hamburger"
+        ? HamburgerNavbar
+        : ClassicNavbar;
 
-  const FooterComponent = footerStyle === "simple" ? SimpleFooter
-    : footerStyle === "branded" ? BrandedFooter
-    : ColumnsFooter;
+  const FooterComponent =
+    footerStyle === "simple"
+      ? SimpleFooter
+      : footerStyle === "branded"
+        ? BrandedFooter
+        : ColumnsFooter;
 
   return (
     <div
@@ -93,7 +111,9 @@ export function StorefrontShell({ settings, children }: Props) {
           className="text-center text-xs font-medium tracking-wide py-2.5 px-4"
           style={{ backgroundColor: t.primary, color: t.onPrimary }}
         >
-          {tr("storefront.nav.announcement", { defaultValue: "✨ Free shipping on orders over 5 000 DA" })}
+          {tr("storefront.nav.announcement", {
+            defaultValue: "✨ Free shipping on orders over 5 000 DA",
+          })}
         </div>
       )}
 

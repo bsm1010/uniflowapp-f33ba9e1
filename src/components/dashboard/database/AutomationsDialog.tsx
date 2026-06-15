@@ -22,11 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type {
-  Automation,
-  AutomationAction,
-  AutomationTrigger,
-} from "./automations";
+import type { Automation, AutomationAction, AutomationTrigger } from "./automations";
 
 type DBField = {
   id: string;
@@ -86,10 +82,7 @@ export function AutomationsDialog({
     const missing = [...targetIds].filter((id) => !targetFields[id]);
     if (missing.length === 0) return;
     (async () => {
-      const { data } = await supabase
-        .from("db_fields")
-        .select("*")
-        .in("table_id", missing);
+      const { data } = await supabase.from("db_fields").select("*").in("table_id", missing);
       if (!data) return;
       const next: Record<string, DBField[]> = { ...targetFields };
       for (const id of missing) next[id] = [];
@@ -167,8 +160,8 @@ export function AutomationsDialog({
           </DialogTitle>
           <DialogDescription>
             Run actions automatically when records are created or updated. Use{" "}
-            <code className="bg-muted px-1 rounded">{"{{field_id}}"}</code> in text fields to
-            inject values from the triggering record.
+            <code className="bg-muted px-1 rounded">{"{{field_id}}"}</code> in text fields to inject
+            values from the triggering record.
           </DialogDescription>
         </DialogHeader>
 
@@ -227,9 +220,7 @@ export function AutomationsDialog({
                         <Label className="text-xs">Trigger</Label>
                         <Select
                           value={a.trigger}
-                          onValueChange={(v) =>
-                            patch(a.id, { trigger: v as AutomationTrigger })
-                          }
+                          onValueChange={(v) => patch(a.id, { trigger: v as AutomationTrigger })}
                         >
                           <SelectTrigger className="h-8">
                             <SelectValue />
@@ -273,7 +264,9 @@ export function AutomationsDialog({
                                 )}
                                 {act.type === "update_field" && (
                                   <>
-                                    <div className="text-xs font-medium">Update field on this record</div>
+                                    <div className="text-xs font-medium">
+                                      Update field on this record
+                                    </div>
                                     <Select
                                       value={act.field_id}
                                       onValueChange={(v) =>
@@ -303,7 +296,9 @@ export function AutomationsDialog({
                                 )}
                                 {act.type === "create_record" && (
                                   <>
-                                    <div className="text-xs font-medium">Create record in another table</div>
+                                    <div className="text-xs font-medium">
+                                      Create record in another table
+                                    </div>
                                     <Select
                                       value={act.target_table_id}
                                       onValueChange={(v) =>
@@ -361,7 +356,11 @@ export function AutomationsDialog({
                           </Card>
                         ))}
                         <div className="flex gap-2 flex-wrap">
-                          <Button size="sm" variant="outline" onClick={() => addAction(a, "notify")}>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => addAction(a, "notify")}
+                          >
                             <Plus className="h-3 w-3 mr-1" /> Notification
                           </Button>
                           <Button

@@ -8,7 +8,7 @@ import { lazy } from "react";
 import type { BlockDefinition } from "./types";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const def = <T,>(d: BlockDefinition<T>): BlockDefinition<any> => d as BlockDefinition<any>;
+const def = <T>(d: BlockDefinition<T>): BlockDefinition<any> => d as BlockDefinition<any>;
 
 export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
   /* ---------------- HERO ---------------- */
@@ -125,7 +125,13 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
     category: "products",
     icon: "LayoutGrid",
     component: lazy(() => import("./blocks/products").then((m) => ({ default: m.ProductGrid }))),
-    defaultProps: { title: "Featured products", subtitle: "", columns: 4, products: [], ctaLabel: "View" },
+    defaultProps: {
+      title: "Featured products",
+      subtitle: "",
+      columns: 4,
+      products: [],
+      ctaLabel: "View",
+    },
     schema: {
       fields: [
         { type: "text", key: "title", label: "Title" },
@@ -140,7 +146,9 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
     description: "Horizontal scroll of products.",
     category: "products",
     icon: "MoveHorizontal",
-    component: lazy(() => import("./blocks/products").then((m) => ({ default: m.ProductCarousel }))),
+    component: lazy(() =>
+      import("./blocks/products").then((m) => ({ default: m.ProductCarousel })),
+    ),
     defaultProps: { title: "Trending now", products: [] },
     schema: { fields: [{ type: "text", key: "title", label: "Title" }] },
   }),
@@ -150,7 +158,9 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
     description: "Spotlight on a single product.",
     category: "products",
     icon: "Star",
-    component: lazy(() => import("./blocks/products").then((m) => ({ default: m.FeaturedProduct }))),
+    component: lazy(() =>
+      import("./blocks/products").then((m) => ({ default: m.FeaturedProduct })),
+    ),
     defaultProps: {
       product: { id: "demo", name: "Hero product", price: 49, imageUrl: "" },
       description: "Our best-seller, reimagined.",
@@ -181,7 +191,9 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
     description: "3-column customer testimonial cards.",
     category: "social-proof",
     icon: "MessageCircle",
-    component: lazy(() => import("./blocks/social-proof").then((m) => ({ default: m.Testimonials }))),
+    component: lazy(() =>
+      import("./blocks/social-proof").then((m) => ({ default: m.Testimonials })),
+    ),
     defaultProps: {
       title: "Loved by customers",
       items: [
@@ -214,7 +226,9 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
     description: "Star reviews in a horizontal slider.",
     category: "social-proof",
     icon: "Star",
-    component: lazy(() => import("./blocks/social-proof").then((m) => ({ default: m.ReviewsSlider }))),
+    component: lazy(() =>
+      import("./blocks/social-proof").then((m) => ({ default: m.ReviewsSlider })),
+    ),
     defaultProps: {
       title: "What customers say",
       reviews: [
@@ -244,7 +258,9 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
     description: "Numerical proof points.",
     category: "social-proof",
     icon: "TrendingUp",
-    component: lazy(() => import("./blocks/social-proof").then((m) => ({ default: m.StatsCounter }))),
+    component: lazy(() =>
+      import("./blocks/social-proof").then((m) => ({ default: m.StatsCounter })),
+    ),
     defaultProps: {
       stats: [
         { value: "12k+", label: "Happy customers" },
@@ -352,7 +368,12 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
     category: "banners",
     icon: "Bell",
     component: lazy(() => import("./blocks/banners").then((m) => ({ default: m.AnnouncementBar }))),
-    defaultProps: { message: "Free shipping on orders $50+", ctaLabel: "Shop", ctaHref: "#", dismissible: true },
+    defaultProps: {
+      message: "Free shipping on orders $50+",
+      ctaLabel: "Shop",
+      ctaHref: "#",
+      dismissible: true,
+    },
     schema: {
       fields: [
         { type: "text", key: "message", label: "Message" },
@@ -490,9 +511,31 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
     defaultProps: {
       title: "Simple pricing",
       plans: [
-        { name: "Starter", price: "$9", period: "mo", features: ["1 store", "Basic support"], ctaLabel: "Start", ctaHref: "#" },
-        { name: "Pro", price: "$29", period: "mo", features: ["5 stores", "Priority support", "AI tools"], ctaLabel: "Go Pro", ctaHref: "#", highlighted: true },
-        { name: "Business", price: "$79", period: "mo", features: ["Unlimited", "Dedicated CSM"], ctaLabel: "Contact us", ctaHref: "#" },
+        {
+          name: "Starter",
+          price: "$9",
+          period: "mo",
+          features: ["1 store", "Basic support"],
+          ctaLabel: "Start",
+          ctaHref: "#",
+        },
+        {
+          name: "Pro",
+          price: "$29",
+          period: "mo",
+          features: ["5 stores", "Priority support", "AI tools"],
+          ctaLabel: "Go Pro",
+          ctaHref: "#",
+          highlighted: true,
+        },
+        {
+          name: "Business",
+          price: "$79",
+          period: "mo",
+          features: ["Unlimited", "Dedicated CSM"],
+          ctaLabel: "Contact us",
+          ctaHref: "#",
+        },
       ],
     },
     schema: { fields: [{ type: "text", key: "title", label: "Title" }] },
@@ -521,7 +564,9 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
     description: "3-column linkable cards.",
     category: "content",
     icon: "MousePointer",
-    component: lazy(() => import("./blocks/content").then((m) => ({ default: m.InteractiveCards }))),
+    component: lazy(() =>
+      import("./blocks/content").then((m) => ({ default: m.InteractiveCards })),
+    ),
     defaultProps: {
       title: "Explore",
       cards: [
@@ -638,7 +683,11 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
     category: "cta",
     icon: "MessageSquare",
     component: lazy(() => import("./blocks/cta").then((m) => ({ default: m.ContactForm }))),
-    defaultProps: { title: "Get in touch", subtitle: "We reply within 24 hours.", submitLabel: "Send message" },
+    defaultProps: {
+      title: "Get in touch",
+      subtitle: "We reply within 24 hours.",
+      submitLabel: "Send message",
+    },
     schema: {
       fields: [
         { type: "text", key: "title", label: "Title" },
@@ -678,7 +727,12 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
     category: "cta",
     icon: "ShoppingBag",
     component: lazy(() => import("./blocks/cta").then((m) => ({ default: m.StickyCart }))),
-    defaultProps: { productName: "Featured product", price: "$49", ctaLabel: "Add to cart", ctaHref: "#" },
+    defaultProps: {
+      productName: "Featured product",
+      price: "$49",
+      ctaLabel: "Add to cart",
+      ctaHref: "#",
+    },
     schema: {
       fields: [
         { type: "text", key: "productName", label: "Product name" },

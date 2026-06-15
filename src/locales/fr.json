@@ -49,11 +49,26 @@
     "titleB": "réussir en ligne",
     "subtitle": "Des outils puissants pensés pour faire grandir votre activité — de votre première vente à la millionième.",
     "items": {
-      "builder": { "title": "Éditeur glisser-déposer", "desc": "Concevez visuellement de superbes boutiques, sans coder." },
-      "themes": { "title": "Thèmes sur mesure", "desc": "Des thèmes soignés au pixel près, alignés à votre marque." },
-      "products": { "title": "Gestion des produits", "desc": "Stocks, variantes et collections, dans un tableau de bord limpide." },
-      "payments": { "title": "Paiements sécurisés", "desc": "Encaissement conforme PCI avec les principaux moyens de paiement." },
-      "analytics": { "title": "Analyses en temps réel", "desc": "Suivez vos ventes, votre trafic et vos clients en direct." }
+      "builder": {
+        "title": "Éditeur glisser-déposer",
+        "desc": "Concevez visuellement de superbes boutiques, sans coder."
+      },
+      "themes": {
+        "title": "Thèmes sur mesure",
+        "desc": "Des thèmes soignés au pixel près, alignés à votre marque."
+      },
+      "products": {
+        "title": "Gestion des produits",
+        "desc": "Stocks, variantes et collections, dans un tableau de bord limpide."
+      },
+      "payments": {
+        "title": "Paiements sécurisés",
+        "desc": "Encaissement conforme PCI avec les principaux moyens de paiement."
+      },
+      "analytics": {
+        "title": "Analyses en temps réel",
+        "desc": "Suivez vos ventes, votre trafic et vos clients en direct."
+      }
     }
   },
   "how": {
@@ -61,9 +76,18 @@
     "titleA": "De l'idée à la boutique en ligne en",
     "titleB": "3 étapes",
     "steps": {
-      "create": { "title": "Créez votre compte", "desc": "Inscription gratuite en 30 secondes. Sans carte bancaire." },
-      "build": { "title": "Construisez votre boutique", "desc": "Choisissez un thème, ajoutez vos produits, personnalisez tout à votre image." },
-      "launch": { "title": "Lancez et vendez", "desc": "Mettez en ligne en un clic et recevez vos premières commandes." }
+      "create": {
+        "title": "Créez votre compte",
+        "desc": "Inscription gratuite en 30 secondes. Sans carte bancaire."
+      },
+      "build": {
+        "title": "Construisez votre boutique",
+        "desc": "Choisissez un thème, ajoutez vos produits, personnalisez tout à votre image."
+      },
+      "launch": {
+        "title": "Lancez et vendez",
+        "desc": "Mettez en ligne en un clic et recevez vos premières commandes."
+      }
     }
   },
   "pricing": {
@@ -75,11 +99,43 @@
     "popular": "Le plus populaire",
     "forever": "/à vie",
     "month": "/mois",
-    "free": { "name": "Gratuit", "desc": "Idéal pour valider votre idée.", "cta": "Démarrer gratuitement", "f": ["1 boutique", "Jusqu'à 10 produits", "Thèmes essentiels", "Support communautaire"] },
-    "pro": { "name": "Pro", "desc": "Pour les activités en pleine croissance.", "cta": "Essayer Pro", "f": ["Produits illimités", "Tous les thèmes premium", "Domaine personnalisé", "Analyses avancées", "Support prioritaire"] },
-    "business": { "name": "Business", "desc": "Outils avancés pour les vendeurs aguerris.", "cta": "Contacter le service commercial", "f": ["Tout le plan Pro", "Multi-boutique", "Accès API", "Responsable de compte dédié", "SLA 99,99 %"] }
+    "free": {
+      "name": "Gratuit",
+      "desc": "Idéal pour valider votre idée.",
+      "cta": "Démarrer gratuitement",
+      "f": ["1 boutique", "Jusqu'à 10 produits", "Thèmes essentiels", "Support communautaire"]
+    },
+    "pro": {
+      "name": "Pro",
+      "desc": "Pour les activités en pleine croissance.",
+      "cta": "Essayer Pro",
+      "f": [
+        "Produits illimités",
+        "Tous les thèmes premium",
+        "Domaine personnalisé",
+        "Analyses avancées",
+        "Support prioritaire"
+      ]
+    },
+    "business": {
+      "name": "Business",
+      "desc": "Outils avancés pour les vendeurs aguerris.",
+      "cta": "Contacter le service commercial",
+      "f": [
+        "Tout le plan Pro",
+        "Multi-boutique",
+        "Accès API",
+        "Responsable de compte dédié",
+        "SLA 99,99 %"
+      ]
+    }
   },
-  "testimonials": { "kicker": "Avis clients", "titleA": "Plébiscité par", "titleB": "10 000+", "titleC": "entrepreneurs" },
+  "testimonials": {
+    "kicker": "Avis clients",
+    "titleA": "Plébiscité par",
+    "titleB": "10 000+",
+    "titleC": "entrepreneurs"
+  },
   "cta": {
     "title": "Prêt à lancer votre boutique ?",
     "subtitle": "Rejoignez des milliers d'entrepreneurs qui développent leur marque sur Storely.",
@@ -164,9 +220,18 @@
         "customers": "Clients"
       },
       "actions": {
-        "addProduct": { "title": "Ajouter un produit", "desc": "Enrichissez votre catalogue d'un nouvel article." },
-        "customize": { "title": "Personnaliser la boutique", "desc": "Choisissez un thème et adaptez-le à votre marque." },
-        "viewStore": { "title": "Voir ma boutique", "desc": "Découvrez votre boutique côté client." }
+        "addProduct": {
+          "title": "Ajouter un produit",
+          "desc": "Enrichissez votre catalogue d'un nouvel article."
+        },
+        "customize": {
+          "title": "Personnaliser la boutique",
+          "desc": "Choisissez un thème et adaptez-le à votre marque."
+        },
+        "viewStore": {
+          "title": "Voir ma boutique",
+          "desc": "Découvrez votre boutique côté client."
+        }
       },
       "recentOrders": "Commandes récentes",
       "viewAll": "Tout voir",
@@ -679,13 +744,22 @@
       "activateStore": "Activez votre boutique pour la rendre publique"
     },
     "milestones": {
-      "first_product": { "label": "Premier produit", "description": "Ajoutez votre premier produit" },
-      "first_published": { "label": "Premier produit publié", "description": "Publiez votre premier produit" },
+      "first_product": {
+        "label": "Premier produit",
+        "description": "Ajoutez votre premier produit"
+      },
+      "first_published": {
+        "label": "Premier produit publié",
+        "description": "Publiez votre premier produit"
+      },
       "ten_products": { "label": "10 produits", "description": "Ajoutez 10 produits" },
       "first_sale": { "label": "Première vente", "description": "Recevez votre première commande" },
       "ten_orders": { "label": "10 commandes", "description": "Recevez 10 commandes" },
       "hundred_orders": { "label": "100 commandes", "description": "Recevez 100 commandes" },
-      "first_revenue": { "label": "Premiers revenus", "description": "Gagnez vos premiers revenus" },
+      "first_revenue": {
+        "label": "Premiers revenus",
+        "description": "Gagnez vos premiers revenus"
+      },
       "revenue_100k": { "label": "100 000 DA", "description": "Gagnez 100 000 DA de revenus" }
     }
   }

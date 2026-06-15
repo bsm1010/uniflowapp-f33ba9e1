@@ -3,7 +3,9 @@ export type SoundName = "click" | "success" | "error" | "whoosh" | "pop" | "chim
 let enabled = false;
 try {
   enabled = typeof window !== "undefined" && localStorage.getItem("fennecly_sound") !== "off";
-} catch {}
+} catch (error) {
+  console.warn(error);
+}
 let ctx: AudioContext | null = null;
 
 function getCtx() {
@@ -69,20 +71,49 @@ function getRingAudio() {
 const sounds: Record<SoundName, () => void> = {
   click: () => playTone(1200, 0.05, "square", 0.04),
   pop: () => playTone(600, 0.08, "sine", 0.1),
-  success: () => playMulti([[523, 0, 0.15], [659, 0.1, 0.15], [784, 0.2, 0.2]], 0.12),
-  error: () => playMulti([[200, 0, 0.15], [150, 0.12, 0.2]], 0.1),
+  success: () =>
+    playMulti(
+      [
+        [523, 0, 0.15],
+        [659, 0.1, 0.15],
+        [784, 0.2, 0.2],
+      ],
+      0.12,
+    ),
+  error: () =>
+    playMulti(
+      [
+        [200, 0, 0.15],
+        [150, 0.12, 0.2],
+      ],
+      0.1,
+    ),
   whoosh: () => playSweep(800, 200, 0.25, 0.06),
-  chime: () => playMulti([[880, 0, 0.3], [1100, 0.08, 0.3], [1320, 0.16, 0.4]], 0.1),
+  chime: () =>
+    playMulti(
+      [
+        [880, 0, 0.3],
+        [1100, 0.08, 0.3],
+        [1320, 0.16, 0.4],
+      ],
+      0.1,
+    ),
   ring: () => {
     const a = getRingAudio();
     a.currentTime = 0;
-    a.play().catch(() => {});
+    a.play().catch((err) => {
+      console.warn(err);
+    });
   },
 };
 
 export function playSound(name: SoundName) {
   if (!enabled) return;
-  try { sounds[name](); } catch {}
+  try {
+    sounds[name]();
+  } catch (error) {
+    console.warn(error);
+  }
 }
 
 export function toggleSound(): boolean {

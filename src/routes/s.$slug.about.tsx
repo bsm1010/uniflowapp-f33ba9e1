@@ -46,8 +46,7 @@ function AboutPage() {
   const t = getStoreTokens(settings);
 
   const title = (settings.about_title as string) || tr("storefront.about.fallbackTitle");
-  const content =
-    (settings.about_content as string) || tr("storefront.about.fallbackContent");
+  const content = (settings.about_content as string) || tr("storefront.about.fallbackContent");
 
   return (
     <StorefrontShell settings={settings}>

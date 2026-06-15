@@ -92,9 +92,7 @@ function AppsPage() {
               App Store
             </div>
             <h1 className="text-3xl font-bold tracking-tight">Apps</h1>
-            <p className="text-muted-foreground">
-              Extend your store with built-in apps.
-            </p>
+            <p className="text-muted-foreground">Extend your store with built-in apps.</p>
           </div>
           <Button
             variant="outline"
@@ -142,9 +140,7 @@ function AppsPage() {
             <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
           </div>
         ) : filtered.length === 0 ? (
-          <div className="text-center py-20 text-muted-foreground">
-            No apps match your search.
-          </div>
+          <div className="text-center py-20 text-muted-foreground">No apps match your search.</div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.map((app) => {
@@ -176,9 +172,7 @@ function AppsPage() {
                         </div>
                       </div>
                       <div className="flex-1 space-y-1">
-                        <h3 className="font-semibold leading-tight text-base">
-                          {app.name}
-                        </h3>
+                        <h3 className="font-semibold leading-tight text-base">{app.name}</h3>
                         <p className="text-sm text-muted-foreground line-clamp-2">
                           {app.description}
                         </p>

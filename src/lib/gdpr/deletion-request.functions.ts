@@ -142,15 +142,9 @@ export const processDeletion = createServerFn({ method: "POST" })
     if (orders && orders.length > 0) {
       const orderIds = orders.map((o) => o.id);
 
-      await admin
-        .from("order_items")
-        .delete()
-        .in("order_id", orderIds);
+      await admin.from("order_items").delete().in("order_id", orderIds);
 
-      await admin
-        .from("orders")
-        .delete()
-        .in("id", orderIds);
+      await admin.from("orders").delete().in("id", orderIds);
     }
 
     // Delete abandoned carts

@@ -77,9 +77,7 @@ function MarketplacePage() {
     return apps.filter((a) => {
       const matchesCat = cat === "All" || a.category === cat;
       const matchesQ =
-        !q ||
-        a.title.toLowerCase().includes(q) ||
-        a.short_description.toLowerCase().includes(q);
+        !q || a.title.toLowerCase().includes(q) || a.short_description.toLowerCase().includes(q);
       return matchesCat && matchesQ;
     });
   }, [apps, query, cat]);
@@ -94,9 +92,7 @@ function MarketplacePage() {
             Community Marketplace
           </div>
           <h1 className="text-3xl font-bold tracking-tight">Apps by developers</h1>
-          <p className="text-muted-foreground">
-            Install community-built apps or publish your own.
-          </p>
+          <p className="text-muted-foreground">Install community-built apps or publish your own.</p>
         </div>
         <Button asChild>
           <Link to="/dashboard/apps/submit">

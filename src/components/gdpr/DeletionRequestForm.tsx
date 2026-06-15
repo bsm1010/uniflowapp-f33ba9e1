@@ -55,8 +55,9 @@ export function DeletionRequestForm({ storeId, storeName }: Props) {
           </div>
           <h3 className="text-xl font-bold mb-2">Request Submitted</h3>
           <p className="text-muted-foreground">
-            Your data deletion request has been submitted to {storeName}. The store owner will review
-            your request and process it accordingly. You will be notified once the request is reviewed.
+            Your data deletion request has been submitted to {storeName}. The store owner will
+            review your request and process it accordingly. You will be notified once the request is
+            reviewed.
           </p>
         </CardContent>
       </Card>

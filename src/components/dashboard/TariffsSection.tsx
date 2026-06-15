@@ -1,15 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import {
-  Search,
-  Save,
-  Loader2,
-  Truck,
-  Home,
-  Store,
-  Zap,
-  Info,
-  RefreshCw,
-} from "lucide-react";
+import { Search, Save, Loader2, Truck, Home, Store, Zap, Info, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { syncDeliveryCompanyTariffs } from "@/lib/delivery/sync-tariffs.functions";
 import { Card, CardContent } from "@/components/ui/card";
@@ -66,8 +56,7 @@ type DeliveryType = "domicile" | "stopdesk";
 // key: `${wilaya}|${city}|${type}` → price string
 type PriceMap = Record<string, string>;
 
-const cellKey = (wilaya: string, city: string, type: DeliveryType) =>
-  `${wilaya}|${city}|${type}`;
+const cellKey = (wilaya: string, city: string, type: DeliveryType) => `${wilaya}|${city}|${type}`;
 
 export function TariffsSection() {
   const { user } = useAuth();
@@ -79,17 +68,15 @@ export function TariffsSection() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
-  const [autoMap, setAutoMap] = useState<Record<string, boolean>>(() =>
-    loadAutoTariffsMap(),
-  );
+  const [autoMap, setAutoMap] = useState<Record<string, boolean>>(() => loadAutoTariffsMap());
   const [syncing, setSyncing] = useState(false);
   const autoEnabled = !!autoMap[companyId];
   const selectedCompany = companies.find((c) => c.id === companyId);
-  const isZRExpress = (selectedCompany?.name ?? "")
-    .toLowerCase()
-    .replace(/[\s-]+/g, "_")
-    .includes("zr_express")
-    || (selectedCompany?.name ?? "").toLowerCase().includes("zrexpress");
+  const isZRExpress =
+    (selectedCompany?.name ?? "")
+      .toLowerCase()
+      .replace(/[\s-]+/g, "_")
+      .includes("zr_express") || (selectedCompany?.name ?? "").toLowerCase().includes("zrexpress");
 
   const setAutoEnabled = (enabled: boolean) => {
     if (!companyId) return;
@@ -109,11 +96,7 @@ export function TariffsSection() {
     (async () => {
       setLoadingCompanies(true);
       const [{ data: comps }, { data: storeComps }] = await Promise.all([
-        supabase
-          .from("delivery_companies")
-          .select("id, name")
-          .eq("is_active", true)
-          .order("name"),
+        supabase.from("delivery_companies").select("id, name").eq("is_active", true).order("name"),
         supabase
           .from("store_delivery_companies")
           .select("company_id, is_default, enabled")
@@ -187,7 +170,6 @@ export function TariffsSection() {
     }
   };
 
-
   const dirtyKeys = useMemo(() => {
     const all = new Set([...Object.keys(prices), ...Object.keys(initialPrices)]);
     const keys: string[] = [];
@@ -202,8 +184,7 @@ export function TariffsSection() {
     if (!q) return ALGERIA_GEO;
     return ALGERIA_GEO.filter(
       (w) =>
-        w.wilaya.toLowerCase().includes(q) ||
-        w.cities.some((c) => c.toLowerCase().includes(q)),
+        w.wilaya.toLowerCase().includes(q) || w.cities.some((c) => c.toLowerCase().includes(q)),
     );
   }, [search]);
 
@@ -274,11 +255,9 @@ export function TariffsSection() {
 
     try {
       if (toUpsert.length > 0) {
-        const { error } = await supabase
-          .from("delivery_tariffs")
-          .upsert(toUpsert, {
-            onConflict: "owner_id,company_id,wilaya,city,delivery_type",
-          });
+        const { error } = await supabase.from("delivery_tariffs").upsert(toUpsert, {
+          onConflict: "owner_id,company_id,wilaya,city,delivery_type",
+        });
         if (error) throw error;
       }
       for (const d of toDelete) {
@@ -301,9 +280,7 @@ export function TariffsSection() {
         delete newInit[cellKey(d.wilaya, d.city, d.type)];
       }
       setInitialPrices(newInit);
-      toast.success(
-        `Saved ${dirtyKeys.length} change${dirtyKeys.length === 1 ? "" : "s"}`,
-      );
+      toast.success(`Saved ${dirtyKeys.length} change${dirtyKeys.length === 1 ? "" : "s"}`);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to save");
     } finally {
@@ -390,11 +367,7 @@ export function TariffsSection() {
             disabled={saving || loading || dirtyKeys.length === 0 || autoEnabled}
             className="h-9 gap-2"
           >
-            {saving ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Save className="h-4 w-4" />
-            )}
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             Save
           </Button>
         </div>
@@ -404,18 +377,13 @@ export function TariffsSection() {
         <div className="flex items-start gap-3">
           <div
             className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md ${
-              autoEnabled
-                ? "bg-emerald-500/15 text-emerald-600"
-                : "bg-muted text-muted-foreground"
+              autoEnabled ? "bg-emerald-500/15 text-emerald-600" : "bg-muted text-muted-foreground"
             }`}
           >
             <Zap className="h-4 w-4" />
           </div>
           <div>
-            <label
-              htmlFor="auto-tariffs-toggle"
-              className="cursor-pointer text-sm font-medium"
-            >
+            <label htmlFor="auto-tariffs-toggle" className="cursor-pointer text-sm font-medium">
               Use automatic tariffs from delivery company
             </label>
             <p className="mt-0.5 flex items-start gap-1 text-xs text-muted-foreground">
@@ -447,11 +415,7 @@ export function TariffsSection() {
                 const cities = getCitiesForWilaya(wilaya);
                 const counts = wilayaCounts(wilaya);
                 return (
-                  <AccordionItem
-                    key={wilaya}
-                    value={wilaya}
-                    className="border-0"
-                  >
+                  <AccordionItem key={wilaya} value={wilaya} className="border-0">
                     <AccordionTrigger className="px-5 py-3 hover:bg-muted/40 hover:no-underline">
                       <div className="flex flex-1 items-center gap-3 pr-3">
                         <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-muted text-xs font-semibold text-muted-foreground">
@@ -501,9 +465,7 @@ export function TariffsSection() {
                                 key={city}
                                 className="grid grid-cols-1 gap-2 rounded-md bg-background px-3 py-2 sm:grid-cols-[1fr_180px_180px] sm:items-center sm:gap-3"
                               >
-                                <span className="truncate text-sm font-medium">
-                                  {city}
-                                </span>
+                                <span className="truncate text-sm font-medium">{city}</span>
                                 <PriceInput
                                   value={dVal}
                                   dirty={dDirty}

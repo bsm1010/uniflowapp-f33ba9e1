@@ -67,7 +67,7 @@ function NotificationsPage() {
       setItems([]);
       setError(true);
     }
-  }, [user?.id]);
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
@@ -83,7 +83,7 @@ function NotificationsPage() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user?.id, load]);
+  }, [user, load]);
 
   const markAllRead = async () => {
     if (!items?.some((n) => !n.read) || !user) return;
@@ -103,7 +103,10 @@ function NotificationsPage() {
 
   const markRead = async (id: string) => {
     try {
-      const { error: dbErr } = await supabase.from("notifications").update({ read: true }).eq("id", id);
+      const { error: dbErr } = await supabase
+        .from("notifications")
+        .update({ read: true })
+        .eq("id", id);
       if (dbErr) throw dbErr;
       setItems((cur) => cur?.map((n) => (n.id === id ? { ...n, read: true } : n)) ?? null);
     } catch {
@@ -217,8 +220,12 @@ function NotificationsPage() {
             </div>
           ) : (
             <ol className="text-xs text-muted-foreground space-y-1 list-decimal list-inside">
-              <li>Click <strong>Connect Telegram</strong> above</li>
-              <li>Telegram opens — press <strong>Start</strong> in the bot chat</li>
+              <li>
+                Click <strong>Connect Telegram</strong> above
+              </li>
+              <li>
+                Telegram opens — press <strong>Start</strong> in the bot chat
+              </li>
               <li>Come back here — status updates automatically</li>
             </ol>
           )}
@@ -231,9 +238,7 @@ function NotificationsPage() {
             <TabsTrigger value="all">All</TabsTrigger>
             <TabsTrigger value="unread">
               Unread
-              {unread > 0 && (
-                <Badge className="ml-2 h-5 px-1.5 bg-primary">{unread}</Badge>
-              )}
+              {unread > 0 && <Badge className="ml-2 h-5 px-1.5 bg-primary">{unread}</Badge>}
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -301,11 +306,21 @@ function NotificationsPage() {
                   </div>
                   <div className="flex items-center gap-1">
                     {!n.read && (
-                      <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => markRead(n.id)}>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7"
+                        onClick={() => markRead(n.id)}
+                      >
                         <CheckCheck className="h-3.5 w-3.5" />
                       </Button>
                     )}
-                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => remove(n.id)}>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-7 w-7"
+                      onClick={() => remove(n.id)}
+                    >
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                   </div>

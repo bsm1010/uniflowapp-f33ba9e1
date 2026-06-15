@@ -23,10 +23,7 @@ import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  trackOrderShipment,
-  type TrackingDTO,
-} from "@/lib/delivery/track-shipment.functions";
+import { trackOrderShipment, type TrackingDTO } from "@/lib/delivery/track-shipment.functions";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Order = Tables<"orders">;
@@ -36,7 +33,13 @@ export const Route = createFileRoute("/dashboard/orders_/$orderId/tracking")({
   head: () => ({ meta: [{ title: "Order tracking — Fennecly" }] }),
 });
 
-const STATUS_FLOW = ["created", "picked_up", "in_transit", "out_for_delivery", "delivered"] as const;
+const STATUS_FLOW = [
+  "created",
+  "picked_up",
+  "in_transit",
+  "out_for_delivery",
+  "delivered",
+] as const;
 type StatusFlow = (typeof STATUS_FLOW)[number];
 
 /**
@@ -51,17 +54,38 @@ function mapToFlowIndex(raw: string): number {
   if (s.includes("distribution") || s.includes("out_for") || s.includes("out for")) return 3;
   // In transit (broad match — most ZR statuses land here)
   if (
-    s.includes("transit") || s.includes("route") || s.includes("expedi") || s.includes("envoi") ||
-    s.includes("shipped") || s.includes("envoy") || s.includes("acheminement") || s.includes("charg") ||
-    s.includes("depart") || s.includes("départ") || s.includes("sorti") || s.includes("pickup") ||
-    s.includes("recup") || s.includes("récup") || s.includes("pris") || s.includes("ramass")
-  ) return 2;
+    s.includes("transit") ||
+    s.includes("route") ||
+    s.includes("expedi") ||
+    s.includes("envoi") ||
+    s.includes("shipped") ||
+    s.includes("envoy") ||
+    s.includes("acheminement") ||
+    s.includes("charg") ||
+    s.includes("depart") ||
+    s.includes("départ") ||
+    s.includes("sorti") ||
+    s.includes("pickup") ||
+    s.includes("recup") ||
+    s.includes("récup") ||
+    s.includes("pris") ||
+    s.includes("ramass")
+  )
+    return 2;
   // Created / pending / preparing
   if (
-    s.includes("cree") || s.includes("créé") || s.includes("created") || s.includes("pret") ||
-    s.includes("prêt") || s.includes("prepar") || s.includes("attente") || s.includes("pending") ||
-    s.includes("enregistr") || s.includes("register")
-  ) return 1;
+    s.includes("cree") ||
+    s.includes("créé") ||
+    s.includes("created") ||
+    s.includes("pret") ||
+    s.includes("prêt") ||
+    s.includes("prepar") ||
+    s.includes("attente") ||
+    s.includes("pending") ||
+    s.includes("enregistr") ||
+    s.includes("register")
+  )
+    return 1;
   // If we have a status but can't map it, put it at step 1 (at least created)
   return s ? 1 : 0;
 }
@@ -92,11 +116,7 @@ function TrackingPage() {
   const loadOrder = async () => {
     if (!user) return;
     try {
-      const { data } = await supabase
-        .from("orders")
-        .select("*")
-        .eq("id", orderId)
-        .maybeSingle();
+      const { data } = await supabase.from("orders").select("*").eq("id", orderId).maybeSingle();
       setOrder(data ?? null);
     } catch {
       // ignore
@@ -115,7 +135,11 @@ function TrackingPage() {
     setRefreshing(true);
     setErrorMsg(null);
     try {
-      const res = await trackFn({ data: { accessToken, orderId } }) as { ok: boolean; tracking?: TrackingDTO; message?: string };
+      const res = (await trackFn({ data: { accessToken, orderId } })) as {
+        ok: boolean;
+        tracking?: TrackingDTO;
+        message?: string;
+      };
       if (res.ok && res.tracking) {
         setTracking(res.tracking);
         setLastRefreshed(new Date());
@@ -175,11 +199,7 @@ function TrackingPage() {
   return (
     <div className="max-w-5xl mx-auto pb-24">
       <div className="flex items-center gap-3 pt-2">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate({ to: "/dashboard/orders" })}
-        >
+        <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/dashboard/orders" })}>
           <ArrowLeft className="h-4 w-4 mr-1" /> Back
         </Button>
       </div>
@@ -203,7 +223,10 @@ function TrackingPage() {
               />
               Auto-refresh 30s
             </label>
-            <Button onClick={() => void refreshTracking()} disabled={refreshing || !order.tracking_number}>
+            <Button
+              onClick={() => void refreshTracking()}
+              disabled={refreshing || !order.tracking_number}
+            >
               {refreshing ? (
                 <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
               ) : (
@@ -223,7 +246,8 @@ function TrackingPage() {
       {!order.tracking_number && (
         <Card className="border-amber-500/30 bg-amber-500/5 mb-6">
           <CardContent className="p-4 text-sm text-amber-700 dark:text-amber-400">
-            This order has not been sent to ZRExpress yet. Send it from the orders page to start tracking.
+            This order has not been sent to ZRExpress yet. Send it from the orders page to start
+            tracking.
           </CardContent>
         </Card>
       )}
@@ -277,11 +301,18 @@ function TrackingPage() {
               {STATUS_FLOW.map((step, idx) => {
                 const completed = idx <= flowIdx;
                 const isCurrent = idx === flowIdx;
-                const Icon = idx === 0 ? ClipboardCheck : idx === 1 ? Package : idx === 2 ? Truck : idx === 3 ? PackageCheck : CheckCircle2;
+                const Icon =
+                  idx === 0
+                    ? ClipboardCheck
+                    : idx === 1
+                      ? Package
+                      : idx === 2
+                        ? Truck
+                        : idx === 3
+                          ? PackageCheck
+                          : CheckCircle2;
                 // Show the raw ZRExpress status text for the current step
-                const label = isCurrent && displayStatus
-                  ? displayStatus
-                  : FLOW_LABELS[step];
+                const label = isCurrent && displayStatus ? displayStatus : FLOW_LABELS[step];
                 return (
                   <div
                     key={step}
@@ -298,7 +329,11 @@ function TrackingPage() {
                     </div>
                     <span
                       className={`text-[11px] text-center font-medium leading-tight ${
-                        isCurrent ? "text-primary font-bold" : completed ? "text-foreground" : "text-muted-foreground"
+                        isCurrent
+                          ? "text-primary font-bold"
+                          : completed
+                            ? "text-foreground"
+                            : "text-muted-foreground"
                       }`}
                     >
                       {label}
@@ -325,7 +360,10 @@ function TrackingPage() {
               {order.customer_name}
             </InfoRow>
             <InfoRow icon={Phone} label="Phone">
-              <a href={`tel:${order.customer_phone || order.shipping_address}`} className="hover:text-primary">
+              <a
+                href={`tel:${order.customer_phone || order.shipping_address}`}
+                className="hover:text-primary"
+              >
                 {order.customer_phone || order.shipping_address}
               </a>
             </InfoRow>
@@ -391,9 +429,7 @@ function TrackingPage() {
                       <div className="flex flex-col items-center">
                         <div
                           className={`h-3 w-3 rounded-full mt-1 ${
-                            isFirst
-                              ? "bg-primary ring-2 ring-primary/20"
-                              : "bg-muted-foreground/40"
+                            isFirst ? "bg-primary ring-2 ring-primary/20" : "bg-muted-foreground/40"
                           }`}
                         />
                         {i < tracking.history.length - 1 && (
@@ -401,13 +437,13 @@ function TrackingPage() {
                         )}
                       </div>
                       <div className={`flex-1 pb-4 ${isFirst ? "" : "opacity-80"}`}>
-                        <div className={`text-sm font-medium ${isFirst ? "" : "text-muted-foreground"}`}>
+                        <div
+                          className={`text-sm font-medium ${isFirst ? "" : "text-muted-foreground"}`}
+                        >
                           {h.status || "—"}
                         </div>
                         <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground mt-0.5">
-                          {h.date && (
-                            <span>{new Date(h.date).toLocaleString()}</span>
-                          )}
+                          {h.date && <span>{new Date(h.date).toLocaleString()}</span>}
                           {locationStr && (
                             <span className="inline-flex items-center gap-1">
                               <MapPin className="h-3 w-3" />

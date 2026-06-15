@@ -203,7 +203,9 @@ function AboutEditor() {
                     ) : (
                       <>
                         <Upload className="h-5 w-5 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">Click to upload an image</span>
+                        <span className="text-sm text-muted-foreground">
+                          Click to upload an image
+                        </span>
                       </>
                     )}
                     <input

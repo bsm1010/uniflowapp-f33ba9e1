@@ -195,8 +195,7 @@ function AppEditor({
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-base truncate">{app.name}</h3>
           <p className="text-xs text-muted-foreground">
-            Key: <code className="text-xs bg-muted px-1 rounded">{app.key}</code> ·{" "}
-            {app.category}
+            Key: <code className="text-xs bg-muted px-1 rounded">{app.key}</code> · {app.category}
           </p>
           {edit && (
             <Badge variant="secondary" className="mt-1 text-xs">
@@ -308,12 +307,7 @@ function AppEditor({
             Save
           </Button>
           {edit && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleRemove}
-              disabled={removing}
-            >
+            <Button variant="outline" size="sm" onClick={handleRemove} disabled={removing}>
               {removing && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
               Reset to default
             </Button>

@@ -41,16 +41,27 @@ export const Route = createRootRoute({
       { name: "apple-mobile-web-app-title", content: "Fenncly" },
       { name: "mobile-web-app-capable", content: "yes" },
       { title: "Fennecly — Build and launch your online store" },
-      { name: "description", content: "Fennecly is the all-in-one platform to design, customize, and launch your online store in minutes — no coding required. Manage products, orders, shipping, and marketing from one dashboard." },
+      {
+        name: "description",
+        content:
+          "Fennecly is the all-in-one platform to design, customize, and launch your online store in minutes — no coding required. Manage products, orders, shipping, and marketing from one dashboard.",
+      },
       { name: "author", content: "Fennecly" },
       { property: "og:title", content: "Fennecly — Build and launch your online store" },
-      { property: "og:description", content: "Design, customize, and launch your online store in minutes with Fennecly. Manage products, orders, shipping, and marketing from one dashboard." },
+      {
+        property: "og:description",
+        content:
+          "Design, customize, and launch your online store in minutes with Fennecly. Manage products, orders, shipping, and marketing from one dashboard.",
+      },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "Fennecly" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Fennecly" },
       { name: "twitter:title", content: "Fennecly — Build and launch your online store" },
-      { name: "twitter:description", content: "Design, customize, and launch your online store in minutes with Fennecly." },
+      {
+        name: "twitter:description",
+        content: "Design, customize, and launch your online store in minutes with Fennecly.",
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -82,7 +93,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
         <HeadContent />
         <style
           dangerouslySetInnerHTML={{
-              __html: `
+            __html: `
               #app-boot-loader{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#fff;z-index:9999;transition:opacity .25s ease}
               #app-boot-loader.dark{background:#0b0a14}
               #app-boot-loader .logo{height:56px;width:180px;-webkit-mask:url(${fennecyLogo}) center/contain no-repeat;mask:url(${fennecyLogo}) center/contain no-repeat;background:oklch(0.47 0.27 295);animation:fennecly-pulse 1.4s ease-in-out infinite}
@@ -94,9 +105,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
         />
       </head>
       <body>
-        <div
-          id="app-boot-loader"
-        >
+        <div id="app-boot-loader">
           <div className="logo" role="img" aria-label="Fennecly" />
         </div>
         <script

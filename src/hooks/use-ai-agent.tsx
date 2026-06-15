@@ -1,7 +1,12 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import type { Conversation, Message, InstagramConnection, AIAgentSettings } from "@/lib/ai-agent/types";
+import type {
+  Conversation,
+  Message,
+  InstagramConnection,
+  AIAgentSettings,
+} from "@/lib/ai-agent/types";
 
 interface AIAgentContextValue {
   connection: InstagramConnection | null;
@@ -28,7 +33,7 @@ export function AIAgentProvider({ children }: { children: ReactNode }) {
 
   const activeConversation = conversations.find((c) => c.id === activeConvId) ?? null;
 
-  const loadConversations = async () => {
+  const loadConversations = useCallback(async () => {
     if (!user) return;
     const { data } = await supabase
       .from("ig_conversations")
@@ -36,9 +41,9 @@ export function AIAgentProvider({ children }: { children: ReactNode }) {
       .eq("user_id", user.id)
       .order("last_message_at", { ascending: false });
     setConversations((data as any[]) ?? []);
-  };
+  }, [user]);
 
-  const loadSettings = async () => {
+  const loadSettings = useCallback(async () => {
     if (!user) return;
     const { data } = await supabase
       .from("ai_agent_settings")
@@ -46,20 +51,26 @@ export function AIAgentProvider({ children }: { children: ReactNode }) {
       .eq("user_id", user.id)
       .maybeSingle();
     setSettings(data as any);
-  };
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
     setLoading(true);
     Promise.all([
-      supabase.from("instagram_connections").select("id, user_id, instagram_user_id, instagram_username, page_id, page_name, token_expires_at, status, last_synced_at, profile_picture_url, created_at, updated_at").eq("user_id", user.id).maybeSingle(),
+      supabase
+        .from("instagram_connections")
+        .select(
+          "id, user_id, instagram_user_id, instagram_username, page_id, page_name, token_expires_at, status, last_synced_at, profile_picture_url, created_at, updated_at",
+        )
+        .eq("user_id", user.id)
+        .maybeSingle(),
       loadConversations(),
       loadSettings(),
     ]).then(([connRes]) => {
       setConnection(connRes.data as any);
       setLoading(false);
     });
-  }, [user]);
+  }, [user, loadConversations, loadSettings]);
 
   // Load messages when active conversation changes
   useEffect(() => {
@@ -75,10 +86,7 @@ export function AIAgentProvider({ children }: { children: ReactNode }) {
       .then(({ data }) => setMessages((data as any[]) ?? []));
 
     // Mark as read
-    supabase
-      .from("ig_conversations")
-      .update({ unread_count: 0 })
-      .eq("id", activeConvId);
+    supabase.from("ig_conversations").update({ unread_count: 0 }).eq("id", activeConvId);
   }, [activeConvId, user]);
 
   // Realtime subscriptions
@@ -87,27 +95,45 @@ export function AIAgentProvider({ children }: { children: ReactNode }) {
 
     const convChannel = supabase
       .channel("ig-conversations")
-      .on("postgres_changes", { event: "*", schema: "public", table: "ig_conversations", filter: `user_id=eq.${user.id}` }, () => {
-        loadConversations();
-      })
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "ig_conversations",
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => {
+          loadConversations();
+        },
+      )
       .subscribe();
 
     const msgChannel = supabase
       .channel("ig-messages")
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "ig_messages", filter: `user_id=eq.${user.id}` }, (payload) => {
-        const newMsg = payload.new as Message;
-        if (newMsg.conversation_id === activeConvId) {
-          setMessages((prev) => [...prev, newMsg]);
-        }
-        loadConversations();
-      })
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "ig_messages",
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          const newMsg = payload.new as Message;
+          if (newMsg.conversation_id === activeConvId) {
+            setMessages((prev) => [...prev, newMsg]);
+          }
+          loadConversations();
+        },
+      )
       .subscribe();
 
     return () => {
       supabase.removeChannel(convChannel);
       supabase.removeChannel(msgChannel);
     };
-  }, [user, activeConvId]);
+  }, [user, activeConvId, loadConversations]);
 
   return (
     <AIAgentContext.Provider

@@ -69,19 +69,25 @@ export const deleteAccount = createServerFn({ method: "POST" })
     ] as const;
 
     for (const t of tables) {
-      const col = t === "delivery_tariffs" || t === "shipments" || t === "store_delivery_companies" || t === "cookie_consent_settings" || t === "cookie_consents" || t === "privacy_policy_settings" || t === "data_export_requests" || t === "deletion_requests" || t === "consent_audit_log"
-        ? "store_id"
-        : t === "abandoned_carts" || t === "chatbot_conversations" || t === "contact_messages"
-          ? "store_owner_id"
-          : "user_id";
+      const col =
+        t === "delivery_tariffs" ||
+        t === "shipments" ||
+        t === "store_delivery_companies" ||
+        t === "cookie_consent_settings" ||
+        t === "cookie_consents" ||
+        t === "privacy_policy_settings" ||
+        t === "data_export_requests" ||
+        t === "deletion_requests" ||
+        t === "consent_audit_log"
+          ? "store_id"
+          : t === "abandoned_carts" || t === "chatbot_conversations" || t === "contact_messages"
+            ? "store_owner_id"
+            : "user_id";
       await admin.from(t).delete().eq(col, uid);
     }
 
     // Orders (store_owner_id) — order_items will cascade if FK set, otherwise delete first
-    const { data: orderRows } = await admin
-      .from("orders")
-      .select("id")
-      .eq("store_owner_id", uid);
+    const { data: orderRows } = await admin.from("orders").select("id").eq("store_owner_id", uid);
     const orderIds = (orderRows ?? []).map((r) => r.id);
     if (orderIds.length > 0) {
       await admin.from("order_items").delete().in("order_id", orderIds);

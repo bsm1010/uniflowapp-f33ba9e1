@@ -45,11 +45,7 @@ function ContactEditor() {
   const load = useCallback(async () => {
     if (!user) return;
     const [settingsRes, contactRes] = await Promise.all([
-      supabase
-        .from("store_settings")
-        .select("*")
-        .eq("user_id", user.id)
-        .maybeSingle(),
+      supabase.from("store_settings").select("*").eq("user_id", user.id).maybeSingle(),
       supabase
         .from("store_contact_info")
         .select("contact_email, contact_phone")
@@ -91,16 +87,14 @@ function ContactEditor() {
           contact_form_enabled: formEnabled,
         })
         .eq("user_id", user.id),
-      supabase
-        .from("store_contact_info")
-        .upsert(
-          {
-            user_id: user.id,
-            contact_email: email.trim(),
-            contact_phone: phone.trim(),
-          },
-          { onConflict: "user_id" },
-        ),
+      supabase.from("store_contact_info").upsert(
+        {
+          user_id: user.id,
+          contact_email: email.trim(),
+          contact_phone: phone.trim(),
+        },
+        { onConflict: "user_id" },
+      ),
     ]);
     setSaving(false);
     const err = settingsRes.error || contactRes.error;
@@ -282,13 +276,28 @@ function ContactEditor() {
 
                   <div className="space-y-3">
                     {email && (
-                      <PreviewRow icon={<Mail className="h-4 w-4" />} label="Email" value={email} muted={tokens?.muted} />
+                      <PreviewRow
+                        icon={<Mail className="h-4 w-4" />}
+                        label="Email"
+                        value={email}
+                        muted={tokens?.muted}
+                      />
                     )}
                     {phone && (
-                      <PreviewRow icon={<Phone className="h-4 w-4" />} label="Phone" value={phone} muted={tokens?.muted} />
+                      <PreviewRow
+                        icon={<Phone className="h-4 w-4" />}
+                        label="Phone"
+                        value={phone}
+                        muted={tokens?.muted}
+                      />
                     )}
                     {address && (
-                      <PreviewRow icon={<MapPin className="h-4 w-4" />} label="Address" value={address} muted={tokens?.muted} />
+                      <PreviewRow
+                        icon={<MapPin className="h-4 w-4" />}
+                        label="Address"
+                        value={address}
+                        muted={tokens?.muted}
+                      />
                     )}
                     {!email && !phone && !address && (
                       <div
@@ -317,7 +326,10 @@ function ContactEditor() {
                   )}
 
                   {formEnabled && (
-                    <div className="space-y-3 pt-4" style={{ borderTop: `1px solid ${tokens?.border}` }}>
+                    <div
+                      className="space-y-3 pt-4"
+                      style={{ borderTop: `1px solid ${tokens?.border}` }}
+                    >
                       <div className="text-sm font-medium">Send us a message</div>
                       <div className="grid gap-2">
                         <div

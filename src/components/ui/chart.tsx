@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from "react";
 import * as RechartsPrimitive from "recharts";
 
@@ -113,7 +112,7 @@ const ChartTooltipContent = React.forwardRef<
       hideLabel = false,
       hideIndicator = false,
       label,
-      // @ts-ignore recharts v3 type mismatch
+      // @ts-expect-error recharts v3 type mismatch
       labelFormatter,
       labelClassName,
       formatter,

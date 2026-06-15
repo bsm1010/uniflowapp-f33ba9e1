@@ -25,9 +25,7 @@ export function Footer() {
               <div className="h-8 w-8 rounded-lg bg-gradient-brand shadow-glow" />
               <span className="font-display font-semibold text-lg">Storely</span>
             </div>
-            <p className="mt-4 text-sm text-muted-foreground max-w-xs">
-              {t("footer.tagline")}
-            </p>
+            <p className="mt-4 text-sm text-muted-foreground max-w-xs">{t("footer.tagline")}</p>
             <div className="mt-6 flex gap-2">
               {socials.map(({ Icon, href, label }) => (
                 <a

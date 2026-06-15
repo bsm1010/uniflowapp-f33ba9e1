@@ -50,7 +50,13 @@ export interface TrackingResult {
   /** Original status text from the provider (e.g. "Livré", "En transit"). */
   rawStatus?: string;
   lastUpdate?: string;
-  history?: Array<{ status: string; date: string; location?: string; city?: string; wilaya?: string }>;
+  history?: Array<{
+    status: string;
+    date: string;
+    location?: string;
+    city?: string;
+    wilaya?: string;
+  }>;
   raw?: unknown;
 }
 

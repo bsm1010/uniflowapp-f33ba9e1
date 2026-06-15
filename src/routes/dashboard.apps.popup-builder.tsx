@@ -197,9 +197,7 @@ function PopupBuilderPage() {
                 <Input
                   type="color"
                   value={draft.background_color}
-                  onChange={(e) =>
-                    setDraft({ ...draft, background_color: e.target.value })
-                  }
+                  onChange={(e) => setDraft({ ...draft, background_color: e.target.value })}
                   className="h-10 w-24"
                 />
               </div>
@@ -264,10 +262,7 @@ function PopupBuilderPage() {
                       {p.trigger_type} · {p.trigger_value}
                     </p>
                   </div>
-                  <Switch
-                    checked={p.active}
-                    onCheckedChange={(v) => toggle(p.id, v)}
-                  />
+                  <Switch checked={p.active} onCheckedChange={(v) => toggle(p.id, v)} />
                   <Button size="icon" variant="ghost" onClick={() => remove(p.id)}>
                     <Trash2 className="h-4 w-4" />
                   </Button>

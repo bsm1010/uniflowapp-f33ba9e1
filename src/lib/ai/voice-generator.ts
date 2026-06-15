@@ -17,7 +17,11 @@ const ALLOWED_VOICE_IDS = new Set([
 
 const Schema = z.object({
   text: z.string().min(1).max(5000),
-  voiceId: z.string().regex(/^[a-zA-Z0-9]+$/).optional().default("JBFqnCBsd6RMkjVDRZzb"),
+  voiceId: z
+    .string()
+    .regex(/^[a-zA-Z0-9]+$/)
+    .optional()
+    .default("JBFqnCBsd6RMkjVDRZzb"),
   accessToken: z.string().min(1),
 });
 

@@ -14,11 +14,23 @@ interface XPBarProps {
   className?: string;
 }
 
-export function XPBar({ xp, level, xpForCurrent, xpForNext, animate = true, size = "md", showLevel = true, className }: XPBarProps) {
+export function XPBar({
+  xp,
+  level,
+  xpForCurrent,
+  xpForNext,
+  animate = true,
+  size = "md",
+  showLevel = true,
+  className,
+}: XPBarProps) {
   const { t } = useTranslation();
-  const progress = xpForNext > xpForCurrent
-    ? Math.min(((xp - xpForCurrent) / (xpForNext - xpForCurrent)) * 100, 100)
-    : xp > 0 ? 100 : 0;
+  const progress =
+    xpForNext > xpForCurrent
+      ? Math.min(((xp - xpForCurrent) / (xpForNext - xpForCurrent)) * 100, 100)
+      : xp > 0
+        ? 100
+        : 0;
 
   const height = size === "sm" ? "h-1.5" : size === "lg" ? "h-3" : "h-2";
   const textSize = size === "sm" ? "text-[10px]" : size === "lg" ? "text-sm" : "text-xs";
@@ -29,10 +41,14 @@ export function XPBar({ xp, level, xpForCurrent, xpForNext, animate = true, size
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             <Zap className={cn("text-amber-400", size === "sm" ? "h-3 w-3" : "h-3.5 w-3.5")} />
-            <span className={cn("font-bold text-amber-400", textSize)}>{t("dashboard.gamification.levelPrefix")}{level}</span>
+            <span className={cn("font-bold text-amber-400", textSize)}>
+              {t("dashboard.gamification.levelPrefix")}
+              {level}
+            </span>
           </div>
           <span className={cn("text-muted-foreground", textSize)}>
-            {xp.toLocaleString()} / {xpForNext.toLocaleString()} {t("dashboard.gamification.xpSuffix")}
+            {xp.toLocaleString()} / {xpForNext.toLocaleString()}{" "}
+            {t("dashboard.gamification.xpSuffix")}
           </span>
         </div>
       )}
@@ -49,7 +65,8 @@ export function XPBar({ xp, level, xpForCurrent, xpForNext, animate = true, size
       </div>
       {!showLevel && (
         <div className={cn("text-muted-foreground", textSize)}>
-          {xp.toLocaleString()} / {xpForNext.toLocaleString()} {t("dashboard.gamification.xpSuffix")}
+          {xp.toLocaleString()} / {xpForNext.toLocaleString()}{" "}
+          {t("dashboard.gamification.xpSuffix")}
         </div>
       )}
     </div>

@@ -8,9 +8,7 @@ export const Route = createFileRoute("/s/$slug/gdpr/deletion")({
   component: DeletionRequestPage,
   loader: ({ params }) => fetchSettings(params.slug),
   head: ({ params, loaderData }) => ({
-    meta: [
-      { title: `Data Deletion — ${loaderData?.store_name ?? params.slug}` },
-    ],
+    meta: [{ title: `Data Deletion — ${loaderData?.store_name ?? params.slug}` }],
   }),
 });
 

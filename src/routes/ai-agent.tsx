@@ -1,6 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { Bot, MessageSquare, Mic, BarChart3, Instagram, Zap, ShieldCheck, Globe, ArrowRight, Check, Star, ChevronRight } from "lucide-react";
+import {
+  Bot,
+  MessageSquare,
+  Mic,
+  BarChart3,
+  Instagram,
+  Zap,
+  ShieldCheck,
+  Globe,
+  ArrowRight,
+  Check,
+  Star,
+  ChevronRight,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/ai-agent")({
@@ -8,7 +21,11 @@ export const Route = createFileRoute("/ai-agent")({
   head: () => ({
     meta: [
       { title: "AI Sales Agent — Your AI Employee For Instagram Sales | Fennecly" },
-      { name: "description", content: "Automate Instagram DMs with AI that understands Darija, Arabic, French & Arabizi. Boost sales with smart product recommendations." },
+      {
+        name: "description",
+        content:
+          "Automate Instagram DMs with AI that understands Darija, Arabic, French & Arabizi. Boost sales with smart product recommendations.",
+      },
     ],
   }),
 });
@@ -17,7 +34,8 @@ const features = [
   {
     icon: Bot,
     title: "AI Auto-Reply",
-    description: "Instant smart replies to customer DMs. Understands Darija, Arabizi, French & Arabic.",
+    description:
+      "Instant smart replies to customer DMs. Understands Darija, Arabizi, French & Arabic.",
     gradient: "from-violet-500 to-indigo-600",
   },
   {
@@ -47,24 +65,46 @@ const features = [
   {
     icon: Globe,
     title: "Multi-Language",
-    description: "Seamlessly handles Darija, MSA, French, English and mixed-language conversations.",
+    description:
+      "Seamlessly handles Darija, MSA, French, English and mixed-language conversations.",
     gradient: "from-purple-500 to-fuchsia-500",
   },
 ];
 
 const demoConversation = [
   { sender: "customer", text: "salam, wach 3andkom hoodie noir taille L?" },
-  { sender: "ai", text: "مرحبا! 👋 نعم عندنا الهودي الأسود متوفر بمقاس L. السعر 4500 دج مع التوصيل 🔥" },
+  {
+    sender: "ai",
+    text: "مرحبا! 👋 نعم عندنا الهودي الأسود متوفر بمقاس L. السعر 4500 دج مع التوصيل 🔥",
+  },
   { sender: "customer", text: "ch7al delivery mta3 alger?" },
   { sender: "ai", text: "التوصيل لولاية الجزائر 400 دج. يوصلك في 2-3 أيام ✅ تحب تطلب؟" },
   { sender: "customer", text: "yih ndirha" },
-  { sender: "ai", text: "تمام! 👌 أعطيني اسمك الكامل ورقم الهاتف وعنوان التوصيل باش نأكدلك الطلب." },
+  {
+    sender: "ai",
+    text: "تمام! 👌 أعطيني اسمك الكامل ورقم الهاتف وعنوان التوصيل باش نأكدلك الطلب.",
+  },
 ];
 
 const testimonials = [
-  { name: "Yassine B.", role: "Store Owner, Algiers", text: "AI Agent saved me 4 hours daily. It answers customer DMs even at 3 AM!", rating: 5 },
-  { name: "Amira K.", role: "Fashion Brand, Oran", text: "The Darija understanding is incredible. Customers think they're talking to a real person.", rating: 5 },
-  { name: "Mohamed R.", role: "Electronics Store", text: "Sales increased 40% since we enabled AI replies. It recommends products perfectly.", rating: 5 },
+  {
+    name: "Yassine B.",
+    role: "Store Owner, Algiers",
+    text: "AI Agent saved me 4 hours daily. It answers customer DMs even at 3 AM!",
+    rating: 5,
+  },
+  {
+    name: "Amira K.",
+    role: "Fashion Brand, Oran",
+    text: "The Darija understanding is incredible. Customers think they're talking to a real person.",
+    rating: 5,
+  },
+  {
+    name: "Mohamed R.",
+    role: "Electronics Store",
+    text: "Sales increased 40% since we enabled AI replies. It recommends products perfectly.",
+    rating: 5,
+  },
 ];
 
 function AIAgentLanding() {
@@ -78,9 +118,13 @@ function AIAgentLanding() {
 
         <div className="relative max-w-6xl mx-auto px-4 pt-24 pb-20">
           <nav className="flex items-center justify-between mb-16">
-            <Link to="/" className="font-bold text-xl">Fennecly</Link>
+            <Link to="/" className="font-bold text-xl">
+              Fennecly
+            </Link>
             <Link to="/login">
-              <Button variant="outline" className="rounded-full">Sign In</Button>
+              <Button variant="outline" className="rounded-full">
+                Sign In
+              </Button>
             </Link>
           </nav>
 
@@ -113,7 +157,8 @@ function AIAgentLanding() {
               transition={{ delay: 0.2 }}
               className="text-lg md:text-xl text-muted-foreground mt-6 max-w-xl mx-auto"
             >
-              Automate customer conversations, recommend products, and close sales 24/7 — in Darija, Arabic, French & Arabizi.
+              Automate customer conversations, recommend products, and close sales 24/7 — in Darija,
+              Arabic, French & Arabizi.
             </motion.p>
 
             <motion.div
@@ -123,7 +168,10 @@ function AIAgentLanding() {
               className="flex flex-col sm:flex-row gap-3 justify-center mt-8"
             >
               <Link to="/signup">
-                <Button size="lg" className="rounded-full px-8 h-12 bg-gradient-to-r from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700 shadow-lg shadow-violet-500/25 text-base gap-2">
+                <Button
+                  size="lg"
+                  className="rounded-full px-8 h-12 bg-gradient-to-r from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700 shadow-lg shadow-violet-500/25 text-base gap-2"
+                >
                   Start Free <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
@@ -140,7 +188,9 @@ function AIAgentLanding() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold">See AI Agent in Action</h2>
-            <p className="text-muted-foreground mt-3">Real conversation with a customer in Algerian Darija</p>
+            <p className="text-muted-foreground mt-3">
+              Real conversation with a customer in Algerian Darija
+            </p>
           </div>
           <div className="max-w-md mx-auto space-y-3 p-6 rounded-2xl bg-muted/30 border">
             <div className="flex items-center gap-2 pb-3 border-b mb-4">
@@ -184,7 +234,9 @@ function AIAgentLanding() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold">Everything You Need</h2>
-            <p className="text-muted-foreground mt-3">A complete AI customer support system for Instagram sellers</p>
+            <p className="text-muted-foreground mt-3">
+              A complete AI customer support system for Instagram sellers
+            </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((f, i) => (
@@ -196,7 +248,9 @@ function AIAgentLanding() {
                 transition={{ delay: i * 0.1 }}
                 className="p-6 rounded-2xl bg-background border shadow-sm hover:shadow-lg transition-shadow"
               >
-                <div className={`h-11 w-11 rounded-xl bg-gradient-to-br ${f.gradient} flex items-center justify-center mb-4`}>
+                <div
+                  className={`h-11 w-11 rounded-xl bg-gradient-to-br ${f.gradient} flex items-center justify-center mb-4`}
+                >
                   <f.icon className="h-5 w-5 text-white" />
                 </div>
                 <h3 className="font-semibold text-lg mb-2">{f.title}</h3>
@@ -243,14 +297,16 @@ function AIAgentLanding() {
       <section className="py-20 px-4">
         <div className="max-w-2xl mx-auto text-center">
           <div className="p-12 rounded-3xl bg-gradient-to-br from-violet-500 to-indigo-600 text-white">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Start Selling on Autopilot
-            </h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Start Selling on Autopilot</h2>
             <p className="text-lg opacity-90 mb-8">
-              Connect your Instagram and let AI handle customer conversations while you focus on growing your business.
+              Connect your Instagram and let AI handle customer conversations while you focus on
+              growing your business.
             </p>
             <Link to="/signup">
-              <Button size="lg" className="rounded-full px-8 h-12 bg-white text-violet-600 hover:bg-gray-100 text-base font-semibold gap-2">
+              <Button
+                size="lg"
+                className="rounded-full px-8 h-12 bg-white text-violet-600 hover:bg-gray-100 text-base font-semibold gap-2"
+              >
                 Get Started Free <ChevronRight className="h-4 w-4" />
               </Button>
             </Link>

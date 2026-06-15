@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Download, Mail, Clock, CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -24,16 +24,16 @@ export function DataExportSection() {
   const [processing, setProcessing] = useState<string | null>(null);
   const [deliveryMethod, setDeliveryMethod] = useState<"download" | "email">("download");
 
-  const loadRequests = async () => {
+  const loadRequests = useCallback(async () => {
     if (!currentStore) return;
     const data = await getExportRequests({ data: { storeId: currentStore.id } });
     setRequests(data);
     setLoading(false);
-  };
+  }, [currentStore]);
 
   useEffect(() => {
     loadRequests();
-  }, [currentStore]);
+  }, [currentStore, loadRequests]);
 
   const handleRequestExport = async () => {
     if (!user || !currentStore) return;
@@ -97,7 +97,9 @@ export function DataExportSection() {
           </div>
           <div>
             <CardTitle className="text-base">Data Export</CardTitle>
-            <CardDescription>Export your store data or manage customer export requests</CardDescription>
+            <CardDescription>
+              Export your store data or manage customer export requests
+            </CardDescription>
           </div>
         </div>
       </CardHeader>
@@ -141,7 +143,9 @@ export function DataExportSection() {
                     {statusIcon(req.status)}
                     <div>
                       <p className="text-sm font-medium">
-                        {req.request_type === "merchant" ? "Store Data" : `Customer: ${req.customer_name}`}
+                        {req.request_type === "merchant"
+                          ? "Store Data"
+                          : `Customer: ${req.customer_name}`}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {new Date(req.created_at).toLocaleDateString()}

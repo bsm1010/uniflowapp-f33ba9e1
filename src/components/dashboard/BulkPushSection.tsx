@@ -110,10 +110,16 @@ export function BulkPushSection({ carriers, onDone }: BulkPushSectionProps) {
 
         <div>
           <div className="mb-1 flex items-center justify-between">
-            <label className="text-xs font-medium text-muted-foreground">Carriers ({selectedIds.size} selected)</label>
+            <label className="text-xs font-medium text-muted-foreground">
+              Carriers ({selectedIds.size} selected)
+            </label>
             <div className="flex gap-2">
-              <button onClick={selectAll} className="text-[11px] text-primary underline">Select all</button>
-              <button onClick={clearAll} className="text-[11px] text-muted-foreground underline">Clear</button>
+              <button onClick={selectAll} className="text-[11px] text-primary underline">
+                Select all
+              </button>
+              <button onClick={clearAll} className="text-[11px] text-muted-foreground underline">
+                Clear
+              </button>
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -144,12 +150,10 @@ export function BulkPushSection({ carriers, onDone }: BulkPushSectionProps) {
           disabled={pushing || !orderId.trim() || selectedIds.size === 0}
           className="w-full gap-1.5"
         >
-          {pushing ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Send className="h-4 w-4" />
-          )}
-          {pushing ? "Pushing…" : `Push to ${selectedIds.size} carrier${selectedIds.size !== 1 ? "s" : ""}`}
+          {pushing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+          {pushing
+            ? "Pushing…"
+            : `Push to ${selectedIds.size} carrier${selectedIds.size !== 1 ? "s" : ""}`}
         </Button>
 
         {result && result.ok && (

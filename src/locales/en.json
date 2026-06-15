@@ -49,11 +49,26 @@
     "titleB": "sell online",
     "subtitle": "Powerful tools designed to grow your business — from your first sale to your millionth.",
     "items": {
-      "builder": { "title": "Drag & Drop Builder", "desc": "Design beautiful storefronts visually — no code, no complexity." },
-      "themes": { "title": "Custom Themes", "desc": "Pixel-perfect themes you can tailor to match your brand identity." },
-      "products": { "title": "Product Management", "desc": "Inventory, variants, and collections — all in one clean dashboard." },
-      "payments": { "title": "Secure Payments", "desc": "PCI-compliant checkout with global payment methods built-in." },
-      "analytics": { "title": "Analytics Dashboard", "desc": "Real-time insights on sales, traffic, and customer behavior." }
+      "builder": {
+        "title": "Drag & Drop Builder",
+        "desc": "Design beautiful storefronts visually — no code, no complexity."
+      },
+      "themes": {
+        "title": "Custom Themes",
+        "desc": "Pixel-perfect themes you can tailor to match your brand identity."
+      },
+      "products": {
+        "title": "Product Management",
+        "desc": "Inventory, variants, and collections — all in one clean dashboard."
+      },
+      "payments": {
+        "title": "Secure Payments",
+        "desc": "PCI-compliant checkout with global payment methods built-in."
+      },
+      "analytics": {
+        "title": "Analytics Dashboard",
+        "desc": "Real-time insights on sales, traffic, and customer behavior."
+      }
     }
   },
   "how": {
@@ -61,9 +76,18 @@
     "titleA": "From idea to live store in",
     "titleB": "3 steps",
     "steps": {
-      "create": { "title": "Create Account", "desc": "Sign up free in 30 seconds. No credit card required." },
-      "build": { "title": "Build Your Store", "desc": "Pick a theme, add your products, and customize everything." },
-      "launch": { "title": "Launch & Sell", "desc": "Go live with one click and start accepting orders worldwide." }
+      "create": {
+        "title": "Create Account",
+        "desc": "Sign up free in 30 seconds. No credit card required."
+      },
+      "build": {
+        "title": "Build Your Store",
+        "desc": "Pick a theme, add your products, and customize everything."
+      },
+      "launch": {
+        "title": "Launch & Sell",
+        "desc": "Go live with one click and start accepting orders worldwide."
+      }
     }
   },
   "pricing": {
@@ -75,11 +99,37 @@
     "popular": "Most popular",
     "forever": "/forever",
     "month": "/month",
-    "free": { "name": "Free", "desc": "Perfect for testing your idea.", "cta": "Start free", "f": ["1 store", "Up to 10 products", "Basic themes", "Community support"] },
-    "pro": { "name": "Pro", "desc": "For growing businesses ready to scale.", "cta": "Start Pro trial", "f": ["Unlimited products", "All premium themes", "Custom domain", "Advanced analytics", "Priority support"] },
-    "business": { "name": "Business", "desc": "Advanced tools for serious sellers.", "cta": "Contact sales", "f": ["Everything in Pro", "Multi-store", "API access", "Dedicated manager", "99.99% SLA"] }
+    "free": {
+      "name": "Free",
+      "desc": "Perfect for testing your idea.",
+      "cta": "Start free",
+      "f": ["1 store", "Up to 10 products", "Basic themes", "Community support"]
+    },
+    "pro": {
+      "name": "Pro",
+      "desc": "For growing businesses ready to scale.",
+      "cta": "Start Pro trial",
+      "f": [
+        "Unlimited products",
+        "All premium themes",
+        "Custom domain",
+        "Advanced analytics",
+        "Priority support"
+      ]
+    },
+    "business": {
+      "name": "Business",
+      "desc": "Advanced tools for serious sellers.",
+      "cta": "Contact sales",
+      "f": ["Everything in Pro", "Multi-store", "API access", "Dedicated manager", "99.99% SLA"]
+    }
   },
-  "testimonials": { "kicker": "Testimonials", "titleA": "Loved by", "titleB": "10,000+", "titleC": "founders" },
+  "testimonials": {
+    "kicker": "Testimonials",
+    "titleA": "Loved by",
+    "titleB": "10,000+",
+    "titleC": "founders"
+  },
   "cta": {
     "title": "Ready to build your store?",
     "subtitle": "Join thousands of founders building successful brands on Storely. Free forever to start.",
@@ -680,7 +730,10 @@
     },
     "milestones": {
       "first_product": { "label": "First product", "description": "Add your first product" },
-      "first_published": { "label": "First published product", "description": "Publish your first product" },
+      "first_published": {
+        "label": "First published product",
+        "description": "Publish your first product"
+      },
       "ten_products": { "label": "10 products", "description": "Add 10 products" },
       "first_sale": { "label": "First sale", "description": "Receive your first order" },
       "ten_orders": { "label": "10 orders", "description": "Receive 10 orders" },

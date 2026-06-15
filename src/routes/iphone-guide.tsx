@@ -9,8 +9,7 @@ export const Route = createFileRoute("/iphone-guide")({
       { title: "Add Fennecly to iPhone — Quick Guide" },
       {
         name: "description",
-        content:
-          "How to install Fennecly on your iPhone home screen and enable notifications.",
+        content: "How to install Fennecly on your iPhone home screen and enable notifications.",
       },
       { name: "theme-color", content: "#09090f" },
     ],
@@ -52,10 +51,8 @@ function IphoneGuidePage() {
     <div
       className="min-h-screen w-full"
       style={{
-        background:
-          "linear-gradient(160deg, #09090f 0%, #0f0a1e 50%, #080d18 100%)",
-        fontFamily:
-          "'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif",
+        background: "linear-gradient(160deg, #09090f 0%, #0f0a1e 50%, #080d18 100%)",
+        fontFamily: "'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif",
       }}
     >
       {/* Ambient glows */}
@@ -94,8 +91,8 @@ function IphoneGuidePage() {
             to your iPhone
           </h1>
           <p className="mt-3 text-base text-white/50 leading-relaxed">
-            3 quick steps — takes less than a minute. Get instant order
-            notifications on your home screen.
+            3 quick steps — takes less than a minute. Get instant order notifications on your home
+            screen.
           </p>
         </motion.div>
 
@@ -129,20 +126,14 @@ function IphoneGuidePage() {
                 </div>
 
                 <div className="min-w-0">
-                  <p className="font-semibold text-white text-[15px] leading-snug">
-                    {step.title}
-                  </p>
-                  <p className="mt-1.5 text-sm text-white/50 leading-relaxed">
-                    {step.desc}
-                  </p>
+                  <p className="font-semibold text-white text-[15px] leading-snug">{step.title}</p>
+                  <p className="mt-1.5 text-sm text-white/50 leading-relaxed">{step.desc}</p>
                   <div
                     className="mt-3 flex items-start gap-1.5 rounded-lg px-3 py-2"
                     style={{ background: "rgba(255,255,255,0.04)" }}
                   >
                     <span className="mt-px text-[10px]">💡</span>
-                    <p className="text-[11px] text-white/35 leading-relaxed">
-                      {step.tip}
-                    </p>
+                    <p className="text-[11px] text-white/35 leading-relaxed">{step.tip}</p>
                   </div>
                 </div>
               </div>
@@ -157,15 +148,11 @@ function IphoneGuidePage() {
           transition={{ duration: 0.5, delay: 0.55 }}
           className="mt-6 rounded-2xl p-5 text-center"
           style={{
-            background:
-              "linear-gradient(135deg, rgba(5,150,105,0.12), rgba(5,150,105,0.05))",
+            background: "linear-gradient(135deg, rgba(5,150,105,0.12), rgba(5,150,105,0.05))",
             border: "1px solid rgba(5,150,105,0.2)",
           }}
         >
-          <CheckCircle2
-            className="mx-auto h-8 w-8 mb-2"
-            style={{ color: "#34d399" }}
-          />
+          <CheckCircle2 className="mx-auto h-8 w-8 mb-2" style={{ color: "#34d399" }} />
           <p className="font-semibold text-white">You're all set!</p>
           <p className="mt-1 text-sm text-white/45">
             Open Fennecly from your home screen and manage your store on the go.

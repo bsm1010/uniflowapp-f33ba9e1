@@ -8,9 +8,7 @@ interface SubscriptionContextValue {
   hadPaidSubscription?: boolean;
 }
 
-const SubscriptionContext = createContext<SubscriptionContextValue | undefined>(
-  undefined,
-);
+const SubscriptionContext = createContext<SubscriptionContextValue | undefined>(undefined);
 
 export function SubscriptionProvider({
   value,
@@ -19,11 +17,7 @@ export function SubscriptionProvider({
   value: SubscriptionContextValue;
   children: ReactNode;
 }) {
-  return (
-    <SubscriptionContext.Provider value={value}>
-      {children}
-    </SubscriptionContext.Provider>
-  );
+  return <SubscriptionContext.Provider value={value}>{children}</SubscriptionContext.Provider>;
 }
 
 export function useSubscription() {

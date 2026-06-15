@@ -29,12 +29,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Img } from "@/components/ui/Img";
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -90,50 +85,42 @@ const STATUS_META: Record<
 > = {
   pending_payment: {
     label: "بانتظار الدفع",
-    color:
-      "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400",
+    color: "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400",
     icon: Clock,
   },
   paid_by_reseller: {
     label: "مدفوع",
-    color:
-      "border-sky-500/40 bg-sky-500/10 text-sky-700 dark:text-sky-400",
+    color: "border-sky-500/40 bg-sky-500/10 text-sky-700 dark:text-sky-400",
     icon: CheckCircle2,
   },
   purchased_by_admin: {
     label: "تم الشراء",
-    color:
-      "border-indigo-500/40 bg-indigo-500/10 text-indigo-700 dark:text-indigo-400",
+    color: "border-indigo-500/40 bg-indigo-500/10 text-indigo-700 dark:text-indigo-400",
     icon: PackageCheck,
   },
   shipped: {
     label: "تم الشحن",
-    color:
-      "border-blue-500/40 bg-blue-500/10 text-blue-700 dark:text-blue-400",
+    color: "border-blue-500/40 bg-blue-500/10 text-blue-700 dark:text-blue-400",
     icon: Truck,
   },
   delivered: {
     label: "تم التسليم",
-    color:
-      "border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+    color: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
     icon: PackageCheck,
   },
   refused: {
     label: "مرفوض",
-    color:
-      "border-rose-500/40 bg-rose-500/10 text-rose-700 dark:text-rose-400",
+    color: "border-rose-500/40 bg-rose-500/10 text-rose-700 dark:text-rose-400",
     icon: XCircle,
   },
   in_stock_buffer: {
     label: "في المخزن المؤقت",
-    color:
-      "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400",
+    color: "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400",
     icon: RotateCcw,
   },
   returned_to_reseller: {
     label: "أُعيد إليك",
-    color:
-      "border-zinc-500/40 bg-zinc-500/10 text-zinc-700 dark:text-zinc-400",
+    color: "border-zinc-500/40 bg-zinc-500/10 text-zinc-700 dark:text-zinc-400",
     icon: RotateCcw,
   },
 };
@@ -186,11 +173,7 @@ function PipelineSteps({ status }: { status: string }) {
             title={step.label}
           />
           {i < PIPELINE.length - 1 && (
-            <div
-              className={`h-0.5 w-3 ${
-                i < current ? "bg-primary" : "bg-muted-foreground/30"
-              }`}
-            />
+            <div className={`h-0.5 w-3 ${i < current ? "bg-primary" : "bg-muted-foreground/30"}`} />
           )}
         </div>
       ))}
@@ -406,17 +389,18 @@ function DropshipOrdersPage() {
             ) : (
               <div className="divide-y divide-border/60">
                 {filtered.map((o) => {
-                  const product = (o as DropshipOrder & {
-                    reseller_listing?: { marketplace_product?: { name?: string; images?: string[] } | null } | null;
-                  }).reseller_listing?.marketplace_product;
+                  const product = (
+                    o as DropshipOrder & {
+                      reseller_listing?: {
+                        marketplace_product?: { name?: string; images?: string[] } | null;
+                      } | null;
+                    }
+                  ).reseller_listing?.marketplace_product;
                   const isPending = o.status === "pending_payment";
                   const walletBalance = Number(wallet?.balance ?? 0);
                   const canPay = walletBalance >= Number(o.platform_price);
                   return (
-                    <div
-                      key={o.id}
-                      className="p-4 flex flex-col md:flex-row md:items-center gap-4"
-                    >
+                    <div key={o.id} className="p-4 flex flex-col md:flex-row md:items-center gap-4">
                       <div className="h-14 w-14 rounded-lg bg-muted overflow-hidden shrink-0">
                         {product?.images?.[0] ? (
                           <Img
@@ -436,9 +420,7 @@ function DropshipOrdersPage() {
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <p className="font-semibold line-clamp-1">
-                            {product?.name ?? "طلبية"}
-                          </p>
+                          <p className="font-semibold line-clamp-1">{product?.name ?? "طلبية"}</p>
                           <StatusBadge status={o.status} />
                         </div>
                         <p className="text-sm text-muted-foreground mt-1">
@@ -477,12 +459,7 @@ function DropshipOrdersPage() {
                             تأكيد ودفع
                           </Button>
                         ) : (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            asChild
-                            className="w-full md:w-auto"
-                          >
+                          <Button variant="outline" size="sm" asChild className="w-full md:w-auto">
                             <a
                               href={`https://zi.express/track/${o.tracking_number ?? ""}`}
                               target="_blank"
@@ -652,16 +629,13 @@ function DropshipOrdersPage() {
       </Tabs>
 
       {/* Confirm & Pay dialog */}
-      <Dialog
-        open={!!confirmingPay}
-        onOpenChange={(o) => !o && setConfirmingPay(null)}
-      >
+      <Dialog open={!!confirmingPay} onOpenChange={(o) => !o && setConfirmingPay(null)}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>تأكيد ودفع الطلبية</DialogTitle>
             <DialogDescription>
-              سيتم خصم {confirmingPay ? formatPrice(Number(confirmingPay.platform_price)) : ""} من محفظتك
-              ({confirmingPay ? formatPrice(Number(wallet?.balance ?? 0)) : ""} متاح).
+              سيتم خصم {confirmingPay ? formatPrice(Number(confirmingPay.platform_price)) : ""} من
+              محفظتك ({confirmingPay ? formatPrice(Number(wallet?.balance ?? 0)) : ""} متاح).
             </DialogDescription>
           </DialogHeader>
           {confirmingPay && (
@@ -694,10 +668,7 @@ function DropshipOrdersPage() {
             >
               إلغاء
             </Button>
-            <Button
-              onClick={handleConfirmPay}
-              disabled={confirmPay.isPending}
-            >
+            <Button onClick={handleConfirmPay} disabled={confirmPay.isPending}>
               {confirmPay.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin ms-2" />
               ) : (
@@ -767,10 +738,7 @@ function DropshipOrdersPage() {
             >
               إلغاء
             </Button>
-            <Button
-              onClick={handleRequestTopup}
-              disabled={requestTopup.isPending}
-            >
+            <Button onClick={handleRequestTopup} disabled={requestTopup.isPending}>
               {requestTopup.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin ms-2" />
               ) : (
@@ -808,9 +776,7 @@ function StatCard({
           <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
         </div>
         <div className="min-w-0">
-          <p className="text-[11px] sm:text-xs text-muted-foreground truncate">
-            {label}
-          </p>
+          <p className="text-[11px] sm:text-xs text-muted-foreground truncate">{label}</p>
           <p className="text-base sm:text-xl font-bold font-display truncate" dir="ltr">
             {value}
           </p>

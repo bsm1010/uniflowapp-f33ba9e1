@@ -46,7 +46,8 @@ export function RatesComparisonTable({
       if (!cancelled) {
         const mapped = (data ?? []).map((r) => ({
           ...r,
-          company_name: connectedCompanies.find((c) => c.companyId === r.company_id)?.name ?? "Unknown",
+          company_name:
+            connectedCompanies.find((c) => c.companyId === r.company_id)?.name ?? "Unknown",
         })) as TariffRow[];
         setTariffs(mapped);
         setLoading(false);
@@ -97,7 +98,9 @@ export function RatesComparisonTable({
         <div className="flex items-center gap-2">
           <DollarSign className="h-4 w-4 text-primary" />
           <span className="text-sm font-medium">Rate comparison by carrier</span>
-          <Badge variant="secondary" className="text-[10px]">{comparison.length} wilayas</Badge>
+          <Badge variant="secondary" className="text-[10px]">
+            {comparison.length} wilayas
+          </Badge>
         </div>
         <div className="relative">
           <Search className="pointer-events-none absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
@@ -149,10 +152,18 @@ export function RatesComparisonTable({
                       return (
                         <React.Fragment key={`${row.wilaya}-${name}`}>
                           <td className="px-2 py-1.5 text-right tabular-nums">
-                            {c?.domicile != null ? `${c.domicile} DZD` : <span className="text-muted-foreground">—</span>}
+                            {c?.domicile != null ? (
+                              `${c.domicile} DZD`
+                            ) : (
+                              <span className="text-muted-foreground">—</span>
+                            )}
                           </td>
                           <td className="px-2 py-1.5 text-right tabular-nums">
-                            {c?.stopdesk != null ? `${c.stopdesk} DZD` : <span className="text-muted-foreground">—</span>}
+                            {c?.stopdesk != null ? (
+                              `${c.stopdesk} DZD`
+                            ) : (
+                              <span className="text-muted-foreground">—</span>
+                            )}
                           </td>
                         </React.Fragment>
                       );
@@ -161,7 +172,10 @@ export function RatesComparisonTable({
                 ))}
                 {filtered.length === 0 && (
                   <tr>
-                    <td colSpan={1 + companyNames.length * 2} className="px-3 py-4 text-center text-muted-foreground">
+                    <td
+                      colSpan={1 + companyNames.length * 2}
+                      className="px-3 py-4 text-center text-muted-foreground"
+                    >
                       No matches
                     </td>
                   </tr>

@@ -28,7 +28,12 @@ const CATEGORIES = ["Marketing", "Sales", "Analytics", "AI", "Productivity", "De
 
 const schema = z.object({
   title: z.string().trim().min(2).max(80),
-  slug: z.string().trim().min(2).max(60).regex(/^[a-z0-9-]+$/, "Lowercase letters, numbers and dashes only"),
+  slug: z
+    .string()
+    .trim()
+    .min(2)
+    .max(60)
+    .regex(/^[a-z0-9-]+$/, "Lowercase letters, numbers and dashes only"),
   short_description: z.string().trim().min(10).max(160),
   long_description: z.string().trim().max(4000).optional().default(""),
   category: z.string().min(1),
@@ -93,8 +98,7 @@ function SubmitAppPage() {
     setScreenshots((s) => [...s, ...urls].slice(0, 8));
   };
 
-  const removeScreenshot = (idx: number) =>
-    setScreenshots((s) => s.filter((_, i) => i !== idx));
+  const removeScreenshot = (idx: number) => setScreenshots((s) => s.filter((_, i) => i !== idx));
 
   const slugify = (s: string) =>
     s
@@ -217,7 +221,10 @@ function SubmitAppPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="slug">Slug <span className="text-muted-foreground text-xs">(auto from name if empty)</span></Label>
+              <Label htmlFor="slug">
+                Slug{" "}
+                <span className="text-muted-foreground text-xs">(auto from name if empty)</span>
+              </Label>
               <Input
                 id="slug"
                 value={form.slug}
@@ -257,10 +264,14 @@ function SubmitAppPage() {
                 value={form.category}
                 onValueChange={(v) => setForm({ ...form, category: v })}
               >
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   {CATEGORIES.map((c) => (
-                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                    <SelectItem key={c} value={c}>
+                      {c}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -337,7 +348,11 @@ function SubmitAppPage() {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-2">
                 {screenshots.map((url, i) => (
                   <div key={url} className="relative group">
-                    <img src={url} alt="" className="w-full aspect-video rounded-lg object-cover border" />
+                    <img
+                      src={url}
+                      alt=""
+                      className="w-full aspect-video rounded-lg object-cover border"
+                    />
                     <button
                       type="button"
                       onClick={() => removeScreenshot(i)}

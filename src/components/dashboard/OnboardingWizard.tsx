@@ -1,5 +1,26 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Loader2, Check, ArrowRight, ArrowLeft, Upload, Store, Link2, DollarSign, ImageIcon, Sparkles, Facebook, Instagram, Music2, Youtube, Users, Search, MoreHorizontal, MapPin, Rocket, PartyPopper } from "lucide-react";
+import {
+  Loader2,
+  Check,
+  ArrowRight,
+  ArrowLeft,
+  Upload,
+  Store,
+  Link2,
+  DollarSign,
+  ImageIcon,
+  Sparkles,
+  Facebook,
+  Instagram,
+  Music2,
+  Youtube,
+  Users,
+  Search,
+  MoreHorizontal,
+  MapPin,
+  Rocket,
+  PartyPopper,
+} from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -38,14 +59,64 @@ const SOURCES = [
 ];
 
 const WILAYAS = [
-  "Adrar","Chlef","Laghouat","Oum El Bouaghi","Batna","Béjaïa","Biskra","Béchar",
-  "Blida","Bouira","Tamanrasset","Tébessa","Tlemcen","Tiaret","Tizi Ouzou","Algiers",
-  "Djelfa","Jijel","Sétif","Saïda","Skikda","Sidi Bel Abbès","Annaba","Guelma",
-  "Constantine","Médéa","Mostaganem","M'Sila","Mascara","Ouargla","Oran","El Bayadh",
-  "Illizi","Bordj Bou Arréridj","Boumerdès","El Tarf","Tindouf","Tissemsilt","El Oued",
-  "Khenchela","Souk Ahras","Tipaza","Mila","Aïn Defla","Naâma","Aïn Témouchent",
-  "Ghardaïa","Relizane","Timimoun","Bordj Badji Mokhtar","Ouled Djellal","Béni Abbès",
-  "In Salah","In Guezzam","Touggourt","Djanet","El M'Ghair","El Meniaa",
+  "Adrar",
+  "Chlef",
+  "Laghouat",
+  "Oum El Bouaghi",
+  "Batna",
+  "Béjaïa",
+  "Biskra",
+  "Béchar",
+  "Blida",
+  "Bouira",
+  "Tamanrasset",
+  "Tébessa",
+  "Tlemcen",
+  "Tiaret",
+  "Tizi Ouzou",
+  "Algiers",
+  "Djelfa",
+  "Jijel",
+  "Sétif",
+  "Saïda",
+  "Skikda",
+  "Sidi Bel Abbès",
+  "Annaba",
+  "Guelma",
+  "Constantine",
+  "Médéa",
+  "Mostaganem",
+  "M'Sila",
+  "Mascara",
+  "Ouargla",
+  "Oran",
+  "El Bayadh",
+  "Illizi",
+  "Bordj Bou Arréridj",
+  "Boumerdès",
+  "El Tarf",
+  "Tindouf",
+  "Tissemsilt",
+  "El Oued",
+  "Khenchela",
+  "Souk Ahras",
+  "Tipaza",
+  "Mila",
+  "Aïn Defla",
+  "Naâma",
+  "Aïn Témouchent",
+  "Ghardaïa",
+  "Relizane",
+  "Timimoun",
+  "Bordj Badji Mokhtar",
+  "Ouled Djellal",
+  "Béni Abbès",
+  "In Salah",
+  "In Guezzam",
+  "Touggourt",
+  "Djanet",
+  "El M'Ghair",
+  "El Meniaa",
 ];
 
 function slugify(input: string) {
@@ -189,18 +260,16 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
       }
 
       // Upsert store settings
-      const { error: storeErr } = await supabase
-        .from("store_settings")
-        .upsert(
-          {
-            user_id: userId,
-            slug,
-            store_name: storeName.trim(),
-            currency,
-            ...(logoUrl ? { logo_url: logoUrl } : {}),
-          },
-          { onConflict: "user_id" },
-        );
+      const { error: storeErr } = await supabase.from("store_settings").upsert(
+        {
+          user_id: userId,
+          slug,
+          store_name: storeName.trim(),
+          currency,
+          ...(logoUrl ? { logo_url: logoUrl } : {}),
+        },
+        { onConflict: "user_id" },
+      );
       if (storeErr) throw storeErr;
 
       // Mark profile as onboarded and save discovery source + wilaya
@@ -276,7 +345,11 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
                   key={i}
                   className={cn(
                     "h-1.5 rounded-full transition-all duration-300",
-                    i < step ? "w-1.5 bg-primary" : i === step ? "w-6 bg-primary" : "w-1.5 bg-muted",
+                    i < step
+                      ? "w-1.5 bg-primary"
+                      : i === step
+                        ? "w-6 bg-primary"
+                        : "w-1.5 bg-muted",
                   )}
                 />
               ))}
@@ -324,7 +397,9 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
                       <div
                         className={cn(
                           "h-8 w-8 rounded-md flex items-center justify-center shrink-0 transition-colors",
-                          selected ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
+                          selected
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted text-muted-foreground",
                         )}
                       >
                         <SrcIcon className="h-4 w-4" />
@@ -364,7 +439,9 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
                           onClick={() => setWilaya(w)}
                           className={cn(
                             "w-full flex items-center justify-between px-3 py-2 text-sm text-left transition-colors",
-                            selected ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/60",
+                            selected
+                              ? "bg-primary/10 text-primary font-medium"
+                              : "hover:bg-muted/60",
                           )}
                         >
                           <span>{w}</span>
@@ -455,7 +532,11 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
                 <div className="flex items-center gap-4">
                   <div className="h-20 w-20 rounded-xl border-2 border-dashed border-border flex items-center justify-center bg-muted/30 overflow-hidden shrink-0">
                     {logoPreview ? (
-                      <img src={logoPreview} alt="Logo preview" className="h-full w-full object-cover" />
+                      <img
+                        src={logoPreview}
+                        alt="Logo preview"
+                        className="h-full w-full object-cover"
+                      />
                     ) : (
                       <ImageIcon className="h-6 w-6 text-muted-foreground" />
                     )}

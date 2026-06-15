@@ -12,5 +12,11 @@ export function formatPrice(amount: number | string | undefined | null): string 
  * Parse a price string like "1 500 DA" or "1500" back to a number.
  */
 export function parsePrice(raw: string): number {
-  return Number(String(raw).replace(/[^\d.,]/g, "").replace(",", ".")) || 0;
+  return (
+    Number(
+      String(raw)
+        .replace(/[^\d.,]/g, "")
+        .replace(",", "."),
+    ) || 0
+  );
 }

@@ -26,12 +26,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { sendOrderStatusSms } from "@/lib/orders/sms.functions";
 import { pushOrderToProvider } from "@/lib/delivery/push-order.functions";
 import { importZRExpressOrders } from "@/lib/delivery/import-zr-orders.functions";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Img } from "@/components/ui/Img";
 
 import type { Tables } from "@/integrations/supabase/types";
@@ -68,11 +63,26 @@ const STATUS_FLOW = ["pending", "confirmed", "shipped", "delivered"] as const;
 type Status = (typeof STATUS_FLOW)[number];
 
 const STATUS_VARIANT: Record<string, { label: string; className: string }> = {
-  pending: { label: "Pending", className: "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30" },
-  confirmed: { label: "Confirmed", className: "bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-500/30" },
-  shipped: { label: "Shipped", className: "bg-violet-500/10 text-violet-700 dark:text-violet-400 border-violet-500/30" },
-  delivered: { label: "Delivered", className: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30" },
-  cancelled: { label: "Cancelled", className: "bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/30" },
+  pending: {
+    label: "Pending",
+    className: "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30",
+  },
+  confirmed: {
+    label: "Confirmed",
+    className: "bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-500/30",
+  },
+  shipped: {
+    label: "Shipped",
+    className: "bg-violet-500/10 text-violet-700 dark:text-violet-400 border-violet-500/30",
+  },
+  delivered: {
+    label: "Delivered",
+    className: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30",
+  },
+  cancelled: {
+    label: "Cancelled",
+    className: "bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/30",
+  },
 };
 
 function OrdersPage() {
@@ -94,20 +104,26 @@ function OrdersPage() {
     if (!user) return;
     const { data: sessionData } = await supabase.auth.getSession();
     const accessToken = sessionData.session?.access_token;
-    if (!accessToken) { toast.error("Please sign in again."); return; }
+    if (!accessToken) {
+      toast.error("Please sign in again.");
+      return;
+    }
     const { data: companies } = await supabase
       .from("delivery_companies")
       .select("id, name")
       .eq("is_active", true);
-    const zr = (companies ?? []).find((c) =>
-      /zr\s*[-_]?\s*express|zrexpress/i.test(c.name),
-    );
-    if (!zr) { toast.error("ZRExpress is not available."); return; }
+    const zr = (companies ?? []).find((c) => /zr\s*[-_]?\s*express|zrexpress/i.test(c.name));
+    if (!zr) {
+      toast.error("ZRExpress is not available.");
+      return;
+    }
     setImportingZR(true);
     try {
       const res = await importZRFn({ data: { accessToken, companyId: zr.id } });
-      if (res.ok) { toast.success(res.message); loadOrders(); }
-      else toast.error(res.message);
+      if (res.ok) {
+        toast.success(res.message);
+        loadOrders();
+      } else toast.error(res.message);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Import failed.");
     } finally {
@@ -118,12 +134,20 @@ function OrdersPage() {
   const sendToProvider = async (orderId: string) => {
     const { data: sessionData } = await supabase.auth.getSession();
     const accessToken = sessionData.session?.access_token;
-    if (!accessToken) { toast.error("Please sign in again."); return; }
+    if (!accessToken) {
+      toast.error("Please sign in again.");
+      return;
+    }
     setPushingId(orderId);
     try {
       const res = await pushFn({ data: { accessToken, orderId } });
-      if (res.ok) { toast.success(res.message); loadOrders(); }
-      else { toast.error(res.message); loadOrders(); }
+      if (res.ok) {
+        toast.success(res.message);
+        loadOrders();
+      } else {
+        toast.error(res.message);
+        loadOrders();
+      }
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to send to delivery provider.");
     } finally {
@@ -169,10 +193,18 @@ function OrdersPage() {
     loadOrders();
     const channel = supabase
       .channel(`orders-${user.id}`)
-      .on("postgres_changes", { event: "*", schema: "public", table: "orders", filter: `store_owner_id=eq.${user.id}` }, () => loadOrders())
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "order_items" }, () => loadOrders())
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "orders", filter: `store_owner_id=eq.${user.id}` },
+        () => loadOrders(),
+      )
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "order_items" }, () =>
+        loadOrders(),
+      )
       .subscribe();
-    return () => { supabase.removeChannel(channel); };
+    return () => {
+      supabase.removeChannel(channel);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id, currentStore?.id]);
 
@@ -180,7 +212,11 @@ function OrdersPage() {
     const prev = orders;
     setOrders((cur) => (cur ? cur.map((o) => (o.id === orderId ? { ...o, status } : o)) : cur));
     const { error } = await supabase.from("orders").update({ status }).eq("id", orderId);
-    if (error) { setOrders(prev); toast.error("Failed to update status"); return; }
+    if (error) {
+      setOrders(prev);
+      toast.error("Failed to update status");
+      return;
+    }
     toast.success(`Order marked as ${STATUS_VARIANT[status].label}`);
     const smsStatuses = ["confirmed", "shipped", "delivered", "cancelled"] as const;
     if ((smsStatuses as readonly string[]).includes(status)) {
@@ -189,7 +225,9 @@ function OrdersPage() {
         const accessToken = sessionData.session?.access_token;
         if (!accessToken) return;
         await sendOrderStatusSms({ data: { orderId, status, accessToken } });
-      } catch (e) { console.error(e); }
+      } catch (e) {
+        console.error(e);
+      }
     }
   };
 
@@ -212,7 +250,8 @@ function OrdersPage() {
   const toggle = (id: string) => {
     setSelectedIds((cur) => {
       const next = new Set(cur);
-      if (next.has(id)) next.delete(id); else next.add(id);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   };
@@ -228,16 +267,17 @@ function OrdersPage() {
     const ids = Array.from(selectedIds);
     if (!ids.length) return;
     const { error } = await supabase.from("orders").update({ status }).in("id", ids);
-    if (error) { toast.error("Bulk update failed"); return; }
+    if (error) {
+      toast.error("Bulk update failed");
+      return;
+    }
     toast.success(`${ids.length} orders → ${STATUS_VARIANT[status].label}`);
     setOrders((cur) => cur?.map((o) => (selectedIds.has(o.id) ? { ...o, status } : o)) ?? null);
     setSelectedIds(new Set());
   };
 
   const exportCsv = () => {
-    const rows = selectedIds.size > 0
-      ? filtered.filter((o) => selectedIds.has(o.id))
-      : filtered;
+    const rows = selectedIds.size > 0 ? filtered.filter((o) => selectedIds.has(o.id)) : filtered;
     if (!rows.length) return;
     const headers = ["ID", "Customer", "Phone", "Wilaya", "City", "Status", "Total", "Date"];
     const csvRows = rows.map((o) =>
@@ -266,9 +306,7 @@ function OrdersPage() {
   };
 
   const printLabels = () => {
-    const rows = selectedIds.size > 0
-      ? filtered.filter((o) => selectedIds.has(o.id))
-      : filtered;
+    const rows = selectedIds.size > 0 ? filtered.filter((o) => selectedIds.has(o.id)) : filtered;
     if (!rows.length) return;
     const win = window.open("", "_blank");
     if (!win) return;
@@ -288,9 +326,10 @@ function OrdersPage() {
         .row{margin:4px 0;font-size:14px}
         .id{font-family:monospace;font-size:12px;color:#666}
       </style></head><body>
-      ${rows.map((o) => {
-        const its = items[o.id] ?? [];
-        return `<div class="label">
+      ${rows
+        .map((o) => {
+          const its = items[o.id] ?? [];
+          return `<div class="label">
           <h2>${esc(o.customer_name)}</h2>
           <div class="id">#${esc(o.id.slice(0, 8).toUpperCase())}</div>
           <div class="row"><strong>Phone:</strong> ${esc(o.shipping_address)}</div>
@@ -299,7 +338,8 @@ function OrdersPage() {
           <div class="row"><strong>Items:</strong> ${its.map((i) => `${esc(i.product_name)} ×${esc(i.quantity)}`).join(", ")}</div>
           <div class="row"><strong>Total:</strong> ${esc(Number(o.total).toFixed(2))} DA</div>
         </div>`;
-      }).join("")}
+        })
+        .join("")}
       </body></html>`;
     win.document.write(html);
     win.document.close();
@@ -324,8 +364,14 @@ function OrdersPage() {
             disabled={importingZR}
             className="gap-1.5"
           >
-            {importingZR ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-            {orders && orders.some((o) => o.source === "zrexpress") ? "Sync ZRExpress orders" : "Import ZRExpress orders"}
+            {importingZR ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <RefreshCw className="h-4 w-4" />
+            )}
+            {orders && orders.some((o) => o.source === "zrexpress")
+              ? "Sync ZRExpress orders"
+              : "Import ZRExpress orders"}
           </Button>
         </div>
       </div>
@@ -339,7 +385,9 @@ function OrdersPage() {
           icon={ShoppingBag}
           title="No orders yet"
           description="When a customer places an order, it will appear here. Share your store link to start selling."
-          action={<Button onClick={() => navigate({ to: "/dashboard/store" })}>View your store</Button>}
+          action={
+            <Button onClick={() => navigate({ to: "/dashboard/store" })}>View your store</Button>
+          }
         />
       ) : (
         <Card className="border-border/60 shadow-soft">
@@ -407,9 +455,15 @@ function OrdersPage() {
                     const firstItem = orderItems[0];
                     const extraCount = orderItems.length - 1;
                     return (
-                      <TableRow key={o.id} data-state={selectedIds.has(o.id) ? "selected" : undefined}>
+                      <TableRow
+                        key={o.id}
+                        data-state={selectedIds.has(o.id) ? "selected" : undefined}
+                      >
                         <TableCell>
-                          <Checkbox checked={selectedIds.has(o.id)} onCheckedChange={() => toggle(o.id)} />
+                          <Checkbox
+                            checked={selectedIds.has(o.id)}
+                            onCheckedChange={() => toggle(o.id)}
+                          />
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
@@ -421,7 +475,10 @@ function OrdersPage() {
                               {o.customer_name}
                             </Link>
                             {o.source === "zrexpress" && (
-                              <Badge variant="outline" className="bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30 text-[10px] px-1.5 py-0">
+                              <Badge
+                                variant="outline"
+                                className="bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30 text-[10px] px-1.5 py-0"
+                              >
                                 ZRExpress
                               </Badge>
                             )}
@@ -435,7 +492,10 @@ function OrdersPage() {
                           </Link>
                         </TableCell>
                         <TableCell>
-                          <a href={`tel:${o.shipping_address}`} className="inline-flex items-center gap-1.5 text-sm hover:text-primary">
+                          <a
+                            href={`tel:${o.shipping_address}`}
+                            className="inline-flex items-center gap-1.5 text-sm hover:text-primary"
+                          >
                             <Phone className="h-3.5 w-3.5 text-muted-foreground" />
                             {o.shipping_address}
                           </a>
@@ -466,9 +526,12 @@ function OrdersPage() {
                                 </div>
                               )}
                               <div className="min-w-0">
-                                <div className="text-sm font-medium line-clamp-1">{firstItem.product_name}</div>
+                                <div className="text-sm font-medium line-clamp-1">
+                                  {firstItem.product_name}
+                                </div>
                                 <div className="text-xs text-muted-foreground">
-                                  Qty {firstItem.quantity}{extraCount > 0 && ` + ${extraCount} more`}
+                                  Qty {firstItem.quantity}
+                                  {extraCount > 0 && ` + ${extraCount} more`}
                                 </div>
                               </div>
                             </div>
@@ -477,22 +540,34 @@ function OrdersPage() {
                           )}
                         </TableCell>
                         <TableCell>
-                          <Select value={o.status} onValueChange={(v) => updateStatus(o.id, v as Status)}>
+                          <Select
+                            value={o.status}
+                            onValueChange={(v) => updateStatus(o.id, v as Status)}
+                          >
                             <SelectTrigger className="h-8 w-[130px] border-0 p-0 focus:ring-0 shadow-none bg-transparent [&>svg]:opacity-50">
-                              <Badge variant="outline" className={`${status.className} font-medium`}>
+                              <Badge
+                                variant="outline"
+                                className={`${status.className} font-medium`}
+                              >
                                 {status.label}
                               </Badge>
                             </SelectTrigger>
                             <SelectContent align="end">
                               {STATUS_FLOW.map((s) => (
-                                <SelectItem key={s} value={s}>{STATUS_VARIANT[s].label}</SelectItem>
+                                <SelectItem key={s} value={s}>
+                                  {STATUS_VARIANT[s].label}
+                                </SelectItem>
                               ))}
                               <SelectItem value="cancelled">Cancelled</SelectItem>
                             </SelectContent>
                           </Select>
                         </TableCell>
                         <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
-                          {new Date(o.created_at).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })}
+                          {new Date(o.created_at).toLocaleDateString(undefined, {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          })}
                         </TableCell>
                         <TableCell className="text-right font-semibold whitespace-nowrap">
                           {Number(o.total).toFixed(2)} DA
@@ -500,22 +575,36 @@ function OrdersPage() {
                         <TableCell className="text-right whitespace-nowrap">
                           {(() => {
                             const ship = shipments[o.id];
-                            const hasTracking = ship && ship.tracking_number && ship.tracking_number.trim() !== "";
+                            const hasTracking =
+                              ship && ship.tracking_number && ship.tracking_number.trim() !== "";
                             const hasError = ship && ship.last_error;
                             if (hasTracking) {
                               return (
                                 <div className="inline-flex flex-col items-end gap-0.5">
                                   <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
-                                    <CheckCircle2 className="h-3.5 w-3.5" />{ship.status}
+                                    <CheckCircle2 className="h-3.5 w-3.5" />
+                                    {ship.status}
                                   </span>
-                                  <span className="text-[11px] font-mono text-muted-foreground">{ship.tracking_number}</span>
+                                  <span className="text-[11px] font-mono text-muted-foreground">
+                                    {ship.tracking_number}
+                                  </span>
                                 </div>
                               );
                             }
                             return (
                               <div className="inline-flex flex-col items-end gap-1">
-                                <Button size="sm" variant="outline" onClick={() => sendToProvider(o.id)} disabled={pushingId === o.id} className="h-8">
-                                  {pushingId === o.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => sendToProvider(o.id)}
+                                  disabled={pushingId === o.id}
+                                  className="h-8"
+                                >
+                                  {pushingId === o.id ? (
+                                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                  ) : (
+                                    <Send className="h-3.5 w-3.5" />
+                                  )}
                                   Send to ZRExpress
                                 </Button>
                                 {hasError && (
@@ -527,7 +616,9 @@ function OrdersPage() {
                                           <span className="truncate">{ship.last_error}</span>
                                         </span>
                                       </TooltipTrigger>
-                                      <TooltipContent className="max-w-sm">{ship.last_error}</TooltipContent>
+                                      <TooltipContent className="max-w-sm">
+                                        {ship.last_error}
+                                      </TooltipContent>
                                     </Tooltip>
                                   </TooltipProvider>
                                 )}
@@ -554,7 +645,9 @@ function OrdersPage() {
             </SelectTrigger>
             <SelectContent>
               {STATUS_FLOW.map((s) => (
-                <SelectItem key={s} value={s}>{STATUS_VARIANT[s].label}</SelectItem>
+                <SelectItem key={s} value={s}>
+                  {STATUS_VARIANT[s].label}
+                </SelectItem>
               ))}
               <SelectItem value="cancelled">Cancelled</SelectItem>
             </SelectContent>

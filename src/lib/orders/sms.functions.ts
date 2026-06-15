@@ -40,8 +40,9 @@ export const sendOrderStatusSms = createServerFn({ method: "POST" })
         return { sent: false, reason: "unauthorized" };
       }
 
-      const { data: userData, error: claimsError } =
-        await supabaseAdmin.auth.getUser(data.accessToken);
+      const { data: userData, error: claimsError } = await supabaseAdmin.auth.getUser(
+        data.accessToken,
+      );
       const userId = userData?.user?.id;
       if (claimsError || !userId) {
         console.error("SMS: invalid auth token", claimsError?.message);
@@ -85,9 +86,7 @@ export const sendOrderStatusSms = createServerFn({ method: "POST" })
           Accept: "application/json",
         },
         body: JSON.stringify({
-          messages: [
-            { from: sender, destinations: [{ to: phone }], text },
-          ],
+          messages: [{ from: sender, destinations: [{ to: phone }], text }],
         }),
       });
 

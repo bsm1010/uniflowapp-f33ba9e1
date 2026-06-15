@@ -34,9 +34,8 @@ export function WindowsDownload() {
                 </span>
               </h2>
               <p className="mt-4 max-w-xl text-base md:text-lg text-purple-100/80 leading-relaxed">
-                Get the full desktop experience — faster, smoother, and always
-                available. Manage your store natively on Windows with offline
-                access and instant launch.
+                Get the full desktop experience — faster, smoother, and always available. Manage
+                your store natively on Windows with offline access and instant launch.
               </p>
 
               <div className="mt-7 flex flex-col sm:flex-row items-start sm:items-center gap-3">
@@ -51,9 +50,7 @@ export function WindowsDownload() {
                     Download for Windows
                   </a>
                 </Button>
-                <span className="text-xs text-purple-200/70">
-                  Free · Windows 10/11 · ~80 MB
-                </span>
+                <span className="text-xs text-purple-200/70">Free · Windows 10/11 · ~80 MB</span>
               </div>
 
               <div className="mt-8 grid grid-cols-3 gap-4 max-w-md">
@@ -105,12 +102,7 @@ function Sparkle() {
 
 export function WindowsLogo({ className }: { className?: string }) {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      className={className}
-      fill="currentColor"
-      aria-hidden="true"
-    >
+    <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden="true">
       <path d="M3 5.5 11 4.3v7.2H3V5.5Zm0 13L11 19.7v-7.2H3v6Zm9-14.3L21 3v8.5h-9V4.2Zm0 8.3h9V21l-9-1.2v-7.3Z" />
     </svg>
   );

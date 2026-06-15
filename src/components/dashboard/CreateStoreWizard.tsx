@@ -67,7 +67,9 @@ export function CreateStoreWizard({ open, onClose, onCreated }: Props) {
     setUploading(true);
     const ext = file.name.split(".").pop() || "png";
     const path = `${user.id}/store-logos/${Date.now()}.${ext}`;
-    const { error } = await supabase.storage.from("store-assets").upload(path, file, { upsert: true });
+    const { error } = await supabase.storage
+      .from("store-assets")
+      .upload(path, file, { upsert: true });
     if (error) {
       toast.error("Failed to upload logo");
       setUploading(false);
@@ -182,7 +184,11 @@ export function CreateStoreWizard({ open, onClose, onCreated }: Props) {
                   )}
                 </div>
                 <label className="cursor-pointer inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-accent">
-                  {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                  {uploading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Upload className="h-4 w-4" />
+                  )}
                   <span>Upload logo</span>
                   <input
                     type="file"
@@ -227,9 +233,7 @@ export function CreateStoreWizard({ open, onClose, onCreated }: Props) {
                   </div>
                 </div>
               </div>
-              {description && (
-                <p className="text-sm text-muted-foreground">{description}</p>
-              )}
+              {description && <p className="text-sm text-muted-foreground">{description}</p>}
             </div>
             <p className="text-sm text-muted-foreground">
               Confirm to create this store. You can change these details later from Store Settings.
@@ -243,18 +247,25 @@ export function CreateStoreWizard({ open, onClose, onCreated }: Props) {
             onClick={step === 1 ? handleClose : () => setStep((s) => s - 1)}
             disabled={submitting}
           >
-            {step === 1 ? "Cancel" : (<><ArrowLeft className="h-4 w-4" /> Back</>)}
+            {step === 1 ? (
+              "Cancel"
+            ) : (
+              <>
+                <ArrowLeft className="h-4 w-4" /> Back
+              </>
+            )}
           </Button>
           {step < 3 ? (
-            <Button
-              onClick={() => setStep((s) => s + 1)}
-              disabled={step === 1 && !name.trim()}
-            >
+            <Button onClick={() => setStep((s) => s + 1)} disabled={step === 1 && !name.trim()}>
               Next <ArrowRight className="h-4 w-4" />
             </Button>
           ) : (
             <Button onClick={submit} disabled={submitting}>
-              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+              {submitting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Check className="h-4 w-4" />
+              )}
               Create Store
             </Button>
           )}

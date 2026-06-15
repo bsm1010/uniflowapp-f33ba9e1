@@ -58,7 +58,9 @@ function Lightbox({
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(4px)" }}
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
     >
       <button
         onClick={onClose}
@@ -147,9 +149,7 @@ function AppLandingPage() {
         description: overrideData.description ?? baseApp.description,
         longDescription: overrideData.long_description ?? baseApp.longDescription,
         screenshots:
-          overrideData.screenshots.length > 0
-            ? overrideData.screenshots
-            : baseApp.screenshots,
+          overrideData.screenshots.length > 0 ? overrideData.screenshots : baseApp.screenshots,
       }
     : baseApp;
 
@@ -210,9 +210,7 @@ function AppLandingPage() {
               >
                 <Icon className="h-7 w-7 text-foreground" />
               </div>
-              <h1 className="text-lg font-bold leading-tight tracking-tight">
-                {app.name}
-              </h1>
+              <h1 className="text-lg font-bold leading-tight tracking-tight">{app.name}</h1>
             </div>
 
             <div className="h-px bg-border" />
@@ -231,7 +229,9 @@ function AppLandingPage() {
                   <button
                     className="text-muted-foreground hover:underline ml-1"
                     onClick={() => {
-                      document.getElementById("reviews-section")?.scrollIntoView({ behavior: "smooth" });
+                      document
+                        .getElementById("reviews-section")
+                        ?.scrollIntoView({ behavior: "smooth" });
                     }}
                   >
                     ({app.reviewCount.toLocaleString()})
@@ -336,9 +336,7 @@ function AppLandingPage() {
 
         {/* Long description below */}
         <div className="max-w-3xl space-y-5 pt-6">
-          <h2 className="text-xl font-bold leading-snug">
-            {app.description}
-          </h2>
+          <h2 className="text-xl font-bold leading-snug">{app.description}</h2>
           <p className="text-base text-muted-foreground leading-relaxed">
             {app.longDescription ?? app.description}
           </p>
@@ -419,7 +417,8 @@ function AppLandingPage() {
                 </div>
               </div>
               <p className="text-sm text-muted-foreground">
-                Reviews from real users help others discover great apps. Sign in and install to leave your own.
+                Reviews from real users help others discover great apps. Sign in and install to
+                leave your own.
               </p>
             </div>
           </div>

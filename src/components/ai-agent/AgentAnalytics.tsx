@@ -1,5 +1,14 @@
 import { motion } from "framer-motion";
-import { BarChart3, TrendingUp, MessageSquare, Bot, Users, Clock, Mic, ShoppingCart } from "lucide-react";
+import {
+  BarChart3,
+  TrendingUp,
+  MessageSquare,
+  Bot,
+  Users,
+  Clock,
+  Mic,
+  ShoppingCart,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAIAgent } from "@/hooks/use-ai-agent";
 import {
@@ -45,12 +54,48 @@ export function AgentAnalytics() {
   const aiHandled = conversations.filter((c) => c.mode === "ai").length;
 
   const stats = [
-    { label: "Total Conversations", value: totalConvos || 150, icon: MessageSquare, color: "text-blue-500", bg: "bg-blue-500/10" },
-    { label: "AI Success Rate", value: "92%", icon: Bot, color: "text-violet-500", bg: "bg-violet-500/10" },
-    { label: "Avg Response Time", value: "2.4s", icon: Clock, color: "text-amber-500", bg: "bg-amber-500/10" },
-    { label: "Sales Generated", value: "45,000 DA", icon: ShoppingCart, color: "text-emerald-500", bg: "bg-emerald-500/10" },
-    { label: "Voice Processed", value: "23", icon: Mic, color: "text-pink-500", bg: "bg-pink-500/10" },
-    { label: "Active Customers", value: "67", icon: Users, color: "text-cyan-500", bg: "bg-cyan-500/10" },
+    {
+      label: "Total Conversations",
+      value: totalConvos || 150,
+      icon: MessageSquare,
+      color: "text-blue-500",
+      bg: "bg-blue-500/10",
+    },
+    {
+      label: "AI Success Rate",
+      value: "92%",
+      icon: Bot,
+      color: "text-violet-500",
+      bg: "bg-violet-500/10",
+    },
+    {
+      label: "Avg Response Time",
+      value: "2.4s",
+      icon: Clock,
+      color: "text-amber-500",
+      bg: "bg-amber-500/10",
+    },
+    {
+      label: "Sales Generated",
+      value: "45,000 DA",
+      icon: ShoppingCart,
+      color: "text-emerald-500",
+      bg: "bg-emerald-500/10",
+    },
+    {
+      label: "Voice Processed",
+      value: "23",
+      icon: Mic,
+      color: "text-pink-500",
+      bg: "bg-pink-500/10",
+    },
+    {
+      label: "Active Customers",
+      value: "67",
+      icon: Users,
+      color: "text-cyan-500",
+      bg: "bg-cyan-500/10",
+    },
   ];
 
   return (
@@ -58,14 +103,23 @@ export function AgentAnalytics() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {stats.map((stat, i) => (
-          <motion.div key={stat.label} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.05 }}
+          >
             <Card className="border-0 shadow-md">
               <CardContent className="p-4">
-                <div className={`h-8 w-8 rounded-lg ${stat.bg} flex items-center justify-center mb-2`}>
+                <div
+                  className={`h-8 w-8 rounded-lg ${stat.bg} flex items-center justify-center mb-2`}
+                >
                   <stat.icon className={`h-4 w-4 ${stat.color}`} />
                 </div>
                 <p className="text-xl font-bold">{stat.value}</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5 leading-tight">{stat.label}</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5 leading-tight">
+                  {stat.label}
+                </p>
               </CardContent>
             </Card>
           </motion.div>
@@ -94,8 +148,21 @@ export function AgentAnalytics() {
                 <XAxis dataKey="day" tick={{ fontSize: 12 }} />
                 <YAxis tick={{ fontSize: 12 }} />
                 <Tooltip />
-                <Area type="monotone" dataKey="conversations" stroke="#8b5cf6" fill="url(#colorConv)" strokeWidth={2} />
-                <Area type="monotone" dataKey="aiReplies" stroke="#06b6d4" fill="transparent" strokeWidth={1.5} strokeDasharray="5 5" />
+                <Area
+                  type="monotone"
+                  dataKey="conversations"
+                  stroke="#8b5cf6"
+                  fill="url(#colorConv)"
+                  strokeWidth={2}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="aiReplies"
+                  stroke="#06b6d4"
+                  fill="transparent"
+                  strokeWidth={1.5}
+                  strokeDasharray="5 5"
+                />
               </AreaChart>
             </ResponsiveContainer>
           </CardContent>
@@ -109,7 +176,15 @@ export function AgentAnalytics() {
           <CardContent className="flex flex-col items-center">
             <ResponsiveContainer width="100%" height={180}>
               <PieChart>
-                <Pie data={pieData} cx="50%" cy="50%" innerRadius={50} outerRadius={70} dataKey="value" strokeWidth={0}>
+                <Pie
+                  data={pieData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={50}
+                  outerRadius={70}
+                  dataKey="value"
+                  strokeWidth={0}
+                >
                   {pieData.map((entry, index) => (
                     <Cell key={index} fill={entry.color} />
                   ))}
@@ -120,7 +195,9 @@ export function AgentAnalytics() {
               {pieData.map((d) => (
                 <div key={d.name} className="flex items-center gap-1.5">
                   <div className="h-3 w-3 rounded-full" style={{ background: d.color }} />
-                  <span className="text-muted-foreground">{d.name}: {d.value}%</span>
+                  <span className="text-muted-foreground">
+                    {d.name}: {d.value}%
+                  </span>
                 </div>
               ))}
             </div>

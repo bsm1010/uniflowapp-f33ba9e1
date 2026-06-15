@@ -148,15 +148,11 @@ export function CreateShipmentDialog({
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Address</span>
-              <span className="text-right max-w-[60%] truncate">
-                {order.shipping_city}
-              </span>
+              <span className="text-right max-w-[60%] truncate">{order.shipping_city}</span>
             </div>
             <div className="flex justify-between pt-1 border-t border-border/60">
               <span className="text-muted-foreground">Total</span>
-              <span className="font-semibold">
-                {Number(order.total).toFixed(2)} DA
-              </span>
+              <span className="font-semibold">{Number(order.total).toFixed(2)} DA</span>
             </div>
           </div>
         )}
@@ -194,8 +190,8 @@ export function CreateShipmentDialog({
                 </Select>
               </div>
               <p className="text-xs text-muted-foreground">
-                A tracking number will be generated automatically and the shipment
-                will be marked as <span className="font-medium">created</span>.
+                A tracking number will be generated automatically and the shipment will be marked as{" "}
+                <span className="font-medium">created</span>.
               </p>
             </TabsContent>
 
@@ -246,10 +242,7 @@ export function CreateShipmentDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button
-            onClick={submit}
-            disabled={submitting || companies.length === 0 || !companyId}
-          >
+          <Button onClick={submit} disabled={submitting || companies.length === 0 || !companyId}>
             {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
             Create shipment
           </Button>

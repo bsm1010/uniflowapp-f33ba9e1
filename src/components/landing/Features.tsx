@@ -16,9 +16,12 @@ export function Features() {
     <section id="features" className="py-14 md:py-20 relative">
       <div className="mx-auto max-w-6xl px-4">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-sm font-medium text-primary uppercase tracking-wider">{t("features.kicker")}</p>
+          <p className="text-sm font-medium text-primary uppercase tracking-wider">
+            {t("features.kicker")}
+          </p>
           <h2 className="mt-3 text-3xl md:text-5xl font-bold">
-            {t("features.titleA")} <span className="text-gradient-brand">{t("features.titleB")}</span>
+            {t("features.titleA")}{" "}
+            <span className="text-gradient-brand">{t("features.titleB")}</span>
           </h2>
           <p className="mt-4 text-muted-foreground">{t("features.subtitle")}</p>
         </div>
@@ -37,7 +40,9 @@ export function Features() {
                 <f.icon className="h-5 w-5" />
               </div>
               <h3 className="mt-5 text-lg font-semibold">{t(`features.items.${f.key}.title`)}</h3>
-              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{t(`features.items.${f.key}.desc`)}</p>
+              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                {t(`features.items.${f.key}.desc`)}
+              </p>
             </motion.div>
           ))}
         </div>

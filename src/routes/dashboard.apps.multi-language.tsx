@@ -61,10 +61,7 @@ function MultiLangPage() {
       setDefaultLang(settings.default_language);
       setEnabled(settings.enabled_languages);
     }
-    const { data: t } = await supabase
-      .from("translations")
-      .select("*")
-      .eq("user_id", user.id);
+    const { data: t } = await supabase.from("translations").select("*").eq("user_id", user.id);
     setTranslations((t ?? []) as Translation[]);
   };
 
@@ -88,9 +85,7 @@ function MultiLangPage() {
   };
 
   const toggleLang = (code: string) => {
-    setEnabled((prev) =>
-      prev.includes(code) ? prev.filter((c) => c !== code) : [...prev, code],
-    );
+    setEnabled((prev) => (prev.includes(code) ? prev.filter((c) => c !== code) : [...prev, code]));
   };
 
   const addTranslation = async () => {
@@ -167,9 +162,7 @@ function MultiLangPage() {
                     key={l.code}
                     onClick={() => toggleLang(l.code)}
                     className={`rounded-md border px-3 py-1.5 text-sm ${
-                      on
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-background"
+                      on ? "bg-primary text-primary-foreground border-primary" : "bg-background"
                     }`}
                   >
                     {l.name}
@@ -218,9 +211,7 @@ function MultiLangPage() {
             </Button>
           </div>
           {filtered.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              No translations for this language yet.
-            </p>
+            <p className="text-sm text-muted-foreground">No translations for this language yet.</p>
           ) : (
             <div className="divide-y">
               {filtered.map((t) => (

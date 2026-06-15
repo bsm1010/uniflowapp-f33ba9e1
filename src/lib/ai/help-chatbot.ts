@@ -86,7 +86,8 @@ export const helpChatbotReply = createServerFn({ method: "POST" })
 
     // Validate user authentication
     const SUPABASE_URL = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL;
-    const PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY ?? process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+    const PUBLISHABLE_KEY =
+      process.env.SUPABASE_PUBLISHABLE_KEY ?? process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
     if (!SUPABASE_URL || !PUBLISHABLE_KEY) {
       return { reply: "", error: "Backend not configured." };
     }

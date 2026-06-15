@@ -1,6 +1,16 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { Suspense, useEffect, useMemo, useState } from "react";
-import { Loader2, Search, ShoppingBag, Mail, ArrowRight, Sparkles, Star, Grid3X3, SlidersHorizontal } from "lucide-react";
+import {
+  Loader2,
+  Search,
+  ShoppingBag,
+  Mail,
+  ArrowRight,
+  Sparkles,
+  Star,
+  Grid3X3,
+  SlidersHorizontal,
+} from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
@@ -64,8 +74,16 @@ export const Route = createFileRoute("/s/$slug/")({
 type SortKey = "newest" | "price-asc" | "price-desc" | "name";
 
 const ALGERIAN_LAYOUTS = new Set<string>([
-  "sahara", "mediterranean", "casbah", "atlas", "tlemcen",
-  "constantine", "oran", "ghardaia", "kabyle", "algiers",
+  "sahara",
+  "mediterranean",
+  "casbah",
+  "atlas",
+  "tlemcen",
+  "constantine",
+  "oran",
+  "ghardaia",
+  "kabyle",
+  "algiers",
 ]);
 
 // ── TikTok Pixel injection ────────────────────────────────────────
@@ -196,9 +214,7 @@ function StorefrontHome() {
     const q = query.trim().toLowerCase();
     if (q) {
       list = list.filter(
-        (p) =>
-          p.name.toLowerCase().includes(q) ||
-          (p.category ?? "").toLowerCase().includes(q),
+        (p) => p.name.toLowerCase().includes(q) || (p.category ?? "").toLowerCase().includes(q),
       );
     }
     const sorted = [...list];
@@ -318,9 +334,7 @@ function StorefrontHome() {
   // ── Legacy template rendering (fallback) ──
   const sectionRenderers: Record<SectionKey, () => React.ReactNode> = {
     hero: () =>
-      settings.show_hero ? (
-        <StorefrontHero key="hero" settings={settings} tokens={t} />
-      ) : null,
+      settings.show_hero ? <StorefrontHero key="hero" settings={settings} tokens={t} /> : null,
 
     categories: () =>
       settings.show_categories && categories.length > 1 ? (
@@ -374,12 +388,17 @@ function StorefrontHome() {
                 >
                   {productInCat?.images[0] && (
                     <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-500">
-                      <img src={productInCat.images[0]} alt="" className="h-full w-full object-cover" />
+                      <img
+                        src={productInCat.images[0]}
+                        alt=""
+                        className="h-full w-full object-cover"
+                      />
                     </div>
                   )}
                   <span className="relative text-base font-bold">{c}</span>
                   <span className="relative text-xs mt-1.5" style={{ color: t.muted }}>
-                    {products.filter((p) => p.category === c).length} {tr("storefront.home.itemsLabel", { defaultValue: "items" })}
+                    {products.filter((p) => p.category === c).length}{" "}
+                    {tr("storefront.home.itemsLabel", { defaultValue: "items" })}
                   </span>
                   <ArrowRight
                     className="relative h-4 w-4 mt-3 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-1 group-hover:translate-y-0"
@@ -511,18 +530,11 @@ function StorefrontHome() {
       {/* ── TikTok Pixel (injected if seller has set a pixel ID) ── */}
       {tiktokPixelId && <TikTokPixel pixelId={tiktokPixelId} />}
 
-      <div
-        className={
-          isBold ? "bg-black text-white" : isMinimal ? "bg-white" : "bg-background"
-        }
-      >
+      <div className={isBold ? "bg-black text-white" : isMinimal ? "bg-white" : "bg-background"}>
         {sectionOrder.map((key) => sectionRenderers[key]())}
 
         {/* All products */}
-        <section
-          id="shop"
-          className="px-5 sm:px-8 py-16 md:py-24 max-w-7xl mx-auto w-full"
-        >
+        <section id="shop" className="px-5 sm:px-8 py-16 md:py-24 max-w-7xl mx-auto w-full">
           <div className="flex flex-col gap-8 mb-10">
             <div>
               <div
@@ -537,7 +549,8 @@ function StorefrontHome() {
               </h2>
               <p className="mt-2 text-base" style={{ color: t.muted }}>
                 {tr("storefront.home.items", { count: filtered.length })}
-                {activeCategory !== "All" && tr("storefront.home.inCategory", { category: activeCategory })}
+                {activeCategory !== "All" &&
+                  tr("storefront.home.inCategory", { category: activeCategory })}
               </p>
             </div>
 
@@ -578,7 +591,9 @@ function StorefrontHome() {
                     }}
                   >
                     {categories.map((c) => (
-                      <option key={c} value={c} style={{ backgroundColor: t.bg }}>{c}</option>
+                      <option key={c} value={c} style={{ backgroundColor: t.bg }}>
+                        {c}
+                      </option>
                     ))}
                   </select>
                 )}
@@ -593,10 +608,18 @@ function StorefrontHome() {
                     color: t.fg,
                   }}
                 >
-                  <option value="newest" style={{ backgroundColor: t.bg }}>{tr("storefront.home.sort.newest")}</option>
-                  <option value="price-asc" style={{ backgroundColor: t.bg }}>{tr("storefront.home.sort.priceAsc")}</option>
-                  <option value="price-desc" style={{ backgroundColor: t.bg }}>{tr("storefront.home.sort.priceDesc")}</option>
-                  <option value="name" style={{ backgroundColor: t.bg }}>{tr("storefront.home.sort.name")}</option>
+                  <option value="newest" style={{ backgroundColor: t.bg }}>
+                    {tr("storefront.home.sort.newest")}
+                  </option>
+                  <option value="price-asc" style={{ backgroundColor: t.bg }}>
+                    {tr("storefront.home.sort.priceAsc")}
+                  </option>
+                  <option value="price-desc" style={{ backgroundColor: t.bg }}>
+                    {tr("storefront.home.sort.priceDesc")}
+                  </option>
+                  <option value="name" style={{ backgroundColor: t.bg }}>
+                    {tr("storefront.home.sort.name")}
+                  </option>
                 </select>
               </div>
             </div>
@@ -613,7 +636,9 @@ function StorefrontHome() {
             >
               <ShoppingBag className="h-12 w-12 mx-auto opacity-30" style={{ color: t.muted }} />
               <p className="mt-5 text-lg font-semibold">
-                {products.length === 0 ? tr("storefront.home.noProducts") : tr("storefront.home.noMatches")}
+                {products.length === 0
+                  ? tr("storefront.home.noProducts")
+                  : tr("storefront.home.noMatches")}
               </p>
               <p className="mt-2 text-sm" style={{ color: t.muted }}>
                 {products.length === 0

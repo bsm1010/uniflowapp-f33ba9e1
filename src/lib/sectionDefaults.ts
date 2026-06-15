@@ -11,13 +11,14 @@ export const SECTION_DEFAULTS: Partial<Record<TemplateKey, SectionDefault[]>> = 
     { blockKey: "products", props: { title: "Related Products", layout: "grid", columns: 4 } },
   ],
   collection: [
-    { blockKey: "hero", props: { title: "Collection", subtitle: "", buttonText: "", backgroundImage: "" } },
+    {
+      blockKey: "hero",
+      props: { title: "Collection", subtitle: "", buttonText: "", backgroundImage: "" },
+    },
     { blockKey: "products", props: { title: "All Products", layout: "grid", columns: 4 } },
   ],
   cart: [
     { blockKey: "trust", props: { items: ["Free Shipping", "Secure Checkout", "Easy Returns"] } },
   ],
-  page: [
-    { blockKey: "content", props: { title: "", body: "" } },
-  ],
+  page: [{ blockKey: "content", props: { title: "", body: "" } }],
 };

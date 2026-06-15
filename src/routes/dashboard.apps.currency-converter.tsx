@@ -123,9 +123,7 @@ function CurrencyPage() {
           <div className="flex items-center justify-between rounded-md border p-3">
             <div>
               <p className="font-medium">Auto-detect visitor currency</p>
-              <p className="text-xs text-muted-foreground">
-                Use IP geolocation when available.
-              </p>
+              <p className="text-xs text-muted-foreground">Use IP geolocation when available.</p>
             </div>
             <Switch checked={auto} onCheckedChange={setAuto} />
           </div>

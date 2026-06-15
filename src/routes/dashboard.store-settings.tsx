@@ -30,8 +30,18 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-const CATEGORIES = ["fashion","electronics","beauty","home","food","sports","books","toys","general"];
-const CURRENCIES = ["DZD","USD","EUR","MAD","TND","GBP","SAR","AED"];
+const CATEGORIES = [
+  "fashion",
+  "electronics",
+  "beauty",
+  "home",
+  "food",
+  "sports",
+  "books",
+  "toys",
+  "general",
+];
+const CURRENCIES = ["DZD", "USD", "EUR", "MAD", "TND", "GBP", "SAR", "AED"];
 
 export const Route = createFileRoute("/dashboard/store-settings")({
   component: StoreSettingsPage,
@@ -74,7 +84,9 @@ function StoreSettingsPage() {
     setUploading(true);
     const ext = file.name.split(".").pop() || "png";
     const path = `${user.id}/store-logos/${Date.now()}.${ext}`;
-    const { error } = await supabase.storage.from("store-assets").upload(path, file, { upsert: true });
+    const { error } = await supabase.storage
+      .from("store-assets")
+      .upload(path, file, { upsert: true });
     if (error) {
       toast.error("Failed to upload logo");
       setUploading(false);
@@ -150,7 +162,11 @@ function StoreSettingsPage() {
                 )}
               </div>
               <label className="cursor-pointer inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-accent">
-                {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                {uploading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Upload className="h-4 w-4" />
+                )}
                 <span>Upload</span>
                 <input
                   type="file"
@@ -172,10 +188,14 @@ function StoreSettingsPage() {
           <div>
             <Label>Category</Label>
             <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 {CATEGORIES.map((c) => (
-                  <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>
+                  <SelectItem key={c} value={c} className="capitalize">
+                    {c}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -183,15 +203,26 @@ function StoreSettingsPage() {
           <div>
             <Label>Currency</Label>
             <Select value={currency} onValueChange={setCurrency}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
-                {CURRENCIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                {CURRENCIES.map((c) => (
+                  <SelectItem key={c} value={c}>
+                    {c}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
           <div>
             <Label htmlFor="desc">Description</Label>
-            <Textarea id="desc" value={description} onChange={(e) => setDescription(e.target.value)} rows={4} />
+            <Textarea
+              id="desc"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={4}
+            />
           </div>
 
           <div className="flex justify-between pt-4 border-t">
@@ -230,8 +261,12 @@ function StoreSettingsPage() {
           <div className="flex items-center gap-3">
             {/* TikTok icon */}
             <div className="h-10 w-10 rounded-xl bg-black flex items-center justify-center shrink-0">
-              <svg viewBox="0 0 24 24" className="h-5 w-5 fill-white" xmlns="http://www.w3.org/2000/svg">
-                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/>
+              <svg
+                viewBox="0 0 24 24"
+                className="h-5 w-5 fill-white"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z" />
               </svg>
             </div>
             <div>
@@ -265,7 +300,8 @@ function StoreSettingsPage() {
 
           {tiktokPixelId && (
             <div className="rounded-lg bg-green-500/10 border border-green-500/20 px-4 py-3 text-sm text-green-700 dark:text-green-400">
-              ✅ Pixel <span className="font-mono font-semibold">{tiktokPixelId}</span> will be injected into your storefront automatically.
+              ✅ Pixel <span className="font-mono font-semibold">{tiktokPixelId}</span> will be
+              injected into your storefront automatically.
             </div>
           )}
 

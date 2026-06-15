@@ -18,12 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -144,7 +139,9 @@ function AdminPaymentsPage() {
           .eq("id", sub.id);
       }
       if (pending.length > 0) {
-        toast.success(`Auto-verified ${pending.length} submission${pending.length === 1 ? "" : "s"}`);
+        toast.success(
+          `Auto-verified ${pending.length} submission${pending.length === 1 ? "" : "s"}`,
+        );
         loadSubmissions();
       } else {
         toast.success("Settings saved");
@@ -187,9 +184,7 @@ function AdminPaymentsPage() {
       enriched.map(async (s) => {
         const path = extractPath(s.proof_url);
         if (!path) return;
-        const { data } = await supabase.storage
-          .from("payment-proofs")
-          .createSignedUrl(path, 3600);
+        const { data } = await supabase.storage.from("payment-proofs").createSignedUrl(path, 3600);
         if (data?.signedUrl) urls[s.id] = data.signedUrl;
       }),
     );
@@ -279,7 +274,10 @@ function AdminPaymentsPage() {
   if (!isAdmin) {
     return (
       <div className="space-y-6">
-        <PageHeader title="Admin · Payments" description="Review and approve payment submissions." />
+        <PageHeader
+          title="Admin · Payments"
+          description="Review and approve payment submissions."
+        />
         <div className="rounded-xl border bg-card p-10 text-center">
           <ShieldAlert className="mx-auto h-10 w-10 text-muted-foreground mb-3" />
           <h3 className="text-lg font-semibold">Admin access required</h3>
@@ -312,15 +310,14 @@ function AdminPaymentsPage() {
               </p>
             </div>
           </div>
-          <Switch
-            checked={avEnabled}
-            onCheckedChange={setAvEnabled}
-          />
+          <Switch checked={avEnabled} onCheckedChange={setAvEnabled} />
         </div>
         {avEnabled && (
           <div className="flex items-end gap-3 pl-8">
             <div className="flex-1 space-y-1">
-              <Label htmlFor="av-pattern" className="text-xs">Filename pattern</Label>
+              <Label htmlFor="av-pattern" className="text-xs">
+                Filename pattern
+              </Label>
               <Input
                 id="av-pattern"
                 value={avPattern}
@@ -362,133 +359,132 @@ function AdminPaymentsPage() {
         </div>
       )}
 
-<div className="rounded-xl border bg-card overflow-hidden">
-    <div className="overflow-x-auto">
-    <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-10">
-                <Checkbox
-                  checked={filtered.length > 0 && selected.size === filtered.length}
-                  onCheckedChange={toggleSelectAll}
-                />
-              </TableHead>
-              <TableHead>User</TableHead>
-              <TableHead>Plan</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Method</TableHead>
-              <TableHead>Proof</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? (
+      <div className="rounded-xl border bg-card overflow-hidden">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
               <TableRow>
-                <TableCell colSpan={9} className="text-center py-10 text-muted-foreground">
-                  Loading…
-                </TableCell>
+                <TableHead className="w-10">
+                  <Checkbox
+                    checked={filtered.length > 0 && selected.size === filtered.length}
+                    onCheckedChange={toggleSelectAll}
+                  />
+                </TableHead>
+                <TableHead>User</TableHead>
+                <TableHead>Plan</TableHead>
+                <TableHead>Amount</TableHead>
+                <TableHead>Method</TableHead>
+                <TableHead>Proof</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
-            ) : filtered.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={9} className="text-center py-10 text-muted-foreground">
-                  No submissions found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              filtered.map((s) => (
-                <TableRow key={s.id}>
-                  <TableCell>
-                    <Checkbox
-                      checked={selected.has(s.id)}
-                      onCheckedChange={() => toggleSelect(s.id)}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">{s.profile?.name || "Unnamed"}</div>
-                    <div className="text-xs text-muted-foreground">{s.profile?.email}</div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">{planLabel(s.plan)}</div>
-                    <div className="text-xs text-muted-foreground">+{planCredits(s.plan)} credits</div>
-                  </TableCell>
-                  <TableCell>{Number(s.amount).toLocaleString()} DZD</TableCell>
-                  <TableCell className="capitalize">{s.payment_method}</TableCell>
-                  <TableCell>
-                    {signedUrls[s.id] ? (
-                      <button
-                        onClick={() => setPreviewUrl(signedUrls[s.id])}
-                        className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
-                      >
-                        <ImageIcon className="h-4 w-4" />
-                        View
-                      </button>
-                    ) : (
-                      <span className="text-xs text-muted-foreground">—</span>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {new Date(s.created_at).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>
-                    <StatusBadge status={s.status} />
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {s.status === "pending" ? (
-                      <div className="flex justify-end gap-2">
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              disabled={actingId === s.id}
-                            >
-                              <X className="h-4 w-4 mr-1" />
-                              Reject
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Reject payment?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This will mark the submission as rejected. The user will not receive credits.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleReject(s)}>
-                                Reject
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                        <Button
-                          size="sm"
-                          disabled={actingId === s.id}
-                          onClick={() => handleApprove(s)}
-                        >
-                          {actingId === s.id ? (
-                            <Loader2 className="h-4 w-4 animate-spin mr-1" />
-                          ) : (
-                            <Check className="h-4 w-4 mr-1" />
-                          )}
-                          Mark as paid
-                        </Button>
-                      </div>
-                    ) : (
-                      <span className="text-xs text-muted-foreground">
-                        {s.reviewed_at ? new Date(s.reviewed_at).toLocaleDateString() : "—"}
-                      </span>
-                    )}
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={9} className="text-center py-10 text-muted-foreground">
+                    Loading…
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ) : filtered.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={9} className="text-center py-10 text-muted-foreground">
+                    No submissions found.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filtered.map((s) => (
+                  <TableRow key={s.id}>
+                    <TableCell>
+                      <Checkbox
+                        checked={selected.has(s.id)}
+                        onCheckedChange={() => toggleSelect(s.id)}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <div className="font-medium">{s.profile?.name || "Unnamed"}</div>
+                      <div className="text-xs text-muted-foreground">{s.profile?.email}</div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="font-medium">{planLabel(s.plan)}</div>
+                      <div className="text-xs text-muted-foreground">
+                        +{planCredits(s.plan)} credits
+                      </div>
+                    </TableCell>
+                    <TableCell>{Number(s.amount).toLocaleString()} DZD</TableCell>
+                    <TableCell className="capitalize">{s.payment_method}</TableCell>
+                    <TableCell>
+                      {signedUrls[s.id] ? (
+                        <button
+                          onClick={() => setPreviewUrl(signedUrls[s.id])}
+                          className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                        >
+                          <ImageIcon className="h-4 w-4" />
+                          View
+                        </button>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {new Date(s.created_at).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
+                      <StatusBadge status={s.status} />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {s.status === "pending" ? (
+                        <div className="flex justify-end gap-2">
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button size="sm" variant="outline" disabled={actingId === s.id}>
+                                <X className="h-4 w-4 mr-1" />
+                                Reject
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Reject payment?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This will mark the submission as rejected. The user will not
+                                  receive credits.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleReject(s)}>
+                                  Reject
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                          <Button
+                            size="sm"
+                            disabled={actingId === s.id}
+                            onClick={() => handleApprove(s)}
+                          >
+                            {actingId === s.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                            ) : (
+                              <Check className="h-4 w-4 mr-1" />
+                            )}
+                            Mark as paid
+                          </Button>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">
+                          {s.reviewed_at ? new Date(s.reviewed_at).toLocaleDateString() : "—"}
+                        </span>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
-    </div>
 
       <Dialog open={!!previewUrl} onOpenChange={(o) => !o && setPreviewUrl(null)}>
         <DialogContent className="max-w-2xl">

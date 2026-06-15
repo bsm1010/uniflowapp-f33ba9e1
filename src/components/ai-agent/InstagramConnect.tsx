@@ -18,15 +18,24 @@ export function InstagramConnect() {
 
   const handleConnect = async () => {
     if (!INSTAGRAM_CLIENT_ID) {
-      toast.error("Instagram not configured. Set VITE_INSTAGRAM_CLIENT_ID in your environment variables.");
+      toast.error(
+        "Instagram not configured. Set VITE_INSTAGRAM_CLIENT_ID in your environment variables.",
+      );
       return;
     }
     setConnecting(true);
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) { toast.error("Please sign in first"); setConnecting(false); return; }
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session) {
+      toast.error("Please sign in first");
+      setConnecting(false);
+      return;
+    }
     const state = encodeURIComponent(session.access_token);
     const redirectUri = `${window.location.origin}/api/auth/instagram/callback`;
-    const scope = "instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments,instagram_business_content_publish";
+    const scope =
+      "instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments,instagram_business_content_publish";
     const oauthUrl = `https://www.instagram.com/oauth/authorize?enable_fb_login=0&force_authentication=1&client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}&state=${state}`;
     window.location.href = oauthUrl;
   };
@@ -36,7 +45,10 @@ export function InstagramConnect() {
   };
 
   const handleDisconnect = async () => {
-    if (demoMode) { setDemoMode(false); return; }
+    if (demoMode) {
+      setDemoMode(false);
+      return;
+    }
     if (!user) return;
     await supabase.from("instagram_connections").delete().eq("user_id", user.id);
     toast.success("Instagram disconnected");
@@ -67,8 +79,14 @@ export function InstagramConnect() {
                     {(demoMode ? "D" : connection?.instagram_username?.[0])?.toUpperCase() || "I"}
                   </div>
                   <div className="flex-1">
-                    <p className="font-semibold">@{demoMode ? "demo_store" : connection?.instagram_username}</p>
-                    <p className="text-sm text-muted-foreground">{demoMode ? "Instagram Business (Demo)" : (connection?.page_name || "Instagram Business")}</p>
+                    <p className="font-semibold">
+                      @{demoMode ? "demo_store" : connection?.instagram_username}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {demoMode
+                        ? "Instagram Business (Demo)"
+                        : connection?.page_name || "Instagram Business"}
+                    </p>
                   </div>
                   <CheckCircle2 className="h-5 w-5 text-emerald-500" />
                 </div>
@@ -80,18 +98,31 @@ export function InstagramConnect() {
                   <div className="p-3 rounded-lg bg-muted/50">
                     <p className="text-muted-foreground">Last Synced</p>
                     <p className="font-medium">
-                      {demoMode ? "Just now" : (connection?.last_synced_at ? new Date(connection.last_synced_at).toLocaleDateString() : "Never")}
+                      {demoMode
+                        ? "Just now"
+                        : connection?.last_synced_at
+                          ? new Date(connection.last_synced_at).toLocaleDateString()
+                          : "Never"}
                     </p>
                   </div>
                 </div>
-                <Button variant="outline" onClick={handleDisconnect} className="w-full gap-2 text-destructive border-destructive/30 hover:bg-destructive/5">
-                  <Link2Off className="h-4 w-4" /> {demoMode ? "Exit Demo Mode" : "Disconnect Instagram"}
+                <Button
+                  variant="outline"
+                  onClick={handleDisconnect}
+                  className="w-full gap-2 text-destructive border-destructive/30 hover:bg-destructive/5"
+                >
+                  <Link2Off className="h-4 w-4" />{" "}
+                  {demoMode ? "Exit Demo Mode" : "Disconnect Instagram"}
                 </Button>
               </div>
             ) : (
               <div className="space-y-6">
                 <div className="space-y-3">
-                  {["Instagram Business or Creator account", "Facebook Page connected to Instagram", "DM access permissions enabled"].map((req, i) => (
+                  {[
+                    "Instagram Business or Creator account",
+                    "Facebook Page connected to Instagram",
+                    "DM access permissions enabled",
+                  ].map((req, i) => (
                     <div key={i} className="flex items-center gap-3 text-sm">
                       <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center text-xs font-medium">
                         {i + 1}
@@ -105,14 +136,22 @@ export function InstagramConnect() {
                   disabled={connecting}
                   className="w-full h-12 gap-2 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 hover:from-yellow-500 hover:via-pink-600 hover:to-purple-700 text-white font-semibold shadow-lg"
                 >
-                  {connecting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Instagram className="h-5 w-5" />}
+                  {connecting ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <Instagram className="h-5 w-5" />
+                  )}
                   Connect Instagram Business
                 </Button>
                 {!INSTAGRAM_CLIENT_ID && (
                   <>
                     <div className="relative">
-                      <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
-                      <div className="relative flex justify-center text-xs uppercase"><span className="bg-card px-2 text-muted-foreground">or</span></div>
+                      <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t" />
+                      </div>
+                      <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-card px-2 text-muted-foreground">or</span>
+                      </div>
                     </div>
                     <Button onClick={startDemo} variant="outline" className="w-full gap-2">
                       <Sparkles className="h-4 w-4" />

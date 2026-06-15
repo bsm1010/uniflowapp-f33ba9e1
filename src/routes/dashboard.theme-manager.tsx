@@ -34,7 +34,10 @@ function ThemeManagerPage() {
   const [activeTab, setActiveTab] = useState<"themes" | "navbar" | "footer" | "sections">("themes");
 
   const load = useCallback(async () => {
-    if (!currentStore?.id) { setLoading(false); return; }
+    if (!currentStore?.id) {
+      setLoading(false);
+      return;
+    }
     const { data } = await supabase
       .from("store_settings")
       .select("*")
@@ -44,7 +47,9 @@ function ThemeManagerPage() {
     setLoading(false);
   }, [currentStore?.id]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+  }, [load]);
 
   const applyTheme = async (preset: ThemeDefinition) => {
     if (!settings || !currentStore?.id) return;
@@ -60,7 +65,10 @@ function ThemeManagerPage() {
       .update(updated)
       .eq("store_id", currentStore.id);
     if (error) toast.error("Failed to apply theme");
-    else { toast.success(`"${preset.name}" theme applied!`); setSettings(updated as any); }
+    else {
+      toast.success(`"${preset.name}" theme applied!`);
+      setSettings(updated as any);
+    }
     setSaving(false);
   };
 
@@ -72,7 +80,10 @@ function ThemeManagerPage() {
       .update({ navbar_style: style } as any)
       .eq("store_id", currentStore.id);
     if (error) toast.error("Failed to update navbar");
-    else { toast.success("Navbar style updated!"); setSettings({ ...settings, navbar_style: style } as any); }
+    else {
+      toast.success("Navbar style updated!");
+      setSettings({ ...settings, navbar_style: style } as any);
+    }
     setSaving(false);
   };
 
@@ -84,7 +95,10 @@ function ThemeManagerPage() {
       .update({ footer_style: style } as any)
       .eq("store_id", currentStore.id);
     if (error) toast.error("Failed to update footer");
-    else { toast.success("Footer style updated!"); setSettings({ ...settings, footer_style: style } as any); }
+    else {
+      toast.success("Footer style updated!");
+      setSettings({ ...settings, footer_style: style } as any);
+    }
     setSaving(false);
   };
 
@@ -98,7 +112,9 @@ function ThemeManagerPage() {
       .update({ sections: preset.sections } as any)
       .eq("store_id", currentStore.id);
     if (error) toast.error("Failed to apply section preset");
-    else { toast.success(`"${preset.name}" sections applied!`); }
+    else {
+      toast.success(`"${preset.name}" sections applied!`);
+    }
     setSaving(false);
   };
 
@@ -163,8 +179,14 @@ function ThemeManagerPage() {
                   style={{ backgroundColor: preset.preview.bg }}
                 >
                   <div className="flex gap-3">
-                    <div className="h-6 w-6 rounded-full" style={{ backgroundColor: preset.preview.primary }} />
-                    <div className="h-6 w-6 rounded-full" style={{ backgroundColor: preset.preview.accent }} />
+                    <div
+                      className="h-6 w-6 rounded-full"
+                      style={{ backgroundColor: preset.preview.primary }}
+                    />
+                    <div
+                      className="h-6 w-6 rounded-full"
+                      style={{ backgroundColor: preset.preview.accent }}
+                    />
                   </div>
                   <Badge
                     className="absolute top-3 right-3 text-[10px] font-semibold"
@@ -178,7 +200,10 @@ function ThemeManagerPage() {
                     {preset.name}
                     <span
                       className="text-[10px] font-normal px-2 py-0.5 rounded-full"
-                      style={{ backgroundColor: preset.preview.primary + "20", color: preset.preview.primary }}
+                      style={{
+                        backgroundColor: preset.preview.primary + "20",
+                        color: preset.preview.primary,
+                      }}
                     >
                       {preset.preview.font}
                     </span>
@@ -291,7 +316,9 @@ function ThemeManagerPage() {
                 <p className="text-xs text-muted-foreground">{preset.description}</p>
                 <div className="flex flex-wrap gap-1">
                   {preset.sections.map((s) => (
-                    <Badge key={s.id} variant="secondary" className="text-[10px]">{s.blockKey}</Badge>
+                    <Badge key={s.id} variant="secondary" className="text-[10px]">
+                      {s.blockKey}
+                    </Badge>
                   ))}
                 </div>
                 <Button

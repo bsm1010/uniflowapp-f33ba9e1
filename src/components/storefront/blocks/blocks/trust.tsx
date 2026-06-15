@@ -2,7 +2,14 @@ import { Shield, Truck, RotateCcw, Lock, Award, Headphones } from "lucide-react"
 import { Section, SectionHeading } from "../shared";
 import type { BlockComponentProps } from "../types";
 
-const ICONS = { shield: Shield, truck: Truck, rotate: RotateCcw, lock: Lock, award: Award, support: Headphones };
+const ICONS = {
+  shield: Shield,
+  truck: Truck,
+  rotate: RotateCcw,
+  lock: Lock,
+  award: Award,
+  support: Headphones,
+};
 type IconKey = keyof typeof ICONS;
 
 /* ---------- TrustBadges ---------- */

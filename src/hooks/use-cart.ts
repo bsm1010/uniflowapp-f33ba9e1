@@ -68,11 +68,10 @@ export function useCart(slug: string) {
   const setQty = useCallback(
     (productId: string, qty: number) => {
       const current = read(slug);
-      const next = qty <= 0
-        ? current.filter((i) => i.productId !== productId)
-        : current.map((i) =>
-            i.productId === productId ? { ...i, quantity: qty } : i,
-          );
+      const next =
+        qty <= 0
+          ? current.filter((i) => i.productId !== productId)
+          : current.map((i) => (i.productId === productId ? { ...i, quantity: qty } : i));
       write(slug, next);
     },
     [slug],
@@ -80,7 +79,10 @@ export function useCart(slug: string) {
 
   const remove = useCallback(
     (productId: string) => {
-      write(slug, read(slug).filter((i) => i.productId !== productId));
+      write(
+        slug,
+        read(slug).filter((i) => i.productId !== productId),
+      );
     },
     [slug],
   );

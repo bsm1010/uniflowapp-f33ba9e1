@@ -3,10 +3,7 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, Loader2, Minus, Plus, ShoppingBag, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { Tables } from "@/integrations/supabase/types";
-import {
-  StorefrontShell,
-  getStoreTokens,
-} from "@/components/storefront/StorefrontShell";
+import { StorefrontShell, getStoreTokens } from "@/components/storefront/StorefrontShell";
 import { useCart } from "@/hooks/use-cart";
 import { fetchSettings, getCachedSettings, setCachedSettings } from "@/lib/storefrontCache";
 
@@ -59,8 +56,7 @@ function CartPage() {
 
   const t = getStoreTokens(settings);
   const currency = settings.currency || "DZD";
-  const radius =
-    settings.theme === "minimal" ? 0 : settings.theme === "grid" ? 8 : 16;
+  const radius = settings.theme === "minimal" ? 0 : settings.theme === "grid" ? 8 : 16;
 
   return (
     <StorefrontShell settings={settings}>
@@ -87,10 +83,7 @@ function CartPage() {
               backgroundColor: t.surface,
             }}
           >
-            <ShoppingBag
-              className="h-8 w-8 mx-auto"
-              style={{ color: t.muted }}
-            />
+            <ShoppingBag className="h-8 w-8 mx-auto" style={{ color: t.muted }} />
             <p className="mt-4 font-medium">{tr("storefront.cart.empty")}</p>
             <Link
               to="/s/$slug"
@@ -152,10 +145,7 @@ function CartPage() {
                         >
                           {item.name}
                         </Link>
-                        <div
-                          className="text-xs mt-0.5"
-                          style={{ color: t.muted }}
-                        >
+                        <div className="text-xs mt-0.5" style={{ color: t.muted }}>
                           {item.price.toFixed(2)} {currency} {tr("storefront.cart.each")}
                         </div>
                       </div>
@@ -177,21 +167,15 @@ function CartPage() {
                         }}
                       >
                         <button
-                          onClick={() =>
-                            cart.setQty(item.productId, item.quantity - 1)
-                          }
+                          onClick={() => cart.setQty(item.productId, item.quantity - 1)}
                           className="h-8 w-8 inline-flex items-center justify-center hover:opacity-70"
                           aria-label={tr("storefront.cart.decrease")}
                         >
                           <Minus className="h-3 w-3" />
                         </button>
-                        <span className="w-8 text-center text-sm font-medium">
-                          {item.quantity}
-                        </span>
+                        <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
                         <button
-                          onClick={() =>
-                            cart.setQty(item.productId, item.quantity + 1)
-                          }
+                          onClick={() => cart.setQty(item.productId, item.quantity + 1)}
                           className="h-8 w-8 inline-flex items-center justify-center hover:opacity-70"
                           aria-label={tr("storefront.cart.increase")}
                         >
@@ -233,7 +217,9 @@ function CartPage() {
                 style={{ borderTop: `1px solid ${t.border}` }}
               >
                 <span>{tr("storefront.cart.total")}</span>
-                <span>{cart.subtotal.toFixed(2)} {currency}</span>
+                <span>
+                  {cart.subtotal.toFixed(2)} {currency}
+                </span>
               </div>
               <Link
                 to="/s/$slug/checkout"

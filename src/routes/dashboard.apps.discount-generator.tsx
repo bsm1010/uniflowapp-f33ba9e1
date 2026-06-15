@@ -218,10 +218,7 @@ function DiscountGeneratorPage() {
                       {d.usage_limit ? ` / ${d.usage_limit}` : ""}
                     </p>
                   </div>
-                  <Switch
-                    checked={d.active}
-                    onCheckedChange={(v) => toggle(d.id, v)}
-                  />
+                  <Switch checked={d.active} onCheckedChange={(v) => toggle(d.id, v)} />
                   <Button size="icon" variant="ghost" onClick={() => remove(d.id)}>
                     <Trash2 className="h-4 w-4" />
                   </Button>

@@ -10,11 +10,7 @@ import {
   useSensors,
   type DragEndEvent,
 } from "@dnd-kit/core";
-import {
-  SortableContext,
-  useSortable,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
+import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useEditorStore } from "@/stores/editor-store";
 import { getBlock } from "@/components/storefront/blocks/registry";
@@ -37,14 +33,9 @@ function SortableSection({
   onRemove: () => void;
 }) {
   const { t: tr } = useTranslation();
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: section.id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: section.id,
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -77,12 +68,8 @@ function SortableSection({
 
       {/* Section info */}
       <div className="flex-1 min-w-0">
-        <div className="text-xs font-medium truncate">
-          {def?.label ?? section.blockKey}
-        </div>
-        <div className="text-[10px] text-muted-foreground truncate">
-          {section.blockKey}
-        </div>
+        <div className="text-xs font-medium truncate">{def?.label ?? section.blockKey}</div>
+        <div className="text-[10px] text-muted-foreground truncate">{section.blockKey}</div>
       </div>
 
       {/* Actions */}
@@ -189,9 +176,7 @@ export function SectionsPanel() {
         {sections.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <Layers className="h-10 w-10 mb-3 text-muted-foreground/40" strokeWidth={1} />
-            <p className="text-xs text-muted-foreground">
-              {tr("editor.sections.empty")}
-            </p>
+            <p className="text-xs text-muted-foreground">{tr("editor.sections.empty")}</p>
           </div>
         ) : (
           <DndContext

@@ -50,16 +50,11 @@ export function SearchableSelect({
           )}
           style={triggerStyle}
         >
-          <span className={cn("truncate", !value && "opacity-60")}>
-            {value || placeholder}
-          </span>
+          <span className={cn("truncate", !value && "opacity-60")}>{value || placeholder}</span>
           <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
         </button>
       </PopoverTrigger>
-      <PopoverContent
-        className="p-0 w-[--radix-popover-trigger-width] max-h-72"
-        align="start"
-      >
+      <PopoverContent className="p-0 w-[--radix-popover-trigger-width] max-h-72" align="start">
         <Command>
           <div className="flex items-center border-b px-3">
             <Search className="h-4 w-4 shrink-0 opacity-50" />
@@ -81,10 +76,7 @@ export function SearchableSelect({
                   }}
                 >
                   <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      value === opt ? "opacity-100" : "opacity-0",
-                    )}
+                    className={cn("mr-2 h-4 w-4", value === opt ? "opacity-100" : "opacity-0")}
                   />
                   {opt}
                 </CommandItem>

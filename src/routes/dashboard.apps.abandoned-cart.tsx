@@ -135,8 +135,7 @@ function AbandonedCartPage() {
                     <p className="text-xs text-muted-foreground">{c.customer_email}</p>
                     <p className="text-xs text-muted-foreground mt-1">
                       {Array.isArray(c.cart_items) ? c.cart_items.length : 0} items · $
-                      {Number(c.cart_total).toFixed(2)} ·{" "}
-                      {new Date(c.created_at).toLocaleString()}
+                      {Number(c.cart_total).toFixed(2)} · {new Date(c.created_at).toLocaleString()}
                     </p>
                   </div>
                   {c.recovered ? (

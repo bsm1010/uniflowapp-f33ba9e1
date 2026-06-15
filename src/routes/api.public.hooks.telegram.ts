@@ -12,12 +12,8 @@ export const Route = createFileRoute("/api/public/hooks/telegram")({
             console.error("TELEGRAM_WEBHOOK_SECRET not configured");
             return new Response("Server misconfigured", { status: 500 });
           }
-          const expectedSecret = createHash("sha256")
-            .update(rawSecret)
-            .digest("hex");
-          const providedSecret = request.headers.get(
-            "x-telegram-bot-api-secret-token",
-          );
+          const expectedSecret = createHash("sha256").update(rawSecret).digest("hex");
+          const providedSecret = request.headers.get("x-telegram-bot-api-secret-token");
           if (providedSecret !== expectedSecret) {
             return new Response("Unauthorized", { status: 401 });
           }

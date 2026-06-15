@@ -16,7 +16,9 @@ export function Marquee({ props }: BlockComponentProps<MarqueeProps>) {
     style.id = "marquee-keyframe";
     style.textContent = `@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }`;
     document.head.appendChild(style);
-    return () => { style.remove(); };
+    return () => {
+      style.remove();
+    };
   }, []);
   return (
     <div className="overflow-hidden border-y border-border bg-primary py-3 text-primary-foreground">
@@ -128,8 +130,13 @@ export function CountdownBanner({ props }: BlockComponentProps<CountdownBannerPr
         <h2 className="font-display text-2xl font-bold md:text-3xl">{props.title}</h2>
         <div className="mt-6 flex justify-center gap-3">
           {cells.map(([v, label]) => (
-            <div key={label} className="min-w-[70px] rounded-xl bg-primary px-4 py-3 text-primary-foreground">
-              <p className="font-display text-3xl font-bold tabular-nums">{String(v).padStart(2, "0")}</p>
+            <div
+              key={label}
+              className="min-w-[70px] rounded-xl bg-primary px-4 py-3 text-primary-foreground"
+            >
+              <p className="font-display text-3xl font-bold tabular-nums">
+                {String(v).padStart(2, "0")}
+              </p>
               <p className="text-[10px] uppercase tracking-wider opacity-80">{label}</p>
             </div>
           ))}

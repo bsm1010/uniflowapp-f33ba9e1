@@ -50,7 +50,10 @@ Reply with the filled JSON only.`;
     if (!res.ok) throw new Error(`AI error ${res.status}`);
     const json = await res.json();
     const raw = json?.choices?.[0]?.message?.content?.trim() ?? "{}";
-    const cleaned = raw.replace(/^```(?:json)?\s*/i, "").replace(/```$/i, "").trim();
+    const cleaned = raw
+      .replace(/^```(?:json)?\s*/i, "")
+      .replace(/```$/i, "")
+      .trim();
     let parsed: Record<string, unknown> = {};
     try {
       parsed = JSON.parse(cleaned);

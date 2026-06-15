@@ -35,38 +35,162 @@ export function DashboardTopbar({ name, avatarUrl }: { name: string; avatarUrl?:
 
   const targets: SearchTarget[] = useMemo(
     () => [
-      { label: t("dashboard.nav.overview", { defaultValue: "Overview" }), to: "/dashboard", keywords: "home overview dashboard" },
-      { label: t("dashboard.nav.products", { defaultValue: "Products" }), to: "/dashboard/products", keywords: "products items inventory catalog" },
-      { label: t("dashboard.nav.categories", { defaultValue: "Categories" }), to: "/dashboard/categories", keywords: "categories tags" },
-      { label: t("dashboard.nav.orders", { defaultValue: "Orders" }), to: "/dashboard/orders", keywords: "orders sales purchases" },
-      { label: t("dashboard.nav.customers", { defaultValue: "Customers" }), to: "/dashboard/customers", keywords: "customers clients buyers" },
-      { label: t("dashboard.nav.shipments", { defaultValue: "Shipments" }), to: "/dashboard/shipments", keywords: "shipments delivery tracking" },
-      { label: t("dashboard.nav.delivery", { defaultValue: "Delivery" }), to: "/dashboard/delivery", keywords: "delivery yalidine zr express tariffs" },
-      { label: t("dashboard.nav.shipping", { defaultValue: "Shipping" }), to: "/dashboard/shipping", keywords: "shipping rates" },
-      { label: t("dashboard.nav.store", { defaultValue: "Store" }), to: "/dashboard/store", keywords: "store storefront settings" },
-      { label: t("dashboard.nav.themes", { defaultValue: "Themes" }), to: "/dashboard/themes", keywords: "themes design colors" },
-      { label: t("dashboard.nav.themePresets", { defaultValue: "Theme Presets" }), to: "/dashboard/theme-presets", keywords: "presets templates" },
-      { label: t("dashboard.nav.customize", { defaultValue: "Customize" }), to: "/customize", keywords: "customize design editor" },
-      { label: t("dashboard.nav.analytics", { defaultValue: "Analytics" }), to: "/dashboard/analytics", keywords: "analytics stats reports" },
-      { label: t("dashboard.nav.database", { defaultValue: "Database" }), to: "/dashboard/database", keywords: "database tables data" },
-      { label: t("dashboard.nav.apps", { defaultValue: "Apps" }), to: "/dashboard/apps", keywords: "apps marketplace integrations" },
-      { label: t("dashboard.nav.credits", { defaultValue: "Credits" }), to: "/dashboard/credits", keywords: "credits billing" },
-      { label: t("dashboard.nav.upgrade", { defaultValue: "Upgrade" }), to: "/dashboard/upgrade", keywords: "upgrade plan pricing subscription" },
-      { label: t("dashboard.nav.referrals", { defaultValue: "Referrals" }), to: "/dashboard/referrals", keywords: "referrals invite friends" },
-      { label: t("dashboard.nav.settings", { defaultValue: "Settings" }), to: "/dashboard/settings", keywords: "settings account profile" },
-      { label: t("dashboard.nav.about", { defaultValue: "About" }), to: "/dashboard/about", keywords: "about info" },
-      { label: t("dashboard.nav.contact", { defaultValue: "Contact" }), to: "/dashboard/contact", keywords: "contact support help" },
-      { label: "AI Descriptions", to: "/dashboard/apps/ai-descriptions", keywords: "ai descriptions generator products" },
-      { label: "Landing Generator", to: "/dashboard/landing-generator", keywords: "landing page generator ai" },
-      { label: "Voice Generator", to: "/dashboard/voice-generator", keywords: "voice ai audio tts" },
-      { label: "Email Marketing", to: "/dashboard/apps/email-marketing", keywords: "email marketing campaigns" },
-      { label: "Abandoned Cart", to: "/dashboard/apps/abandoned-cart", keywords: "abandoned cart recovery" },
-      { label: "Discount Generator", to: "/dashboard/apps/discount-generator", keywords: "discounts coupons codes" },
-      { label: "Popup Builder", to: "/dashboard/apps/popup-builder", keywords: "popup modal builder" },
-      { label: "SEO Optimizer", to: "/dashboard/apps/seo-optimizer", keywords: "seo meta optimization" },
+      {
+        label: t("dashboard.nav.overview", { defaultValue: "Overview" }),
+        to: "/dashboard",
+        keywords: "home overview dashboard",
+      },
+      {
+        label: t("dashboard.nav.products", { defaultValue: "Products" }),
+        to: "/dashboard/products",
+        keywords: "products items inventory catalog",
+      },
+      {
+        label: t("dashboard.nav.categories", { defaultValue: "Categories" }),
+        to: "/dashboard/categories",
+        keywords: "categories tags",
+      },
+      {
+        label: t("dashboard.nav.orders", { defaultValue: "Orders" }),
+        to: "/dashboard/orders",
+        keywords: "orders sales purchases",
+      },
+      {
+        label: t("dashboard.nav.customers", { defaultValue: "Customers" }),
+        to: "/dashboard/customers",
+        keywords: "customers clients buyers",
+      },
+      {
+        label: t("dashboard.nav.shipments", { defaultValue: "Shipments" }),
+        to: "/dashboard/shipments",
+        keywords: "shipments delivery tracking",
+      },
+      {
+        label: t("dashboard.nav.delivery", { defaultValue: "Delivery" }),
+        to: "/dashboard/delivery",
+        keywords: "delivery yalidine zr express tariffs",
+      },
+      {
+        label: t("dashboard.nav.shipping", { defaultValue: "Shipping" }),
+        to: "/dashboard/shipping",
+        keywords: "shipping rates",
+      },
+      {
+        label: t("dashboard.nav.store", { defaultValue: "Store" }),
+        to: "/dashboard/store",
+        keywords: "store storefront settings",
+      },
+      {
+        label: t("dashboard.nav.themes", { defaultValue: "Themes" }),
+        to: "/dashboard/themes",
+        keywords: "themes design colors",
+      },
+      {
+        label: t("dashboard.nav.themePresets", { defaultValue: "Theme Presets" }),
+        to: "/dashboard/theme-presets",
+        keywords: "presets templates",
+      },
+      {
+        label: t("dashboard.nav.customize", { defaultValue: "Customize" }),
+        to: "/customize",
+        keywords: "customize design editor",
+      },
+      {
+        label: t("dashboard.nav.analytics", { defaultValue: "Analytics" }),
+        to: "/dashboard/analytics",
+        keywords: "analytics stats reports",
+      },
+      {
+        label: t("dashboard.nav.database", { defaultValue: "Database" }),
+        to: "/dashboard/database",
+        keywords: "database tables data",
+      },
+      {
+        label: t("dashboard.nav.apps", { defaultValue: "Apps" }),
+        to: "/dashboard/apps",
+        keywords: "apps marketplace integrations",
+      },
+      {
+        label: t("dashboard.nav.credits", { defaultValue: "Credits" }),
+        to: "/dashboard/credits",
+        keywords: "credits billing",
+      },
+      {
+        label: t("dashboard.nav.upgrade", { defaultValue: "Upgrade" }),
+        to: "/dashboard/upgrade",
+        keywords: "upgrade plan pricing subscription",
+      },
+      {
+        label: t("dashboard.nav.referrals", { defaultValue: "Referrals" }),
+        to: "/dashboard/referrals",
+        keywords: "referrals invite friends",
+      },
+      {
+        label: t("dashboard.nav.settings", { defaultValue: "Settings" }),
+        to: "/dashboard/settings",
+        keywords: "settings account profile",
+      },
+      {
+        label: t("dashboard.nav.about", { defaultValue: "About" }),
+        to: "/dashboard/about",
+        keywords: "about info",
+      },
+      {
+        label: t("dashboard.nav.contact", { defaultValue: "Contact" }),
+        to: "/dashboard/contact",
+        keywords: "contact support help",
+      },
+      {
+        label: "AI Descriptions",
+        to: "/dashboard/apps/ai-descriptions",
+        keywords: "ai descriptions generator products",
+      },
+      {
+        label: "Landing Generator",
+        to: "/dashboard/landing-generator",
+        keywords: "landing page generator ai",
+      },
+      {
+        label: "Voice Generator",
+        to: "/dashboard/voice-generator",
+        keywords: "voice ai audio tts",
+      },
+      {
+        label: "Email Marketing",
+        to: "/dashboard/apps/email-marketing",
+        keywords: "email marketing campaigns",
+      },
+      {
+        label: "Abandoned Cart",
+        to: "/dashboard/apps/abandoned-cart",
+        keywords: "abandoned cart recovery",
+      },
+      {
+        label: "Discount Generator",
+        to: "/dashboard/apps/discount-generator",
+        keywords: "discounts coupons codes",
+      },
+      {
+        label: "Popup Builder",
+        to: "/dashboard/apps/popup-builder",
+        keywords: "popup modal builder",
+      },
+      {
+        label: "SEO Optimizer",
+        to: "/dashboard/apps/seo-optimizer",
+        keywords: "seo meta optimization",
+      },
       { label: "Chatbot", to: "/dashboard/apps/chatbot", keywords: "chatbot ai assistant" },
-      { label: "Multi-language", to: "/dashboard/apps/multi-language", keywords: "translation multilingual i18n" },
-      { label: "Currency Converter", to: "/dashboard/apps/currency-converter", keywords: "currency converter exchange" },
+      {
+        label: "Multi-language",
+        to: "/dashboard/apps/multi-language",
+        keywords: "translation multilingual i18n",
+      },
+      {
+        label: "Currency Converter",
+        to: "/dashboard/apps/currency-converter",
+        keywords: "currency converter exchange",
+      },
     ],
     [t],
   );
@@ -91,10 +215,7 @@ export function DashboardTopbar({ name, avatarUrl }: { name: string; avatarUrl?:
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
-  const initials = (name || user?.email || "U")
-    .split(/[\s@]/)[0]
-    .slice(0, 2)
-    .toUpperCase();
+  const initials = (name || user?.email || "U").split(/[\s@]/)[0].slice(0, 2).toUpperCase();
 
   const handleSignOut = async () => {
     await signOut();
@@ -156,7 +277,9 @@ export function DashboardTopbar({ name, avatarUrl }: { name: string; avatarUrl?:
                         onMouseEnter={() => setActiveIdx(idx)}
                         onClick={() => goTo(r.to)}
                         className={`w-full text-start px-3 py-2 text-sm flex items-center gap-2 transition-colors ${
-                          idx === activeIdx ? "bg-accent text-accent-foreground" : "hover:bg-accent/50"
+                          idx === activeIdx
+                            ? "bg-accent text-accent-foreground"
+                            : "hover:bg-accent/50"
                         }`}
                       >
                         <Search className="h-3.5 w-3.5 text-muted-foreground" />
@@ -182,16 +305,16 @@ export function DashboardTopbar({ name, avatarUrl }: { name: string; avatarUrl?:
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="gap-2 px-2">
               <Avatar className="h-8 w-8">
-                {avatarUrl ? <AvatarImage src={avatarUrl} alt={name || t("dashboard.account")} /> : null}
+                {avatarUrl ? (
+                  <AvatarImage src={avatarUrl} alt={name || t("dashboard.account")} />
+                ) : null}
                 <AvatarFallback className="bg-gradient-brand text-brand-foreground text-xs font-semibold">
                   {initials}
                 </AvatarFallback>
               </Avatar>
               <div className="hidden sm:flex flex-col items-start leading-tight">
                 <span className="text-sm font-medium">{name || t("dashboard.account")}</span>
-                <span className="text-xs text-muted-foreground">
-                  {user?.email}
-                </span>
+                <span className="text-xs text-muted-foreground">{user?.email}</span>
               </div>
             </Button>
           </DropdownMenuTrigger>

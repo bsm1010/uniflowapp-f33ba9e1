@@ -1,4 +1,14 @@
-import { ShoppingBag, Search, Heart, User, ChevronLeft, Star, Truck, Shield, RotateCcw } from "lucide-react";
+import {
+  ShoppingBag,
+  Search,
+  Heart,
+  User,
+  ChevronLeft,
+  Star,
+  Truck,
+  Shield,
+  RotateCcw,
+} from "lucide-react";
 import {
   getStoreTokens,
   getNavLinks,
@@ -23,10 +33,11 @@ export function ProductPagePreview({ settings, products = [] }: Props) {
     price: 89,
     images: [],
   };
-  const related = (products.length ? products.slice(1, 5) : Array.from({ length: 4 })).map((p, i) =>
-    p && "name" in (p as object)
-      ? (p as { name: string; price: number; images: string[] })
-      : { name: `Related ${i + 1}`, price: 39 + i * 10, images: [] as string[] },
+  const related = (products.length ? products.slice(1, 5) : Array.from({ length: 4 })).map(
+    (p, i) =>
+      p && "name" in (p as object)
+        ? (p as { name: string; price: number; images: string[] })
+        : { name: `Related ${i + 1}`, price: 39 + i * 10, images: [] as string[] },
   );
 
   return (
@@ -49,7 +60,11 @@ export function ProductPagePreview({ settings, products = [] }: Props) {
         <div className="px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
             {settings.logo_url ? (
-              <img src={settings.logo_url} alt={settings.store_name} className="h-7 w-7 rounded object-cover" />
+              <img
+                src={settings.logo_url}
+                alt={settings.store_name}
+                className="h-7 w-7 rounded object-cover"
+              />
             ) : (
               <div className="h-7 w-7 rounded" style={{ backgroundColor: t.primary }} />
             )}
@@ -89,7 +104,11 @@ export function ProductPagePreview({ settings, products = [] }: Props) {
             }}
           >
             {product.images?.[0] ? (
-              <img src={product.images[0]} alt={product.name} className="h-full w-full object-cover" />
+              <img
+                src={product.images[0]}
+                alt={product.name}
+                className="h-full w-full object-cover"
+              />
             ) : (
               <div
                 className="h-full w-full"

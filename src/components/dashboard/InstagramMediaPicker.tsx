@@ -1,5 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
-import { Instagram, Loader2, Check, Image as ImageIcon, AlertCircle, LogIn, ExternalLink, Sparkles } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  Instagram,
+  Loader2,
+  Check,
+  Image as ImageIcon,
+  AlertCircle,
+  LogIn,
+  ExternalLink,
+  Sparkles,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -28,11 +37,34 @@ export function InstagramMediaPicker({ onSelect, onClose }: Props) {
   const [connecting, setConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const checkConnection = async () => {
+  const fetchMedia = async (token: string) => {
+    try {
+      const res = await fetch("/api/auth/instagram/media", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const result = await res.json();
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+      setMedia(
+        result.data.filter((m: InstagramMedia) => m.media_type === "IMAGE" || m.thumbnail_url),
+      );
+    } catch {
+      setError("Failed to load Instagram media");
+    }
+  };
+
+  const checkConnection = useCallback(async () => {
     setLoading(true);
     setError(null);
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) { setLoading(false); return; }
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session) {
+      setLoading(false);
+      return;
+    }
 
     const { data } = await supabase
       .from("instagram_connections")
@@ -46,34 +78,31 @@ export function InstagramMediaPicker({ onSelect, onClose }: Props) {
       await fetchMedia(session.access_token);
     }
     setLoading(false);
-  };
+  }, []);
 
-  const fetchMedia = async (token: string) => {
-    try {
-      const res = await fetch("/api/auth/instagram/media", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const result = await res.json();
-      if (result.error) { setError(result.error); return; }
-      setMedia(result.data.filter((m: InstagramMedia) => m.media_type === "IMAGE" || m.thumbnail_url));
-    } catch {
-      setError("Failed to load Instagram media");
-    }
-  };
-
-  useEffect(() => { checkConnection(); }, []);
+  useEffect(() => {
+    checkConnection();
+  }, [checkConnection]);
 
   const initiateOAuth = async () => {
     setError(null);
 
     if (!INSTAGRAM_CLIENT_ID) {
-      setError("Instagram API not configured. The store owner needs to set VITE_INSTAGRAM_CLIENT_ID in their environment variables.");
+      setError(
+        "Instagram API not configured. The store owner needs to set VITE_INSTAGRAM_CLIENT_ID in their environment variables.",
+      );
       return;
     }
 
     setConnecting(true);
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) { setError("Please sign in first"); setConnecting(false); return; }
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session) {
+      setError("Please sign in first");
+      setConnecting(false);
+      return;
+    }
 
     try {
       const state = encodeURIComponent(session.access_token);
@@ -87,15 +116,31 @@ export function InstagramMediaPicker({ onSelect, onClose }: Props) {
     }
   };
 
-  const DEMO_MEDIA: InstagramMedia[] = useMemo(() =>
-    Array.from({ length: 12 }, (_, i) => ({
-      id: `demo_${i + 1}`,
-      media_type: "IMAGE" as const,
-      media_url: `https://picsum.photos/seed/fennec-demo${i + 1}/400/400`,
-      thumbnail_url: `https://picsum.photos/seed/fennec-demo${i + 1}/200/200`,
-      caption: ["Product shot", "Lifestyle", "Detail view", "Packaging", "On model", "BTS", "Flat lay", "Group shot", "Feature close-up", "Outdoors", "Studio", "Angle"][i],
-      timestamp: new Date(Date.now() - i * 86400000).toISOString(),
-    })), []);
+  const DEMO_MEDIA: InstagramMedia[] = useMemo(
+    () =>
+      Array.from({ length: 12 }, (_, i) => ({
+        id: `demo_${i + 1}`,
+        media_type: "IMAGE" as const,
+        media_url: `https://picsum.photos/seed/fennec-demo${i + 1}/400/400`,
+        thumbnail_url: `https://picsum.photos/seed/fennec-demo${i + 1}/200/200`,
+        caption: [
+          "Product shot",
+          "Lifestyle",
+          "Detail view",
+          "Packaging",
+          "On model",
+          "BTS",
+          "Flat lay",
+          "Group shot",
+          "Feature close-up",
+          "Outdoors",
+          "Studio",
+          "Angle",
+        ][i],
+        timestamp: new Date(Date.now() - i * 86400000).toISOString(),
+      })),
+    [],
+  );
 
   const startDemo = () => {
     setError(null);
@@ -114,10 +159,11 @@ export function InstagramMediaPicker({ onSelect, onClose }: Props) {
   };
 
   const confirmSelection = () => {
-    const urls = media
-      .filter((m) => selected.has(m.id))
-      .map((m) => m.media_url);
-    if (urls.length === 0) { toast.error("Select at least one image"); return; }
+    const urls = media.filter((m) => selected.has(m.id)).map((m) => m.media_url);
+    if (urls.length === 0) {
+      toast.error("Select at least one image");
+      return;
+    }
     onSelect(urls);
   };
 
@@ -128,8 +174,17 @@ export function InstagramMediaPicker({ onSelect, onClose }: Props) {
           <AlertCircle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
           <div className="text-xs text-amber-700">
             <p className="font-medium mb-1">Instagram not configured</p>
-            <p>To enable Instagram photo import, create an app at developers.facebook.com and add the App ID to your environment as <code className="bg-amber-500/10 px-1 rounded">VITE_INSTAGRAM_CLIENT_ID</code>.</p>
-            <a href="https://developers.facebook.com" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 mt-1.5 text-amber-600 hover:text-amber-700 underline font-medium">
+            <p>
+              To enable Instagram photo import, create an app at developers.facebook.com and add the
+              App ID to your environment as{" "}
+              <code className="bg-amber-500/10 px-1 rounded">VITE_INSTAGRAM_CLIENT_ID</code>.
+            </p>
+            <a
+              href="https://developers.facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 mt-1.5 text-amber-600 hover:text-amber-700 underline font-medium"
+            >
               Open Meta Developer Console <ExternalLink className="h-3 w-3" />
             </a>
           </div>
@@ -199,8 +254,16 @@ export function InstagramMediaPicker({ onSelect, onClose }: Props) {
           <p className="text-sm text-muted-foreground text-center max-w-xs">
             Connect your Instagram account to import your post photos into products
           </p>
-          <Button onClick={initiateOAuth} disabled={connecting} className="gap-2 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 text-white hover:opacity-90">
-            {connecting ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}
+          <Button
+            onClick={initiateOAuth}
+            disabled={connecting}
+            className="gap-2 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 text-white hover:opacity-90"
+          >
+            {connecting ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <LogIn className="h-4 w-4" />
+            )}
             Connect Instagram
           </Button>
           {!INSTAGRAM_CLIENT_ID && (

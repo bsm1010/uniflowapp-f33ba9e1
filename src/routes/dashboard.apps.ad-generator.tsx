@@ -41,10 +41,10 @@ function AdGenPage() {
   const [name, setName] = useState("");
   const [desc, setDesc] = useState("");
   const [audience, setAudience] = useState("");
-  const [platform, setPlatform] =
-    useState<"facebook" | "instagram" | "tiktok" | "google">("facebook");
-  const [tone, setTone] =
-    useState<"urgent" | "playful" | "luxury" | "professional">("urgent");
+  const [platform, setPlatform] = useState<"facebook" | "instagram" | "tiktok" | "google">(
+    "facebook",
+  );
+  const [tone, setTone] = useState<"urgent" | "playful" | "luxury" | "professional">("urgent");
   const [ad, setAd] = useState<Ad | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -204,11 +204,7 @@ function Field({
           <Copy className="h-3.5 w-3.5" /> Copy
         </Button>
       </div>
-      {multiline ? (
-        <Textarea value={value} readOnly rows={4} />
-      ) : (
-        <Input value={value} readOnly />
-      )}
+      {multiline ? <Textarea value={value} readOnly rows={4} /> : <Input value={value} readOnly />}
     </div>
   );
 }

@@ -37,8 +37,9 @@ function AiDescPage() {
   const [productId, setProductId] = useState("");
   const [name, setName] = useState("");
   const [keywords, setKeywords] = useState("");
-  const [tone, setTone] =
-    useState<"professional" | "playful" | "luxury" | "minimal">("professional");
+  const [tone, setTone] = useState<"professional" | "playful" | "luxury" | "minimal">(
+    "professional",
+  );
   const [output, setOutput] = useState("");
   const [busy, setBusy] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -169,11 +170,7 @@ function AiDescPage() {
           {output && (
             <div className="space-y-2">
               <Label>Result</Label>
-              <Textarea
-                value={output}
-                onChange={(e) => setOutput(e.target.value)}
-                rows={8}
-              />
+              <Textarea value={output} onChange={(e) => setOutput(e.target.value)} rows={8} />
               <div className="flex gap-2">
                 <Button
                   variant="outline"

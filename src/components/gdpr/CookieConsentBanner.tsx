@@ -40,7 +40,12 @@ export function CookieConsentBanner({ storeId }: { storeId: string }) {
   }, [storeId]);
 
   const saveConsent = useCallback(
-    async (necessary: boolean, analyticsVal: boolean, marketingVal: boolean, preferencesVal: boolean) => {
+    async (
+      necessary: boolean,
+      analyticsVal: boolean,
+      marketingVal: boolean,
+      preferencesVal: boolean,
+    ) => {
       const visitorId = getVisitorId();
       await recordCookieConsent({
         data: {
@@ -108,11 +113,7 @@ export function CookieConsentBanner({ storeId }: { storeId: string }) {
             {settings.reject_all_text}
           </Button>
           {!showCustomize ? (
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => setShowCustomize(true)}
-            >
+            <Button size="sm" variant="ghost" onClick={() => setShowCustomize(true)}>
               {settings.manage_text}
             </Button>
           ) : (

@@ -133,7 +133,9 @@ export const generateLandingPage = createServerFn({ method: "POST" })
       reason: "ai_landing_page",
     });
     if (!credit.ok) {
-      throw new Error(credit.reason === "insufficient" ? INSUFFICIENT_CREDITS_ERROR : "Unauthorized");
+      throw new Error(
+        credit.reason === "insufficient" ? INSUFFICIENT_CREDITS_ERROR : "Unauthorized",
+      );
     }
 
     const systemPrompt = `أنت كاتب إعلانات (Copywriter) محترف لأكبر متاجر التجارة الإلكترونية العربية مثل نمشي، نون، وجولي شيك. مهمتك إنشاء صفحة هبوط عربية تبيع فعلاً.

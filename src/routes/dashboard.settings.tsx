@@ -61,7 +61,6 @@ function SettingsPage() {
   const [deleteConfirm, setDeleteConfirm] = useState("");
   const [deleting, setDeleting] = useState(false);
 
-
   useEffect(() => {
     if (!user) return;
 
@@ -122,17 +121,15 @@ function SettingsPage() {
       }
 
       if (localFallback) {
-        const { error: migrateErr } = await supabase
-          .from("payment_settings")
-          .upsert(
-            {
-              user_id: user.id,
-              enabled: !!localFallback.enabled,
-              currency: localFallback.currency ?? "DZD",
-              payout_email: localFallback.payoutEmail ?? user.email ?? "",
-            },
-            { onConflict: "user_id" },
-          );
+        const { error: migrateErr } = await supabase.from("payment_settings").upsert(
+          {
+            user_id: user.id,
+            enabled: !!localFallback.enabled,
+            currency: localFallback.currency ?? "DZD",
+            payout_email: localFallback.payoutEmail ?? user.email ?? "",
+          },
+          { onConflict: "user_id" },
+        );
         if (!migrateErr) {
           localStorage.removeItem(`payments:${user.id}`);
         }
@@ -145,10 +142,7 @@ function SettingsPage() {
   const saveProfile = async () => {
     if (!user) return;
     setSavingProfile(true);
-    const { error } = await supabase
-      .from("profiles")
-      .update({ name })
-      .eq("id", user.id);
+    const { error } = await supabase.from("profiles").update({ name }).eq("id", user.id);
     setSavingProfile(false);
     if (error) toast.error(error.message);
     else {
@@ -254,17 +248,15 @@ function SettingsPage() {
     setSavingPayments(true);
     const cleanedCurrency = (currency || "DZD").toUpperCase().slice(0, 3);
     const cleanedEmail = payoutEmail.trim();
-    const { error } = await supabase
-      .from("payment_settings")
-      .upsert(
-        {
-          user_id: user.id,
-          enabled: paymentsEnabled,
-          currency: cleanedCurrency,
-          payout_email: cleanedEmail,
-        },
-        { onConflict: "user_id" },
-      );
+    const { error } = await supabase.from("payment_settings").upsert(
+      {
+        user_id: user.id,
+        enabled: paymentsEnabled,
+        currency: cleanedCurrency,
+        payout_email: cleanedEmail,
+      },
+      { onConflict: "user_id" },
+    );
     setSavingPayments(false);
     if (error) {
       toast.error(error.message);
@@ -435,10 +427,7 @@ function SettingsPage() {
           </div>
 
           <div className="flex justify-end">
-            <Button
-              onClick={saveDomain}
-              disabled={savingDomain || slug === originalSlug}
-            >
+            <Button onClick={saveDomain} disabled={savingDomain || slug === originalSlug}>
               {savingDomain ? "Saving…" : "Save URL"}
             </Button>
           </div>
@@ -454,9 +443,7 @@ function SettingsPage() {
             </div>
             <div>
               <CardTitle>Payments</CardTitle>
-              <CardDescription>
-                Configure how you accept payments from customers.
-              </CardDescription>
+              <CardDescription>Configure how you accept payments from customers.</CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -468,10 +455,7 @@ function SettingsPage() {
                 When off, checkout collects orders without charging customers.
               </p>
             </div>
-            <Switch
-              checked={paymentsEnabled}
-              onCheckedChange={setPaymentsEnabled}
-            />
+            <Switch checked={paymentsEnabled} onCheckedChange={setPaymentsEnabled} />
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
@@ -528,9 +512,7 @@ function SettingsPage() {
             </div>
             <div>
               <CardTitle>Profile</CardTitle>
-              <CardDescription>
-                Personal information for your account.
-              </CardDescription>
+              <CardDescription>Personal information for your account.</CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -539,10 +521,7 @@ function SettingsPage() {
             <Avatar className="h-20 w-20 border border-border/60">
               {avatarUrl ? <AvatarImage src={avatarUrl} alt={name || "Avatar"} /> : null}
               <AvatarFallback className="bg-gradient-brand text-brand-foreground text-lg font-semibold">
-                {(name || user?.email || "U")
-                  .split(/[\s@]/)[0]
-                  .slice(0, 2)
-                  .toUpperCase()}
+                {(name || user?.email || "U").split(/[\s@]/)[0].slice(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
@@ -614,9 +593,7 @@ function SettingsPage() {
           <div className="flex items-center justify-between gap-4">
             <div>
               <h3 className="font-semibold text-sm">Sign out</h3>
-              <p className="text-sm text-muted-foreground">
-                End your session on this device.
-              </p>
+              <p className="text-sm text-muted-foreground">End your session on this device.</p>
             </div>
             <Button variant="outline" onClick={handleSignOut}>
               Sign out
@@ -635,7 +612,8 @@ function SettingsPage() {
             <div>
               <CardTitle className="text-destructive">Delete account</CardTitle>
               <CardDescription>
-                Permanently delete your account and all associated data. This action cannot be undone.
+                Permanently delete your account and all associated data. This action cannot be
+                undone.
               </CardDescription>
             </div>
           </div>
@@ -664,7 +642,8 @@ function SettingsPage() {
                 <AlertDialogHeader>
                   <AlertDialogTitle>Delete your account?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This will permanently delete your account, store, products, orders, and all related data. This cannot be undone.
+                    This will permanently delete your account, store, products, orders, and all
+                    related data. This cannot be undone.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <div className="space-y-2">

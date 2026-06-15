@@ -12,15 +12,26 @@ export type DnsRecord = {
 
 export type DomainType = "root" | "www" | "subdomain";
 
-export function classifyDomain(raw: string): { domain: string; type: DomainType; subdomain?: string; root: string } | null {
-  const cleaned = raw.trim().toLowerCase().replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+export function classifyDomain(
+  raw: string,
+): { domain: string; type: DomainType; subdomain?: string; root: string } | null {
+  const cleaned = raw
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\//, "")
+    .replace(/\/.*$/, "");
   if (!/^([a-z0-9-]+\.)+[a-z]{2,}$/.test(cleaned)) return null;
   const parts = cleaned.split(".");
   if (parts.length === 2) return { domain: cleaned, type: "root", root: cleaned };
   if (parts.length === 3 && parts[0] === "www") {
     return { domain: cleaned, type: "www", root: parts.slice(1).join(".") };
   }
-  return { domain: cleaned, type: "subdomain", subdomain: parts[0], root: parts.slice(-2).join(".") };
+  return {
+    domain: cleaned,
+    type: "subdomain",
+    subdomain: parts[0],
+    root: parts.slice(-2).join("."),
+  };
 }
 
 export function buildDnsRecords(domain: string, type: DomainType, token: string): DnsRecord[] {
@@ -64,7 +75,11 @@ export function buildDnsRecords(domain: string, type: DomainType, token: string)
 export const PROVIDER_GUIDES: Record<string, { name: string; url: string; color: string }> = {
   cloudflare: { name: "Cloudflare", url: "https://dash.cloudflare.com", color: "#F38020" },
   godaddy: { name: "GoDaddy", url: "https://dcc.godaddy.com/control/portfolio", color: "#1BDBDB" },
-  namecheap: { name: "Namecheap", url: "https://ap.www.namecheap.com/domains/list", color: "#DE3910" },
+  namecheap: {
+    name: "Namecheap",
+    url: "https://ap.www.namecheap.com/domains/list",
+    color: "#DE3910",
+  },
   hostinger: { name: "Hostinger", url: "https://hpanel.hostinger.com/domains", color: "#673DE6" },
   google: { name: "Google Domains", url: "https://domains.google.com", color: "#4285F4" },
   ovh: { name: "OVH", url: "https://www.ovh.com/manager", color: "#123F6D" },

@@ -44,7 +44,10 @@ function ResetPasswordPage() {
       password: z.string().min(8, "At least 8 characters").max(72),
       confirm: z.string(),
     })
-    .refine((d) => d.password === d.confirm, { path: ["confirm"], message: "Passwords don't match" });
+    .refine((d) => d.password === d.confirm, {
+      path: ["confirm"],
+      message: "Passwords don't match",
+    });
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -80,9 +83,7 @@ function ResetPasswordPage() {
           Password updated. Redirecting…
         </div>
       ) : !ready ? (
-        <div className="text-sm text-muted-foreground text-center py-6">
-          Validating reset link…
-        </div>
+        <div className="text-sm text-muted-foreground text-center py-6">Validating reset link…</div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1.5">

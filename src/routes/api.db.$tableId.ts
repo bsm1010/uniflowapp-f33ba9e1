@@ -3,8 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL!;
 const SUPABASE_ANON =
-  process.env.SUPABASE_PUBLISHABLE_KEY ||
-  process.env.VITE_SUPABASE_PUBLISHABLE_KEY!;
+  process.env.SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY!;
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -20,9 +19,7 @@ const json = (body: unknown, status = 200) =>
 
 async function getAuthedClient(request: Request) {
   const auth = request.headers.get("authorization") || "";
-  const token = auth.toLowerCase().startsWith("bearer ")
-    ? auth.slice(7)
-    : null;
+  const token = auth.toLowerCase().startsWith("bearer ") ? auth.slice(7) : null;
   if (!token) return { error: json({ error: "Missing bearer token" }, 401) };
 
   const client = createClient(SUPABASE_URL, SUPABASE_ANON, {
@@ -30,8 +27,7 @@ async function getAuthedClient(request: Request) {
     auth: { persistSession: false, autoRefreshToken: false },
   });
   const { data, error } = await client.auth.getUser(token);
-  if (error || !data.user)
-    return { error: json({ error: "Invalid token" }, 401) };
+  if (error || !data.user) return { error: json({ error: "Invalid token" }, 401) };
   return { client, userId: data.user.id };
 }
 
@@ -60,10 +56,7 @@ export const Route = createFileRoute("/api/db/$tableId")({
           return json({ error: "Table not found" }, 404);
 
         const url = new URL(request.url);
-        const limit = Math.min(
-          Number(url.searchParams.get("limit")) || 100,
-          1000,
-        );
+        const limit = Math.min(Number(url.searchParams.get("limit")) || 100, 1000);
         const offset = Number(url.searchParams.get("offset")) || 0;
 
         const { data, error } = await client
@@ -92,8 +85,7 @@ export const Route = createFileRoute("/api/db/$tableId")({
           return json({ error: "Invalid JSON body" }, 400);
         }
 
-        const recordData =
-          body && typeof body === "object" && body.data ? body.data : body;
+        const recordData = body && typeof body === "object" && body.data ? body.data : body;
         if (!recordData || typeof recordData !== "object")
           return json({ error: "Body must be an object or { data: {...} }" }, 400);
 

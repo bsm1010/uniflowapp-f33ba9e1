@@ -77,7 +77,11 @@ export function BlockLibrary({ onClose }: Props) {
               />
             </div>
             <div className="mt-3 flex flex-wrap gap-1.5">
-              <Pill label={tr("editor.library.all")} active={active === "all"} onClick={() => setActive("all")} />
+              <Pill
+                label={tr("editor.library.all")}
+                active={active === "all"}
+                onClick={() => setActive("all")}
+              />
               {BLOCK_CATEGORIES.map((c) => (
                 <Pill
                   key={c.key}

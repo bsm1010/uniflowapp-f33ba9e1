@@ -66,7 +66,10 @@ export const createOrder = createServerFn({ method: "POST" })
     }
     const wrongStore = products.filter((p) => p.user_id !== storeOwnerId);
     if (wrongStore.length > 0) {
-      console.error("Products belong to wrong store:", wrongStore.map((p) => p.id));
+      console.error(
+        "Products belong to wrong store:",
+        wrongStore.map((p) => p.id),
+      );
       throw new Error("One or more products do not belong to this store");
     }
 
@@ -93,7 +96,7 @@ export const createOrder = createServerFn({ method: "POST" })
         product_name: product.name,
         unit_price: unitPrice,
         quantity: item.quantity,
-        image_url: Array.isArray(product.images) ? product.images[0] ?? null : null,
+        image_url: Array.isArray(product.images) ? (product.images[0] ?? null) : null,
       });
     }
 
@@ -214,4 +217,3 @@ export const createOrder = createServerFn({ method: "POST" })
 
     return { orderId: order.id, subtotal, deliveryPrice, total };
   });
-

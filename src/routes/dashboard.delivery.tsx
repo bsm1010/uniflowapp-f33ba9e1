@@ -27,7 +27,9 @@ function DeliverySettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
-  const [connectedCarriers, setConnectedCarriers] = useState<{ companyId: string; name: string; enabled: boolean }[]>([]);
+  const [connectedCarriers, setConnectedCarriers] = useState<
+    { companyId: string; name: string; enabled: boolean }[]
+  >([]);
 
   useEffect(() => {
     if (!user) return;
@@ -164,10 +166,14 @@ function DeliverySettingsPage() {
 
       {/* Hero showcase section */}
       <section className="relative overflow-hidden rounded-2xl border bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 text-white shadow-lg">
-        <div className="absolute inset-0 opacity-20" style={{
-          backgroundImage: "radial-gradient(circle at 20% 20%, white 1px, transparent 1px), radial-gradient(circle at 80% 60%, white 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-        }} />
+        <div
+          className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 20% 20%, white 1px, transparent 1px), radial-gradient(circle at 80% 60%, white 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
+          }}
+        />
         <div className="relative grid items-center gap-6 p-6 sm:p-8 md:grid-cols-2 md:gap-4">
           <div className="space-y-4">
             <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-medium backdrop-blur">
@@ -177,13 +183,22 @@ function DeliverySettingsPage() {
               وصّل طلباتك لكل ولاية في الجزائر 🇩🇿
             </h2>
             <p className="text-sm leading-relaxed text-white/80 sm:text-base">
-              Connect with Algeria's top delivery companies. Set custom tariffs per wilaya, track shipments in real-time, and grow your business with confidence.
+              Connect with Algeria's top delivery companies. Set custom tariffs per wilaya, track
+              shipments in real-time, and grow your business with confidence.
             </p>
             <div className="flex flex-wrap gap-2 pt-2">
-              <span className="rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium backdrop-blur">58 Wilayas</span>
-              <span className="rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium backdrop-blur">Yalidine</span>
-              <span className="rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium backdrop-blur">ZR Express</span>
-              <span className="rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium backdrop-blur">+ More</span>
+              <span className="rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium backdrop-blur">
+                58 Wilayas
+              </span>
+              <span className="rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium backdrop-blur">
+                Yalidine
+              </span>
+              <span className="rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium backdrop-blur">
+                ZR Express
+              </span>
+              <span className="rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium backdrop-blur">
+                + More
+              </span>
             </div>
           </div>
           <div className="relative flex items-center justify-center">

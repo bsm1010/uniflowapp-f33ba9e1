@@ -3,11 +3,37 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import {
-  Sparkles, CheckCircle2, Circle, ArrowRight, Package, Palette,
-  ShoppingBag, Store, Rocket, Trophy, Zap, Star, TrendingUp,
-  DollarSign, Layers, Award, Lock, Gem, Crown, Gift, Code,
-  Headphones, ShoppingCart, Mic, FileCode, Flame, Download,
-  PenTool, Image, Moon, Droplets,
+  Sparkles,
+  CheckCircle2,
+  Circle,
+  ArrowRight,
+  Package,
+  Palette,
+  ShoppingBag,
+  Store,
+  Rocket,
+  Trophy,
+  Zap,
+  Star,
+  TrendingUp,
+  DollarSign,
+  Layers,
+  Award,
+  Lock,
+  Gem,
+  Crown,
+  Gift,
+  Code,
+  Headphones,
+  ShoppingCart,
+  Mic,
+  FileCode,
+  Flame,
+  Download,
+  PenTool,
+  Image,
+  Moon,
+  Droplets,
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,14 +53,19 @@ export const Route = createFileRoute("/dashboard/progress")({
 });
 
 const ITEM_ICONS: Record<string, typeof Package> = {
-  product: Package, published: Rocket, store_customized: Palette,
-  first_order: ShoppingBag, store_launched: Store,
+  product: Package,
+  published: Rocket,
+  store_customized: Palette,
+  first_order: ShoppingBag,
+  store_launched: Store,
 };
 
 const ITEM_ACTIONS: Record<string, string> = {
-  product: "/dashboard/products", published: "/dashboard/products",
+  product: "/dashboard/products",
+  published: "/dashboard/products",
   store_customized: "/customize",
-  first_order: "/dashboard/orders", store_launched: "/dashboard/store",
+  first_order: "/dashboard/orders",
+  store_launched: "/dashboard/store",
 };
 
 const LEVELS = [
@@ -46,21 +77,126 @@ const LEVELS = [
 ];
 
 const REWARDS_ROADMAP = [
-  { key: "badge_rising_star", level: 2, tier: "Rising Star", icon: Gem, type: "badge", color: "from-violet-400 to-fuchsia-400" },
-  { key: "cosmetic_dashboard_accent", level: 3, tier: "Rising Star", icon: Palette, type: "cosmetic", color: "from-violet-400 to-fuchsia-400" },
-  { key: "badge_merchant", level: 5, tier: "Merchant", icon: Award, type: "badge", color: "from-amber-400 to-orange-400" },
-  { key: "feature_export", level: 5, tier: "Merchant", icon: Download, type: "feature", color: "from-amber-400 to-orange-400" },
-  { key: "cosmetic_aether_preset", level: 6, tier: "Merchant", icon: Sparkles, type: "cosmetic", color: "from-amber-400 to-orange-400" },
-  { key: "cosmetic_dashboard_theme", level: 7, tier: "Merchant", icon: Moon, type: "cosmetic", color: "from-amber-400 to-orange-400" },
-  { key: "feature_bulk_edit", level: 8, tier: "Merchant", icon: PenTool, type: "feature", color: "from-amber-400 to-orange-400" },
-  { key: "cosmetic_ember_preset", level: 9, tier: "Merchant", icon: Flame, type: "cosmetic", color: "from-amber-400 to-orange-400" },
-  { key: "badge_elite", level: 10, tier: "Elite", icon: Crown, type: "badge", color: "from-yellow-400 to-rose-400" },
-  { key: "feature_abandoned_cart", level: 10, tier: "Elite", icon: ShoppingCart, type: "feature", color: "from-yellow-400 to-rose-400" },
-  { key: "cosmetic_tide_preset", level: 12, tier: "Elite", icon: Droplets, type: "cosmetic", color: "from-yellow-400 to-rose-400" },
-  { key: "feature_ai_extra", level: 13, tier: "Elite", icon: Mic, type: "feature", color: "from-yellow-400 to-rose-400" },
-  { key: "feature_custom_css", level: 15, tier: "Elite", icon: FileCode, type: "feature", color: "from-yellow-400 to-rose-400" },
-  { key: "feature_api_access", level: 18, tier: "Elite", icon: Code, type: "feature", color: "from-yellow-400 to-rose-400" },
-  { key: "badge_legend", level: 20, tier: "Legend", icon: Trophy, type: "badge", color: "from-cyan-400 to-blue-500" },
+  {
+    key: "badge_rising_star",
+    level: 2,
+    tier: "Rising Star",
+    icon: Gem,
+    type: "badge",
+    color: "from-violet-400 to-fuchsia-400",
+  },
+  {
+    key: "cosmetic_dashboard_accent",
+    level: 3,
+    tier: "Rising Star",
+    icon: Palette,
+    type: "cosmetic",
+    color: "from-violet-400 to-fuchsia-400",
+  },
+  {
+    key: "badge_merchant",
+    level: 5,
+    tier: "Merchant",
+    icon: Award,
+    type: "badge",
+    color: "from-amber-400 to-orange-400",
+  },
+  {
+    key: "feature_export",
+    level: 5,
+    tier: "Merchant",
+    icon: Download,
+    type: "feature",
+    color: "from-amber-400 to-orange-400",
+  },
+  {
+    key: "cosmetic_aether_preset",
+    level: 6,
+    tier: "Merchant",
+    icon: Sparkles,
+    type: "cosmetic",
+    color: "from-amber-400 to-orange-400",
+  },
+  {
+    key: "cosmetic_dashboard_theme",
+    level: 7,
+    tier: "Merchant",
+    icon: Moon,
+    type: "cosmetic",
+    color: "from-amber-400 to-orange-400",
+  },
+  {
+    key: "feature_bulk_edit",
+    level: 8,
+    tier: "Merchant",
+    icon: PenTool,
+    type: "feature",
+    color: "from-amber-400 to-orange-400",
+  },
+  {
+    key: "cosmetic_ember_preset",
+    level: 9,
+    tier: "Merchant",
+    icon: Flame,
+    type: "cosmetic",
+    color: "from-amber-400 to-orange-400",
+  },
+  {
+    key: "badge_elite",
+    level: 10,
+    tier: "Elite",
+    icon: Crown,
+    type: "badge",
+    color: "from-yellow-400 to-rose-400",
+  },
+  {
+    key: "feature_abandoned_cart",
+    level: 10,
+    tier: "Elite",
+    icon: ShoppingCart,
+    type: "feature",
+    color: "from-yellow-400 to-rose-400",
+  },
+  {
+    key: "cosmetic_tide_preset",
+    level: 12,
+    tier: "Elite",
+    icon: Droplets,
+    type: "cosmetic",
+    color: "from-yellow-400 to-rose-400",
+  },
+  {
+    key: "feature_ai_extra",
+    level: 13,
+    tier: "Elite",
+    icon: Mic,
+    type: "feature",
+    color: "from-yellow-400 to-rose-400",
+  },
+  {
+    key: "feature_custom_css",
+    level: 15,
+    tier: "Elite",
+    icon: FileCode,
+    type: "feature",
+    color: "from-yellow-400 to-rose-400",
+  },
+  {
+    key: "feature_api_access",
+    level: 18,
+    tier: "Elite",
+    icon: Code,
+    type: "feature",
+    color: "from-yellow-400 to-rose-400",
+  },
+  {
+    key: "badge_legend",
+    level: 20,
+    tier: "Legend",
+    icon: Trophy,
+    type: "badge",
+    color: "from-cyan-400 to-blue-500",
+  },
 ];
 
 const ACHIEVEMENT_REWARDS = [
@@ -70,14 +206,14 @@ const ACHIEVEMENT_REWARDS = [
 
 function calculateLevel(xp: number) {
   let lvl = 1;
-  while (100 * lvl * (lvl + 1) / 2 <= xp) lvl++;
+  while ((100 * lvl * (lvl + 1)) / 2 <= xp) lvl++;
   return lvl;
 }
 
 function LevelProgress({ xp }: { xp: number }) {
   const level = calculateLevel(xp);
-  const currentLevelXp = level === 1 ? 0 : 100 * (level - 1) * level / 2;
-  const nextLevelXp = 100 * level * (level + 1) / 2;
+  const currentLevelXp = level === 1 ? 0 : (100 * (level - 1) * level) / 2;
+  const nextLevelXp = (100 * level * (level + 1)) / 2;
   const progress = Math.min(((xp - currentLevelXp) / (nextLevelXp - currentLevelXp)) * 100, 100);
   return { level, progress, xp, nextLevelXp, currentLevelXp };
 }
@@ -96,17 +232,31 @@ function ProgressPage() {
 
   useEffect(() => {
     const load = async () => {
-      if (!user || !currentStore?.id) { setLoading(false); return; }
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { setLoading(false); return; }
+      if (!user || !currentStore?.id) {
+        setLoading(false);
+        return;
+      }
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) {
+        setLoading(false);
+        return;
+      }
       try {
         const [progressResult, gamiResult] = await Promise.all([
-          callGetProgress({ data: { accessToken: session.access_token, storeId: currentStore.id } }),
-          callGetGamification({ data: { accessToken: session.access_token, storeId: currentStore.id } }),
+          callGetProgress({
+            data: { accessToken: session.access_token, storeId: currentStore.id },
+          }),
+          callGetGamification({
+            data: { accessToken: session.access_token, storeId: currentStore.id },
+          }),
         ]);
         setData(progressResult);
         setGami(gamiResult);
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
       setLoading(false);
     };
     load();
@@ -136,7 +286,9 @@ function ProgressPage() {
           <Trophy className="h-8 w-8 text-muted-foreground" />
         </div>
         <p className="text-muted-foreground">{t("dashboard.progress.error")}</p>
-        <Button variant="outline" onClick={() => window.location.reload()}>{t("common.retry")}</Button>
+        <Button variant="outline" onClick={() => window.location.reload()}>
+          {t("common.retry")}
+        </Button>
       </div>
     );
   }
@@ -174,21 +326,29 @@ function ProgressPage() {
       >
         <div className="absolute inset-0 bg-gradient-to-r from-violet-500/5 to-fuchsia-500/5" />
         <div className="relative flex items-center gap-5">
-          <div className={cn(
-            "h-16 w-16 rounded-2xl flex items-center justify-center bg-gradient-to-br shadow-lg shrink-0",
-            currentLevelDef.color,
-          )}>
+          <div
+            className={cn(
+              "h-16 w-16 rounded-2xl flex items-center justify-center bg-gradient-to-br shadow-lg shrink-0",
+              currentLevelDef.color,
+            )}
+          >
             <currentLevelDef.icon className="h-8 w-8 text-white" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <h2 className="text-lg font-bold">{t("dashboard.progress.level")} {level}</h2>
-              <Badge variant="secondary" className="text-xs bg-violet-500/10 text-violet-600 dark:text-violet-400">
+              <h2 className="text-lg font-bold">
+                {t("dashboard.progress.level")} {level}
+              </h2>
+              <Badge
+                variant="secondary"
+                className="text-xs bg-violet-500/10 text-violet-600 dark:text-violet-400"
+              >
                 {currentLevelDef.label}
               </Badge>
               {nextLevelDef && (
                 <Badge variant="outline" className="text-xs text-muted-foreground ml-auto">
-                  {t("dashboard.progress.next")}: {t("dashboard.progress.level")} {nextLevelDef.level} · {nextLevelDef.label}
+                  {t("dashboard.progress.next")}: {t("dashboard.progress.level")}{" "}
+                  {nextLevelDef.level} · {nextLevelDef.label}
                 </Badge>
               )}
             </div>
@@ -211,10 +371,30 @@ function ProgressPage() {
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: t("dashboard.progress.products"), value: stats.products, icon: Package, color: "from-emerald-500 to-teal-500" },
-          { label: t("dashboard.progress.published"), value: stats.published, icon: Rocket, color: "from-sky-500 to-blue-500" },
-          { label: t("dashboard.progress.orders"), value: stats.orders, icon: ShoppingBag, color: "from-amber-500 to-orange-500" },
-          { label: t("dashboard.progress.revenue"), value: `${stats.revenue.toLocaleString("fr-DZ")} DA`, icon: TrendingUp, color: "from-violet-500 to-purple-500" },
+          {
+            label: t("dashboard.progress.products"),
+            value: stats.products,
+            icon: Package,
+            color: "from-emerald-500 to-teal-500",
+          },
+          {
+            label: t("dashboard.progress.published"),
+            value: stats.published,
+            icon: Rocket,
+            color: "from-sky-500 to-blue-500",
+          },
+          {
+            label: t("dashboard.progress.orders"),
+            value: stats.orders,
+            icon: ShoppingBag,
+            color: "from-amber-500 to-orange-500",
+          },
+          {
+            label: t("dashboard.progress.revenue"),
+            value: `${stats.revenue.toLocaleString("fr-DZ")} DA`,
+            icon: TrendingUp,
+            color: "from-violet-500 to-purple-500",
+          },
         ].map((s, i) => (
           <motion.div
             key={s.label}
@@ -223,12 +403,17 @@ function ProgressPage() {
             transition={{ delay: i * 0.1 }}
             className="group relative overflow-hidden rounded-xl border border-border/40 bg-card/50 backdrop-blur-sm p-4 hover:shadow-lg hover:shadow-violet-500/5 transition-all duration-300"
           >
-            <div className="absolute -right-4 -top-4 h-16 w-16 rounded-full bg-gradient-to-br opacity-[0.03] dark:opacity-[0.06] group-hover:opacity-[0.08] transition-opacity" style={{ backgroundImage: `linear-gradient(to bottom right, var(--${s.color})` }} />
+            <div
+              className="absolute -right-4 -top-4 h-16 w-16 rounded-full bg-gradient-to-br opacity-[0.03] dark:opacity-[0.06] group-hover:opacity-[0.08] transition-opacity"
+              style={{ backgroundImage: `linear-gradient(to bottom right, var(--${s.color})` }}
+            />
             <div className="flex items-center gap-3">
-              <div className={cn(
-                "h-10 w-10 rounded-xl flex items-center justify-center bg-gradient-to-br shadow-sm",
-                s.color,
-              )}>
+              <div
+                className={cn(
+                  "h-10 w-10 rounded-xl flex items-center justify-center bg-gradient-to-br shadow-sm",
+                  s.color,
+                )}
+              >
                 <s.icon className="h-5 w-5 text-white" />
               </div>
               <div>
@@ -284,12 +469,14 @@ function ProgressPage() {
                         item.completed && "bg-emerald-500/5",
                       )}
                     >
-                      <div className={cn(
-                        "h-8 w-8 rounded-lg flex items-center justify-center shrink-0 transition-all",
-                        item.completed
-                          ? "bg-emerald-500/10 text-emerald-500"
-                          : "bg-muted/50 text-muted-foreground/40",
-                      )}>
+                      <div
+                        className={cn(
+                          "h-8 w-8 rounded-lg flex items-center justify-center shrink-0 transition-all",
+                          item.completed
+                            ? "bg-emerald-500/10 text-emerald-500"
+                            : "bg-muted/50 text-muted-foreground/40",
+                        )}
+                      >
                         {item.completed ? (
                           <CheckCircle2 className="h-4.5 w-4.5" />
                         ) : (
@@ -297,10 +484,13 @@ function ProgressPage() {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <span className={cn(
-                          "text-sm font-medium",
-                          item.completed && "text-emerald-600 dark:text-emerald-400 line-through decoration-emerald-500/30",
-                        )}>
+                        <span
+                          className={cn(
+                            "text-sm font-medium",
+                            item.completed &&
+                              "text-emerald-600 dark:text-emerald-400 line-through decoration-emerald-500/30",
+                          )}
+                        >
                           {t(`dashboard.progress.checklist.${item.key}`)}
                         </span>
                       </div>
@@ -315,7 +505,12 @@ function ProgressPage() {
                         </Button>
                       )}
                       {item.completed && (
-                        <Badge variant="outline" className="text-[10px] text-emerald-500 h-5 shrink-0">{t("dashboard.progress.done")}</Badge>
+                        <Badge
+                          variant="outline"
+                          className="text-[10px] text-emerald-500 h-5 shrink-0"
+                        >
+                          {t("dashboard.progress.done")}
+                        </Badge>
                       )}
                     </motion.div>
                   );
@@ -374,29 +569,45 @@ function ProgressPage() {
                           : "bg-muted/20 border border-border/40 hover:bg-muted/30",
                       )}
                     >
-                      <div className={cn(
-                        "h-9 w-9 rounded-xl flex items-center justify-center shrink-0 transition-all",
-                        isUnlocked
-                          ? "bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-sm"
-                          : "bg-muted/50 text-muted-foreground/40",
-                      )}>
-                        {isUnlocked ? <Icon className="h-4.5 w-4.5" /> : <Lock className="h-4 w-4" />}
+                      <div
+                        className={cn(
+                          "h-9 w-9 rounded-xl flex items-center justify-center shrink-0 transition-all",
+                          isUnlocked
+                            ? "bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-sm"
+                            : "bg-muted/50 text-muted-foreground/40",
+                        )}
+                      >
+                        {isUnlocked ? (
+                          <Icon className="h-4.5 w-4.5" />
+                        ) : (
+                          <Lock className="h-4 w-4" />
+                        )}
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-2">
-                          <p className={cn(
-                            "text-sm font-medium",
-                            isUnlocked ? "text-emerald-700 dark:text-emerald-400" : "text-foreground",
-                          )}>
+                          <p
+                            className={cn(
+                              "text-sm font-medium",
+                              isUnlocked
+                                ? "text-emerald-700 dark:text-emerald-400"
+                                : "text-foreground",
+                            )}
+                          >
                             {t(`dashboard.progress.milestone.${m.key}`)}
                           </p>
                           {isUnlocked && (
-                            <Badge variant="outline" className="h-5 text-[10px] text-emerald-500 shrink-0">
-                              <CheckCircle2 className="h-3 w-3 mr-0.5" /> {t("dashboard.progress.earned")}
+                            <Badge
+                              variant="outline"
+                              className="h-5 text-[10px] text-emerald-500 shrink-0"
+                            >
+                              <CheckCircle2 className="h-3 w-3 mr-0.5" />{" "}
+                              {t("dashboard.progress.earned")}
                             </Badge>
                           )}
                         </div>
-                        <p className="text-xs text-muted-foreground mt-0.5">{t(`dashboard.progress.milestone.${m.key}_desc`)}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {t(`dashboard.progress.milestone.${m.key}_desc`)}
+                        </p>
                         {isProgress && m.target && (
                           <div className="mt-2 h-1.5 rounded-full bg-muted/60 overflow-hidden">
                             <motion.div
@@ -430,13 +641,22 @@ function ProgressPage() {
                             : "bg-muted/20 border-border/40 opacity-50",
                         )}
                       >
-                        <div className={cn(
-                          "h-8 w-8 rounded-lg mx-auto mb-1.5 flex items-center justify-center bg-gradient-to-br",
-                          reached ? l.color : "from-muted to-muted",
-                        )}>
-                          <l.icon className={cn("h-4 w-4", reached ? "text-white" : "text-muted-foreground/50")} />
+                        <div
+                          className={cn(
+                            "h-8 w-8 rounded-lg mx-auto mb-1.5 flex items-center justify-center bg-gradient-to-br",
+                            reached ? l.color : "from-muted to-muted",
+                          )}
+                        >
+                          <l.icon
+                            className={cn(
+                              "h-4 w-4",
+                              reached ? "text-white" : "text-muted-foreground/50",
+                            )}
+                          />
                         </div>
-                        <p className="text-xs font-bold tabular-nums">{t("dashboard.progress.level")}.{l.level}</p>
+                        <p className="text-xs font-bold tabular-nums">
+                          {t("dashboard.progress.level")}.{l.level}
+                        </p>
                         <p className="text-[10px] text-muted-foreground truncate">{l.label}</p>
                       </div>
                     );
@@ -487,34 +707,56 @@ function ProgressPage() {
                           : "bg-muted/20 border border-border/40 opacity-60",
                     )}
                   >
-                    <div className={cn(
-                      "h-9 w-9 rounded-xl flex items-center justify-center shrink-0 transition-all bg-gradient-to-br",
-                      unlocked ? `${r.color} text-white shadow-sm` : "from-muted to-muted text-muted-foreground/40",
-                    )}>
-                      {unlocked ? <CheckCircle2 className="h-4.5 w-4.5" /> : <r.icon className="h-4 w-4" />}
+                    <div
+                      className={cn(
+                        "h-9 w-9 rounded-xl flex items-center justify-center shrink-0 transition-all bg-gradient-to-br",
+                        unlocked
+                          ? `${r.color} text-white shadow-sm`
+                          : "from-muted to-muted text-muted-foreground/40",
+                      )}
+                    >
+                      {unlocked ? (
+                        <CheckCircle2 className="h-4.5 w-4.5" />
+                      ) : (
+                        <r.icon className="h-4 w-4" />
+                      )}
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <span className={cn(
-                          "text-sm font-medium",
-                          unlocked && "text-emerald-700 dark:text-emerald-400",
-                        )}>
+                        <span
+                          className={cn(
+                            "text-sm font-medium",
+                            unlocked && "text-emerald-700 dark:text-emerald-400",
+                          )}
+                        >
                           {t(labelKey)}
                         </span>
-                        <span className={cn(
-                          "text-[10px] px-1.5 py-0.5 rounded font-medium",
-                          r.type === "badge" ? "bg-violet-500/10 text-violet-600 dark:text-violet-400"
-                            : r.type === "cosmetic" ? "bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400"
-                            : "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400",
-                        )}>
-                          {t(`dashboard.progress.type${r.type.charAt(0).toUpperCase() + r.type.slice(1)}`)}
+                        <span
+                          className={cn(
+                            "text-[10px] px-1.5 py-0.5 rounded font-medium",
+                            r.type === "badge"
+                              ? "bg-violet-500/10 text-violet-600 dark:text-violet-400"
+                              : r.type === "cosmetic"
+                                ? "bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400"
+                                : "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400",
+                          )}
+                        >
+                          {t(
+                            `dashboard.progress.type${r.type.charAt(0).toUpperCase() + r.type.slice(1)}`,
+                          )}
                         </span>
                       </div>
-                      <p className="text-xs text-muted-foreground">{t(descKey)} · {t("dashboard.progress.level")}.{r.level}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {t(descKey)} · {t("dashboard.progress.level")}.{r.level}
+                      </p>
                     </div>
                     {unlocked ? (
-                      <Badge variant="outline" className="h-5 text-[10px] text-emerald-500 shrink-0">
-                        <CheckCircle2 className="h-3 w-3 mr-0.5" /> {t("dashboard.progress.unlocked")}
+                      <Badge
+                        variant="outline"
+                        className="h-5 text-[10px] text-emerald-500 shrink-0"
+                      >
+                        <CheckCircle2 className="h-3 w-3 mr-0.5" />{" "}
+                        {t("dashboard.progress.unlocked")}
                       </Badge>
                     ) : level >= r.level - 2 ? (
                       <Badge variant="outline" className="h-5 text-[10px] text-violet-500 shrink-0">
@@ -538,29 +780,50 @@ function ProgressPage() {
                   const labelKey = `dashboard.progress.achReward.${ar.key}`;
                   const descKey = `dashboard.progress.achReward.${ar.key}_desc`;
                   return (
-                    <div key={ar.key} className={cn(
-                      "flex items-center gap-3 p-3 rounded-xl border transition-all",
-                      unlocked
-                        ? "bg-emerald-500/5 border-emerald-500/15"
-                        : "bg-muted/20 border-border/40",
-                    )}>
-                      <div className={cn(
-                        "h-8 w-8 rounded-xl flex items-center justify-center shrink-0",
+                    <div
+                      key={ar.key}
+                      className={cn(
+                        "flex items-center gap-3 p-3 rounded-xl border transition-all",
                         unlocked
-                          ? "bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-sm"
-                          : "bg-muted/50 text-muted-foreground/40",
-                      )}>
-                        {unlocked ? <CheckCircle2 className="h-4 w-4" /> : <ar.icon className="h-4 w-4" />}
+                          ? "bg-emerald-500/5 border-emerald-500/15"
+                          : "bg-muted/20 border-border/40",
+                      )}
+                    >
+                      <div
+                        className={cn(
+                          "h-8 w-8 rounded-xl flex items-center justify-center shrink-0",
+                          unlocked
+                            ? "bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-sm"
+                            : "bg-muted/50 text-muted-foreground/40",
+                        )}
+                      >
+                        {unlocked ? (
+                          <CheckCircle2 className="h-4 w-4" />
+                        ) : (
+                          <ar.icon className="h-4 w-4" />
+                        )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className={cn("text-sm font-medium", unlocked && "text-emerald-700 dark:text-emerald-400")}>
+                        <p
+                          className={cn(
+                            "text-sm font-medium",
+                            unlocked && "text-emerald-700 dark:text-emerald-400",
+                          )}
+                        >
                           {t(labelKey)}
                         </p>
-                        <p className="text-xs text-muted-foreground">{t(descKey)} · {ar.count} {t("dashboard.progress.achievementRewards").toLowerCase()}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {t(descKey)} · {ar.count}{" "}
+                          {t("dashboard.progress.achievementRewards").toLowerCase()}
+                        </p>
                       </div>
                       {unlocked && (
-                        <Badge variant="outline" className="h-5 text-[10px] text-emerald-500 shrink-0">
-                          <CheckCircle2 className="h-3 w-3 mr-0.5" /> {t("dashboard.progress.unlocked")}
+                        <Badge
+                          variant="outline"
+                          className="h-5 text-[10px] text-emerald-500 shrink-0"
+                        >
+                          <CheckCircle2 className="h-3 w-3 mr-0.5" />{" "}
+                          {t("dashboard.progress.unlocked")}
                         </Badge>
                       )}
                     </div>

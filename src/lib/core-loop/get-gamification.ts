@@ -5,8 +5,7 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL!;
 const SUPABASE_ANON =
-  process.env.SUPABASE_PUBLISHABLE_KEY ||
-  process.env.VITE_SUPABASE_PUBLISHABLE_KEY!;
+  process.env.SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY!;
 
 export type GamificationData = {
   xp: number;
@@ -16,7 +15,14 @@ export type GamificationData = {
   currentStreak: number;
   longestStreak: number;
   lastActiveDate: string | null;
-  stats: { products: number; published: number; orders: number; revenue: number; referrals: number; customized: boolean };
+  stats: {
+    products: number;
+    published: number;
+    orders: number;
+    revenue: number;
+    referrals: number;
+    customized: boolean;
+  };
   dailyQuests: QuestWithProgress[];
   weeklyQuests: QuestWithProgress[];
   achievementQuests: QuestWithProgress[];
@@ -76,7 +82,7 @@ const Schema = z.object({
   storeId: z.string().optional(),
 });
 
-const xpForLevel = (level: number) => 100 * level * (level + 1) / 2;
+const xpForLevel = (level: number) => (100 * level * (level + 1)) / 2;
 
 export const getGamification = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => Schema.parse(input))
@@ -86,14 +92,33 @@ export const getGamification = createServerFn({ method: "POST" })
       auth: { persistSession: false, autoRefreshToken: false },
     });
 
-    const { data: { user }, error: authError } = await client.auth.getUser(data.accessToken);
+    const {
+      data: { user },
+      error: authError,
+    } = await client.auth.getUser(data.accessToken);
     if (authError || !user) {
       return {
-        xp: 0, level: 1, xpForCurrent: 0, xpForNext: 100,
-        currentStreak: 0, longestStreak: 0, lastActiveDate: null,
-        stats: { products: 0, published: 0, orders: 0, revenue: 0, referrals: 0, customized: false },
-        dailyQuests: [], weeklyQuests: [], achievementQuests: [],
-        achievements: [], unlockables: [], recentEvents: [],
+        xp: 0,
+        level: 1,
+        xpForCurrent: 0,
+        xpForNext: 100,
+        currentStreak: 0,
+        longestStreak: 0,
+        lastActiveDate: null,
+        stats: {
+          products: 0,
+          published: 0,
+          orders: 0,
+          revenue: 0,
+          referrals: 0,
+          customized: false,
+        },
+        dailyQuests: [],
+        weeklyQuests: [],
+        achievementQuests: [],
+        achievements: [],
+        unlockables: [],
+        recentEvents: [],
       } as GamificationData;
     }
 
@@ -114,15 +139,46 @@ export const getGamification = createServerFn({ method: "POST" })
         .select()
         .single();
 
-      return created || { user_id: userId, xp: 0, level: 1, current_streak: 0, longest_streak: 0, last_active_date: null };
+      return (
+        created || {
+          user_id: userId,
+          xp: 0,
+          level: 1,
+          current_streak: 0,
+          longest_streak: 0,
+          last_active_date: null,
+        }
+      );
     };
 
-    const [gami, questsRes, achievementsRes, unlockablesRes, eventsRes, userQuestsRes, userAchievementsRes, userUnlocksRes, prodRes, orderRes, settingsRes, referralRes] = await Promise.all([
+    const [
+      gami,
+      questsRes,
+      achievementsRes,
+      unlockablesRes,
+      eventsRes,
+      userQuestsRes,
+      userAchievementsRes,
+      userUnlocksRes,
+      prodRes,
+      orderRes,
+      settingsRes,
+      referralRes,
+    ] = await Promise.all([
       ensureGamification(),
-      client.from("quests").select("*").order("type", { ascending: true }).order("xp_reward", { ascending: true }),
+      client
+        .from("quests")
+        .select("*")
+        .order("type", { ascending: true })
+        .order("xp_reward", { ascending: true }),
       client.from("achievements").select("*"),
       client.from("unlockables").select("*").order("requirement_value", { ascending: true }),
-      client.from("xp_events").select("*").eq("user_id", userId).order("created_at", { ascending: false }).limit(20),
+      client
+        .from("xp_events")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(20),
       client.from("user_quests").select("*").eq("user_id", userId),
       client.from("user_achievements").select("*").eq("user_id", userId),
       client.from("user_unlocks").select("*").eq("user_id", userId),
@@ -133,7 +189,11 @@ export const getGamification = createServerFn({ method: "POST" })
         ? client.from("orders").select("id,total").eq("store_id", data.storeId)
         : client.from("orders").select("id,total").eq("store_owner_id", userId),
       data.storeId
-        ? client.from("store_settings").select("id,primary_color,background_color,hero_heading").eq("store_id", data.storeId).maybeSingle()
+        ? client
+            .from("store_settings")
+            .select("id,primary_color,background_color,hero_heading")
+            .eq("store_id", data.storeId)
+            .maybeSingle()
         : Promise.resolve({ data: null }),
       client.from("profiles").select("referral_code,referred_by").eq("id", userId).maybeSingle(),
     ]);
@@ -155,13 +215,29 @@ export const getGamification = createServerFn({ method: "POST" })
     const publishedCount = products.filter((p: any) => p.status === "published").length;
     const orderCount = orders.length;
     const totalRevenue = orders.reduce((sum: number, o: any) => sum + Number(o.total || 0), 0);
-    const hasCustomized = !!(settings?.primary_color && settings.primary_color !== "#000000" && settings?.hero_heading);
+    const hasCustomized = !!(
+      settings?.primary_color &&
+      settings.primary_color !== "#000000" &&
+      settings?.hero_heading
+    );
 
     const referralCount = profile?.referral_code
-      ? (await client.from("profiles").select("id", { count: "exact", head: true }).eq("referred_by", profile.referral_code)).count ?? 0
+      ? ((
+          await client
+            .from("profiles")
+            .select("id", { count: "exact", head: true })
+            .eq("referred_by", profile.referral_code)
+        ).count ?? 0)
       : 0;
 
-    const stats = { products: productCount, published: publishedCount, orders: orderCount, revenue: totalRevenue, referrals: referralCount, customized: hasCustomized };
+    const stats = {
+      products: productCount,
+      published: publishedCount,
+      orders: orderCount,
+      revenue: totalRevenue,
+      referrals: referralCount,
+      customized: hasCustomized,
+    };
 
     const today = new Date().toISOString().split("T")[0];
     const weekStart = new Date();
@@ -179,25 +255,53 @@ export const getGamification = createServerFn({ method: "POST" })
       const eventType = (q.requirements as any)?.event ?? "";
 
       if (q.type === "daily") {
-        const todayEvents = events.filter((e: any) => e.event_type === eventType && e.created_at?.startsWith(today));
+        const todayEvents = events.filter(
+          (e: any) => e.event_type === eventType && e.created_at?.startsWith(today),
+        );
         progress = Math.min(todayEvents.length, target);
       } else if (q.type === "weekly") {
-        const weekEvents = events.filter((e: any) => e.event_type === eventType && e.created_at >= weekStartStr);
+        const weekEvents = events.filter(
+          (e: any) => e.event_type === eventType && e.created_at >= weekStartStr,
+        );
         progress = Math.min(weekEvents.length, target);
       } else if (q.type === "achievement") {
         switch (eventType) {
-          case "add_product": progress = Math.min(productCount, target); break;
-          case "get_order": progress = Math.min(orderCount, target); break;
-          case "customize_store": progress = hasCustomized ? 1 : 0; break;
-          case "revenue": progress = Math.min(totalRevenue, target); break;
-          case "referral": progress = Math.min(referralCount, target); break;
-          case "streak": progress = Math.min(gami.current_streak || 0, target); break;
+          case "add_product":
+            progress = Math.min(productCount, target);
+            break;
+          case "get_order":
+            progress = Math.min(orderCount, target);
+            break;
+          case "customize_store":
+            progress = hasCustomized ? 1 : 0;
+            break;
+          case "revenue":
+            progress = Math.min(totalRevenue, target);
+            break;
+          case "referral":
+            progress = Math.min(referralCount, target);
+            break;
+          case "streak":
+            progress = Math.min(gami.current_streak || 0, target);
+            break;
         }
       }
 
       const completed = progress >= target;
       const claimed = existingUQ?.claimed ?? false;
-      const qp: QuestWithProgress = { id: q.id, key: q.key, title: q.title, description: q.description, type: q.type, xpReward: q.xp_reward, icon: q.icon, progress, target, completed, claimed };
+      const qp: QuestWithProgress = {
+        id: q.id,
+        key: q.key,
+        title: q.title,
+        description: q.description,
+        type: q.type,
+        xpReward: q.xp_reward,
+        icon: q.icon,
+        progress,
+        target,
+        completed,
+        claimed,
+      };
 
       if (q.type === "daily") dailyQuests.push(qp);
       else if (q.type === "weekly") weeklyQuests.push(qp);
@@ -206,15 +310,41 @@ export const getGamification = createServerFn({ method: "POST" })
 
     const achievementsWithStatus: AchievementWithStatus[] = achievements.map((a: any) => {
       const earned = userAchievements.find((ua: any) => ua.achievement_id === a.id);
-      return { id: a.id, key: a.key, title: a.title, description: a.description, icon: a.icon, xpReward: a.xp_reward, earned: !!earned, earnedAt: earned?.earned_at ?? null, shared: earned?.shared ?? false };
+      return {
+        id: a.id,
+        key: a.key,
+        title: a.title,
+        description: a.description,
+        icon: a.icon,
+        xpReward: a.xp_reward,
+        earned: !!earned,
+        earnedAt: earned?.earned_at ?? null,
+        shared: earned?.shared ?? false,
+      };
     });
 
     const unlockablesWithStatus: UnlockableWithStatus[] = unlockablesList.map((u: any) => {
       const unlocked = userUnlocks.find((uu: any) => uu.unlockable_id === u.id);
-      return { id: u.id, key: u.key, name: u.name, description: u.description, type: u.type, icon: u.icon, requirementType: u.requirement_type, requirementValue: u.requirement_value, unlocked: !!unlocked, equipped: unlocked?.equipped ?? false };
+      return {
+        id: u.id,
+        key: u.key,
+        name: u.name,
+        description: u.description,
+        type: u.type,
+        icon: u.icon,
+        requirementType: u.requirement_type,
+        requirementValue: u.requirement_value,
+        unlocked: !!unlocked,
+        equipped: unlocked?.equipped ?? false,
+      };
     });
 
-    const recentEvents: XpEvent[] = events.map((e: any) => ({ id: e.id, eventType: e.event_type, xpAmount: e.xp_amount, createdAt: e.created_at }));
+    const recentEvents: XpEvent[] = events.map((e: any) => ({
+      id: e.id,
+      eventType: e.event_type,
+      xpAmount: e.xp_amount,
+      createdAt: e.created_at,
+    }));
 
     return {
       xp: gami.xp,

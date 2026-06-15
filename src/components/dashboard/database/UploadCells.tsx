@@ -6,7 +6,11 @@ import { toast } from "sonner";
 const BUCKET = "store-assets";
 const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
 
-async function uploadToBucket(file: File, userId: string, kind: "image" | "file"): Promise<string | null> {
+async function uploadToBucket(
+  file: File,
+  userId: string,
+  kind: "image" | "file",
+): Promise<string | null> {
   if (file.size > MAX_BYTES) {
     toast.error("File too large (max 10 MB)");
     return null;
@@ -56,9 +60,7 @@ export function ImageUploadCell({
             className="h-9 w-9 rounded object-cover border border-border"
           />
         </a>
-        <span className="text-xs text-muted-foreground truncate flex-1">
-          Uploaded
-        </span>
+        <span className="text-xs text-muted-foreground truncate flex-1">Uploaded</span>
         <button
           type="button"
           onClick={() => onChange(null)}

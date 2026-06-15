@@ -50,7 +50,6 @@ export type StockBuffer = any;
 export type ResellerWallet = ResellerWalletRow;
 export type WalletTransaction = WalletTransactionRow;
 
-
 // Join shapes returned by the hooks below
 export type MarketplaceProductWithJoins = MarketplaceProduct;
 export type ResellerListingWithProduct = ResellerListing & {
@@ -743,9 +742,7 @@ export function useAdminDeleteSupplyProduct() {
 }
 
 /** Admin: list all supply orders. */
-export function useAdminSupplyOrders(
-  status?: string,
-): UseQueryResult<
+export function useAdminSupplyOrders(status?: string): UseQueryResult<
   (SupplyOrder & {
     supply_product: Pick<SupplyMarketplaceProduct, "id" | "name" | "images" | "category"> | null;
     buyer: { id: string; name: string | null; email: string | null } | null;

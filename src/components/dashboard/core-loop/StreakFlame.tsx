@@ -13,7 +13,14 @@ interface StreakFlameProps {
 export function StreakFlame({ streak, longestStreak, size = "md", className }: StreakFlameProps) {
   const { t } = useTranslation();
   const isActive = streak > 0;
-  const flameColor = streak >= 30 ? "text-orange-500" : streak >= 7 ? "text-orange-400" : streak >= 3 ? "text-amber-400" : "text-amber-300";
+  const flameColor =
+    streak >= 30
+      ? "text-orange-500"
+      : streak >= 7
+        ? "text-orange-400"
+        : streak >= 3
+          ? "text-amber-400"
+          : "text-amber-300";
 
   const iconSize = size === "sm" ? "h-4 w-4" : size === "lg" ? "h-7 w-7" : "h-5 w-5";
   const textSize = size === "sm" ? "text-sm" : size === "lg" ? "text-2xl" : "text-lg";
@@ -30,14 +37,19 @@ export function StreakFlame({ streak, longestStreak, size = "md", className }: S
         <Flame className={cn(iconSize, "drop-shadow-[0_0_6px_rgba(251,146,60,0.5)]")} />
       </motion.div>
       <div>
-        <span className={cn("font-bold", textSize, flameColor)}>
-          {streak}
-        </span>
-        <span className={cn("text-muted-foreground", size === "sm" ? "text-[10px]" : "text-xs", "ml-1")}>
-{streak === 1 ? t("dashboard.gamification.streakDay") : t("dashboard.gamification.streakDays")}
+        <span className={cn("font-bold", textSize, flameColor)}>{streak}</span>
+        <span
+          className={cn("text-muted-foreground", size === "sm" ? "text-[10px]" : "text-xs", "ml-1")}
+        >
+          {streak === 1
+            ? t("dashboard.gamification.streakDay")
+            : t("dashboard.gamification.streakDays")}
         </span>
         {size === "lg" && (
-          <p className="text-[11px] text-muted-foreground">{t("dashboard.gamification.bestLabel")}: {longestStreak} {t("dashboard.gamification.streakDays")}</p>
+          <p className="text-[11px] text-muted-foreground">
+            {t("dashboard.gamification.bestLabel")}: {longestStreak}{" "}
+            {t("dashboard.gamification.streakDays")}
+          </p>
         )}
       </div>
     </div>

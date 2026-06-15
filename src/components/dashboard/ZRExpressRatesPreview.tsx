@@ -90,7 +90,9 @@ export function ZRExpressRatesPreview({ companyId }: { companyId: string }) {
         <div className="flex items-center gap-2">
           <MapPin className="h-3.5 w-3.5 text-primary" />
           <span className="text-xs font-medium">ZRExpress rates</span>
-          <Badge variant="secondary" className="text-[10px]">{grouped.length} wilayas</Badge>
+          <Badge variant="secondary" className="text-[10px]">
+            {grouped.length} wilayas
+          </Badge>
         </div>
         <div className="relative">
           <Search className="pointer-events-none absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
@@ -116,10 +118,18 @@ export function ZRExpressRatesPreview({ companyId }: { companyId: string }) {
               <tr key={r.wilaya} className="border-t">
                 <td className="px-3 py-1.5">{r.wilaya}</td>
                 <td className="px-3 py-1.5 text-right tabular-nums">
-                  {r.domicile != null ? `${r.domicile} DZD` : <span className="text-muted-foreground">—</span>}
+                  {r.domicile != null ? (
+                    `${r.domicile} DZD`
+                  ) : (
+                    <span className="text-muted-foreground">—</span>
+                  )}
                 </td>
                 <td className="px-3 py-1.5 text-right tabular-nums">
-                  {r.stopdesk != null ? `${r.stopdesk} DZD` : <span className="text-muted-foreground">—</span>}
+                  {r.stopdesk != null ? (
+                    `${r.stopdesk} DZD`
+                  ) : (
+                    <span className="text-muted-foreground">—</span>
+                  )}
                 </td>
               </tr>
             ))}

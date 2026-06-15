@@ -66,9 +66,7 @@ export function InstalledAppsSection() {
             Your Apps
           </h2>
 
-          <p className="mt-0.5 text-sm text-muted-foreground">
-            Apps installed on your store.
-          </p>
+          <p className="mt-0.5 text-sm text-muted-foreground">Apps installed on your store.</p>
         </div>
 
         <Button size="sm" asChild>
@@ -98,9 +96,7 @@ export function InstalledAppsSection() {
               <Blocks className="h-6 w-6 text-muted-foreground" />
             </div>
 
-            <p className="mt-4 font-semibold text-foreground">
-              No apps installed yet
-            </p>
+            <p className="mt-4 font-semibold text-foreground">No apps installed yet</p>
 
             <p className="mt-1 max-w-sm text-sm text-muted-foreground">
               Visit the App Store to discover apps that supercharge your store.
@@ -138,21 +134,14 @@ export function InstalledAppsSection() {
                   </div>
 
                   <div className="flex-1 space-y-1">
-                    <h3 className="font-semibold text-foreground">
-                      {app.name}
-                    </h3>
+                    <h3 className="font-semibold text-foreground">{app.name}</h3>
 
-                    <p className="line-clamp-2 text-sm text-muted-foreground">
-                      {app.description}
-                    </p>
+                    <p className="line-clamp-2 text-sm text-muted-foreground">{app.description}</p>
                   </div>
 
                   <div className="flex items-center gap-2">
                     <Button size="sm" className="flex-1" asChild>
-                      <Link
-                        to="/dashboard/apps/listing/$appKey"
-                        params={{ appKey: app.key }}
-                      >
+                      <Link to="/dashboard/apps/listing/$appKey" params={{ appKey: app.key }}>
                         <ExternalLink className="mr-1.5 h-4 w-4" />
                         Open
                       </Link>
@@ -175,19 +164,14 @@ export function InstalledAppsSection() {
         </div>
       )}
 
-      <AlertDialog
-        open={!!removing}
-        onOpenChange={(open) => !open && setRemoving(null)}
-      >
+      <AlertDialog open={!!removing} onOpenChange={(open) => !open && setRemoving(null)}>
         <AlertDialogContent className="border border-border bg-card text-foreground">
           <AlertDialogHeader>
-            <AlertDialogTitle>
-              Remove {removing?.name}?
-            </AlertDialogTitle>
+            <AlertDialogTitle>Remove {removing?.name}?</AlertDialogTitle>
 
             <AlertDialogDescription className="text-muted-foreground">
-              This will uninstall the app from your dashboard. You can reinstall
-              it anytime from the App Store.
+              This will uninstall the app from your dashboard. You can reinstall it anytime from the
+              App Store.
             </AlertDialogDescription>
           </AlertDialogHeader>
 

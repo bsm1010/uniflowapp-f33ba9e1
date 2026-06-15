@@ -7,7 +7,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useAIAgent } from "@/hooks/use-ai-agent";
 import { useAuth } from "@/hooks/use-auth";
@@ -72,7 +78,10 @@ export function AITrainingPanel() {
       darija_level: form.darija_level,
       reply_delay_seconds: form.reply_delay_seconds,
       auto_reply: form.auto_reply,
-      forbidden_words: form.forbidden_words.split(",").map((w) => w.trim()).filter(Boolean),
+      forbidden_words: form.forbidden_words
+        .split(",")
+        .map((w) => w.trim())
+        .filter(Boolean),
       custom_instructions: form.custom_instructions,
       greeting_message: form.greeting_message,
       suggest_human_takeover: form.suggest_human_takeover,
@@ -138,25 +147,37 @@ export function AITrainingPanel() {
               <AlertTriangle className="h-4 w-4 !text-amber-600" />
               <AlertTitle>Auto-reply is in preview mode</AlertTitle>
               <AlertDescription>
-                AI replies are generated and shown in your LiveChat, but they
-                will not be sent to your customers on Instagram until
-                <code className="mx-1 rounded bg-amber-500/20 px-1 py-0.5 text-xs">META_PAGE_ACCESS_TOKEN</code>
-                is configured. Until then, the AI Auto-Reply switch below is
-                cosmetic.
+                AI replies are generated and shown in your LiveChat, but they will not be sent to
+                your customers on Instagram until
+                <code className="mx-1 rounded bg-amber-500/20 px-1 py-0.5 text-xs">
+                  META_PAGE_ACCESS_TOKEN
+                </code>
+                is configured. Until then, the AI Auto-Reply switch below is cosmetic.
               </AlertDescription>
             </Alert>
             <div className="flex items-center justify-between">
               <Label>AI Auto-Reply</Label>
-              <Switch checked={form.auto_reply} onCheckedChange={(v) => setForm((f) => ({ ...f, auto_reply: v }))} />
+              <Switch
+                checked={form.auto_reply}
+                onCheckedChange={(v) => setForm((f) => ({ ...f, auto_reply: v }))}
+              />
             </div>
             <div className="flex items-center justify-between">
               <Label>Enabled</Label>
-              <Switch checked={form.enabled} onCheckedChange={(v) => setForm((f) => ({ ...f, enabled: v }))} />
+              <Switch
+                checked={form.enabled}
+                onCheckedChange={(v) => setForm((f) => ({ ...f, enabled: v }))}
+              />
             </div>
             <div className="space-y-1.5">
               <Label>Personality</Label>
-              <Select value={form.personality} onValueChange={(v) => setForm((f) => ({ ...f, personality: v }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+              <Select
+                value={form.personality}
+                onValueChange={(v) => setForm((f) => ({ ...f, personality: v }))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="friendly">Friendly</SelectItem>
                   <SelectItem value="professional">Professional</SelectItem>
@@ -168,7 +189,9 @@ export function AITrainingPanel() {
             <div className="space-y-1.5">
               <Label>Tone</Label>
               <Select value={form.tone} onValueChange={(v) => setForm((f) => ({ ...f, tone: v }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="casual">Casual</SelectItem>
                   <SelectItem value="formal">Formal</SelectItem>
@@ -178,8 +201,13 @@ export function AITrainingPanel() {
             </div>
             <div className="space-y-1.5">
               <Label>Darija Level</Label>
-              <Select value={form.darija_level} onValueChange={(v) => setForm((f) => ({ ...f, darija_level: v }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+              <Select
+                value={form.darija_level}
+                onValueChange={(v) => setForm((f) => ({ ...f, darija_level: v }))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="low">Low (mostly MSA)</SelectItem>
                   <SelectItem value="medium">Medium (mixed)</SelectItem>
@@ -194,12 +222,17 @@ export function AITrainingPanel() {
                 min={0}
                 max={30}
                 value={form.reply_delay_seconds}
-                onChange={(e) => setForm((f) => ({ ...f, reply_delay_seconds: Number(e.target.value) }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, reply_delay_seconds: Number(e.target.value) }))
+                }
               />
             </div>
             <div className="flex items-center justify-between">
               <Label>Suggest Human Takeover</Label>
-              <Switch checked={form.suggest_human_takeover} onCheckedChange={(v) => setForm((f) => ({ ...f, suggest_human_takeover: v }))} />
+              <Switch
+                checked={form.suggest_human_takeover}
+                onCheckedChange={(v) => setForm((f) => ({ ...f, suggest_human_takeover: v }))}
+              />
             </div>
           </CardContent>
         </Card>
@@ -248,15 +281,36 @@ export function AITrainingPanel() {
         </CardHeader>
         <CardContent className="space-y-3">
           {form.faq_entries.map((faq, idx) => (
-            <div key={idx} className="grid grid-cols-1 md:grid-cols-2 gap-2 p-3 rounded-lg bg-muted/50">
-              <Input placeholder="Question" value={faq.question} onChange={(e) => updateFAQ(idx, "question", e.target.value)} />
+            <div
+              key={idx}
+              className="grid grid-cols-1 md:grid-cols-2 gap-2 p-3 rounded-lg bg-muted/50"
+            >
+              <Input
+                placeholder="Question"
+                value={faq.question}
+                onChange={(e) => updateFAQ(idx, "question", e.target.value)}
+              />
               <div className="flex gap-2">
-                <Input placeholder="Answer" value={faq.answer} onChange={(e) => updateFAQ(idx, "answer", e.target.value)} className="flex-1" />
-                <Button variant="ghost" size="icon" onClick={() => removeFAQ(idx)} className="shrink-0 text-destructive">×</Button>
+                <Input
+                  placeholder="Answer"
+                  value={faq.answer}
+                  onChange={(e) => updateFAQ(idx, "answer", e.target.value)}
+                  className="flex-1"
+                />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => removeFAQ(idx)}
+                  className="shrink-0 text-destructive"
+                >
+                  ×
+                </Button>
               </div>
             </div>
           ))}
-          <Button variant="outline" size="sm" onClick={addFAQ}>+ Add FAQ</Button>
+          <Button variant="outline" size="sm" onClick={addFAQ}>
+            + Add FAQ
+          </Button>
         </CardContent>
       </Card>
 
@@ -276,7 +330,11 @@ export function AITrainingPanel() {
               placeholder='Try: "ch7al el prix ta3 hoodie noir?"'
               onKeyDown={(e) => e.key === "Enter" && handleTest()}
             />
-            <Button onClick={handleTest} disabled={testing || !testMsg.trim()} className="bg-violet-500 hover:bg-violet-600">
+            <Button
+              onClick={handleTest}
+              disabled={testing || !testMsg.trim()}
+              className="bg-violet-500 hover:bg-violet-600"
+            >
               {testing ? <Loader2 className="h-4 w-4 animate-spin" /> : "Test"}
             </Button>
           </div>
@@ -296,8 +354,16 @@ export function AITrainingPanel() {
       </Card>
 
       <div className="flex justify-end">
-        <Button onClick={handleSave} disabled={saving} className="bg-gradient-to-r from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700 shadow-lg px-8">
-          {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
+        <Button
+          onClick={handleSave}
+          disabled={saving}
+          className="bg-gradient-to-r from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700 shadow-lg px-8"
+        >
+          {saving ? (
+            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+          ) : (
+            <Save className="h-4 w-4 mr-2" />
+          )}
           Save Settings
         </Button>
       </div>

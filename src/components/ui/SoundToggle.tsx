@@ -6,7 +6,9 @@ import { isSoundEnabled, toggleSound, playSound } from "@/lib/sounds";
 export function SoundToggle() {
   const [on, setOn] = useState(true);
 
-  useEffect(() => { setOn(isSoundEnabled()); }, []);
+  useEffect(() => {
+    setOn(isSoundEnabled());
+  }, []);
 
   const handleToggle = () => {
     const now = toggleSound();

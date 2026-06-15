@@ -125,7 +125,14 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       }
     }
 
-    set({ settings: normalizedSettings, pageSections: parsed, dirty: false, history: [], future: [], lastPropSnapshot: null });
+    set({
+      settings: normalizedSettings,
+      pageSections: parsed,
+      dirty: false,
+      history: [],
+      future: [],
+      lastPropSnapshot: null,
+    });
   },
 
   updateSettings: (partial) => {
@@ -192,7 +199,11 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       return {
         pageSections: { ...state.pageSections, [state.activeTemplate]: current },
         dirty: true,
-        history: pushHistory(state.history, state.activeTemplate, state.pageSections[state.activeTemplate]),
+        history: pushHistory(
+          state.history,
+          state.activeTemplate,
+          state.pageSections[state.activeTemplate],
+        ),
         future: [],
       };
     });
@@ -207,9 +218,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
         ...original,
         id: crypto.randomUUID(),
         props: { ...original.props },
-        styleOverrides: original.styleOverrides
-          ? { ...original.styleOverrides }
-          : undefined,
+        styleOverrides: original.styleOverrides ? { ...original.styleOverrides } : undefined,
       };
       const idx = current.findIndex((s) => s.id === id);
       const next = [...current];
@@ -249,9 +258,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     set((state) => {
       const current = state.pageSections[state.activeTemplate];
       const next = current.map((s) =>
-        s.id === id
-          ? { ...s, styleOverrides: { ...s.styleOverrides, ...styles } }
-          : s,
+        s.id === id ? { ...s, styleOverrides: { ...s.styleOverrides, ...styles } } : s,
       );
       return {
         pageSections: { ...state.pageSections, [state.activeTemplate]: next },
@@ -293,7 +300,10 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       return {
         pageSections: { ...state.pageSections, [state.activeTemplate]: entry.sections },
         history: state.history.slice(0, -1),
-        future: [{ template: state.activeTemplate, sections: current }, ...state.future].slice(0, 50),
+        future: [{ template: state.activeTemplate, sections: current }, ...state.future].slice(
+          0,
+          50,
+        ),
         dirty: true,
       };
     });

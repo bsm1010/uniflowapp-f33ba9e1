@@ -124,17 +124,23 @@ export const importZRExpressOrders = createServerFn({ method: "POST" })
         const obj = (parsed && typeof parsed === "object" ? parsed : {}) as Record<string, unknown>;
         const items: unknown[] = Array.isArray(parsed)
           ? (parsed as unknown[])
-          : Array.isArray(obj.items) ? (obj.items as unknown[])
-          : Array.isArray(obj.data) ? (obj.data as unknown[])
-          : Array.isArray(obj.parcels) ? (obj.parcels as unknown[])
-          : Array.isArray(obj.results) ? (obj.results as unknown[])
-          : [];
+          : Array.isArray(obj.items)
+            ? (obj.items as unknown[])
+            : Array.isArray(obj.data)
+              ? (obj.data as unknown[])
+              : Array.isArray(obj.parcels)
+                ? (obj.parcels as unknown[])
+                : Array.isArray(obj.results)
+                  ? (obj.results as unknown[])
+                  : [];
         for (const it of items) {
           if (it && typeof it === "object") arr.push(it as Record<string, unknown>);
         }
         const hasNext = obj.hasNext === true;
         const totalPages = typeof obj.totalPages === "number" ? obj.totalPages : null;
-        console.log(`[importZR] page=${pageNumber} got=${items.length} total=${obj.totalCount ?? "?"} hasNext=${hasNext}`);
+        console.log(
+          `[importZR] page=${pageNumber} got=${items.length} total=${obj.totalCount ?? "?"} hasNext=${hasNext}`,
+        );
         if (items.length === 0) break;
         if (!hasNext && (totalPages === null || pageNumber >= totalPages)) break;
         if (Array.isArray(parsed)) break; // not paginated
@@ -142,7 +148,13 @@ export const importZRExpressOrders = createServerFn({ method: "POST" })
       }
 
       if (arr.length === 0) {
-        return { ok: true, message: "No orders found at ZRExpress.", imported: 0, updated: 0, total: 0 };
+        return {
+          ok: true,
+          message: "No orders found at ZRExpress.",
+          imported: 0,
+          updated: 0,
+          total: 0,
+        };
       }
 
       // Existing imports for this store (match by tracking_number).
@@ -173,7 +185,8 @@ export const importZRExpressOrders = createServerFn({ method: "POST" })
           pickStr(asObj(p.id ? { v: p.id } : {}), ["v"]);
         if (!tracking) continue;
 
-        const name = pickStr(customer, ["name", "fullName"]) || pickStr(p, ["customerName", "client", "name"]);
+        const name =
+          pickStr(customer, ["name", "fullName"]) || pickStr(p, ["customerName", "client", "name"]);
         const phone =
           pickStr(phoneObj, ["number1", "number2", "number3"]) ||
           pickStr(p, ["phone", "mobile_a", "mobileA", "telephone", "Tel"]);
@@ -279,9 +292,7 @@ export const importZRExpressOrders = createServerFn({ method: "POST" })
         .from("shipments")
         .select("order_id")
         .eq("store_id", userId);
-      const existingShipOrderIds = new Set(
-        (existingShipments.data ?? []).map((s) => s.order_id),
-      );
+      const existingShipOrderIds = new Set((existingShipments.data ?? []).map((s) => s.order_id));
 
       const shipmentsToInsert: Array<{
         store_id: string;
@@ -293,10 +304,7 @@ export const importZRExpressOrders = createServerFn({ method: "POST" })
       }> = [];
 
       for (const order of ordersList) {
-        if (
-          order.tracking_number &&
-          !existingShipOrderIds.has(order.id)
-        ) {
+        if (order.tracking_number && !existingShipOrderIds.has(order.id)) {
           shipmentsToInsert.push({
             store_id: userId,
             order_id: order.id,
@@ -309,19 +317,14 @@ export const importZRExpressOrders = createServerFn({ method: "POST" })
       }
 
       if (shipmentsToInsert.length) {
-        const { error: shipErr } = await supabaseAdmin
-          .from("shipments")
-          .insert(shipmentsToInsert);
+        const { error: shipErr } = await supabaseAdmin.from("shipments").insert(shipmentsToInsert);
         if (shipErr) {
           console.error("[importZR] shipment insert error", shipErr);
         }
       }
 
       for (const u of toUpdate) {
-        const { error: upErr } = await supabaseAdmin
-          .from("orders")
-          .update(u.patch)
-          .eq("id", u.id);
+        const { error: upErr } = await supabaseAdmin.from("orders").update(u.patch).eq("id", u.id);
         if (upErr) console.error("[importZR] update error", upErr);
         else updated += 1;
       }

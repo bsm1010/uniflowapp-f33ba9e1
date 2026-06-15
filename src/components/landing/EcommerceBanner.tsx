@@ -28,7 +28,10 @@ export function EcommerceBanner() {
             className="absolute inset-0 bg-gradient-to-r from-[#1a0533]/95 via-[#2a0a4d]/80 to-transparent"
           />
 
-          <div dir="ltr" className="relative grid grid-cols-1 md:grid-cols-2 gap-6 p-8 sm:p-12 md:p-16 min-h-[340px] md:min-h-[420px]">
+          <div
+            dir="ltr"
+            className="relative grid grid-cols-1 md:grid-cols-2 gap-6 p-8 sm:p-12 md:p-16 min-h-[340px] md:min-h-[420px]"
+          >
             <div className="flex flex-col justify-center text-white">
               <motion.div
                 initial={{ opacity: 0, y: 10 }}

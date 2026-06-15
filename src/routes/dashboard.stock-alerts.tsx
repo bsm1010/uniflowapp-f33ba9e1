@@ -90,7 +90,8 @@ function StockAlertsPage() {
   };
 
   const lowStock = useMemo(
-    () => (products ?? []).filter((p) => p.stock <= (thresholds[p.id] ?? p.low_stock_threshold ?? 5)),
+    () =>
+      (products ?? []).filter((p) => p.stock <= (thresholds[p.id] ?? p.low_stock_threshold ?? 5)),
     [products, thresholds],
   );
 
@@ -145,12 +146,18 @@ function StockAlertsPage() {
                     </TableCell>
                     <TableCell>
                       {isLow ? (
-                        <Badge variant="outline" className="bg-rose-500/10 text-rose-600 border-rose-500/30">
+                        <Badge
+                          variant="outline"
+                          className="bg-rose-500/10 text-rose-600 border-rose-500/30"
+                        >
                           <AlertTriangle className="h-3 w-3 mr-1" />
                           Low stock
                         </Badge>
                       ) : (
-                        <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/30">
+                        <Badge
+                          variant="outline"
+                          className="bg-emerald-500/10 text-emerald-600 border-emerald-500/30"
+                        >
                           OK
                         </Badge>
                       )}

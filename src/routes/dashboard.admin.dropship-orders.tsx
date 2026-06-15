@@ -25,12 +25,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Img } from "@/components/ui/Img";
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -78,8 +73,7 @@ function formatDate(iso: string) {
 const STATUS_LABEL: Record<string, { label: string; color: string }> = {
   pending_payment: {
     label: "بانتظار الدفع",
-    color:
-      "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400",
+    color: "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400",
   },
   paid_by_reseller: {
     label: "مدفوع",
@@ -87,8 +81,7 @@ const STATUS_LABEL: Record<string, { label: string; color: string }> = {
   },
   purchased_by_admin: {
     label: "تم الشراء",
-    color:
-      "border-indigo-500/40 bg-indigo-500/10 text-indigo-700 dark:text-indigo-400",
+    color: "border-indigo-500/40 bg-indigo-500/10 text-indigo-700 dark:text-indigo-400",
   },
   shipped: {
     label: "تم الشحن",
@@ -96,8 +89,7 @@ const STATUS_LABEL: Record<string, { label: string; color: string }> = {
   },
   delivered: {
     label: "مُسلَّم",
-    color:
-      "border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+    color: "border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
   },
   refused: {
     label: "مرفوض",
@@ -105,17 +97,20 @@ const STATUS_LABEL: Record<string, { label: string; color: string }> = {
   },
   in_stock_buffer: {
     label: "مخزن مؤقت",
-    color:
-      "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400",
+    color: "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400",
   },
   returned_to_reseller: {
     label: "أُعيد للوكيل",
-    color:
-      "border-zinc-500/40 bg-zinc-500/10 text-zinc-700 dark:text-zinc-400",
+    color: "border-zinc-500/40 bg-zinc-500/10 text-zinc-700 dark:text-zinc-400",
   },
 };
 
-const STATUS_FLOW: { from: string; to: string; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+const STATUS_FLOW: {
+  from: string;
+  to: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+}[] = [
   { from: "paid_by_reseller", to: "purchased_by_admin", label: "تأكيد الشراء", icon: PackageCheck },
   { from: "purchased_by_admin", to: "shipped", label: "شحن", icon: Truck },
   { from: "shipped", to: "delivered", label: "تسليم (يحرّض ربح الوكيل)", icon: CheckCircle2 },
@@ -149,14 +144,16 @@ function AdminDropshipOrdersPage() {
           setIsAdmin(!!data && data.length > 0);
         }
       } catch (e) {
-        console.error("[AdminDropshipOrders] Admin check failed:", e instanceof Error ? e.message : e);
+        console.error(
+          "[AdminDropshipOrders] Admin check failed:",
+          e instanceof Error ? e.message : e,
+        );
         setIsAdmin(false);
       }
     })();
   }, [user]);
 
-  const { data: orders = [], isLoading: ordersLoading } =
-    useAdminDropshipOrders(statusFilter);
+  const { data: orders = [], isLoading: ordersLoading } = useAdminDropshipOrders(statusFilter);
   const updateStatus = useAdminUpdateOrderStatus();
 
   // Reset side-panel state when opening a new order
@@ -165,7 +162,7 @@ function AdminDropshipOrdersPage() {
       setTrackingInput(selected.tracking_number ?? "");
       setZrIdInput(selected.zr_express_id ?? "");
     }
-  }, [selected?.id]);
+  }, [selected]);
 
   const counts = useMemo(() => {
     return {
@@ -178,10 +175,7 @@ function AdminDropshipOrdersPage() {
     };
   }, [orders]);
 
-  const handleStatusChange = async (
-    order: DropshipOrder,
-    newStatus: string,
-  ) => {
+  const handleStatusChange = async (order: DropshipOrder, newStatus: string) => {
     if (newStatus === "shipped" && !trackingInput.trim()) {
       toast.error("أدخل رقم التتبع لشحنة الطلب");
       return;
@@ -233,12 +227,42 @@ function AdminDropshipOrdersPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 mb-6">
-        <AdminStat icon={Clock} label="بانتظار" value={counts.pending_payment} gradient="from-amber-500 to-orange-500" />
-        <AdminStat icon={Wallet} label="مدفوعة" value={counts.paid_by_reseller} gradient="from-sky-500 to-blue-500" />
-        <AdminStat icon={PackageCheck} label="تم الشراء" value={counts.purchased_by_admin} gradient="from-indigo-500 to-violet-500" />
-        <AdminStat icon={Truck} label="تم الشحن" value={counts.shipped} gradient="from-blue-500 to-cyan-500" />
-        <AdminStat icon={CheckCircle2} label="مُسلَّمة" value={counts.delivered} gradient="from-emerald-500 to-teal-500" />
-        <AdminStat icon={XCircle} label="مرفوضة" value={counts.refused} gradient="from-rose-500 to-pink-500" />
+        <AdminStat
+          icon={Clock}
+          label="بانتظار"
+          value={counts.pending_payment}
+          gradient="from-amber-500 to-orange-500"
+        />
+        <AdminStat
+          icon={Wallet}
+          label="مدفوعة"
+          value={counts.paid_by_reseller}
+          gradient="from-sky-500 to-blue-500"
+        />
+        <AdminStat
+          icon={PackageCheck}
+          label="تم الشراء"
+          value={counts.purchased_by_admin}
+          gradient="from-indigo-500 to-violet-500"
+        />
+        <AdminStat
+          icon={Truck}
+          label="تم الشحن"
+          value={counts.shipped}
+          gradient="from-blue-500 to-cyan-500"
+        />
+        <AdminStat
+          icon={CheckCircle2}
+          label="مُسلَّمة"
+          value={counts.delivered}
+          gradient="from-emerald-500 to-teal-500"
+        />
+        <AdminStat
+          icon={XCircle}
+          label="مرفوضة"
+          value={counts.refused}
+          gradient="from-rose-500 to-pink-500"
+        />
       </div>
 
       <Tabs value={statusFilter} onValueChange={setStatusFilter}>
@@ -300,13 +324,14 @@ function AdminDropshipOrdersPage() {
                                 {o.client_phone}
                               </p>
                             </TableCell>
-                            <TableCell className="text-sm">
-                              {o.client_wilaya}
-                            </TableCell>
+                            <TableCell className="text-sm">{o.client_wilaya}</TableCell>
                             <TableCell className="font-semibold" dir="ltr">
                               {formatPrice(Number(o.selling_price))}
                             </TableCell>
-                            <TableCell className="text-sm text-emerald-600 dark:text-emerald-400" dir="ltr">
+                            <TableCell
+                              className="text-sm text-emerald-600 dark:text-emerald-400"
+                              dir="ltr"
+                            >
                               {formatPrice(adminProfit)}
                             </TableCell>
                             <TableCell className="text-sm" dir="ltr">
@@ -316,11 +341,7 @@ function AdminDropshipOrdersPage() {
                               {formatDate(o.created_at)}
                             </TableCell>
                             <TableCell>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => setSelected(o)}
-                              >
+                              <Button size="sm" variant="outline" onClick={() => setSelected(o)}>
                                 معالجة
                               </Button>
                             </TableCell>
@@ -337,16 +358,11 @@ function AdminDropshipOrdersPage() {
       </Tabs>
 
       {/* Order action dialog */}
-      <Dialog
-        open={!!selected}
-        onOpenChange={(o) => !o && setSelected(null)}
-      >
+      <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>معالجة الطلبية #{selected?.id.slice(0, 8)}</DialogTitle>
-            <DialogDescription>
-              {selected && STATUS_LABEL[selected.status].label}
-            </DialogDescription>
+            <DialogDescription>{selected && STATUS_LABEL[selected.status].label}</DialogDescription>
           </DialogHeader>
 
           {selected && (
@@ -357,12 +373,27 @@ function AdminDropshipOrdersPage() {
                 <Field label="الهاتف" value={selected.client_phone} ltr />
                 <Field label="الولاية" value={selected.client_wilaya} />
                 <Field label="العنوان" value={selected.client_address} className="col-span-2" />
-                <Field label="سعر البيع" value={formatPrice(Number(selected.selling_price))} ltr bold />
-                <Field label="تكلفة المنصة" value={formatPrice(Number(selected.platform_price))} ltr />
-                <Field label="ربح الوكيل" value={formatPrice(Number(selected.reseller_profit))} ltr />
+                <Field
+                  label="سعر البيع"
+                  value={formatPrice(Number(selected.selling_price))}
+                  ltr
+                  bold
+                />
+                <Field
+                  label="تكلفة المنصة"
+                  value={formatPrice(Number(selected.platform_price))}
+                  ltr
+                />
+                <Field
+                  label="ربح الوكيل"
+                  value={formatPrice(Number(selected.reseller_profit))}
+                  ltr
+                />
                 <Field
                   label="ربح الإدارة"
-                  value={formatPrice(Number(selected.platform_price) - Number(selected.cost_price ?? 0))}
+                  value={formatPrice(
+                    Number(selected.platform_price) - Number(selected.cost_price ?? 0),
+                  )}
                   ltr
                 />
               </div>
@@ -370,7 +401,8 @@ function AdminDropshipOrdersPage() {
               {selected.tracking_number && (
                 <div className="text-xs text-muted-foreground flex items-center gap-2">
                   <Truck className="h-3.5 w-3.5" />
-                  رقم التتبع الحالي: <code className="bg-muted px-1.5 py-0.5 rounded">{selected.tracking_number}</code>
+                  رقم التتبع الحالي:{" "}
+                  <code className="bg-muted px-1.5 py-0.5 rounded">{selected.tracking_number}</code>
                 </div>
               )}
 
@@ -378,50 +410,49 @@ function AdminDropshipOrdersPage() {
               <div className="space-y-2">
                 <p className="text-sm font-medium">الإجراءات المتاحة</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {STATUS_FLOW.filter((f) => f.from === selected.status).map(
-                    (f) => {
-                      const isShip = f.to === "shipped";
-                      return (
-                        <div key={f.to} className="space-y-2">
-                          {isShip && (
-                            <div className="space-y-1.5 sm:col-span-2">
-                              <Input
-                                placeholder="رقم التتبع (tracking number)"
-                                value={trackingInput}
-                                onChange={(e) => setTrackingInput(e.target.value)}
-                                dir="ltr"
-                              />
-                              <Input
-                                placeholder="ZR Express ID (اختياري)"
-                                value={zrIdInput}
-                                onChange={(e) => setZrIdInput(e.target.value)}
-                                dir="ltr"
-                              />
-                            </div>
+                  {STATUS_FLOW.filter((f) => f.from === selected.status).map((f) => {
+                    const isShip = f.to === "shipped";
+                    return (
+                      <div key={f.to} className="space-y-2">
+                        {isShip && (
+                          <div className="space-y-1.5 sm:col-span-2">
+                            <Input
+                              placeholder="رقم التتبع (tracking number)"
+                              value={trackingInput}
+                              onChange={(e) => setTrackingInput(e.target.value)}
+                              dir="ltr"
+                            />
+                            <Input
+                              placeholder="ZR Express ID (اختياري)"
+                              value={zrIdInput}
+                              onChange={(e) => setZrIdInput(e.target.value)}
+                              dir="ltr"
+                            />
+                          </div>
+                        )}
+                        <Button
+                          onClick={() => handleStatusChange(selected, f.to)}
+                          disabled={updateStatus.isPending}
+                          className="w-full"
+                          variant={f.to === "refused" ? "destructive" : "default"}
+                        >
+                          {updateStatus.isPending ? (
+                            <Loader2 className="h-4 w-4 animate-spin ms-2" />
+                          ) : (
+                            <f.icon className="h-4 w-4 ms-2" />
                           )}
-                          <Button
-                            onClick={() => handleStatusChange(selected, f.to)}
-                            disabled={updateStatus.isPending}
-                            className="w-full"
-                            variant={f.to === "refused" ? "destructive" : "default"}
-                          >
-                            {updateStatus.isPending ? (
-                              <Loader2 className="h-4 w-4 animate-spin ms-2" />
-                            ) : (
-                              <f.icon className="h-4 w-4 ms-2" />
-                            )}
-                            {f.label}
-                          </Button>
-                          {f.to === "delivered" && (
-                            <p className="text-[11px] text-muted-foreground leading-relaxed">
-                              <CheckCircle2 className="inline h-3 w-3 me-1" />
-                              سيتم إضافة {formatPrice(Number(selected.selling_price))} لمحفظة الوكيل تلقائياً.
-                            </p>
-                          )}
-                        </div>
-                      );
-                    },
-                  )}
+                          {f.label}
+                        </Button>
+                        {f.to === "delivered" && (
+                          <p className="text-[11px] text-muted-foreground leading-relaxed">
+                            <CheckCircle2 className="inline h-3 w-3 me-1" />
+                            سيتم إضافة {formatPrice(Number(selected.selling_price))} لمحفظة الوكيل
+                            تلقائياً.
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })}
                   {STATUS_FLOW.filter((f) => f.from === selected.status).length === 0 && (
                     <p className="text-sm text-muted-foreground col-span-2">
                       لا توجد إجراءات إضافية لهذه الحالة.
@@ -473,7 +504,10 @@ function Field({
   return (
     <div className={className}>
       <p className="text-[11px] text-muted-foreground">{label}</p>
-      <p className={`${bold ? "font-bold" : ""} ${ltr ? "text-end" : ""}`} dir={ltr ? "ltr" : undefined}>
+      <p
+        className={`${bold ? "font-bold" : ""} ${ltr ? "text-end" : ""}`}
+        dir={ltr ? "ltr" : undefined}
+      >
         {value}
       </p>
     </div>

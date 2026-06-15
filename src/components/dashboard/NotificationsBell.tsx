@@ -6,11 +6,7 @@ import { playSound } from "@/lib/sounds";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 
@@ -33,9 +29,12 @@ function resolveLink(n: Notification): string | null {
 
   if (msg.includes("order") || title.includes("order")) return "/dashboard/orders";
   if (msg.includes("customer") || title.includes("customer")) return "/dashboard/customers";
-  if (msg.includes("shipment") || msg.includes("shipping") || title.includes("shipment")) return "/dashboard/shipments";
-  if (msg.includes("stock alert") || title.includes("stock alert")) return "/dashboard/stock-alerts";
-  if (msg.includes("product") || msg.includes("stock") || title.includes("stock")) return "/dashboard/products";
+  if (msg.includes("shipment") || msg.includes("shipping") || title.includes("shipment"))
+    return "/dashboard/shipments";
+  if (msg.includes("stock alert") || title.includes("stock alert"))
+    return "/dashboard/stock-alerts";
+  if (msg.includes("product") || msg.includes("stock") || title.includes("stock"))
+    return "/dashboard/products";
   if (msg.includes("payment") || title.includes("payment")) return "/dashboard/payments";
   if (msg.includes("return") || title.includes("return")) return "/dashboard/returns";
 
@@ -55,7 +54,8 @@ async function sendBrowserNotification(title: string, body: string, type: string
     new Notification(`${icon} ${title}`, {
       body,
       icon: "https://gyfcaoscsjazazhfozig.supabase.co/storage/v1/object/public/store-assets/email/fennecly-logo-white.png",
-      badge: "https://gyfcaoscsjazazhfozig.supabase.co/storage/v1/object/public/store-assets/email/fennecly-logo-white.png",
+      badge:
+        "https://gyfcaoscsjazazhfozig.supabase.co/storage/v1/object/public/store-assets/email/fennecly-logo-white.png",
       tag: "fennecly-notification",
     });
   }
@@ -75,9 +75,7 @@ export function NotificationsBell() {
   const [items, setItems] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
   const [permission, setPermission] = useState<NotificationPermission>(
-    typeof window !== "undefined" && "Notification" in window
-      ? Notification.permission
-      : "default",
+    typeof window !== "undefined" && "Notification" in window ? Notification.permission : "default",
   );
   const [showPermissionBanner, setShowPermissionBanner] = useState(false);
   const bellRef = useRef<HTMLButtonElement>(null);
@@ -127,15 +125,15 @@ export function NotificationsBell() {
           sendBrowserNotification(n.title, n.message, n.type);
 
           const fn =
-            n.type === "success" ? toast.success
-            : n.type === "error" ? toast.error
-            : toast.info;
+            n.type === "success" ? toast.success : n.type === "error" ? toast.error : toast.info;
           fn(n.title, { description: n.message });
         },
       )
       .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
+    return () => {
+      supabase.removeChannel(channel);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
@@ -182,9 +180,7 @@ export function NotificationsBell() {
           </div>
           <div className="flex-1">
             <p className="text-sm font-semibold">Enable notifications</p>
-            <p className="text-xs text-muted-foreground">
-              Get notified for new orders and updates
-            </p>
+            <p className="text-xs text-muted-foreground">Get notified for new orders and updates</p>
           </div>
           <div className="flex gap-2">
             <Button
@@ -277,16 +273,20 @@ export function NotificationsBell() {
                     <li
                       key={n.id}
                       className={`px-4 py-3 transition-colors ${
-                        link ? "cursor-pointer hover:bg-muted/50" : "cursor-default hover:bg-muted/30"
+                        link
+                          ? "cursor-pointer hover:bg-muted/50"
+                          : "cursor-default hover:bg-muted/30"
                       } ${!n.read ? "bg-primary/5" : ""}`}
                       onClick={() => handleClick(n)}
                     >
                       <div className="flex items-start gap-2">
                         <span
                           className={`mt-1.5 size-2 rounded-full shrink-0 ${
-                            n.type === "success" ? "bg-green-500"
-                            : n.type === "error" ? "bg-destructive"
-                            : "bg-primary"
+                            n.type === "success"
+                              ? "bg-green-500"
+                              : n.type === "error"
+                                ? "bg-destructive"
+                                : "bg-primary"
                           } ${n.read ? "opacity-30" : ""}`}
                         />
                         <div className="flex-1 min-w-0">
@@ -296,9 +296,7 @@ export function NotificationsBell() {
                               {link && (
                                 <span className="text-[10px] text-primary font-medium">→</span>
                               )}
-                              {n.read && (
-                                <Check className="h-3 w-3 text-muted-foreground" />
-                              )}
+                              {n.read && <Check className="h-3 w-3 text-muted-foreground" />}
                             </div>
                           </div>
                           <p className="text-xs text-muted-foreground mt-0.5">{n.message}</p>

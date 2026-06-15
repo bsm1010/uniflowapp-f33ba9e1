@@ -7,10 +7,13 @@ export function ThemeToggle() {
 
   useEffect(() => {
     let stored: string | null = null;
-    try { stored = localStorage.getItem("theme"); } catch {}
+    try {
+      stored = localStorage.getItem("theme");
+    } catch (error) {
+      console.warn(error);
+    }
     const dark =
-      stored === "dark" ||
-      (!stored && window.matchMedia("(prefers-color-scheme: dark)").matches);
+      stored === "dark" || (!stored && window.matchMedia("(prefers-color-scheme: dark)").matches);
     setIsDark(dark);
     document.documentElement.classList.toggle("dark", dark);
   }, []);
@@ -24,7 +27,11 @@ export function ThemeToggle() {
     document.head.appendChild(style);
     // Apply theme
     document.documentElement.classList.toggle("dark", next);
-    try { localStorage.setItem("theme", next ? "dark" : "light"); } catch {}
+    try {
+      localStorage.setItem("theme", next ? "dark" : "light");
+    } catch (error) {
+      console.warn(error);
+    }
     // Force immediate paint then remove the blocker
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
@@ -41,11 +48,7 @@ export function ThemeToggle() {
       aria-label="Toggle dark mode"
       className="h-9 w-9"
     >
-      {isDark ? (
-        <Sun className="h-4 w-4" />
-      ) : (
-        <Moon className="h-4 w-4" />
-      )}
+      {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
     </Button>
   );
 }

@@ -85,7 +85,9 @@ export function ContactForm({ props }: BlockComponentProps<ContactFormProps>) {
           placeholder="Message"
           required
         />
-        <Button type="submit" size="lg">{props.submitLabel}</Button>
+        <Button type="submit" size="lg">
+          {props.submitLabel}
+        </Button>
       </form>
     </Section>
   );

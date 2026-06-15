@@ -81,37 +81,59 @@ function StorePage() {
     Promise.all([
       supabase.from("store_settings").select("*").eq("user_id", user.id).maybeSingle(),
       supabase.from("products").select("id", { count: "exact", head: true }).eq("user_id", user.id),
-      supabase.from("orders").select("id", { count: "exact", head: true }).eq("store_owner_id", user.id),
-      supabase.from("orders").select("total,customer_email").eq("store_owner_id", user.id).limit(5000),
-      supabase.from("orders").select("id,customer_name,total,status,created_at").eq("store_owner_id", user.id).order("created_at", { ascending: false }).limit(5),
-    ]).then(([s, p, o, agg, recent]) => {
-      if (!active) return;
-      if (s.error || p.error || o.error || agg.error || recent.error) {
-        console.error({ s: s.error, p: p.error, o: o.error, agg: agg.error, recent: recent.error });
-        setError("Failed to load store data. Please try again.");
+      supabase
+        .from("orders")
+        .select("id", { count: "exact", head: true })
+        .eq("store_owner_id", user.id),
+      supabase
+        .from("orders")
+        .select("total,customer_email")
+        .eq("store_owner_id", user.id)
+        .limit(5000),
+      supabase
+        .from("orders")
+        .select("id,customer_name,total,status,created_at")
+        .eq("store_owner_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(5),
+    ])
+      .then(([s, p, o, agg, recent]) => {
+        if (!active) return;
+        if (s.error || p.error || o.error || agg.error || recent.error) {
+          console.error({
+            s: s.error,
+            p: p.error,
+            o: o.error,
+            agg: agg.error,
+            recent: recent.error,
+          });
+          setError("Failed to load store data. Please try again.");
+          setLoading(false);
+          return;
+        }
+        setSettings(s.data);
+        setStoreVisible(s.data?.is_active !== false);
+        setProductCount(p.count ?? 0);
+        setOrderCount(o.count ?? 0);
+
+        const aggData = agg.data ?? [];
+        setRevenue(aggData.reduce((n, r) => n + Number(r.total ?? 0), 0));
+        setCustomerCount(
+          new Set(aggData.map((r) => (r.customer_email ?? "").toLowerCase()).filter(Boolean)).size,
+        );
+        setRecentOrders(recent.data ?? []);
         setLoading(false);
-        return;
-      }
-      setSettings(s.data);
-      setStoreVisible(s.data?.is_active !== false);
-      setProductCount(p.count ?? 0);
-      setOrderCount(o.count ?? 0);
+      })
+      .catch((err) => {
+        if (!active) return;
+        console.error("Store page load failed:", err);
+        setError("Something went wrong loading your store.");
+        setLoading(false);
+      });
 
-      const aggData = agg.data ?? [];
-      setRevenue(aggData.reduce((n, r) => n + Number(r.total ?? 0), 0));
-      setCustomerCount(
-        new Set(aggData.map((r) => (r.customer_email ?? "").toLowerCase()).filter(Boolean)).size
-      );
-      setRecentOrders(recent.data ?? []);
-      setLoading(false);
-    }).catch((err) => {
-      if (!active) return;
-      console.error("Store page load failed:", err);
-      setError("Something went wrong loading your store.");
-      setLoading(false);
-    });
-
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [user]);
 
   useEffect(() => {
@@ -131,22 +153,41 @@ function StorePage() {
       <div className="flex flex-col items-center justify-center py-20 gap-4">
         <AlertTriangle className="h-8 w-8 text-destructive" />
         <p className="text-sm text-muted-foreground">{error}</p>
-        <Button onClick={() => { setLoading(true); loadStore(); }}>Retry</Button>
+        <Button
+          onClick={() => {
+            setLoading(true);
+            loadStore();
+          }}
+        >
+          Retry
+        </Button>
       </div>
     );
   }
 
   const slug = settings?.slug;
   const liveUrl = slug ? `/s/${slug}` : "";
-  const themePicked = settings != null && (
-    settings.store_name !== "My Store" ||
-    settings.theme !== "default" ||
-    settings.hero_image_url != null
-  );
+  const themePicked =
+    settings != null &&
+    (settings.store_name !== "My Store" ||
+      settings.theme !== "default" ||
+      settings.hero_image_url != null);
 
   const checklist = [
-    { title: "Add your first product", done: productCount > 0, to: "/dashboard/products", external: false, icon: Package },
-    { title: "Customize your storefront", done: themePicked, to: "/customize", external: true, icon: Palette },
+    {
+      title: "Add your first product",
+      done: productCount > 0,
+      to: "/dashboard/products",
+      external: false,
+      icon: Package,
+    },
+    {
+      title: "Customize your storefront",
+      done: themePicked,
+      to: "/customize",
+      external: true,
+      icon: Palette,
+    },
     { title: "Share your store URL", done: !!slug, to: "/customize", external: true, icon: Globe },
   ];
 
@@ -187,10 +228,30 @@ function StorePage() {
     : "";
 
   const stats = [
-    { label: "Products", value: productCount, icon: Package, color: "from-violet-500/15 to-violet-500/5" },
-    { label: "Orders", value: orderCount, icon: ShoppingBag, color: "from-fuchsia-500/15 to-fuchsia-500/5" },
-    { label: "Revenue", value: `${revenue.toLocaleString()} ${settings?.currency ?? "DZD"}`, icon: DollarSign, color: "from-emerald-500/15 to-emerald-500/5" },
-    { label: "Customers", value: customerCount, icon: Users, color: "from-sky-500/15 to-sky-500/5" },
+    {
+      label: "Products",
+      value: productCount,
+      icon: Package,
+      color: "from-violet-500/15 to-violet-500/5",
+    },
+    {
+      label: "Orders",
+      value: orderCount,
+      icon: ShoppingBag,
+      color: "from-fuchsia-500/15 to-fuchsia-500/5",
+    },
+    {
+      label: "Revenue",
+      value: `${revenue.toLocaleString()} ${settings?.currency ?? "DZD"}`,
+      icon: DollarSign,
+      color: "from-emerald-500/15 to-emerald-500/5",
+    },
+    {
+      label: "Customers",
+      value: customerCount,
+      icon: Users,
+      color: "from-sky-500/15 to-sky-500/5",
+    },
   ];
 
   const statusColor = (s: string) => {
@@ -237,7 +298,10 @@ function StorePage() {
             {settings?.logo_url ? (
               <img src={settings.logo_url} alt="" className="h-full w-full object-cover" />
             ) : (
-              <div className="h-12 w-12 rounded-xl" style={{ backgroundColor: settings?.primary_color }} />
+              <div
+                className="h-12 w-12 rounded-xl"
+                style={{ backgroundColor: settings?.primary_color }}
+              />
             )}
           </div>
           <div className="mt-4 flex items-start justify-between flex-wrap gap-3">
@@ -261,7 +325,9 @@ function StorePage() {
               variant="outline"
               className={`gap-1.5 ${storeVisible ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" : "border-orange-500/40 bg-orange-500/10 text-orange-500"}`}
             >
-              <CircleDot className={`h-3 w-3 ${storeVisible ? "fill-emerald-500 text-emerald-500" : "fill-orange-500 text-orange-500"}`} />
+              <CircleDot
+                className={`h-3 w-3 ${storeVisible ? "fill-emerald-500 text-emerald-500" : "fill-orange-500 text-orange-500"}`}
+              />
               {storeVisible ? "Active" : "Hidden"}
             </Badge>
           </div>
@@ -274,7 +340,9 @@ function StorePage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {stats.map((s) => (
             <Card key={s.label} className="relative overflow-hidden border-border/60 shadow-soft">
-              <div className={`absolute inset-0 bg-gradient-to-br ${s.color} pointer-events-none`} />
+              <div
+                className={`absolute inset-0 bg-gradient-to-br ${s.color} pointer-events-none`}
+              />
               <CardContent className="relative p-5 flex items-center justify-between">
                 <div>
                   <p className="text-xs text-muted-foreground font-medium">{s.label}</p>
@@ -291,13 +359,18 @@ function StorePage() {
 
       {/* ── Store health + QR ── */}
       <div className="grid gap-4 md:grid-cols-2">
-
         {/* Health score */}
         <Card className="border-border/60 shadow-soft">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold">Store health</h3>
-              <span className="text-2xl font-bold" style={{ color: healthScore === 100 ? "#10b981" : healthScore >= 60 ? "#f59e0b" : "#ef4444" }}>
+              <span
+                className="text-2xl font-bold"
+                style={{
+                  color:
+                    healthScore === 100 ? "#10b981" : healthScore >= 60 ? "#f59e0b" : "#ef4444",
+                }}
+              >
                 {healthScore}%
               </span>
             </div>
@@ -307,20 +380,26 @@ function StorePage() {
                 className="h-full rounded-full transition-all duration-700"
                 style={{
                   width: `${healthScore}%`,
-                  background: healthScore === 100 ? "#10b981" : healthScore >= 60 ? "#f59e0b" : "#ef4444",
+                  background:
+                    healthScore === 100 ? "#10b981" : healthScore >= 60 ? "#f59e0b" : "#ef4444",
                 }}
               />
             </div>
             <div className="space-y-3">
               {checklist.map((item) => (
                 <div key={item.title} className="flex items-center gap-3">
-                  <div className={`h-5 w-5 rounded-full flex items-center justify-center flex-shrink-0 ${item.done ? "bg-emerald-500/15 text-emerald-500" : "bg-accent text-muted-foreground"}`}>
-                    {item.done
-                      ? <CheckCircle2 className="h-3.5 w-3.5" />
-                      : <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground" />
-                    }
+                  <div
+                    className={`h-5 w-5 rounded-full flex items-center justify-center flex-shrink-0 ${item.done ? "bg-emerald-500/15 text-emerald-500" : "bg-accent text-muted-foreground"}`}
+                  >
+                    {item.done ? (
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                    ) : (
+                      <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground" />
+                    )}
                   </div>
-                  <span className={`text-sm ${item.done ? "line-through text-muted-foreground" : "text-foreground"}`}>
+                  <span
+                    className={`text-sm ${item.done ? "line-through text-muted-foreground" : "text-foreground"}`}
+                  >
                     {item.title}
                   </span>
                 </div>
@@ -421,21 +500,35 @@ function StorePage() {
             const card = (
               <Card className="border-border/60 shadow-soft hover:border-primary/40 transition-colors">
                 <CardContent className="p-4 flex items-center gap-4">
-                  <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${item.done ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" : "bg-accent text-accent-foreground"}`}>
+                  <div
+                    className={`h-10 w-10 rounded-xl flex items-center justify-center ${item.done ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" : "bg-accent text-accent-foreground"}`}
+                  >
                     <item.icon className="h-5 w-5" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="font-medium">{item.title}</div>
-                    <div className="text-xs text-muted-foreground">{item.done ? "Completed" : "Not started"}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {item.done ? "Completed" : "Not started"}
+                    </div>
                   </div>
-                  <Button variant="ghost" size="sm">{item.done ? "Edit" : "Start"}</Button>
+                  <Button variant="ghost" size="sm">
+                    {item.done ? "Edit" : "Start"}
+                  </Button>
                 </CardContent>
               </Card>
             );
             if (item.external) {
-              return <a key={item.title} href={item.to} target="_blank" rel="noopener noreferrer">{card}</a>;
+              return (
+                <a key={item.title} href={item.to} target="_blank" rel="noopener noreferrer">
+                  {card}
+                </a>
+              );
             }
-            return <Link key={item.title} to={item.to as "/dashboard/products"}>{card}</Link>;
+            return (
+              <Link key={item.title} to={item.to as "/dashboard/products"}>
+                {card}
+              </Link>
+            );
           })}
         </div>
       </div>
@@ -448,11 +541,12 @@ function StorePage() {
         </h3>
         <Card className="border-destructive/30 shadow-soft">
           <CardContent className="p-5 space-y-4">
-
             {/* Toggle visibility */}
             <div className="flex items-center justify-between gap-4 flex-wrap">
               <div>
-                <p className="font-medium text-sm">{storeVisible ? "Hide your store" : "Show your store"}</p>
+                <p className="font-medium text-sm">
+                  {storeVisible ? "Hide your store" : "Show your store"}
+                </p>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   {storeVisible
                     ? "Customers won't be able to visit your storefront while it's hidden."
@@ -466,12 +560,17 @@ function StorePage() {
                 disabled={togglingVisibility}
                 className="shrink-0 border-orange-500/40 text-orange-500 hover:bg-orange-500/10"
               >
-                {togglingVisibility
-                  ? <Loader2 className="h-4 w-4 animate-spin" />
-                  : storeVisible
-                    ? <><EyeOff className="h-4 w-4 mr-1.5" /> Hide store</>
-                    : <><Eye className="h-4 w-4 mr-1.5" /> Show store</>
-                }
+                {togglingVisibility ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : storeVisible ? (
+                  <>
+                    <EyeOff className="h-4 w-4 mr-1.5" /> Hide store
+                  </>
+                ) : (
+                  <>
+                    <Eye className="h-4 w-4 mr-1.5" /> Show store
+                  </>
+                )}
               </Button>
             </div>
 
@@ -504,11 +603,9 @@ function StorePage() {
                 </AlertDialogContent>
               </AlertDialog>
             </div>
-
           </CardContent>
         </Card>
       </div>
-
     </div>
   );
 }

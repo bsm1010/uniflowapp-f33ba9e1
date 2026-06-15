@@ -1,7 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { buildDnsRecords, classifyDomain, LOVABLE_EDGE_IP, LOVABLE_CNAME_TARGET } from "./dns-records";
+import {
+  buildDnsRecords,
+  classifyDomain,
+  LOVABLE_EDGE_IP,
+  LOVABLE_CNAME_TARGET,
+} from "./dns-records";
 
 const addSchema = z.object({ domain: z.string().min(3).max(253) });
 const idSchema = z.object({ id: z.string().uuid() });
@@ -14,9 +19,12 @@ function genToken() {
 
 async function dohQuery(name: string, type: "A" | "CNAME" | "TXT" | "NS"): Promise<string[]> {
   try {
-    const res = await fetch(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(name)}&type=${type}`, {
-      headers: { accept: "application/dns-json" },
-    });
+    const res = await fetch(
+      `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(name)}&type=${type}`,
+      {
+        headers: { accept: "application/dns-json" },
+      },
+    );
     if (!res.ok) return [];
     const data = (await res.json()) as { Answer?: { data: string }[] };
     return (data.Answer ?? []).map((a) => a.data.replace(/^"|"$/g, ""));
@@ -44,11 +52,19 @@ export const addCustomDomain = createServerFn({ method: "POST" })
     const cls = classifyDomain(data.domain);
     if (!cls) throw new Error("Invalid domain format");
 
-    const { data: profile } = await supabase.from("profiles").select("id").eq("id", userId).maybeSingle();
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("id", userId)
+      .maybeSingle();
     if (!profile) throw new Error("Profile not found");
 
     // store_slug — use store_settings if available, else userId
-    const { data: settings } = await supabase.from("store_settings").select("slug").eq("user_id", userId).maybeSingle();
+    const { data: settings } = await supabase
+      .from("store_settings")
+      .select("slug")
+      .eq("user_id", userId)
+      .maybeSingle();
     const slug = (settings as { slug?: string } | null)?.slug ?? userId;
 
     const token = genToken();
@@ -88,7 +104,10 @@ export const verifyCustomDomain = createServerFn({ method: "POST" })
     if (!row) throw new Error("Domain not found");
 
     const d = row as {
-      id: string; domain: string; domain_type: string; verification_token: string;
+      id: string;
+      domain: string;
+      domain_type: string;
+      verification_token: string;
     };
 
     // Check TXT
@@ -108,7 +127,13 @@ export const verifyCustomDomain = createServerFn({ method: "POST" })
 
     const verified = txtOk && dnsOk;
     const update = verified
-      ? { status: "verified", ssl_active: true, verified_at: new Date().toISOString(), error_message: null, last_checked_at: new Date().toISOString() }
+      ? {
+          status: "verified",
+          ssl_active: true,
+          verified_at: new Date().toISOString(),
+          error_message: null,
+          last_checked_at: new Date().toISOString(),
+        }
       : {
           status: "verifying",
           last_checked_at: new Date().toISOString(),

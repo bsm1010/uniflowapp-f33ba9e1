@@ -45,7 +45,10 @@ export function SectionEditor() {
   const def = getBlock(section.blockKey);
   if (!def) {
     return (
-      <div className="p-6 text-sm text-destructive">{tr("editor.sectionEditor.unknownType")}{section.blockKey}</div>
+      <div className="p-6 text-sm text-destructive">
+        {tr("editor.sectionEditor.unknownType")}
+        {section.blockKey}
+      </div>
     );
   }
 
@@ -87,7 +90,9 @@ export function SectionEditor() {
       {/* Header */}
       <div className="flex items-start justify-between gap-2 border-b p-4">
         <div className="min-w-0">
-          <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{tr("editor.sectionEditor.editing")}</div>
+          <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
+            {tr("editor.sectionEditor.editing")}
+          </div>
           <div className="truncate text-sm font-semibold">{def.label}</div>
         </div>
         <Button
@@ -143,7 +148,9 @@ export function SectionEditor() {
 
           {/* Style overrides */}
           <div className="pt-2 border-t">
-            <div className="text-xs font-medium text-muted-foreground mb-3">{tr("editor.sectionEditor.styleOverrides")}</div>
+            <div className="text-xs font-medium text-muted-foreground mb-3">
+              {tr("editor.sectionEditor.styleOverrides")}
+            </div>
             <div className="space-y-3">
               <FieldInline label={tr("editor.sectionEditor.paddingY")}>
                 <Input

@@ -39,11 +39,18 @@ type Profile = {
 function statusBadge(status: string) {
   const map: Record<string, { label: string; cls: string }> = {
     pending: { label: "Pending review", cls: "bg-amber-500/15 text-amber-700 border-amber-500/30" },
-    approved: { label: "Approved", cls: "bg-emerald-500/15 text-emerald-700 border-emerald-500/30" },
+    approved: {
+      label: "Approved",
+      cls: "bg-emerald-500/15 text-emerald-700 border-emerald-500/30",
+    },
     rejected: { label: "Rejected", cls: "bg-red-500/15 text-red-700 border-red-500/30" },
   };
   const m = map[status] ?? { label: status, cls: "" };
-  return <Badge variant="outline" className={m.cls}>{m.label}</Badge>;
+  return (
+    <Badge variant="outline" className={m.cls}>
+      {m.label}
+    </Badge>
+  );
 }
 
 function DeveloperPage() {
@@ -65,7 +72,9 @@ function DeveloperPage() {
       const [appsRes, profRes, purchRes] = await Promise.all([
         supabase
           .from("apps")
-          .select("id,title,slug,category,status,is_free,price,icon_url,rejection_reason,created_at")
+          .select(
+            "id,title,slug,category,status,is_free,price,icon_url,rejection_reason,created_at",
+          )
           .eq("developer_id", user.id)
           .order("created_at", { ascending: false }),
         supabase
@@ -216,7 +225,9 @@ function DeveloperPage() {
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-semibold truncate">{app.title}</span>
                     {statusBadge(app.status)}
-                    <Badge variant="secondary" className="text-xs">{app.category}</Badge>
+                    <Badge variant="secondary" className="text-xs">
+                      {app.category}
+                    </Badge>
                   </div>
                   <div className="text-sm text-muted-foreground mt-0.5">
                     {app.is_free ? "Free" : `$${Number(app.price).toFixed(2)}`} ·{" "}

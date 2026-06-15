@@ -110,9 +110,7 @@ function SupplyListingsPage() {
         listingId: listing.id,
         is_active: !listing.is_active,
       });
-      toast.success(
-        listing.is_active ? "تم إخفاء المنتج" : "تم تفعيل المنتج",
-      );
+      toast.success(listing.is_active ? "تم إخفاء المنتج" : "تم تفعيل المنتج");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed");
     }
@@ -212,9 +210,7 @@ function SupplyListingsPage() {
               icon={Store}
               title={search ? "لا توجد نتائج" : "لا توجد منتجات في متجرك"}
               description={
-                search
-                  ? "جرّب تعديل كلمة البحث"
-                  : "أضف منتجات من سوق التوريد لتظهر هنا."
+                search ? "جرّب تعديل كلمة البحث" : "أضف منتجات من سوق التوريد لتظهر هنا."
               }
             />
           </div>
@@ -259,9 +255,7 @@ function SupplyListingsPage() {
                               {product?.name ?? "—"}
                             </p>
                             {product?.category && (
-                              <p className="text-xs text-muted-foreground">
-                                {product.category}
-                              </p>
+                              <p className="text-xs text-muted-foreground">{product.category}</p>
                             )}
                           </div>
                         </div>
@@ -417,9 +411,7 @@ function EditPriceDialog({
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>تعديل سعر البيع</DialogTitle>
-          <DialogDescription>
-            {listing?.supply_product?.name}
-          </DialogDescription>
+          <DialogDescription>{listing?.supply_product?.name}</DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-2">
           <div className="rounded-lg border border-border/60 p-3 space-y-2 text-sm">

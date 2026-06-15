@@ -63,7 +63,16 @@ export function CreditsProvider({ children }: { children: ReactNode }) {
 
   return (
     <Ctx.Provider
-      value={{ credits, plan, referralCode, loading, refresh, showPaywall, setShowPaywall, triggerPaywall }}
+      value={{
+        credits,
+        plan,
+        referralCode,
+        loading,
+        refresh,
+        showPaywall,
+        setShowPaywall,
+        triggerPaywall,
+      }}
     >
       {children}
     </Ctx.Provider>

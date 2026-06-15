@@ -5,10 +5,7 @@ import { z } from "zod";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
-import {
-  StorefrontShell,
-  getStoreTokens,
-} from "@/components/storefront/StorefrontShell";
+import { StorefrontShell, getStoreTokens } from "@/components/storefront/StorefrontShell";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -105,7 +102,10 @@ function TrackPage() {
         ...o,
         items: (items ?? []).filter((it) => it.order_id === o.id),
         shipment: shipment
-          ? { ...shipment, carrier: shipment.company_id ? carriers[shipment.company_id] : undefined }
+          ? {
+              ...shipment,
+              carrier: shipment.company_id ? carriers[shipment.company_id] : undefined,
+            }
           : null,
       };
     });
@@ -128,17 +128,11 @@ function TrackPage() {
     const ids = orders.map((o) => o.id);
     const channel = supabase
       .channel(`track-${slug}-${ids[0]}`)
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "orders" },
-        (payload) => {
-          const updated = payload.new as Order;
-          if (!ids.includes(updated.id)) return;
-          setOrders((cur) =>
-            cur.map((o) => (o.id === updated.id ? { ...o, ...updated } : o)),
-          );
-        },
-      )
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "orders" }, (payload) => {
+        const updated = payload.new as Order;
+        if (!ids.includes(updated.id)) return;
+        setOrders((cur) => cur.map((o) => (o.id === updated.id ? { ...o, ...updated } : o)));
+      })
       .subscribe();
     return () => {
       supabase.removeChannel(channel);
@@ -167,8 +161,7 @@ function TrackPage() {
   }
 
   const t = getStoreTokens(settings);
-  const radius =
-    settings.theme === "minimal" ? 0 : settings.theme === "grid" ? 8 : 16;
+  const radius = settings.theme === "minimal" ? 0 : settings.theme === "grid" ? 8 : 16;
 
   return (
     <StorefrontShell settings={settings}>
@@ -180,16 +173,15 @@ function TrackPage() {
           >
             <Package className="h-7 w-7" />
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{tr("storefront.track.title")}</h1>
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+            {tr("storefront.track.title")}
+          </h1>
           <p className="mt-2 text-sm" style={{ color: t.muted }}>
             {tr("storefront.track.subtitle")}
           </p>
         </div>
 
-        <form
-          onSubmit={handleSearch}
-          className="flex flex-col sm:flex-row gap-2 mb-8"
-        >
+        <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-2 mb-8">
           <Input
             type="tel"
             placeholder={tr("storefront.track.phonePh")}
@@ -202,7 +194,11 @@ function TrackPage() {
             disabled={searching || !phoneInput.trim()}
             style={{ backgroundColor: t.primary, color: t.onPrimary, borderRadius: radius / 2 }}
           >
-            {searching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4 mr-2" />}
+            {searching ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Search className="h-4 w-4 mr-2" />
+            )}
             {!searching && tr("storefront.track.search")}
           </Button>
         </form>
@@ -216,7 +212,11 @@ function TrackPage() {
         {!searching && searched && orders.length === 0 && (
           <div
             className="text-center py-12 rounded-lg"
-            style={{ backgroundColor: t.surface, border: `1px solid ${t.border}`, borderRadius: radius / 2 }}
+            style={{
+              backgroundColor: t.surface,
+              border: `1px solid ${t.border}`,
+              borderRadius: radius / 2,
+            }}
           >
             <XCircle className="h-10 w-10 mx-auto mb-2" style={{ color: t.muted }} />
             <p className="font-medium">{tr("storefront.track.none")}</p>
@@ -366,7 +366,11 @@ function OrderTrackingCard({
                 const Icon = STEP_ICONS[key];
                 const reached = i <= currentIndex;
                 return (
-                  <div key={key} className="flex flex-col items-center text-center" style={{ width: 80 }}>
+                  <div
+                    key={key}
+                    className="flex flex-col items-center text-center"
+                    style={{ width: 80 }}
+                  >
                     <div
                       className="h-8 w-8 rounded-full flex items-center justify-center transition-colors"
                       style={{

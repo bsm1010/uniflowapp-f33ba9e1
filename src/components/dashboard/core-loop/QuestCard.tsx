@@ -1,7 +1,25 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
-import { CheckCircle2, Circle, Gift, Sparkles, Package, ShoppingBag, LayoutDashboard, LogIn, Truck, Palette, Layers, TrendingUp, DollarSign, Users, Flame, Award, type LucideIcon } from "lucide-react";
+import {
+  CheckCircle2,
+  Circle,
+  Gift,
+  Sparkles,
+  Package,
+  ShoppingBag,
+  LayoutDashboard,
+  LogIn,
+  Truck,
+  Palette,
+  Layers,
+  TrendingUp,
+  DollarSign,
+  Users,
+  Flame,
+  Award,
+  type LucideIcon,
+} from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { claimQuest } from "@/lib/core-loop/claim-quest";
@@ -11,7 +29,20 @@ import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 const ICON_MAP: Record<string, LucideIcon> = {
-  LogIn, LayoutDashboard, Package, ShoppingBag, Truck, Palette, Layers, TrendingUp, DollarSign, Users, Flame, Award, Sparkles, Gift,
+  LogIn,
+  LayoutDashboard,
+  Package,
+  ShoppingBag,
+  Truck,
+  Palette,
+  Layers,
+  TrendingUp,
+  DollarSign,
+  Users,
+  Flame,
+  Award,
+  Sparkles,
+  Gift,
 };
 
 const TYPE_COLORS: Record<string, string> = {
@@ -39,24 +70,32 @@ export function QuestCard({ quest, onClaimed }: QuestCardProps) {
   const handleClaim = async () => {
     setClaiming(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) return;
       await callClaim({ data: { accessToken: session.access_token, questId: quest.id } });
       onClaimed?.();
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
     setClaiming(false);
   };
 
   return (
-    <Card className={cn(
-      "border-border/60 shadow-soft transition-all",
-      quest.completed && quest.claimed && "opacity-60",
-    )}>
+    <Card
+      className={cn(
+        "border-border/60 shadow-soft transition-all",
+        quest.completed && quest.claimed && "opacity-60",
+      )}
+    >
       <CardContent className="p-4 flex items-start gap-3">
-        <div className={cn(
-          "h-9 w-9 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br",
-          quest.completed ? "from-emerald-500 to-teal-500" : TYPE_COLORS[quest.type],
-        )}>
+        <div
+          className={cn(
+            "h-9 w-9 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br",
+            quest.completed ? "from-emerald-500 to-teal-500" : TYPE_COLORS[quest.type],
+          )}
+        >
           {quest.completed ? (
             <CheckCircle2 className="h-4 w-4 text-white" />
           ) : (
@@ -73,7 +112,10 @@ export function QuestCard({ quest, onClaimed }: QuestCardProps) {
             </div>
             <div className="flex items-center gap-1.5 shrink-0">
               <Sparkles className="h-3 w-3 text-amber-400" />
-              <span className="text-xs font-bold text-amber-400">+{quest.xpReward}{t("dashboard.gamification.xpSuffix")}</span>
+              <span className="text-xs font-bold text-amber-400">
+                +{quest.xpReward}
+                {t("dashboard.gamification.xpSuffix")}
+              </span>
             </div>
           </div>
           {quest.description && (
@@ -87,7 +129,9 @@ export function QuestCard({ quest, onClaimed }: QuestCardProps) {
                 transition={{ duration: 0.5 }}
                 className={cn(
                   "h-full rounded-full",
-                  quest.completed ? "bg-emerald-500" : "bg-gradient-to-r from-violet-500 to-fuchsia-500",
+                  quest.completed
+                    ? "bg-emerald-500"
+                    : "bg-gradient-to-r from-violet-500 to-fuchsia-500",
                 )}
               />
             </div>
@@ -103,7 +147,9 @@ export function QuestCard({ quest, onClaimed }: QuestCardProps) {
               disabled={claiming}
             >
               <Gift className="h-3 w-3" />
-              {claiming ? t("dashboard.gamification.claiming") : t("dashboard.gamification.claimReward")}
+              {claiming
+                ? t("dashboard.gamification.claiming")
+                : t("dashboard.gamification.claimReward")}
             </Button>
           )}
           {quest.completed && quest.claimed && (

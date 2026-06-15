@@ -41,18 +41,15 @@ type Status = (typeof STATUS_FLOW)[number];
 const STATUS_VARIANT: Record<string, { label: string; className: string }> = {
   pending: {
     label: "Pending",
-    className:
-      "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30",
+    className: "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30",
   },
   in_transit: {
     label: "In transit",
-    className:
-      "bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-500/30",
+    className: "bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-500/30",
   },
   delivered: {
     label: "Delivered",
-    className:
-      "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30",
+    className: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30",
   },
 };
 
@@ -88,10 +85,7 @@ function ShipmentsPage() {
         const [{ data: ords }, { data: comps }] = await Promise.all([
           supabase.from("orders").select("*").in("id", orderIds),
           companyIds.length
-            ? supabase
-                .from("delivery_companies")
-                .select("id, name")
-                .in("id", companyIds)
+            ? supabase.from("delivery_companies").select("id, name").in("id", companyIds)
             : Promise.resolve({ data: [] as Company[] }),
         ]);
         const oMap: Record<string, Order> = {};
@@ -134,14 +128,9 @@ function ShipmentsPage() {
 
   const updateStatus = async (id: string, status: Status) => {
     const prev = shipments;
-    setShipments((cur) =>
-      cur ? cur.map((s) => (s.id === id ? { ...s, status } : s)) : cur,
-    );
+    setShipments((cur) => (cur ? cur.map((s) => (s.id === id ? { ...s, status } : s)) : cur));
     try {
-      const { error } = await supabase
-        .from("shipments")
-        .update({ status })
-        .eq("id", id);
+      const { error } = await supabase.from("shipments").update({ status }).eq("id", id);
       if (error) {
         setShipments(prev);
         toast.error("Failed to update status");
@@ -199,12 +188,19 @@ function ShipmentsPage() {
               تابع طلباتك من الانطلاق حتى وصولها للزبون 🚀
             </h2>
             <p className="text-xs leading-relaxed text-white/80 sm:text-sm">
-              Track every package in real-time, update statuses on the fly, and keep your customers informed.
+              Track every package in real-time, update statuses on the fly, and keep your customers
+              informed.
             </p>
             <div className="flex flex-wrap gap-2 pt-1">
-              <span className="rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-medium backdrop-blur">Live Updates</span>
-              <span className="rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-medium backdrop-blur">Tracking Numbers</span>
-              <span className="rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-medium backdrop-blur">Status Workflow</span>
+              <span className="rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-medium backdrop-blur">
+                Live Updates
+              </span>
+              <span className="rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-medium backdrop-blur">
+                Tracking Numbers
+              </span>
+              <span className="rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-medium backdrop-blur">
+                Status Workflow
+              </span>
             </div>
           </div>
           <div className="relative hidden h-full sm:block sm:w-48 md:w-64">
@@ -303,40 +299,30 @@ function ShipmentsPage() {
                         <TableCell>
                           {o ? (
                             <>
-                              <div className="font-medium text-sm">
-                                {o.customer_name}
-                              </div>
+                              <div className="font-medium text-sm">{o.customer_name}</div>
                               <div className="text-xs text-muted-foreground">
                                 {o.shipping_address}
                               </div>
                             </>
                           ) : (
-                            <span className="text-xs text-muted-foreground">
-                              —
-                            </span>
+                            <span className="text-xs text-muted-foreground">—</span>
                           )}
                         </TableCell>
                         <TableCell className="text-sm">
-                          {s.company_id ? companies[s.company_id]?.name ?? "—" : "—"}
+                          {s.company_id ? (companies[s.company_id]?.name ?? "—") : "—"}
                         </TableCell>
-                        <TableCell className="text-sm">
-                          {o?.shipping_postal_code || "—"}
-                        </TableCell>
+                        <TableCell className="text-sm">{o?.shipping_postal_code || "—"}</TableCell>
                         <TableCell>
                           <Select
                             value={STATUS_FLOW.includes(s.status as Status) ? s.status : "pending"}
-                            onValueChange={(v) =>
-                              updateStatus(s.id, v as Status)
-                            }
+                            onValueChange={(v) => updateStatus(s.id, v as Status)}
                           >
                             <SelectTrigger className="h-8 w-[140px] border-0 p-0 focus:ring-0 shadow-none bg-transparent [&>svg]:opacity-50">
                               <Badge
                                 variant="outline"
                                 className={`${status.className} font-medium gap-1`}
                               >
-                                {s.status === "delivered" && (
-                                  <CheckCircle2 className="h-3 w-3" />
-                                )}
+                                {s.status === "delivered" && <CheckCircle2 className="h-3 w-3" />}
                                 {status.label}
                               </Badge>
                             </SelectTrigger>

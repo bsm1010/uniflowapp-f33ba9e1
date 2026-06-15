@@ -5,9 +5,7 @@ import { consumeCreditsServer, INSUFFICIENT_CREDITS_ERROR } from "@/lib/credits/
 const Schema = z.object({
   imageBase64: z.string().min(20), // data:image/...;base64,...
   prompt: z.string().max(500).optional().default(""),
-  preset: z
-    .enum(["studio", "lifestyle", "white-bg", "enhance"])
-    .default("enhance"),
+  preset: z.enum(["studio", "lifestyle", "white-bg", "enhance"]).default("enhance"),
   accessToken: z.string().min(1),
 });
 
@@ -34,7 +32,9 @@ export const enhanceImage = createServerFn({ method: "POST" })
       reason: "ai_image_enhancer",
     });
     if (!credit.ok) {
-      throw new Error(credit.reason === "insufficient" ? INSUFFICIENT_CREDITS_ERROR : "Unauthorized");
+      throw new Error(
+        credit.reason === "insufficient" ? INSUFFICIENT_CREDITS_ERROR : "Unauthorized",
+      );
     }
 
     const fullPrompt =

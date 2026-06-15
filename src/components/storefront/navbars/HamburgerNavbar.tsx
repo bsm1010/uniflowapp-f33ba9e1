@@ -14,7 +14,15 @@ interface HamburgerNavbarProps {
   onCartOpen: () => void;
 }
 
-export function HamburgerNavbar({ tokens: t, logo, brand, links, cartCount, slug, onCartOpen }: HamburgerNavbarProps) {
+export function HamburgerNavbar({
+  tokens: t,
+  logo,
+  brand,
+  links,
+  cartCount,
+  slug,
+  onCartOpen,
+}: HamburgerNavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -43,11 +51,20 @@ export function HamburgerNavbar({ tokens: t, logo, brand, links, cartCount, slug
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
 
-          <Link to="/s/$slug" params={{ slug }} className="flex items-center gap-2.5 absolute left-1/2 -translate-x-1/2">
+          <Link
+            to="/s/$slug"
+            params={{ slug }}
+            className="flex items-center gap-2.5 absolute left-1/2 -translate-x-1/2"
+          >
             {logo ? (
               <img src={logo} alt={brand} className="h-7 w-auto" />
             ) : (
-              <span className="text-base font-bold font-display tracking-tight" style={{ color: t.fg }}>{brand}</span>
+              <span
+                className="text-base font-bold font-display tracking-tight"
+                style={{ color: t.fg }}
+              >
+                {brand}
+              </span>
             )}
           </Link>
 

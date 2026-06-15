@@ -13,8 +13,7 @@ export const Route = createFileRoute("/dashboard/shipping")({
       { title: "Shipping Settings — Fennecly" },
       {
         name: "description",
-        content:
-          "Manage delivery companies and per-wilaya tariffs for your store.",
+        content: "Manage delivery companies and per-wilaya tariffs for your store.",
       },
     ],
   }),
@@ -48,13 +47,22 @@ function ShippingSettingsPage() {
               وصّل طلباتك لكل ولاية في الجزائر 🇩🇿
             </h2>
             <p className="text-xs leading-relaxed text-white/80 sm:text-sm">
-              Connect with Algeria's top delivery companies. Set custom tariffs per wilaya and grow your business.
+              Connect with Algeria's top delivery companies. Set custom tariffs per wilaya and grow
+              your business.
             </p>
             <div className="flex flex-wrap gap-2 pt-1">
-              <span className="rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-medium backdrop-blur">58 Wilayas</span>
-              <span className="rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-medium backdrop-blur">Yalidine</span>
-              <span className="rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-medium backdrop-blur">ZR Express</span>
-              <span className="rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-medium backdrop-blur">+ More</span>
+              <span className="rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-medium backdrop-blur">
+                58 Wilayas
+              </span>
+              <span className="rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-medium backdrop-blur">
+                Yalidine
+              </span>
+              <span className="rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-medium backdrop-blur">
+                ZR Express
+              </span>
+              <span className="rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-medium backdrop-blur">
+                + More
+              </span>
             </div>
           </div>
           <div className="relative hidden h-full sm:block sm:w-56 md:w-72">

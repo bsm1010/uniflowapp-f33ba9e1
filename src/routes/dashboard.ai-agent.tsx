@@ -44,9 +44,7 @@ function AIAgentPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold tracking-tight">AI Sales Agent</h1>
-              <p className="text-sm text-muted-foreground">
-                Your AI employee for Instagram sales
-              </p>
+              <p className="text-sm text-muted-foreground">Your AI employee for Instagram sales</p>
             </div>
           </div>
         </div>
@@ -61,7 +59,7 @@ function AIAgentPage() {
                 "relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap",
                 activeTab === tab.id
                   ? "text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
+                  : "text-muted-foreground hover:text-foreground",
               )}
             >
               {activeTab === tab.id && (

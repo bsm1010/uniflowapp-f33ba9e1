@@ -20,7 +20,9 @@ export const copilotAction = createServerFn({ method: "POST" })
       reason: "ai_copilot",
     });
     if (!credit.ok) {
-      throw new Error(credit.reason === "insufficient" ? INSUFFICIENT_CREDITS_ERROR : "Unauthorized");
+      throw new Error(
+        credit.reason === "insufficient" ? INSUFFICIENT_CREDITS_ERROR : "Unauthorized",
+      );
     }
 
     const systemPrompt = `You are Fennecly Copilot, an expert e-commerce AI assistant embedded inside the Fennecly dashboard. You help store owners with concise, actionable advice. 

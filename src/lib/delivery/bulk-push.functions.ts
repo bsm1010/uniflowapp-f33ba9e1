@@ -10,7 +10,10 @@ const BulkInputSchema = z.object({
 });
 
 export type BulkPushResult =
-  | { ok: true; results: Array<{ companyId: string; ok: boolean; message: string; trackingNumber?: string }> }
+  | {
+      ok: true;
+      results: Array<{ companyId: string; ok: boolean; message: string; trackingNumber?: string }>;
+    }
   | { ok: false; message: string };
 
 /**

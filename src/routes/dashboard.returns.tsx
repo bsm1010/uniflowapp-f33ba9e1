@@ -35,11 +35,20 @@ export const Route = createFileRoute("/dashboard/returns")({
 });
 
 const STATUS_VARIANT: Record<string, { label: string; className: string }> = {
-  requested: { label: "Requested", className: "bg-amber-500/10 text-amber-600 border-amber-500/30" },
+  requested: {
+    label: "Requested",
+    className: "bg-amber-500/10 text-amber-600 border-amber-500/30",
+  },
   approved: { label: "Approved", className: "bg-sky-500/10 text-sky-600 border-sky-500/30" },
   rejected: { label: "Rejected", className: "bg-rose-500/10 text-rose-600 border-rose-500/30" },
-  received: { label: "Received", className: "bg-violet-500/10 text-violet-600 border-violet-500/30" },
-  refunded: { label: "Refunded", className: "bg-emerald-500/10 text-emerald-600 border-emerald-500/30" },
+  received: {
+    label: "Received",
+    className: "bg-violet-500/10 text-violet-600 border-violet-500/30",
+  },
+  refunded: {
+    label: "Refunded",
+    className: "bg-emerald-500/10 text-emerald-600 border-emerald-500/30",
+  },
 };
 
 function ReturnsPage() {
@@ -93,9 +102,7 @@ function ReturnsPage() {
       return;
     }
     toast.success(`Marked as ${status}`);
-    setRows((cur) =>
-      cur ? cur.map((r) => (r.id === id ? { ...r, ...payload } : r)) : cur,
-    );
+    setRows((cur) => (cur ? cur.map((r) => (r.id === id ? { ...r, ...payload } : r)) : cur));
     if (selected?.id === id) setSelected({ ...selected, ...payload } as ReturnRow);
   };
 
@@ -210,9 +217,7 @@ function ReturnsPage() {
             <>
               <SheetHeader>
                 <SheetTitle>Return request</SheetTitle>
-                <SheetDescription>
-                  #{selected.id.slice(0, 8).toUpperCase()}
-                </SheetDescription>
+                <SheetDescription>#{selected.id.slice(0, 8).toUpperCase()}</SheetDescription>
               </SheetHeader>
               <div className="space-y-4 mt-6">
                 <div>
@@ -241,10 +246,7 @@ function ReturnsPage() {
                 )}
                 <div>
                   <div className="text-xs text-muted-foreground mb-1">Current status</div>
-                  <Badge
-                    variant="outline"
-                    className={STATUS_VARIANT[selected.status]?.className}
-                  >
+                  <Badge variant="outline" className={STATUS_VARIANT[selected.status]?.className}>
                     {STATUS_VARIANT[selected.status]?.label ?? selected.status}
                   </Badge>
                 </div>

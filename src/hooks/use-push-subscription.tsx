@@ -20,7 +20,13 @@ function bufToB64u(buf: ArrayBuffer | null): string {
   return btoa(s).replace(/=+$/, "").replace(/\+/g, "-").replace(/\//g, "_");
 }
 
-export type PushStatus = "unsupported" | "denied" | "default" | "granted-no-sub" | "granted-subscribed" | "loading";
+export type PushStatus =
+  | "unsupported"
+  | "denied"
+  | "default"
+  | "granted-no-sub"
+  | "granted-subscribed"
+  | "loading";
 
 export function usePushSubscription(storeId?: string | null) {
   const [status, setStatus] = useState<PushStatus>("loading");
@@ -29,7 +35,11 @@ export function usePushSubscription(storeId?: string | null) {
 
   const refresh = useCallback(async () => {
     if (typeof window === "undefined") return;
-    if (!("serviceWorker" in navigator) || !("PushManager" in window) || !("Notification" in window)) {
+    if (
+      !("serviceWorker" in navigator) ||
+      !("PushManager" in window) ||
+      !("Notification" in window)
+    ) {
       setStatus("unsupported");
       return;
     }

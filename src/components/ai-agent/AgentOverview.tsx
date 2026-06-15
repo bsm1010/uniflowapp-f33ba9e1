@@ -1,6 +1,15 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bot, MessageSquare, BarChart3, Settings2, Zap, Users, Mic, TrendingUp } from "lucide-react";
+import {
+  Bot,
+  MessageSquare,
+  BarChart3,
+  Settings2,
+  Zap,
+  Users,
+  Mic,
+  TrendingUp,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAIAgent } from "@/hooks/use-ai-agent";
 import { cn } from "@/lib/utils";
@@ -14,10 +23,20 @@ export function AgentOverview() {
   const activeConvos = conversations.filter((c) => c.status === "active").length;
 
   const stats = [
-    { label: "Total Conversations", value: totalConvos, icon: MessageSquare, color: "from-blue-500 to-cyan-500" },
+    {
+      label: "Total Conversations",
+      value: totalConvos,
+      icon: MessageSquare,
+      color: "from-blue-500 to-cyan-500",
+    },
     { label: "AI Handled", value: aiConvos, icon: Bot, color: "from-violet-500 to-purple-500" },
     { label: "Unread Messages", value: unread, icon: Zap, color: "from-amber-500 to-orange-500" },
-    { label: "Active Now", value: activeConvos, icon: Users, color: "from-emerald-500 to-teal-500" },
+    {
+      label: "Active Now",
+      value: activeConvos,
+      icon: Users,
+      color: "from-emerald-500 to-teal-500",
+    },
   ];
 
   return (
@@ -30,13 +49,13 @@ export function AgentOverview() {
           "rounded-2xl border p-4 flex items-center gap-4",
           connection?.status === "connected"
             ? "border-emerald-500/30 bg-emerald-500/5"
-            : "border-amber-500/30 bg-amber-500/5"
+            : "border-amber-500/30 bg-amber-500/5",
         )}
       >
         <div
           className={cn(
             "h-3 w-3 rounded-full animate-pulse",
-            connection?.status === "connected" ? "bg-emerald-500" : "bg-amber-500"
+            connection?.status === "connected" ? "bg-emerald-500" : "bg-amber-500",
           )}
         />
         <div>

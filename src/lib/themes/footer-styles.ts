@@ -11,7 +11,8 @@ export const FOOTER_CONFIGS: FooterConfig[] = [
   {
     style: "columns",
     label: "Columns",
-    description: "Multi-column layout with brand info, link groups, and social icons. Feature-rich.",
+    description:
+      "Multi-column layout with brand info, link groups, and social icons. Feature-rich.",
     preview: "Brand · Shop · Help · Social\n           © 2025",
   },
   {

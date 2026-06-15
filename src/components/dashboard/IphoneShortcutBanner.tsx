@@ -7,8 +7,14 @@ const QR_URL = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${
 
 export function IphoneShortcutBanner() {
   const [dismissed, setDismissed] = useState(() => {
-    try { return typeof window !== "undefined" && localStorage.getItem("iphone-banner-v2-dismissed") === "true"; }
-    catch { return false; }
+    try {
+      return (
+        typeof window !== "undefined" &&
+        localStorage.getItem("iphone-banner-v2-dismissed") === "true"
+      );
+    } catch {
+      return false;
+    }
   });
   const [isDesktop, setIsDesktop] = useState(false);
 
@@ -22,7 +28,11 @@ export function IphoneShortcutBanner() {
   if (!isDesktop || dismissed) return null;
 
   const handleDismiss = () => {
-    try { localStorage.setItem("iphone-banner-v2-dismissed", "true"); } catch {}
+    try {
+      localStorage.setItem("iphone-banner-v2-dismissed", "true");
+    } catch (error) {
+      console.warn(error);
+    }
     setDismissed(true);
   };
 
@@ -51,7 +61,6 @@ export function IphoneShortcutBanner() {
         </button>
 
         <div className="relative flex items-stretch">
-
           {/* LEFT: Text content */}
           <div className="flex-1 p-6 pr-4">
             <div
@@ -61,18 +70,22 @@ export function IphoneShortcutBanner() {
                 border: "1px solid rgba(139,92,246,0.3)",
               }}
             >
-              <span className="text-xs font-bold tracking-widest uppercase text-violet-300">New</span>
+              <span className="text-xs font-bold tracking-widest uppercase text-violet-300">
+                New
+              </span>
               <span className="h-1 w-1 rounded-full bg-violet-400/60" />
               <span className="text-xs text-violet-300/70">iPhone Ready</span>
             </div>
 
             <h2 className="text-xl font-bold leading-snug text-white sm:text-2xl">
-              Fennecly is now<br />
+              Fennecly is now
+              <br />
               <span style={{ color: "#a78bfa" }}>available on iPhone</span>
             </h2>
 
             <p className="mt-2.5 text-sm leading-relaxed text-white/50 max-w-xs">
-              No App Store needed. Scan the QR code with your iPhone camera to open the install guide.
+              No App Store needed. Scan the QR code with your iPhone camera to open the install
+              guide.
             </p>
 
             <div className="mt-5 flex flex-wrap gap-2">
@@ -135,7 +148,9 @@ export function IphoneShortcutBanner() {
                 <div className="absolute bottom-2 right-2 h-4 w-4 rounded-br-md border-b-2 border-r-2 border-violet-400/50" />
               </div>
               <p className="text-center text-[11px] font-medium text-white/30 leading-tight">
-                Scan with iPhone<br />camera app
+                Scan with iPhone
+                <br />
+                camera app
               </p>
             </div>
 
@@ -163,7 +178,6 @@ export function IphoneShortcutBanner() {
               />
             </motion.div>
           </div>
-
         </div>
       </motion.div>
     </AnimatePresence>

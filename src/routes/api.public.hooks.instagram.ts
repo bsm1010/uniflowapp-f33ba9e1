@@ -103,9 +103,7 @@ export const Route = createFileRoute("/api/public/hooks/instagram")({
 
               if (!conversation) continue;
 
-              const isVoice = messageData.attachments?.some(
-                (a: any) => a.type === "audio"
-              );
+              const isVoice = messageData.attachments?.some((a: any) => a.type === "audio");
 
               // Save the incoming message
               await admin.from("ig_messages").insert({
@@ -156,7 +154,10 @@ export const Route = createFileRoute("/api/public/hooks/instagram")({
                     .maybeSingle();
 
                   const productList = (products ?? [])
-                    .map((p) => `- ${p.name}: ${p.price} ${storeSettings?.currency ?? "DZD"} (stock: ${p.stock})`)
+                    .map(
+                      (p) =>
+                        `- ${p.name}: ${p.price} ${storeSettings?.currency ?? "DZD"} (stock: ${p.stock})`,
+                    )
                     .join("\n");
 
                   // Fetch last messages for context

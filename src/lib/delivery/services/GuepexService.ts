@@ -2,10 +2,7 @@ import { GuepexAdapter } from "../adapters/GuepexAdapter";
 import type { ApiKeyValidationResult } from "./YalidineService";
 
 export class GuepexService {
-  static async validateApiKey(
-    apiKey: string,
-    apiSecret = "",
-  ): Promise<ApiKeyValidationResult> {
+  static async validateApiKey(apiKey: string, apiSecret = ""): Promise<ApiKeyValidationResult> {
     if (!apiKey || !apiKey.trim()) {
       return { success: false, message: "API key is required." };
     }

@@ -2,10 +2,7 @@ import { DHDAdapter } from "../adapters/DHDAdapter";
 import type { ApiKeyValidationResult } from "./YalidineService";
 
 export class DHDService {
-  static async validateApiKey(
-    apiKey: string,
-    apiSecret = "",
-  ): Promise<ApiKeyValidationResult> {
+  static async validateApiKey(apiKey: string, apiSecret = ""): Promise<ApiKeyValidationResult> {
     if (!apiKey || !apiKey.trim()) {
       return { success: false, message: "API key is required." };
     }

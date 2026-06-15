@@ -124,9 +124,7 @@ export const processDataExport = createServerFn({ method: "POST" })
         throw new Error(uploadErr.message);
       }
 
-      const { data: urlData } = admin.storage
-        .from("exports")
-        .getPublicUrl(uploadData.path);
+      const { data: urlData } = admin.storage.from("exports").getPublicUrl(uploadData.path);
 
       await admin
         .from("data_export_requests")

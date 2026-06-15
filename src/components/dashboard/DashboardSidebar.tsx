@@ -95,7 +95,9 @@ export function DashboardSidebar() {
     let stored: string | null = null;
     try {
       stored = localStorage.getItem("sidebar-purple");
-    } catch {}
+    } catch (error) {
+      console.warn(error);
+    }
     const enabled = stored === "true";
     setPurpleSidebar(enabled);
     document.documentElement.setAttribute("data-sidebar-purple", String(enabled));
@@ -106,7 +108,9 @@ export function DashboardSidebar() {
     document.documentElement.setAttribute("data-sidebar-purple", String(checked));
     try {
       localStorage.setItem("sidebar-purple", String(checked));
-    } catch {}
+    } catch (error) {
+      console.warn(error);
+    }
   };
 
   const groups: NavGroup[] = [

@@ -57,19 +57,17 @@ export const savePrivacyPolicySettings = createServerFn({ method: "POST" })
     }) => input,
   )
   .handler(async ({ data }) => {
-    const { error } = await supabase
-      .from("privacy_policy_settings")
-      .upsert(
-        {
-          user_id: data.userId,
-          store_id: data.storeId,
-          enabled: data.enabled,
-          sections: data.sections as any,
-          custom_html: data.customHtml,
-          last_updated: new Date().toISOString(),
-        },
-        { onConflict: "user_id,store_id" },
-      );
+    const { error } = await supabase.from("privacy_policy_settings").upsert(
+      {
+        user_id: data.userId,
+        store_id: data.storeId,
+        enabled: data.enabled,
+        sections: data.sections as any,
+        custom_html: data.customHtml,
+        last_updated: new Date().toISOString(),
+      },
+      { onConflict: "user_id,store_id" },
+    );
     if (error) throw new Error(error.message);
     return { ok: true };
   });

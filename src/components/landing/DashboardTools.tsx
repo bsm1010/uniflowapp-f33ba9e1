@@ -35,8 +35,6 @@ export function DashboardTools() {
 
   return (
     <section className="relative overflow-hidden py-20 md:py-28">
-
-
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
           {/* Left — Image */}
@@ -60,8 +58,7 @@ export function DashboardTools() {
             </span>
 
             <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-              {t("dashTools.titleA")}{" "}
-              <span className="text-primary">{t("dashTools.titleB")}</span>
+              {t("dashTools.titleA")} <span className="text-primary">{t("dashTools.titleB")}</span>
             </h2>
 
             <p className="mt-4 max-w-lg text-base text-muted-foreground sm:text-lg">

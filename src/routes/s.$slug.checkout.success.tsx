@@ -5,10 +5,7 @@ import { z } from "zod";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
-import {
-  StorefrontShell,
-  getStoreTokens,
-} from "@/components/storefront/StorefrontShell";
+import { StorefrontShell, getStoreTokens } from "@/components/storefront/StorefrontShell";
 
 type StoreSettings = Tables<"store_settings">;
 
@@ -62,8 +59,7 @@ function SuccessPage() {
   }
 
   const t = getStoreTokens(settings);
-  const radius =
-    settings.theme === "minimal" ? 0 : settings.theme === "grid" ? 8 : 16;
+  const radius = settings.theme === "minimal" ? 0 : settings.theme === "grid" ? 8 : 16;
 
   return (
     <StorefrontShell settings={settings}>

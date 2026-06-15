@@ -10,21 +10,13 @@ import { APPS_BY_KEY } from "@/lib/apps";
  * Gate an app route behind installation. If the app is not installed for the
  * current user, render a friendly prompt with a one-click install action.
  */
-export function RequireApp({
-  appKey,
-  children,
-}: {
-  appKey: string;
-  children: React.ReactNode;
-}) {
+export function RequireApp({ appKey, children }: { appKey: string; children: React.ReactNode }) {
   const { isInstalled, install, loading } = useInstalledApps();
   const app = APPS_BY_KEY[appKey];
 
   if (loading) {
     return (
-      <div className="max-w-3xl mx-auto py-20 text-center text-muted-foreground">
-        Loading…
-      </div>
+      <div className="max-w-3xl mx-auto py-20 text-center text-muted-foreground">Loading…</div>
     );
   }
 
@@ -47,8 +39,7 @@ export function RequireApp({
             Install {app?.name ?? "this app"} to use it
           </h1>
           <p className="mt-2 text-sm text-muted-foreground max-w-sm">
-            {app?.description ??
-              "This app isn't installed on your store yet."}
+            {app?.description ?? "This app isn't installed on your store yet."}
           </p>
           <div className="mt-6 flex items-center gap-2">
             <Button

@@ -1,12 +1,25 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Globe, Plus, Trash2, ShieldCheck, Loader2, ExternalLink, RefreshCw, AlertCircle } from "lucide-react";
+import {
+  Globe,
+  Plus,
+  Trash2,
+  ShieldCheck,
+  Loader2,
+  ExternalLink,
+  RefreshCw,
+  AlertCircle,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ConnectDomainWizard } from "@/components/domains/ConnectDomainWizard";
-import { listCustomDomains, removeCustomDomain, verifyCustomDomain } from "@/lib/domains/domains.functions";
+import {
+  listCustomDomains,
+  removeCustomDomain,
+  verifyCustomDomain,
+} from "@/lib/domains/domains.functions";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -15,8 +28,13 @@ export const Route = createFileRoute("/dashboard/domains")({
 });
 
 type DomainRow = {
-  id: string; domain: string; domain_type: string; status: string;
-  ssl_active: boolean; detected_provider: string | null; created_at: string;
+  id: string;
+  domain: string;
+  domain_type: string;
+  status: string;
+  ssl_active: boolean;
+  detected_provider: string | null;
+  created_at: string;
   error_message: string | null;
 };
 
@@ -37,27 +55,35 @@ function DomainsPage() {
   const verifyFn = useServerFn(verifyCustomDomain);
   const removeFn = useServerFn(removeCustomDomain);
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     try {
       setLoadError(null);
       const rows = await listFn();
       setDomains(rows as unknown as DomainRow[]);
     } catch (e) {
       setLoadError(e instanceof Error ? e.message : "Failed to load domains");
-    } finally { setLoading(false); }
-  };
+    } finally {
+      setLoading(false);
+    }
+  }, [listFn]);
 
-  useEffect(() => { void refresh(); }, []);
+  useEffect(() => {
+    void refresh();
+  }, [refresh]);
 
   const recheck = async (id: string) => {
     setBusyId(id);
     try {
       const r = await verifyFn({ data: { id } });
-      toast[r.verified ? "success" : "info"](r.verified ? "Domain verified!" : "Still propagating…");
+      toast[r.verified ? "success" : "info"](
+        r.verified ? "Domain verified!" : "Still propagating…",
+      );
       await refresh();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Verification failed");
-    } finally { setBusyId(null); }
+    } finally {
+      setBusyId(null);
+    }
   };
 
   const remove = async (id: string) => {
@@ -69,7 +95,9 @@ function DomainsPage() {
       await refresh();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to remove domain");
-    } finally { setBusyId(null); }
+    } finally {
+      setBusyId(null);
+    }
   };
 
   return (
@@ -77,7 +105,9 @@ function DomainsPage() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Custom Domains</h1>
-          <p className="text-sm text-muted-foreground mt-1">Connect your own domain to your storefront with auto-SSL.</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Connect your own domain to your storefront with auto-SSL.
+          </p>
         </div>
         <Button onClick={() => setOpen(true)} className="gap-2">
           <Plus className="h-4 w-4" /> Connect Domain
@@ -91,11 +121,15 @@ function DomainsPage() {
         </CardHeader>
         <CardContent className="p-0">
           {loading ? (
-            <div className="p-10 grid place-items-center"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>
+            <div className="p-10 grid place-items-center">
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+            </div>
           ) : loadError ? (
             <div className="p-10 text-center">
               <p className="text-sm text-destructive mb-3">{loadError}</p>
-              <Button variant="outline" size="sm" onClick={() => void refresh()}>Retry</Button>
+              <Button variant="outline" size="sm" onClick={() => void refresh()}>
+                Retry
+              </Button>
             </div>
           ) : domains.length === 0 ? (
             <div className="p-10 text-center">
@@ -103,22 +137,36 @@ function DomainsPage() {
                 <Globe className="h-6 w-6 text-muted-foreground" />
               </div>
               <p className="font-medium">No domains connected yet</p>
-              <p className="text-sm text-muted-foreground mt-1">Click "Connect Domain" to add your first one.</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Click "Connect Domain" to add your first one.
+              </p>
             </div>
           ) : (
             <ul className="divide-y">
               {domains.map((d) => {
                 const meta = STATUS_META[d.status] ?? STATUS_META.pending;
                 return (
-                  <li key={d.id} className="p-4 flex items-center gap-4 hover:bg-muted/30 transition-colors">
+                  <li
+                    key={d.id}
+                    className="p-4 flex items-center gap-4 hover:bg-muted/30 transition-colors"
+                  >
                     <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 grid place-items-center shrink-0">
                       <Globe className="h-4 w-4 text-primary" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="font-mono font-medium truncate">{d.domain}</span>
-                        <Badge variant="secondary" className="capitalize text-[10px]">{d.domain_type}</Badge>
-                        <span className={cn("text-[11px] font-medium px-2 py-0.5 rounded-full", meta.cls)}>{meta.label}</span>
+                        <Badge variant="secondary" className="capitalize text-[10px]">
+                          {d.domain_type}
+                        </Badge>
+                        <span
+                          className={cn(
+                            "text-[11px] font-medium px-2 py-0.5 rounded-full",
+                            meta.cls,
+                          )}
+                        >
+                          {meta.label}
+                        </span>
                         {d.ssl_active && (
                           <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary inline-flex items-center gap-1">
                             <ShieldCheck className="h-3 w-3" /> SSL
@@ -133,14 +181,35 @@ function DomainsPage() {
                     </div>
                     <div className="flex items-center gap-1">
                       {d.status === "verified" && (
-                        <a href={`https://${d.domain}`} target="_blank" rel="noreferrer" className="inline-flex">
-                          <Button variant="ghost" size="icon"><ExternalLink className="h-4 w-4" /></Button>
+                        <a
+                          href={`https://${d.domain}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex"
+                        >
+                          <Button variant="ghost" size="icon">
+                            <ExternalLink className="h-4 w-4" />
+                          </Button>
                         </a>
                       )}
-                      <Button variant="ghost" size="icon" onClick={() => recheck(d.id)} disabled={busyId === d.id}>
-                        {busyId === d.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => recheck(d.id)}
+                        disabled={busyId === d.id}
+                      >
+                        {busyId === d.id ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <RefreshCw className="h-4 w-4" />
+                        )}
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={() => remove(d.id)} disabled={busyId === d.id}>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => remove(d.id)}
+                        disabled={busyId === d.id}
+                      >
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </div>

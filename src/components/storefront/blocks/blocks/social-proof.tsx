@@ -128,11 +128,7 @@ export function UGCWall({ props }: BlockComponentProps<UGCWallProps>) {
       <SectionHeading title={props.title} />
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-6">
         {props.posts.map((p, i) => (
-          <a
-            key={i}
-            href="#"
-            className="group relative aspect-square overflow-hidden rounded-lg"
-          >
+          <a key={i} href="#" className="group relative aspect-square overflow-hidden rounded-lg">
             <img
               src={p.imageUrl}
               alt={p.handle}

@@ -64,23 +64,55 @@ function ReferralIllustration() {
       </g>
 
       {/* Connection lines */}
-      <line x1="120" y1="130" x2="160" y2="100" stroke="url(#lineGrad)" strokeWidth="2" strokeDasharray="6 4" opacity="0.5" />
-      <line x1="280" y1="130" x2="240" y2="100" stroke="url(#lineGrad)" strokeWidth="2" strokeDasharray="6 4" opacity="0.5" />
+      <line
+        x1="120"
+        y1="130"
+        x2="160"
+        y2="100"
+        stroke="url(#lineGrad)"
+        strokeWidth="2"
+        strokeDasharray="6 4"
+        opacity="0.5"
+      />
+      <line
+        x1="280"
+        y1="130"
+        x2="240"
+        y2="100"
+        stroke="url(#lineGrad)"
+        strokeWidth="2"
+        strokeDasharray="6 4"
+        opacity="0.5"
+      />
 
       {/* Gift box - center top */}
       <g transform="translate(180, 20)">
         <rect x="0" y="10" width="40" height="30" rx="4" fill="url(#giftGrad)" />
         <rect x="0" y="10" width="40" height="8" rx="4" fill="url(#giftGrad2)" />
         <rect x="17" y="10" width="6" height="30" fill="url(#giftGrad2)" />
-        <path d="M20 10 C15 0 10 5 15 8" stroke="url(#giftGrad2)" strokeWidth="3" fill="none" strokeLinecap="round" />
-        <path d="M20 10 C25 0 30 5 25 8" stroke="url(#giftGrad2)" strokeWidth="3" fill="none" strokeLinecap="round" />
+        <path
+          d="M20 10 C15 0 10 5 15 8"
+          stroke="url(#giftGrad2)"
+          strokeWidth="3"
+          fill="none"
+          strokeLinecap="round"
+        />
+        <path
+          d="M20 10 C25 0 30 5 25 8"
+          stroke="url(#giftGrad2)"
+          strokeWidth="3"
+          fill="none"
+          strokeLinecap="round"
+        />
       </g>
 
       {/* Coins */}
       <g transform="translate(310, 170)">
         <circle cx="0" cy="0" r="12" fill="url(#coinGrad)" />
         <circle cx="0" cy="0" r="8" fill="url(#coinGrad2)" />
-        <text x="0" y="4" textAnchor="middle" fontSize="10" fill="white" fontWeight="bold">D</text>
+        <text x="0" y="4" textAnchor="middle" fontSize="10" fill="white" fontWeight="bold">
+          D
+        </text>
       </g>
       <g transform="translate(330, 185)">
         <circle cx="0" cy="0" r="10" fill="url(#coinGrad)" />
@@ -166,7 +198,9 @@ function ReferralsPage() {
       }
     };
     load();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
 
   const link = referralCode
@@ -199,9 +233,23 @@ function ReferralsPage() {
 
       {/* Hero section */}
       <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-gradient-to-br from-pink-600 via-rose-600 to-orange-500 p-8 sm:p-12 text-white shadow-[0_20px_70px_-20px_rgba(236,72,153,0.5)]">
-        <div aria-hidden className="absolute inset-0 opacity-20" style={{ backgroundImage: "radial-gradient(circle at 20% 20%, white 1px, transparent 1px), radial-gradient(circle at 80% 60%, white 1px, transparent 1px)", backgroundSize: "40px 40px, 60px 60px" }} />
-        <div aria-hidden className="absolute -top-20 -right-20 size-72 rounded-full bg-white/10 blur-3xl" />
-        <div aria-hidden className="absolute -bottom-24 -left-10 size-72 rounded-full bg-amber-300/20 blur-3xl" />
+        <div
+          aria-hidden
+          className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 20% 20%, white 1px, transparent 1px), radial-gradient(circle at 80% 60%, white 1px, transparent 1px)",
+            backgroundSize: "40px 40px, 60px 60px",
+          }}
+        />
+        <div
+          aria-hidden
+          className="absolute -top-20 -right-20 size-72 rounded-full bg-white/10 blur-3xl"
+        />
+        <div
+          aria-hidden
+          className="absolute -bottom-24 -left-10 size-72 rounded-full bg-amber-300/20 blur-3xl"
+        />
 
         <div className="relative flex flex-col lg:flex-row lg:items-center gap-8">
           <div className="flex-1 space-y-4 max-w-xl">
@@ -224,13 +272,18 @@ function ReferralsPage() {
       {/* Stats */}
       <div className="grid sm:grid-cols-3 gap-4">
         <Card className="relative overflow-hidden border-border/60 hover:shadow-lg transition-shadow">
-          <div aria-hidden className="absolute inset-0 bg-gradient-to-br from-pink-500/5 to-transparent" />
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-gradient-to-br from-pink-500/5 to-transparent"
+          />
           <CardContent className="relative p-5 flex items-center gap-4">
             <div className="size-12 grid place-items-center rounded-xl bg-gradient-to-br from-pink-500 to-rose-500 text-white shadow-lg shadow-pink-500/30">
               <Users className="size-6" />
             </div>
             <div>
-              <div className="text-xs uppercase tracking-wider text-muted-foreground">{t("dashboard.referrals.successful")}</div>
+              <div className="text-xs uppercase tracking-wider text-muted-foreground">
+                {t("dashboard.referrals.successful")}
+              </div>
               {loading ? (
                 <Skeleton className="h-8 w-16 mt-1" />
               ) : (
@@ -241,13 +294,18 @@ function ReferralsPage() {
         </Card>
 
         <Card className="relative overflow-hidden border-border/60 hover:shadow-lg transition-shadow">
-          <div aria-hidden className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent" />
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent"
+          />
           <CardContent className="relative p-5 flex items-center gap-4">
             <div className="size-12 grid place-items-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-500/30">
               <Coins className="size-6" />
             </div>
             <div>
-              <div className="text-xs uppercase tracking-wider text-muted-foreground">{t("dashboard.referrals.earned")}</div>
+              <div className="text-xs uppercase tracking-wider text-muted-foreground">
+                {t("dashboard.referrals.earned")}
+              </div>
               {loading ? (
                 <Skeleton className="h-8 w-16 mt-1" />
               ) : (
@@ -258,13 +316,18 @@ function ReferralsPage() {
         </Card>
 
         <Card className="relative overflow-hidden border-border/60 hover:shadow-lg transition-shadow">
-          <div aria-hidden className="absolute inset-0 bg-gradient-to-br from-violet-500/5 to-transparent" />
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-gradient-to-br from-violet-500/5 to-transparent"
+          />
           <CardContent className="relative p-5 flex items-center gap-4">
             <div className="size-12 grid place-items-center rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white shadow-lg shadow-violet-500/30">
               <Gift className="size-6" />
             </div>
             <div>
-              <div className="text-xs uppercase tracking-wider text-muted-foreground">رصيد صديقك</div>
+              <div className="text-xs uppercase tracking-wider text-muted-foreground">
+                رصيد صديقك
+              </div>
               {loading ? (
                 <Skeleton className="h-8 w-16 mt-1" />
               ) : (
@@ -277,8 +340,14 @@ function ReferralsPage() {
 
       {/* Referral link section */}
       <Card className="relative overflow-hidden border-border/60 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.15)]">
-        <div aria-hidden className="absolute inset-0 bg-gradient-to-br from-pink-500/5 via-transparent to-orange-500/5" />
-        <div aria-hidden className="absolute -top-24 -right-24 size-64 rounded-full bg-pink-500/10 blur-3xl" />
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-br from-pink-500/5 via-transparent to-orange-500/5"
+        />
+        <div
+          aria-hidden
+          className="absolute -top-24 -right-24 size-64 rounded-full bg-pink-500/10 blur-3xl"
+        />
 
         <CardContent className="relative p-6 sm:p-8 space-y-6">
           <div className="flex items-start gap-4">
@@ -286,13 +355,19 @@ function ReferralsPage() {
               <Share2 className="size-6" />
             </div>
             <div>
-              <h3 className="font-semibold text-xl font-display">{t("dashboard.referrals.yourLink")}</h3>
-              <p className="text-sm text-muted-foreground mt-1">شارك الرابط مع أصدقائك واحصل على رصيد مجاناً</p>
+              <h3 className="font-semibold text-xl font-display">
+                {t("dashboard.referrals.yourLink")}
+              </h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                شارك الرابط مع أصدقائك واحصل على رصيد مجاناً
+              </p>
             </div>
           </div>
 
           <div className="space-y-3">
-            <div className="text-sm font-medium text-muted-foreground">{t("dashboard.referrals.code")}</div>
+            <div className="text-sm font-medium text-muted-foreground">
+              {t("dashboard.referrals.code")}
+            </div>
             <div className="flex gap-2">
               <div className="flex-1 relative">
                 <Input
@@ -304,7 +379,9 @@ function ReferralsPage() {
               <Button
                 variant="outline"
                 size="lg"
-                onClick={() => copy(referralCode ?? "", t("dashboard.referrals.copiedCode"), "code")}
+                onClick={() =>
+                  copy(referralCode ?? "", t("dashboard.referrals.copiedCode"), "code")
+                }
                 disabled={!referralCode || copying === "code"}
                 className="px-6"
               >
@@ -318,14 +395,12 @@ function ReferralsPage() {
           </div>
 
           <div className="space-y-3">
-            <div className="text-sm font-medium text-muted-foreground">{t("dashboard.referrals.directLink")}</div>
+            <div className="text-sm font-medium text-muted-foreground">
+              {t("dashboard.referrals.directLink")}
+            </div>
             <div className="flex gap-2">
               <div className="flex-1 relative">
-                <Input
-                  value={link}
-                  readOnly
-                  className="text-sm h-12 bg-muted/50"
-                />
+                <Input value={link} readOnly className="text-sm h-12 bg-muted/50" />
               </div>
               <Button
                 size="lg"
@@ -377,10 +452,15 @@ function ReferralsPage() {
           ].map((item, i) => (
             <div key={i} className="relative group">
               <Card className="relative overflow-hidden border-border/60 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full">
-                <div aria-hidden className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-5 transition-opacity`} />
+                <div
+                  aria-hidden
+                  className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-5 transition-opacity`}
+                />
                 <CardContent className="relative p-6 text-center space-y-4">
                   <div className="relative mx-auto">
-                    <div className={`size-16 grid place-items-center rounded-2xl bg-gradient-to-br ${item.gradient} text-white shadow-lg mx-auto`}>
+                    <div
+                      className={`size-16 grid place-items-center rounded-2xl bg-gradient-to-br ${item.gradient} text-white shadow-lg mx-auto`}
+                    >
                       <item.icon className="size-7" />
                     </div>
                     <div className="absolute -top-2 -right-2 size-7 grid place-items-center rounded-full bg-foreground text-background text-xs font-bold">
@@ -406,7 +486,10 @@ function ReferralsPage() {
       {/* Referral history */}
       {refs.length > 0 && (
         <Card className="relative overflow-hidden border-border/60">
-          <div aria-hidden className="absolute inset-0 bg-gradient-to-br from-muted/30 to-transparent" />
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-gradient-to-br from-muted/30 to-transparent"
+          />
           <CardContent className="relative p-6 sm:p-8 space-y-4">
             <div className="flex items-center gap-3">
               <div className="size-10 grid place-items-center rounded-xl bg-gradient-to-br from-pink-500 to-rose-500 text-white shadow-lg">

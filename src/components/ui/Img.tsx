@@ -19,17 +19,23 @@ const FIT_CLASS: Record<NonNullable<ImgProps["objectFit"]>, string> = {
   "scale-down": "object-scale-down",
 };
 
-export function Img({ src, alt, className, width, height, quality = 80, objectFit = "cover", ...rest }: ImgProps) {
+export function Img({
+  src,
+  alt,
+  className,
+  width,
+  height,
+  quality = 80,
+  objectFit = "cover",
+  ...rest
+}: ImgProps) {
   const [loaded, setLoaded] = useState(false);
   const [errored, setErrored] = useState(false);
   const optimized = optimizeImageUrl(src, { width, height, quality });
 
   if (!optimized || errored) {
     return (
-      <div
-        className={cn("bg-gradient-to-br from-muted to-muted/50", className)}
-        aria-hidden
-      />
+      <div className={cn("bg-gradient-to-br from-muted to-muted/50", className)} aria-hidden />
     );
   }
 

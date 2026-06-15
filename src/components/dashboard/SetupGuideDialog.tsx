@@ -65,7 +65,9 @@ export function SetupGuideDialog({ userId }: Props) {
 
     const load = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
         if (!session || cancelled) return;
         const result = await callGetProgress({
           data: { accessToken: session.access_token, storeId: currentStore.id },
@@ -81,7 +83,9 @@ export function SetupGuideDialog({ userId }: Props) {
     };
 
     load();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [userId, currentStore?.id, callGetProgress]);
 
   // Show dialog on first visit if setup is not 100%
@@ -138,7 +142,12 @@ export function SetupGuideDialog({ userId }: Props) {
   }, []);
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { if (!v) handleClose(); }}>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        if (!v) handleClose();
+      }}
+    >
       <DialogContent className="max-w-lg overflow-hidden border-0 p-0 shadow-2xl sm:rounded-2xl">
         {/* Header illustration */}
         <div className="relative flex h-40 items-center justify-center overflow-hidden bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700">
@@ -152,7 +161,10 @@ export function SetupGuideDialog({ userId }: Props) {
             <p className="text-sm text-white/80 mt-1">
               {allDone
                 ? t("progress.guide.ready")
-                : t("progress.guide.stepsComplete", { completed: completedCount, total: items.length })}
+                : t("progress.guide.stepsComplete", {
+                    completed: completedCount,
+                    total: items.length,
+                  })}
             </p>
           </div>
         </div>
@@ -165,7 +177,9 @@ export function SetupGuideDialog({ userId }: Props) {
               style={{ width: `${progress}%` }}
             />
           </div>
-          <p className="text-xs text-muted-foreground text-center mt-2">{t("progress.setup.percent", { percent: progress })}</p>
+          <p className="text-xs text-muted-foreground text-center mt-2">
+            {t("progress.setup.percent", { percent: progress })}
+          </p>
         </div>
 
         {/* Checklist */}
@@ -192,7 +206,12 @@ export function SetupGuideDialog({ userId }: Props) {
                 )}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <Icon className={cn("h-4 w-4 shrink-0", item.completed ? "text-emerald-500" : "text-muted-foreground")} />
+                    <Icon
+                      className={cn(
+                        "h-4 w-4 shrink-0",
+                        item.completed ? "text-emerald-500" : "text-muted-foreground",
+                      )}
+                    />
                     <span
                       className={cn(
                         "text-sm font-medium",
@@ -222,7 +241,9 @@ export function SetupGuideDialog({ userId }: Props) {
           {!allDone && (
             <Button onClick={handleStart} className="flex-1 gap-2">
               <Rocket className="h-4 w-4" />
-              {items.find((i) => !i.completed) ? t("progress.guide.startNow") : t("progress.guide.close")}
+              {items.find((i) => !i.completed)
+                ? t("progress.guide.startNow")
+                : t("progress.guide.close")}
             </Button>
           )}
         </div>

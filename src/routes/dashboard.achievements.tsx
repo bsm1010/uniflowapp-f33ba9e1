@@ -21,16 +21,25 @@ function AchievementsPage() {
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) { setLoading(false); return; }
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session) {
+      setLoading(false);
+      return;
+    }
     try {
       const result = await callGet({ data: { accessToken: session.access_token } });
       setData(result);
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
     setLoading(false);
   }, [callGet]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+  }, [load]);
 
   if (loading) {
     return (
@@ -58,10 +67,12 @@ function AchievementsPage() {
       <Tabs defaultValue="all" className="w-full">
         <TabsList>
           <TabsTrigger value="all" className="gap-1.5">
-            <Trophy className="h-4 w-4" /> {t("dashboard.achievements.tabAll")} ({data.achievements.length})
+            <Trophy className="h-4 w-4" /> {t("dashboard.achievements.tabAll")} (
+            {data.achievements.length})
           </TabsTrigger>
           <TabsTrigger value="unlocked" className="gap-1.5">
-            <CheckCircle2 className="h-4 w-4" /> {t("dashboard.achievements.tabUnlocked")} ({earned.length})
+            <CheckCircle2 className="h-4 w-4" /> {t("dashboard.achievements.tabUnlocked")} (
+            {earned.length})
           </TabsTrigger>
           <TabsTrigger value="locked" className="gap-1.5">
             <Lock className="h-4 w-4" /> {t("dashboard.achievements.tabLocked")} ({locked.length})
@@ -76,7 +87,9 @@ function AchievementsPage() {
         </TabsContent>
         <TabsContent value="unlocked" className="mt-4">
           {earned.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-8">{t("dashboard.achievements.emptyLocked")}</p>
+            <p className="text-sm text-muted-foreground text-center py-8">
+              {t("dashboard.achievements.emptyLocked")}
+            </p>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2">
               {earned.map((a) => (
@@ -87,7 +100,9 @@ function AchievementsPage() {
         </TabsContent>
         <TabsContent value="locked" className="mt-4">
           {locked.length === 0 ? (
-            <p className="text-sm text-emerald-500 text-center py-8">{t("dashboard.achievements.emptyAll")}</p>
+            <p className="text-sm text-emerald-500 text-center py-8">
+              {t("dashboard.achievements.emptyAll")}
+            </p>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2">
               {locked.map((a) => (

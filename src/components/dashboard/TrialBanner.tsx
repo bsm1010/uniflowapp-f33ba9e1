@@ -8,11 +8,7 @@ interface TrialBannerProps {
   hadPaidSubscription?: boolean;
 }
 
-export function TrialBanner({
-  status,
-  daysRemaining,
-  hadPaidSubscription,
-}: TrialBannerProps) {
+export function TrialBanner({ status, daysRemaining, hadPaidSubscription }: TrialBannerProps) {
   if (status === "active") return null;
 
   const isExpired = status === "expired" || daysRemaining <= 0;
@@ -55,9 +51,7 @@ export function TrialBanner({
     >
       <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 md:px-8">
         <div className="flex items-center gap-2 text-sm text-foreground">
-          <Sparkles
-            className={isUrgent ? "size-4 text-amber-600" : "size-4 text-primary"}
-          />
+          <Sparkles className={isUrgent ? "size-4 text-amber-600" : "size-4 text-primary"} />
           <span>
             <strong>Free trial:</strong> {daysRemaining} {dayLabel} remaining
           </span>

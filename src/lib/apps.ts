@@ -55,12 +55,7 @@ const defaultPlans: AppPlan[] = [
     price: "$19",
     period: "/ month",
     highlighted: true,
-    features: [
-      "Unlimited actions",
-      "Priority support",
-      "Advanced analytics",
-      "Custom branding",
-    ],
+    features: ["Unlimited actions", "Priority support", "Advanced analytics", "Custom branding"],
   },
 ];
 
@@ -451,8 +446,7 @@ export const APPS: AppDef[] = [
     key: "fake-order-detector",
     name: "Fake Order Detector",
     description: "Automatically flag suspicious orders before you ship.",
-    longDescription:
-      "Reduce wasted shipping costs with smart fake order detection.",
+    longDescription: "Reduce wasted shipping costs with smart fake order detection.",
     icon: ShieldAlert,
     category: "Algeria",
     gradient: "from-rose-500 to-red-600",
@@ -479,8 +473,7 @@ export const APPS: AppDef[] = [
     key: "cod-manager",
     name: "COD Manager",
     description: "Track cash on delivery payments, collections and reconciliation.",
-    longDescription:
-      "The essential tool for Algerian merchants using Cash on Delivery.",
+    longDescription: "The essential tool for Algerian merchants using Cash on Delivery.",
     icon: Wallet,
     category: "Algeria",
     gradient: "from-amber-400 to-orange-500",
@@ -505,8 +498,14 @@ export const APPS: AppDef[] = [
   },
 ];
 
-export const APPS_BY_KEY: Record<string, AppDef> = Object.fromEntries(
-  APPS.map((a) => [a.key, a]),
-);
+export const APPS_BY_KEY: Record<string, AppDef> = Object.fromEntries(APPS.map((a) => [a.key, a]));
 
-export const APP_CATEGORIES = ["All", "Marketing", "AI", "Sales", "Growth", "Analytics", "Algeria"] as const;
+export const APP_CATEGORIES = [
+  "All",
+  "Marketing",
+  "AI",
+  "Sales",
+  "Growth",
+  "Analytics",
+  "Algeria",
+] as const;

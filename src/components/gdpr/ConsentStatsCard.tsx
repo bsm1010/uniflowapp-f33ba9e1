@@ -51,21 +51,27 @@ export function ConsentStatsCard() {
                   <span className="h-3 w-3 rounded-full bg-green-500" />
                   Accepted All
                 </span>
-                <span className="font-medium">{stats.allAccepted} ({acceptedPct}%)</span>
+                <span className="font-medium">
+                  {stats.allAccepted} ({acceptedPct}%)
+                </span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="flex items-center gap-2">
                   <span className="h-3 w-3 rounded-full bg-red-500" />
                   Rejected All
                 </span>
-                <span className="font-medium">{stats.allRejected} ({rejectedPct}%)</span>
+                <span className="font-medium">
+                  {stats.allRejected} ({rejectedPct}%)
+                </span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="flex items-center gap-2">
                   <span className="h-3 w-3 rounded-full bg-amber-500" />
                   Customized
                 </span>
-                <span className="font-medium">{stats.customized} ({customizedPct}%)</span>
+                <span className="font-medium">
+                  {stats.customized} ({customizedPct}%)
+                </span>
               </div>
             </div>
 
@@ -73,7 +79,10 @@ export function ConsentStatsCard() {
               <div className="flex h-3 overflow-hidden rounded-full bg-muted">
                 <div className="bg-green-500 transition-all" style={{ width: `${acceptedPct}%` }} />
                 <div className="bg-red-500 transition-all" style={{ width: `${rejectedPct}%` }} />
-                <div className="bg-amber-500 transition-all" style={{ width: `${customizedPct}%` }} />
+                <div
+                  className="bg-amber-500 transition-all"
+                  style={{ width: `${customizedPct}%` }}
+                />
               </div>
             )}
           </div>

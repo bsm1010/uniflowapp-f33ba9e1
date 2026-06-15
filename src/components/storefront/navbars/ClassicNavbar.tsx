@@ -13,7 +13,15 @@ interface ClassicNavbarProps {
   onCartOpen: () => void;
 }
 
-export function ClassicNavbar({ tokens: t, logo, brand, links, cartCount, slug, onCartOpen }: ClassicNavbarProps) {
+export function ClassicNavbar({
+  tokens: t,
+  logo,
+  brand,
+  links,
+  cartCount,
+  slug,
+  onCartOpen,
+}: ClassicNavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -37,7 +45,9 @@ export function ClassicNavbar({ tokens: t, logo, brand, links, cartCount, slug, 
           {logo ? (
             <img src={logo} alt={brand} className="h-8 w-auto" />
           ) : (
-            <span className="text-lg font-bold font-display" style={{ color: t.fg }}>{brand}</span>
+            <span className="text-lg font-bold font-display" style={{ color: t.fg }}>
+              {brand}
+            </span>
           )}
         </Link>
 

@@ -58,12 +58,8 @@ export const getZRExpressBalance = createServerFn({ method: "POST" })
       const { userId } = auth;
       const { client: supabase } = auth;
 
-      const { data: companies } = await supabase
-        .from("delivery_companies")
-        .select("id, name");
-      const zr = (companies ?? []).find(
-        (c) => normalizeProviderKey(c.name) === "zr_express",
-      );
+      const { data: companies } = await supabase.from("delivery_companies").select("id, name");
+      const zr = (companies ?? []).find((c) => normalizeProviderKey(c.name) === "zr_express");
       if (!zr) {
         return { ok: false, notConnected: true, message: "ZRExpress is not configured." };
       }
@@ -128,8 +124,7 @@ export const getZRExpressBalance = createServerFn({ method: "POST" })
 
       for (const p of probes) {
         if (p.status === "rejected") {
-          const reason =
-            p.reason instanceof Error ? p.reason.message : String(p.reason);
+          const reason = p.reason instanceof Error ? p.reason.message : String(p.reason);
           attempts.push(`network error (${reason})`);
           lastMessage = `ZRExpress request failed: ${reason}`;
           if (isDev) console.log(`[ZR Balance] network error: ${reason}`);
@@ -154,10 +149,7 @@ export const getZRExpressBalance = createServerFn({ method: "POST" })
           lastMessage = `ZRExpress ${path} returned a non-JSON response.`;
           continue;
         }
-        const obj =
-          parsed && typeof parsed === "object"
-            ? (parsed as Record<string, unknown>)
-            : {};
+        const obj = parsed && typeof parsed === "object" ? (parsed as Record<string, unknown>) : {};
         const inner =
           (obj.data && typeof obj.data === "object"
             ? (obj.data as Record<string, unknown>)
@@ -165,9 +157,7 @@ export const getZRExpressBalance = createServerFn({ method: "POST" })
         const readyBalance = pickNum(inner, BALANCE_KEYS);
         if (Number.isFinite(readyBalance)) {
           if (isDev) {
-            console.log(
-              `[ZR Balance] resolved on ${path} -> readyBalance=${readyBalance}`,
-            );
+            console.log(`[ZR Balance] resolved on ${path} -> readyBalance=${readyBalance}`);
           }
           return { ok: true, readyBalance, currency: "DA" };
         }
@@ -176,9 +166,7 @@ export const getZRExpressBalance = createServerFn({ method: "POST" })
       }
 
       if (isDev) {
-        console.log(
-          `[ZR Balance] all endpoints failed. Attempts: ${attempts.join(" | ")}`,
-        );
+        console.log(`[ZR Balance] all endpoints failed. Attempts: ${attempts.join(" | ")}`);
       }
       return { ok: false, message: lastMessage };
     } catch (e) {

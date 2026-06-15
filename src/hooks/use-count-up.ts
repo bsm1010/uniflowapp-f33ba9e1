@@ -14,8 +14,6 @@ export function useCountUp(target: number, duration = 1200, delay = 0): number {
     const from = fromRef.current;
     const to = Number.isFinite(target) ? target : 0;
     let startTs: number | null = null;
-    let timeoutId: number | undefined;
-
     const step = (ts: number) => {
       if (startTs === null) startTs = ts;
       const elapsed = ts - startTs;
@@ -31,9 +29,12 @@ export function useCountUp(target: number, duration = 1200, delay = 0): number {
       }
     };
 
-    timeoutId = window.setTimeout(() => {
-      rafRef.current = requestAnimationFrame(step);
-    }, Math.max(0, delay));
+    const timeoutId = window.setTimeout(
+      () => {
+        rafRef.current = requestAnimationFrame(step);
+      },
+      Math.max(0, delay),
+    );
 
     return () => {
       if (timeoutId) window.clearTimeout(timeoutId);

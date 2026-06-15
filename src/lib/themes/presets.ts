@@ -2,7 +2,8 @@ export const THEME_PRESETS = [
   {
     id: "sahara",
     name: "Sahara Gold",
-    description: "Desert-inspired warmth with gold accents on deep earth tones. Luxury jewelry, leather goods.",
+    description:
+      "Desert-inspired warmth with gold accents on deep earth tones. Luxury jewelry, leather goods.",
     preview: { bg: "#0f0d0a", primary: "#D4A853", accent: "#8B6914", font: "Playfair Display" },
     settings: {
       theme: "sahara",
@@ -25,7 +26,8 @@ export const THEME_PRESETS = [
   {
     id: "mediterranean",
     name: "Mediterranean Breeze",
-    description: "Cool blues and whites inspired by the Algerian coast. Fashion, home decor, lifestyle.",
+    description:
+      "Cool blues and whites inspired by the Algerian coast. Fashion, home decor, lifestyle.",
     preview: { bg: "#f0f7ff", primary: "#2563EB", accent: "#0ea5e9", font: "Outfit" },
     settings: {
       theme: "mediterranean",
@@ -71,7 +73,8 @@ export const THEME_PRESETS = [
   {
     id: "atlas",
     name: "Atlas Cedar",
-    description: "Forest greens and warm browns from the Atlas Mountains. Organic, wellness, nature.",
+    description:
+      "Forest greens and warm browns from the Atlas Mountains. Organic, wellness, nature.",
     preview: { bg: "#f0fdf4", primary: "#16A34A", accent: "#A3E635", font: "Manrope" },
     settings: {
       theme: "atlas",
@@ -94,7 +97,8 @@ export const THEME_PRESETS = [
   {
     id: "tlemcen",
     name: "Tlemcen Ornate",
-    description: "Rich reds and golds from Tlemcen's Islamic architecture. Luxury fashion, traditional crafts.",
+    description:
+      "Rich reds and golds from Tlemcen's Islamic architecture. Luxury fashion, traditional crafts.",
     preview: { bg: "#1a1410", primary: "#B91C1C", accent: "#D4A853", font: "DM Serif Display" },
     settings: {
       theme: "tlemcen",
@@ -117,7 +121,8 @@ export const THEME_PRESETS = [
   {
     id: "constantine",
     name: "Constantine Bridge",
-    description: "High contrast black and white with dramatic accents. Streetwear, urban, electronics.",
+    description:
+      "High contrast black and white with dramatic accents. Streetwear, urban, electronics.",
     preview: { bg: "#0a0a0a", primary: "#E11D48", accent: "#f8fafc", font: "Archivo Black" },
     settings: {
       theme: "constantine",
@@ -140,7 +145,8 @@ export const THEME_PRESETS = [
   {
     id: "oran",
     name: "Oran White",
-    description: "Crisp white with Mediterranean blue. Modern, chic, sophisticated. Fashion and beauty.",
+    description:
+      "Crisp white with Mediterranean blue. Modern, chic, sophisticated. Fashion and beauty.",
     preview: { bg: "#f8fafc", primary: "#0284C7", accent: "#38BDF8", font: "Sora" },
     settings: {
       theme: "oran",
@@ -209,7 +215,8 @@ export const THEME_PRESETS = [
   {
     id: "algiers",
     name: "Algiers Modern",
-    description: "Sleek black and white with gold. Cosmopolitan, premium. Tech, fashion, accessories.",
+    description:
+      "Sleek black and white with gold. Cosmopolitan, premium. Tech, fashion, accessories.",
     preview: { bg: "#fafafa", primary: "#CA8A04", accent: "#FDE68A", font: "Space Grotesk" },
     settings: {
       theme: "algiers",

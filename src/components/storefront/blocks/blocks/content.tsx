@@ -73,7 +73,9 @@ export function ComparisonTable({ props }: BlockComponentProps<ComparisonTablePr
             <tr>
               <th className="p-4 text-left font-medium">Feature</th>
               {props.columns.map((c) => (
-                <th key={c} className="p-4 text-center font-medium">{c}</th>
+                <th key={c} className="p-4 text-center font-medium">
+                  {c}
+                </th>
               ))}
             </tr>
           </thead>
@@ -84,7 +86,11 @@ export function ComparisonTable({ props }: BlockComponentProps<ComparisonTablePr
                 {r.values.map((v, j) => (
                   <td key={j} className="p-4 text-center">
                     {typeof v === "boolean" ? (
-                      v ? <Check className="mx-auto h-4 w-4 text-primary" /> : <span className="text-muted-foreground">—</span>
+                      v ? (
+                        <Check className="mx-auto h-4 w-4 text-primary" />
+                      ) : (
+                        <span className="text-muted-foreground">—</span>
+                      )
                     ) : (
                       v
                     )}
@@ -129,7 +135,9 @@ export function Pricing({ props }: BlockComponentProps<PricingProps>) {
             <h3 className="text-lg font-semibold">{p.name}</h3>
             <p className="mt-3 font-display text-4xl font-bold">
               {p.price}
-              {p.period ? <span className="text-base font-normal opacity-70">/{p.period}</span> : null}
+              {p.period ? (
+                <span className="text-base font-normal opacity-70">/{p.period}</span>
+              ) : null}
             </p>
             <ul className="mt-5 space-y-2 text-sm">
               {p.features.map((f, j) => (
@@ -171,7 +179,12 @@ export function BentoGrid({ props }: BlockComponentProps<BentoGridProps>) {
             }`}
           >
             {it.imageUrl ? (
-              <BlockImage src={it.imageUrl} alt={it.title} aspect="video" className="absolute inset-0 h-full w-full rounded-none opacity-40" />
+              <BlockImage
+                src={it.imageUrl}
+                alt={it.title}
+                aspect="video"
+                className="absolute inset-0 h-full w-full rounded-none opacity-40"
+              />
             ) : null}
             <div className="relative">
               <h3 className="font-semibold">{it.title}</h3>

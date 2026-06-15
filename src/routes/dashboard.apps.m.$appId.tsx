@@ -42,11 +42,7 @@ function MarketplaceAppPage() {
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase
-        .from("apps")
-        .select("*")
-        .eq("id", appId)
-        .maybeSingle();
+      const { data } = await supabase.from("apps").select("*").eq("id", appId).maybeSingle();
       if (!data) {
         setLoading(false);
         return;
@@ -149,7 +145,9 @@ function MarketplaceAppPage() {
               {app.is_free ? "Free" : `$${Number(app.price).toFixed(2)}`}
             </div>
           </div>
-          <Badge variant="secondary" className="w-full justify-center">{app.category}</Badge>
+          <Badge variant="secondary" className="w-full justify-center">
+            {app.category}
+          </Badge>
 
           {purchased ? (
             <Button asChild className="w-full bg-[#7C3AED] hover:bg-[#6D28D9] text-white">
@@ -184,7 +182,9 @@ function MarketplaceAppPage() {
                   key={s}
                   onClick={() => setHeroIdx(i)}
                   className={`h-16 w-28 rounded-lg overflow-hidden shrink-0 border-2 transition ${
-                    i === heroIdx ? "border-[#7C3AED]" : "border-transparent opacity-70 hover:opacity-100"
+                    i === heroIdx
+                      ? "border-[#7C3AED]"
+                      : "border-transparent opacity-70 hover:opacity-100"
                   }`}
                 >
                   <img src={s} alt="" className="w-full h-full object-cover" />

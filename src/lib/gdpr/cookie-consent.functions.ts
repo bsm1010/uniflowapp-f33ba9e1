@@ -47,26 +47,24 @@ export const saveCookieConsentSettings = createServerFn({ method: "POST" })
     }) => input,
   )
   .handler(async ({ data }) => {
-    const { error } = await supabase
-      .from("cookie_consent_settings")
-      .upsert(
-        {
-          user_id: data.userId,
-          store_id: data.storeId,
-          enabled: data.enabled,
-          banner_title: data.bannerTitle,
-          banner_text: data.bannerText,
-          accept_all_text: data.acceptAllText,
-          reject_all_text: data.rejectAllText,
-          save_text: data.saveText,
-          manage_text: data.manageText,
-          privacy_policy_url: data.privacyPolicyUrl,
-          position: data.position,
-          theme: data.theme,
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: "user_id,store_id" },
-      );
+    const { error } = await supabase.from("cookie_consent_settings").upsert(
+      {
+        user_id: data.userId,
+        store_id: data.storeId,
+        enabled: data.enabled,
+        banner_title: data.bannerTitle,
+        banner_text: data.bannerText,
+        accept_all_text: data.acceptAllText,
+        reject_all_text: data.rejectAllText,
+        save_text: data.saveText,
+        manage_text: data.manageText,
+        privacy_policy_url: data.privacyPolicyUrl,
+        position: data.position,
+        theme: data.theme,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id,store_id" },
+    );
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -86,20 +84,18 @@ export const recordCookieConsent = createServerFn({ method: "POST" })
     const expiresAt = new Date();
     expiresAt.setMonth(expiresAt.getMonth() + 12);
 
-    const { error } = await supabaseAdmin
-      .from("cookie_consents")
-      .upsert(
-        {
-          store_id: data.storeId,
-          visitor_id: data.visitorId,
-          necessary: data.necessary,
-          analytics: data.analytics,
-          marketing: data.marketing,
-          preferences: data.preferences,
-          expires_at: expiresAt.toISOString(),
-        },
-        { onConflict: "store_id,visitor_id" },
-      );
+    const { error } = await supabaseAdmin.from("cookie_consents").upsert(
+      {
+        store_id: data.storeId,
+        visitor_id: data.visitorId,
+        necessary: data.necessary,
+        analytics: data.analytics,
+        marketing: data.marketing,
+        preferences: data.preferences,
+        expires_at: expiresAt.toISOString(),
+      },
+      { onConflict: "store_id,visitor_id" },
+    );
     if (error) throw new Error(error.message);
 
     await supabaseAdmin.from("consent_audit_log").insert({
@@ -137,10 +133,7 @@ export const getCookieConsentStats = createServerFn({ method: "GET" })
 export const deleteCookieConsent = createServerFn({ method: "POST" })
   .inputValidator((input: { consentId: string }) => input)
   .handler(async ({ data }) => {
-    const { error } = await supabase
-      .from("cookie_consents")
-      .delete()
-      .eq("id", data.consentId);
+    const { error } = await supabase.from("cookie_consents").delete().eq("id", data.consentId);
     if (error) throw new Error(error.message);
     return { ok: true };
   });

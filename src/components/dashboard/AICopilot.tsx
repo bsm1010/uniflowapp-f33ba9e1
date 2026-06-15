@@ -31,26 +31,39 @@ export function AICopilot() {
     }
   }, [response, activeAction]);
 
-  const handleAction = useCallback(async (action: CopilotAction) => {
-    setActiveAction(action);
-    setLoading(true);
-    setResponse("");
+  const handleAction = useCallback(
+    async (action: CopilotAction) => {
+      setActiveAction(action);
+      setLoading(true);
+      setResponse("");
 
-    try {
-      const { data: sessionData } = await (await import("@/integrations/supabase/client")).supabase.auth.getSession();
-      const accessToken = sessionData.session?.access_token ?? "";
-      if (!accessToken) { setResponse("Please sign in first."); setLoading(false); return; }
+      try {
+        const { data: sessionData } = await (
+          await import("@/integrations/supabase/client")
+        ).supabase.auth.getSession();
+        const accessToken = sessionData.session?.access_token ?? "";
+        if (!accessToken) {
+          setResponse("Please sign in first.");
+          setLoading(false);
+          return;
+        }
 
-      const result = await callCopilot({ data: { prompt: action.prompt, actionLabel: action.label, accessToken } });
-      setResponse(result.response || "No response generated.");
-    } catch (err: any) {
-      setResponse(err?.message?.includes("INSUFFICIENT_CREDITS")
-        ? "⚠️ You don't have enough credits. Please top up to use AI features."
-        : `⚠️ ${err?.message || "Something went wrong. Please try again."}`);
-    } finally {
-      setLoading(false);
-    }
-  }, [callCopilot]);
+        const result = await callCopilot({
+          data: { prompt: action.prompt, actionLabel: action.label, accessToken },
+        });
+        setResponse(result.response || "No response generated.");
+      } catch (err: any) {
+        setResponse(
+          err?.message?.includes("INSUFFICIENT_CREDITS")
+            ? "⚠️ You don't have enough credits. Please top up to use AI features."
+            : `⚠️ ${err?.message || "Something went wrong. Please try again."}`,
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [callCopilot],
+  );
 
   return (
     <>
@@ -96,9 +109,7 @@ export function AICopilot() {
                 </div>
                 <div>
                   <p className="text-sm font-semibold leading-tight">AI Copilot</p>
-                  <p className="text-[10px] text-white/80">
-                    Powered by Gemini
-                  </p>
+                  <p className="text-[10px] text-white/80">Powered by Gemini</p>
                 </div>
               </div>
               <button
@@ -118,7 +129,10 @@ export function AICopilot() {
                 <>
                   {/* Back button */}
                   <button
-                    onClick={() => { setActiveAction(null); setResponse(""); }}
+                    onClick={() => {
+                      setActiveAction(null);
+                      setResponse("");
+                    }}
                     className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors mb-2"
                   >
                     <ChevronRight className="h-3 w-3 rotate-180" />
@@ -165,7 +179,9 @@ export function AICopilot() {
                           </div>
                           <div className="min-w-0">
                             <p className="text-sm font-medium leading-tight">{action.label}</p>
-                            <p className="text-xs text-muted-foreground truncate">{action.description}</p>
+                            <p className="text-xs text-muted-foreground truncate">
+                              {action.description}
+                            </p>
                           </div>
                           <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
                         </button>

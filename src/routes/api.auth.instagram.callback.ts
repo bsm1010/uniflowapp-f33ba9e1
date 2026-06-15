@@ -3,15 +3,13 @@ import { createClient } from "@supabase/supabase-js";
 
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL!;
 const SUPABASE_ANON =
-  process.env.SUPABASE_PUBLISHABLE_KEY ||
-  process.env.VITE_SUPABASE_PUBLISHABLE_KEY!;
+  process.env.SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY!;
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const CLIENT_ID = process.env.INSTAGRAM_CLIENT_ID || process.env.VITE_INSTAGRAM_CLIENT_ID;
 const CLIENT_SECRET = process.env.INSTAGRAM_CLIENT_SECRET;
 
-const redirect = (to: string) =>
-  new Response(null, { status: 302, headers: { Location: to } });
+const redirect = (to: string) => new Response(null, { status: 302, headers: { Location: to } });
 
 export const Route = createFileRoute("/api/auth/instagram/callback")({
   server: {
@@ -35,7 +33,10 @@ export const Route = createFileRoute("/api/auth/instagram/callback")({
           global: { headers: { Authorization: `Bearer ${accessToken}` } },
           auth: { persistSession: false, autoRefreshToken: false },
         });
-        const { data: { user }, error: authError } = await userClient.auth.getUser(accessToken);
+        const {
+          data: { user },
+          error: authError,
+        } = await userClient.auth.getUser(accessToken);
         if (authError || !user) return redirect("/login");
 
         const redirectUri = `${url.origin}/api/auth/instagram/callback`;
@@ -73,15 +74,18 @@ export const Route = createFileRoute("/api/auth/instagram/callback")({
           const admin = createClient(SUPABASE_URL, SERVICE_KEY, {
             auth: { persistSession: false, autoRefreshToken: false },
           });
-          await admin.from("instagram_connections").upsert({
-            user_id: user.id,
-            instagram_user_id: profile.id,
-            instagram_username: profile.username,
-            access_token: finalToken,
-            token_expires_at: expiresAt,
-            status: "connected",
-            last_synced_at: new Date().toISOString(),
-          }, { onConflict: "user_id" });
+          await admin.from("instagram_connections").upsert(
+            {
+              user_id: user.id,
+              instagram_user_id: profile.id,
+              instagram_username: profile.username,
+              access_token: finalToken,
+              token_expires_at: expiresAt,
+              status: "connected",
+              last_synced_at: new Date().toISOString(),
+            },
+            { onConflict: "user_id" },
+          );
 
           return redirect(`${redirectTo}?instagram=connected`);
         } catch {

@@ -28,11 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  useMySupplyOrders,
-  useMyWallet,
-  type SupplyOrder,
-} from "@/hooks/useDropshipping";
+import { useMySupplyOrders, useMyWallet, type SupplyOrder } from "@/hooks/useDropshipping";
 
 export const Route = createFileRoute("/dashboard/supply-orders")({
   component: SupplyOrdersPage,
@@ -128,11 +124,7 @@ function PipelineSteps({ status }: { status: string }) {
             title={step.label}
           />
           {i < PIPELINE.length - 1 && (
-            <div
-              className={`h-0.5 w-3 ${
-                i < current ? "bg-primary" : "bg-muted-foreground/30"
-              }`}
-            />
+            <div className={`h-0.5 w-3 ${i < current ? "bg-primary" : "bg-muted-foreground/30"}`} />
           )}
         </div>
       ))}

@@ -5,9 +5,7 @@ import { useSubscription } from "@/hooks/use-subscription";
 
 export function ExpiredOverlay() {
   const { hadPaidSubscription } = useSubscription();
-  const title = hadPaidSubscription
-    ? "Your subscription has expired"
-    : "Your trial has expired";
+  const title = hadPaidSubscription ? "Your subscription has expired" : "Your trial has expired";
   const message = hadPaidSubscription
     ? "Renew to continue using your store. Your products, orders, and settings are safe — nothing has been deleted."
     : "Please upgrade your plan to continue managing your store. Your products, orders, and customizations are safe — nothing has been deleted.";

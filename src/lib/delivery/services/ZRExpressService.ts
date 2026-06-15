@@ -6,10 +6,7 @@ import type { ApiKeyValidationResult } from "./YalidineService";
  * ZR Express requires both a `token` (apiKey) and a `key` (apiSecret).
  */
 export class ZRExpressService {
-  static async validateApiKey(
-    apiKey: string,
-    apiSecret = "",
-  ): Promise<ApiKeyValidationResult> {
+  static async validateApiKey(apiKey: string, apiSecret = ""): Promise<ApiKeyValidationResult> {
     if (!apiKey || !apiKey.trim()) {
       return { success: false, message: "API token is required." };
     }

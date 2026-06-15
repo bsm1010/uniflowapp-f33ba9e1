@@ -39,7 +39,10 @@ import { Img } from "@/components/ui/Img";
 import { GamificationHub } from "@/components/dashboard/core-loop/GamificationHub";
 import { useServerFn } from "@tanstack/react-start";
 import { getGamification, type GamificationData } from "@/lib/core-loop";
-import { getZRExpressBalance, type ZRExpressBalanceResult } from "@/lib/delivery/zrexpress-balance.functions";
+import {
+  getZRExpressBalance,
+  type ZRExpressBalanceResult,
+} from "@/lib/delivery/zrexpress-balance.functions";
 
 export const Route = createFileRoute("/dashboard/")({
   component: DashboardHome,
@@ -71,16 +74,18 @@ function DashboardHome() {
     revenue: 0,
     customers: 0,
   });
-  const [recentOrders, setRecentOrders] = useState<Array<{
-    id: string;
-    customer_name: string;
-    total: number;
-    status: string;
-    created_at: string;
-    product_name: string | null;
-    product_image: string | null;
-    item_count: number;
-  }>>([]);
+  const [recentOrders, setRecentOrders] = useState<
+    Array<{
+      id: string;
+      customer_name: string;
+      total: number;
+      status: string;
+      created_at: string;
+      product_name: string | null;
+      product_image: string | null;
+      item_count: number;
+    }>
+  >([]);
   const [gamiData, setGamiData] = useState<GamificationData | null>(null);
   const [gamiLoading, setGamiLoading] = useState(true);
   const callGami = useServerFn(getGamification);
@@ -148,65 +153,64 @@ function DashboardHome() {
       return q;
     };
 
-    Promise.all([
-      scopedProducts(),
-      scopedOrdersCount(),
-      scopedOrdersForAgg(),
-      scopedRecentOrders(),
-    ]).then(async ([prodRes, ordersCountRes, ordersAggRes, recentRes]) => {
-      if (cancelled) return;
-      const agg = ordersAggRes.data ?? [];
-      const revenue = agg.reduce((n, o) => n + Number(o.total ?? 0), 0);
-      const customers = new Set(
-        agg.map((o) => (o.customer_email ?? "").toLowerCase()).filter(Boolean),
-      ).size;
-      setCounts({
-        products: prodRes.count ?? 0,
-        orders: ordersCountRes.count ?? 0,
-        revenue,
-        customers,
+    Promise.all([scopedProducts(), scopedOrdersCount(), scopedOrdersForAgg(), scopedRecentOrders()])
+      .then(async ([prodRes, ordersCountRes, ordersAggRes, recentRes]) => {
+        if (cancelled) return;
+        const agg = ordersAggRes.data ?? [];
+        const revenue = agg.reduce((n, o) => n + Number(o.total ?? 0), 0);
+        const customers = new Set(
+          agg.map((o) => (o.customer_email ?? "").toLowerCase()).filter(Boolean),
+        ).size;
+        setCounts({
+          products: prodRes.count ?? 0,
+          orders: ordersCountRes.count ?? 0,
+          revenue,
+          customers,
+        });
+
+        const recent = recentRes.data ?? [];
+        const recentIds = recent.map((o) => o.id);
+        const itemsByOrder: Record<
+          string,
+          { product_name: string; image_url: string | null; count: number }
+        > = {};
+        if (recentIds.length) {
+          const { data: its } = await supabase
+            .from("order_items")
+            .select("order_id,product_name,image_url")
+            .in("order_id", recentIds);
+          if (cancelled) return;
+          for (const it of its ?? []) {
+            const cur = itemsByOrder[it.order_id];
+            if (cur) cur.count += 1;
+            else
+              itemsByOrder[it.order_id] = {
+                product_name: it.product_name,
+                image_url: it.image_url,
+                count: 1,
+              };
+          }
+        }
+        setRecentOrders(
+          recent.map((o) => ({
+            id: o.id,
+            customer_name: o.customer_name,
+            total: Number(o.total),
+            status: o.status,
+            created_at: o.created_at,
+            product_name: itemsByOrder[o.id]?.product_name ?? null,
+            product_image: itemsByOrder[o.id]?.image_url ?? null,
+            item_count: itemsByOrder[o.id]?.count ?? 0,
+          })),
+        );
+      })
+      .catch((err) => {
+        if (!cancelled) console.error("Dashboard data load failed:", err);
       });
 
-      const recent = recentRes.data ?? [];
-      const recentIds = recent.map((o) => o.id);
-      const itemsByOrder: Record<
-        string,
-        { product_name: string; image_url: string | null; count: number }
-      > = {};
-      if (recentIds.length) {
-        const { data: its } = await supabase
-          .from("order_items")
-          .select("order_id,product_name,image_url")
-          .in("order_id", recentIds);
-        if (cancelled) return;
-        for (const it of its ?? []) {
-          const cur = itemsByOrder[it.order_id];
-          if (cur) cur.count += 1;
-          else
-            itemsByOrder[it.order_id] = {
-              product_name: it.product_name,
-              image_url: it.image_url,
-              count: 1,
-            };
-        }
-      }
-      setRecentOrders(
-        recent.map((o) => ({
-          id: o.id,
-          customer_name: o.customer_name,
-          total: Number(o.total),
-          status: o.status,
-          created_at: o.created_at,
-          product_name: itemsByOrder[o.id]?.product_name ?? null,
-          product_image: itemsByOrder[o.id]?.image_url ?? null,
-          item_count: itemsByOrder[o.id]?.count ?? 0,
-        })),
-      );
-    }).catch((err) => {
-      if (!cancelled) console.error("Dashboard data load failed:", err);
-    });
-
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [user, currentStore?.id]);
 
   useEffect(() => {
@@ -216,30 +220,47 @@ function DashboardHome() {
   useEffect(() => {
     let cancelled = false;
     const load = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { if (!cancelled) setGamiLoading(false); return; }
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) {
+        if (!cancelled) setGamiLoading(false);
+        return;
+      }
       try {
-        const result = await callGami({ data: { accessToken: session.access_token, storeId: currentStore?.id } });
+        const result = await callGami({
+          data: { accessToken: session.access_token, storeId: currentStore?.id },
+        });
         if (!cancelled) setGamiData(result);
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
       if (!cancelled) setGamiLoading(false);
     };
     load();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [callGami, currentStore?.id]);
 
   useEffect(() => {
     let cancelled = false;
     const load = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) return;
       try {
         const result = await callZrBalance({ data: { accessToken: session.access_token } });
         if (!cancelled) setZrBalance(result);
-      } catch { if (!cancelled) setZrBalance(null); }
+      } catch {
+        if (!cancelled) setZrBalance(null);
+      }
     };
     load();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [callZrBalance]);
 
   useEffect(() => {
@@ -273,34 +294,37 @@ function DashboardHome() {
 
   const currency = currentStore?.currency ?? "DZD";
 
-  const stats = useMemo(() => [
-    {
-      label: t("dashboard.home.stats.products"),
-      raw: counts.products,
-      icon: Package,
-      gradient: "bg-gradient-to-br from-violet-500 to-fuchsia-500",
-    },
-    {
-      label: t("dashboard.home.stats.orders"),
-      raw: counts.orders,
-      icon: ShoppingBag,
-      gradient: "bg-gradient-to-br from-blue-500 to-indigo-500",
-    },
-    {
-      label: t("dashboard.home.stats.revenue"),
-      raw: counts.revenue,
-      isRevenue: true,
-      icon: DollarSign,
-      gradient: "bg-gradient-to-br from-emerald-500 to-teal-500",
-      currency,
-    },
-    {
-      label: t("dashboard.home.stats.customers"),
-      raw: counts.customers,
-      icon: Users,
-      gradient: "bg-gradient-to-br from-orange-400 to-amber-500",
-    },
-  ], [t, counts.products, counts.orders, counts.revenue, counts.customers, currency]);
+  const stats = useMemo(
+    () => [
+      {
+        label: t("dashboard.home.stats.products"),
+        raw: counts.products,
+        icon: Package,
+        gradient: "bg-gradient-to-br from-violet-500 to-fuchsia-500",
+      },
+      {
+        label: t("dashboard.home.stats.orders"),
+        raw: counts.orders,
+        icon: ShoppingBag,
+        gradient: "bg-gradient-to-br from-blue-500 to-indigo-500",
+      },
+      {
+        label: t("dashboard.home.stats.revenue"),
+        raw: counts.revenue,
+        isRevenue: true,
+        icon: DollarSign,
+        gradient: "bg-gradient-to-br from-emerald-500 to-teal-500",
+        currency,
+      },
+      {
+        label: t("dashboard.home.stats.customers"),
+        raw: counts.customers,
+        icon: Users,
+        gradient: "bg-gradient-to-br from-orange-400 to-amber-500",
+      },
+    ],
+    [t, counts.products, counts.orders, counts.revenue, counts.customers, currency],
+  );
 
   const displayName = name || user?.email?.split("@")[0] || "—";
 
@@ -320,8 +344,7 @@ function DashboardHome() {
               {t("dashboard.home.kicker")}
             </div>
             <h1 className="mt-3 text-3xl md:text-4xl font-bold font-display">
-              {t("dashboard.home.welcome")}{" "}
-              <span className="aurora-text">{displayName}</span>
+              {t("dashboard.home.welcome")} <span className="aurora-text">{displayName}</span>
             </h1>
             <p className="mt-1.5 text-muted-foreground/80 text-sm">
               {t("dashboard.home.subtitle")}
@@ -363,7 +386,10 @@ function DashboardHome() {
             icon={Store}
             title="Welcome to your dashboard"
             description="Your store stats will show up here once you add products and start getting orders."
-            action={{ label: "Add your first product", onClick: () => navigate({ to: "/dashboard/products" }) }}
+            action={{
+              label: "Add your first product",
+              onClick: () => navigate({ to: "/dashboard/products" }),
+            }}
           />
         </motion.div>
       ) : (
@@ -422,9 +448,7 @@ function DashboardHome() {
                 >
                   ZRExpress
                 </div>
-                <div className="text-sm font-medium text-muted-foreground">
-                  Solde prêt
-                </div>
+                <div className="text-sm font-medium text-muted-foreground">Solde prêt</div>
               </div>
             </div>
             <div className="flex items-baseline gap-2">
@@ -454,9 +478,7 @@ function DashboardHome() {
             </div>
           </div>
           {!zrBalance.ok && (
-            <div className="mt-3 text-xs text-amber-700/90 break-words">
-              {zrBalance.message}
-            </div>
+            <div className="mt-3 text-xs text-amber-700/90 break-words">{zrBalance.message}</div>
           )}
         </motion.div>
       )}
@@ -617,11 +639,7 @@ function DashboardHome() {
               {t("dashboard.home.checklistDesc")}
             </p>
             <div className="mt-auto pt-6">
-              <Button
-                size="sm"
-                asChild
-                className="w-full gap-1.5"
-              >
+              <Button size="sm" asChild className="w-full gap-1.5">
                 <Link to="/dashboard/store">
                   {t("dashboard.home.continueSetup")}
                   <ArrowRight className="h-3.5 w-3.5" />
@@ -734,9 +752,7 @@ function QuickAction({
         </div>
         <div className="min-w-0">
           <div className="font-semibold text-sm">{title}</div>
-          <p className="mt-0.5 text-sm text-muted-foreground">
-            {description}
-          </p>
+          <p className="mt-0.5 text-sm text-muted-foreground">{description}</p>
         </div>
       </CardContent>
     </Card>
@@ -804,7 +820,12 @@ function SubscriptionStatusCard({
               </p>
             </div>
           </div>
-          <Button variant="outline" size="sm" asChild className="border-amber-500/20 hover:bg-amber-500/10">
+          <Button
+            variant="outline"
+            size="sm"
+            asChild
+            className="border-amber-500/20 hover:bg-amber-500/10"
+          >
             <Link to="/dashboard/upgrade">{t("dashboard.home.viewStatus")}</Link>
           </Button>
         </CardContent>
@@ -819,9 +840,7 @@ function SubscriptionStatusCard({
     const desc = hadPaidSubscription
       ? t("dashboard.home.subExpiredDesc")
       : t("dashboard.home.trialExpiredDesc");
-    const cta = hadPaidSubscription
-      ? t("dashboard.home.renew")
-      : t("dashboard.home.upgradeNow");
+    const cta = hadPaidSubscription ? t("dashboard.home.renew") : t("dashboard.home.upgradeNow");
     return (
       <Card className="border-red-500/20 shadow-sm overflow-hidden">
         <CardContent className="p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4">
@@ -859,12 +878,15 @@ function SubscriptionStatusCard({
                 unit: daysRemaining === 1 ? t("dashboard.home.day") : t("dashboard.home.days"),
               })}
             </p>
-            <p className="text-xs text-muted-foreground/70">
-              {t("dashboard.home.trialDesc")}
-            </p>
+            <p className="text-xs text-muted-foreground/70">{t("dashboard.home.trialDesc")}</p>
           </div>
         </div>
-        <Button size="sm" variant="outline" asChild className="border-primary/20 hover:bg-primary/10">
+        <Button
+          size="sm"
+          variant="outline"
+          asChild
+          className="border-primary/20 hover:bg-primary/10"
+        >
           <Link to="/dashboard/upgrade">{t("dashboard.home.upgrade")}</Link>
         </Button>
       </CardContent>

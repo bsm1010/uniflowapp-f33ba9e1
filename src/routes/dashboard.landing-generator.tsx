@@ -30,10 +30,7 @@ import {
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  generateLandingPage,
-  type LandingPageContent,
-} from "@/lib/ai/generate-landing-page";
+import { generateLandingPage, type LandingPageContent } from "@/lib/ai/generate-landing-page";
 import { supabase } from "@/integrations/supabase/client";
 import { useCredits, CREDIT_COSTS } from "@/hooks/use-credits";
 
@@ -272,9 +269,7 @@ function LandingGeneratorPage() {
               </div>
               <div>
                 <p className="font-medium">اسحب صورة المنتج هنا أو اضغط للاختيار</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  JPG, PNG, WEBP — حتى 10MB
-                </p>
+                <p className="text-xs text-muted-foreground mt-1">JPG, PNG, WEBP — حتى 10MB</p>
               </div>
             </div>
           )}
@@ -317,7 +312,10 @@ function LandingGeneratorPage() {
       )}
 
       {content && (
-        <div ref={previewRef} className="rounded-xl border border-border bg-background overflow-hidden">
+        <div
+          ref={previewRef}
+          className="rounded-xl border border-border bg-background overflow-hidden"
+        >
           <div className="bg-muted/40 border-b border-border px-4 py-2 text-xs text-muted-foreground flex items-center gap-2">
             <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
             معاينة الصفحة • التصنيف المكتشف:{" "}

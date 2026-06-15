@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Trash2, CheckCircle, XCircle, Clock, Eye } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -28,13 +28,19 @@ export function DeletionRequestsSection() {
   const { user } = useAuth();
   const { currentStore } = useCurrentStore();
   const [requests, setRequests] = useState<DeletionRequest[]>([]);
-  const [stats, setStats] = useState({ total: 0, pending: 0, approved: 0, rejected: 0, completed: 0 });
+  const [stats, setStats] = useState({
+    total: 0,
+    pending: 0,
+    approved: 0,
+    rejected: 0,
+    completed: 0,
+  });
   const [loading, setLoading] = useState(true);
   const [selectedRequest, setSelectedRequest] = useState<DeletionRequest | null>(null);
   const [reviewNotes, setReviewNotes] = useState("");
   const [processingId, setProcessingId] = useState<string | null>(null);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     if (!currentStore) return;
     const [reqs, st] = await Promise.all([
       getDeletionRequests({ data: { storeId: currentStore.id } }),
@@ -43,11 +49,11 @@ export function DeletionRequestsSection() {
     setRequests(reqs);
     setStats(st);
     setLoading(false);
-  };
+  }, [currentStore]);
 
   useEffect(() => {
     loadData();
-  }, [currentStore]);
+  }, [currentStore, loadData]);
 
   const handleReview = async (status: "approved" | "rejected") => {
     if (!user || !selectedRequest) return;
@@ -190,7 +196,9 @@ export function DeletionRequestsSection() {
             <div className="space-y-3">
               <div>
                 <p className="text-sm font-medium">Customer</p>
-                <p className="text-sm text-muted-foreground">{selectedRequest?.customer_name} ({selectedRequest?.customer_email})</p>
+                <p className="text-sm text-muted-foreground">
+                  {selectedRequest?.customer_name} ({selectedRequest?.customer_email})
+                </p>
               </div>
               {selectedRequest?.reason && (
                 <div>
@@ -211,9 +219,7 @@ export function DeletionRequestsSection() {
               <Button variant="outline" onClick={() => handleReview("rejected")}>
                 Reject
               </Button>
-              <Button onClick={() => handleReview("approved")}>
-                Approve
-              </Button>
+              <Button onClick={() => handleReview("approved")}>Approve</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

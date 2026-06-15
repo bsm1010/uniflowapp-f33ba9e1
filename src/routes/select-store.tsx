@@ -44,10 +44,7 @@ function SelectStorePage() {
 
     if (list.length > 0) {
       const ids = list.map((s) => s.id);
-      const { data: orders } = await supabase
-        .from("orders")
-        .select("store_id")
-        .in("store_id", ids);
+      const { data: orders } = await supabase.from("orders").select("store_id").in("store_id", ids);
       const map: Record<string, number> = {};
       for (const row of orders ?? []) {
         if (row.store_id) map[row.store_id] = (map[row.store_id] ?? 0) + 1;
@@ -73,10 +70,7 @@ function SelectStorePage() {
   const handleSelect = async (storeId: string) => {
     localStorage.setItem("selectedStore", storeId);
     if (user) {
-      await supabase
-        .from("profiles")
-        .update({ current_store_id: storeId })
-        .eq("id", user.id);
+      await supabase.from("profiles").update({ current_store_id: storeId }).eq("id", user.id);
     }
     navigate({ to: "/dashboard" });
   };
@@ -128,9 +122,7 @@ function SelectStorePage() {
                 )}
               </div>
               <h2 className="text-xl font-semibold truncate">{store.name}</h2>
-              <p className="text-sm text-muted-foreground mt-2">
-                {counts[store.id] ?? 0} orders
-              </p>
+              <p className="text-sm text-muted-foreground mt-2">{counts[store.id] ?? 0} orders</p>
             </motion.button>
           ))}
 

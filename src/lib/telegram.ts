@@ -3,23 +3,17 @@ const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
 /**
  * Send a Telegram message to a chat ID
  */
-export async function sendTelegramMessage(
-  chatId: string,
-  text: string,
-): Promise<void> {
+export async function sendTelegramMessage(chatId: string, text: string): Promise<void> {
   try {
-    const res = await fetch(
-      `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chat_id: chatId,
-          text,
-          parse_mode: "HTML",
-        }),
-      },
-    );
+    const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text,
+        parse_mode: "HTML",
+      }),
+    });
 
     if (!res.ok) {
       const err = await res.text();

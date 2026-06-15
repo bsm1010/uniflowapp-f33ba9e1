@@ -132,14 +132,18 @@ function VoiceGeneratorPage() {
     try {
       const raw = localStorage.getItem(HISTORY_KEY);
       if (raw) setHistory(JSON.parse(raw));
-    } catch {}
+    } catch (error) {
+      console.warn(error);
+    }
   }, []);
 
   const saveHistory = (items: HistoryItem[]) => {
     setHistory(items);
     try {
       localStorage.setItem(HISTORY_KEY, JSON.stringify(items));
-    } catch {}
+    } catch (error) {
+      console.warn(error);
+    }
   };
 
   const handleGenerate = async () => {
@@ -239,10 +243,7 @@ function VoiceGeneratorPage() {
                     Your text
                   </Label>
                   <div className="flex items-center gap-2">
-                    <Badge
-                      variant="secondary"
-                      className="text-[10px] gap-1 font-normal"
-                    >
+                    <Badge variant="secondary" className="text-[10px] gap-1 font-normal">
                       <Languages className="h-3 w-3" />
                       {(() => {
                         const lang = detectLanguage(text);
@@ -277,9 +278,10 @@ function VoiceGeneratorPage() {
                 <div className="flex items-start gap-2 rounded-md bg-primary/5 border border-primary/10 px-3 py-2">
                   <Info className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    This tool supports <span className="font-medium text-foreground">Arabic voice generation</span>{" "}
-                    (including mixed Arabic-English text). Punctuation, diacritics, and tone
-                    are preserved using the multilingual model.
+                    This tool supports{" "}
+                    <span className="font-medium text-foreground">Arabic voice generation</span>{" "}
+                    (including mixed Arabic-English text). Punctuation, diacritics, and tone are
+                    preserved using the multilingual model.
                   </p>
                 </div>
               </div>
@@ -307,16 +309,12 @@ function VoiceGeneratorPage() {
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0">
                             <div className="flex items-center gap-1.5">
-                              <span className="font-semibold text-sm truncate">
-                                {preset.name}
-                              </span>
+                              <span className="font-semibold text-sm truncate">{preset.name}</span>
                               {active && (
                                 <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
                               )}
                             </div>
-                            <p className="text-[11px] text-muted-foreground mt-0.5">
-                              {preset.tag}
-                            </p>
+                            <p className="text-[11px] text-muted-foreground mt-0.5">{preset.tag}</p>
                           </div>
                           <Volume2
                             className={cn(

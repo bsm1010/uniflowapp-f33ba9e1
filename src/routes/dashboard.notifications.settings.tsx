@@ -136,8 +136,16 @@ function NotificationsSettings() {
   const items: Array<{ key: keyof Prefs; label: string; description: string }> = [
     { key: "new_order", label: "New orders", description: "When a new order is placed" },
     { key: "low_stock", label: "Low stock alerts", description: "When a product is running low" },
-    { key: "order_status", label: "Order status changes", description: "When an order moves through fulfillment" },
-    { key: "delivery_update", label: "Delivery updates", description: "ZRExpress / shipment tracking changes" },
+    {
+      key: "order_status",
+      label: "Order status changes",
+      description: "When an order moves through fulfillment",
+    },
+    {
+      key: "delivery_update",
+      label: "Delivery updates",
+      description: "ZRExpress / shipment tracking changes",
+    },
     { key: "payment", label: "Payments", description: "When a payment is received" },
   ];
 
@@ -163,10 +171,10 @@ function NotificationsSettings() {
                 {status === "granted-subscribed"
                   ? `Active on ${subCount} device${subCount === 1 ? "" : "s"}.`
                   : status === "denied"
-                  ? "Blocked. Enable notifications in your browser settings to re-enable."
-                  : status === "unsupported"
-                  ? "Push notifications aren't supported on this browser/device."
-                  : "Not enabled on this device."}
+                    ? "Blocked. Enable notifications in your browser settings to re-enable."
+                    : status === "unsupported"
+                      ? "Push notifications aren't supported on this browser/device."
+                      : "Not enabled on this device."}
               </CardDescription>
             </div>
             {status === "granted-subscribed" ? (
@@ -178,7 +186,11 @@ function NotificationsSettings() {
                 Re-check
               </Button>
             ) : (
-              <Button size="sm" onClick={handleEnable} disabled={status === "unsupported" || status === "loading"}>
+              <Button
+                size="sm"
+                onClick={handleEnable}
+                disabled={status === "unsupported" || status === "loading"}
+              >
                 <Bell className="h-4 w-4 mr-1.5" /> Enable
               </Button>
             )}
@@ -189,8 +201,8 @@ function NotificationsSettings() {
             <div className="flex items-start gap-2 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
               <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
               <div>
-                Notifications are blocked at the browser level. On iPhone: Settings → Notifications → Fennecly →
-                Allow Notifications.
+                Notifications are blocked at the browser level. On iPhone: Settings → Notifications
+                → Fennecly → Allow Notifications.
               </div>
             </div>
           )}
@@ -235,7 +247,8 @@ function NotificationsSettings() {
                 <Volume2 className="h-4 w-4" /> Custom sound
               </Label>
               <p className="text-xs text-muted-foreground">
-                Plays the Fennecly chime when this tab is open. iOS uses the system sound on the lock screen.
+                Plays the Fennecly chime when this tab is open. iOS uses the system sound on the
+                lock screen.
               </p>
             </div>
             <Switch

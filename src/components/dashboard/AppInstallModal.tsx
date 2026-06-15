@@ -65,9 +65,7 @@ export function AppInstallModal({
                 className="flex flex-col items-center gap-1.5 bg-muted rounded-lg p-3 border border-border"
               >
                 <TrustIcon className="h-4 w-4 text-foreground" />
-                <span className="text-xs font-medium text-center leading-tight">
-                  {label}
-                </span>
+                <span className="text-xs font-medium text-center leading-tight">{label}</span>
               </div>
             ))}
           </div>

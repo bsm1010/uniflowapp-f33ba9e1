@@ -24,12 +24,7 @@ const SUGGESTIONS_BY_LANG: Record<string, string[]> = {
     "Comment obtenir plus de crédits ?",
     "Où voir mes commandes ?",
   ],
-  ar: [
-    "كيف أضيف منتجاً؟",
-    "كيف أخصص متجري؟",
-    "كيف أحصل على المزيد من الرصيد؟",
-    "أين أرى الطلبات؟",
-  ],
+  ar: ["كيف أضيف منتجاً؟", "كيف أخصص متجري؟", "كيف أحصل على المزيد من الرصيد؟", "أين أرى الطلبات؟"],
 };
 
 const WELCOME_BY_LANG: Record<string, string> = {
@@ -81,17 +76,16 @@ export function HelpChatbot() {
     setLoading(true);
 
     try {
-      const { data: sessionData } = await (await import("@/integrations/supabase/client")).supabase.auth.getSession();
+      const { data: sessionData } = await (
+        await import("@/integrations/supabase/client")
+      ).supabase.auth.getSession();
       const accessToken = sessionData.session?.access_token ?? "";
       const history = next.slice(-12);
       const result = await callHelp({ data: { language: lang, messages: history, accessToken } });
       if (result.error) {
         setMessages((p) => [...p, { role: "assistant", content: `⚠️ ${result.error}` }]);
       } else {
-        setMessages((p) => [
-          ...p,
-          { role: "assistant", content: result.reply || "..." },
-        ]);
+        setMessages((p) => [...p, { role: "assistant", content: result.reply || "..." }]);
       }
     } catch (err) {
       console.error("help chatbot error", err);
@@ -174,10 +168,7 @@ export function HelpChatbot() {
               {messages.map((m, i) => (
                 <div
                   key={i}
-                  className={cn(
-                    "flex",
-                    m.role === "user" ? "justify-end" : "justify-start",
-                  )}
+                  className={cn("flex", m.role === "user" ? "justify-end" : "justify-start")}
                 >
                   <div
                     className={cn(

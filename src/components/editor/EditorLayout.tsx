@@ -110,7 +110,11 @@ export function EditorLayout() {
 
         {/* Status */}
         <span className="text-xs text-muted-foreground">
-          {saving ? tr("editor.layout.saving") : dirty ? tr("editor.layout.unsaved") : tr("editor.layout.allSaved")}
+          {saving
+            ? tr("editor.layout.saving")
+            : dirty
+              ? tr("editor.layout.unsaved")
+              : tr("editor.layout.allSaved")}
         </span>
 
         {/* Undo / Redo */}

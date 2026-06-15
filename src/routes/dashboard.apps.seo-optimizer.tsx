@@ -121,11 +121,7 @@ function SeoPage() {
           </div>
           <div className="space-y-2">
             <Label>Social share image URL</Label>
-            <Input
-              value={og}
-              onChange={(e) => setOg(e.target.value)}
-              placeholder="https://…"
-            />
+            <Input value={og} onChange={(e) => setOg(e.target.value)} placeholder="https://…" />
           </div>
           <div className="flex items-center justify-between rounded-md border p-3">
             <div>

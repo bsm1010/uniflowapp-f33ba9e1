@@ -2,7 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentStore } from "@/hooks/use-current-store";
-import { ALGERIA_MAP_HEIGHT, ALGERIA_MAP_WIDTH, ALGERIA_WILAYA_SHAPES } from "@/lib/algeriaMapShapes";
+import {
+  ALGERIA_MAP_HEIGHT,
+  ALGERIA_MAP_WIDTH,
+  ALGERIA_WILAYA_SHAPES,
+} from "@/lib/algeriaMapShapes";
 import { ALGERIA_GEO } from "@/lib/algeriaWilayas";
 
 type TooltipState = { name: string; count: number; x: number; y: number } | null;
@@ -38,7 +42,7 @@ function heatColor(count: number, max: number) {
   if (!count) return "color-mix(in oklch, var(--muted) 62%, var(--background))";
   const t = count / Math.max(max, 1);
   if (t < 0.25) return "oklch(0.82 0.12 170)";
-  if (t < 0.5)  return "oklch(0.74 0.16 145)";
+  if (t < 0.5) return "oklch(0.74 0.16 145)";
   if (t < 0.75) return "oklch(0.66 0.19 80)";
   return "oklch(0.58 0.22 35)";
 }
@@ -121,7 +125,8 @@ export function AlgeriaOrdersMap() {
         <div>
           <h3 className="text-lg font-semibold tracking-tight">Orders by Wilaya</h3>
           <p className="mt-1 text-sm text-muted-foreground">
-            <span className="font-semibold text-foreground">{totalOrders}</span> orders mapped across Algeria
+            <span className="font-semibold text-foreground">{totalOrders}</span> orders mapped
+            across Algeria
           </p>
         </div>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -148,7 +153,13 @@ export function AlgeriaOrdersMap() {
               >
                 <defs>
                   <filter id="wilayaShadow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feDropShadow dx="0" dy="8" stdDeviation="10" floodColor="currentColor" floodOpacity="0.12" />
+                    <feDropShadow
+                      dx="0"
+                      dy="8"
+                      stdDeviation="10"
+                      floodColor="currentColor"
+                      floodOpacity="0.12"
+                    />
                   </filter>
                 </defs>
 
@@ -169,7 +180,9 @@ export function AlgeriaOrdersMap() {
                         stroke={isSelected ? "var(--foreground)" : "rgba(100,100,100,0.45)"}
                         strokeWidth={isSelected ? 2.5 : 0.8}
                         className="cursor-pointer transition-[filter,opacity] hover:brightness-105"
-                        onClick={() => setSelected((cur) => (cur === shape.name ? null : shape.name))}
+                        onClick={() =>
+                          setSelected((cur) => (cur === shape.name ? null : shape.name))
+                        }
                         onMouseMove={(event) => {
                           const rect = event.currentTarget.ownerSVGElement?.getBoundingClientRect();
                           if (!rect) return;
@@ -213,7 +226,9 @@ export function AlgeriaOrdersMap() {
 
         {/* ── Sidebar ── */}
         <aside className="border-t border-border/60 p-5 lg:border-l lg:border-t-0">
-          <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Top Wilayas</h4>
+          <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+            Top Wilayas
+          </h4>
 
           <div className="mt-4 space-y-3">
             {topWilayas.length ? (
@@ -248,7 +263,10 @@ export function AlgeriaOrdersMap() {
           {selected && (
             <div className="mt-4 rounded-lg bg-accent p-3 text-sm">
               <span className="font-semibold">{selected}</span>
-              <span className="text-muted-foreground"> · {ordersByWilaya[selected] ?? 0} orders</span>
+              <span className="text-muted-foreground">
+                {" "}
+                · {ordersByWilaya[selected] ?? 0} orders
+              </span>
             </div>
           )}
         </aside>

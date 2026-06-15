@@ -162,14 +162,20 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
         : "home";
 
     const items = input.items ?? [
-      { productName: input.productName ?? "Order", quantity: 1, unitPrice: Math.round(input.totalPrice) },
+      {
+        productName: input.productName ?? "Order",
+        quantity: 1,
+        unitPrice: Math.round(input.totalPrice),
+      },
     ];
 
     // Resolve territory UUIDs from names.
     const territories = await this.fetchTerritories();
     const wilaya = this.findTerritory(territories, input.wilaya, "wilaya");
     if (!wilaya) {
-      throw new Error(`ZR Express: wilaya "${input.wilaya}" not found. Check the shipping address.`);
+      throw new Error(
+        `ZR Express: wilaya "${input.wilaya}" not found. Check the shipping address.`,
+      );
     }
     const commune = this.findTerritory(
       territories,
@@ -178,7 +184,9 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
       wilaya.id,
     );
     if (!commune) {
-      throw new Error(`ZR Express: commune "${input.commune ?? input.wilaya}" not found in ${wilaya.name}.`);
+      throw new Error(
+        `ZR Express: commune "${input.commune ?? input.wilaya}" not found in ${wilaya.name}.`,
+      );
     }
 
     const body = {
@@ -225,9 +233,7 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
       bodyPreview: text.slice(0, 500),
     });
     if (!res.ok) {
-      throw new Error(
-        `ZR Express ${res.status}: ${text.slice(0, 300) || res.statusText}`,
-      );
+      throw new Error(`ZR Express ${res.status}: ${text.slice(0, 300) || res.statusText}`);
     }
 
     const tracking = (data.id as string) || this.generateTrackingNumber("ZRE");
@@ -254,9 +260,7 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
       bodyPreview: text.slice(0, 800),
     });
     if (!res.ok) {
-      throw new Error(
-        `ZR Express ${res.status}: ${text.slice(0, 300) || res.statusText}`,
-      );
+      throw new Error(`ZR Express ${res.status}: ${text.slice(0, 300) || res.statusText}`);
     }
 
     // Unwrap: API may return { data: { ... } } or just the object directly.
@@ -297,16 +301,28 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
             const e = (h ?? {}) as Record<string, unknown>;
             const st = (e.state ?? e.statusObj ?? {}) as Record<string, unknown>;
             const statusText =
-              pickStr(e, ["status", "name", "label", "description", "statusText", "event", "action"]) ||
-              pickStr(st, ["name", "description", "label"]);
-            const dateText =
-              pickStr(e, ["date", "createdAt", "created_at", "at", "timestamp", "eventDate", "statusDate", "modifiedAt"]);
-            const locText =
-              pickStr(e, ["location", "address", "place"]) || undefined;
-            const cityText =
-              pickStr(e, ["city", "commune", "cityName"]) || undefined;
-            const wilayaText =
-              pickStr(e, ["wilaya", "wilayaName", "state", "region"]) || undefined;
+              pickStr(e, [
+                "status",
+                "name",
+                "label",
+                "description",
+                "statusText",
+                "event",
+                "action",
+              ]) || pickStr(st, ["name", "description", "label"]);
+            const dateText = pickStr(e, [
+              "date",
+              "createdAt",
+              "created_at",
+              "at",
+              "timestamp",
+              "eventDate",
+              "statusDate",
+              "modifiedAt",
+            ]);
+            const locText = pickStr(e, ["location", "address", "place"]) || undefined;
+            const cityText = pickStr(e, ["city", "commune", "cityName"]) || undefined;
+            const wilayaText = pickStr(e, ["wilaya", "wilayaName", "state", "region"]) || undefined;
             return {
               status: statusText,
               date: dateText || "",
@@ -339,10 +355,7 @@ function pickStr(obj: Record<string, unknown>, keys: string[]): string {
 }
 
 /** Search for the first array among the given keys, including one level deep. */
-function findArrayField(
-  obj: Record<string, unknown>,
-  keys: string[],
-): unknown[] {
+function findArrayField(obj: Record<string, unknown>, keys: string[]): unknown[] {
   for (const k of keys) {
     const v = obj[k];
     if (Array.isArray(v)) return v;

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
   Building2,
@@ -42,11 +42,7 @@ const PLANS = [
     cadence: "/ 3 أيام",
     description: "20 رصيد مجاني لاكتشاف المنصة.",
     credits: 20,
-    perks: [
-      "20 رصيد",
-      "متجر واحد",
-      "بدون تطبيقات AI",
-    ],
+    perks: ["20 رصيد", "متجر واحد", "بدون تطبيقات AI"],
     style: "trial",
     highlight: false,
     icon: Sparkles,
@@ -152,7 +148,7 @@ const PLANS = [
   },
 ];
 
-type PlanId = typeof PLANS[number]["id"];
+type PlanId = (typeof PLANS)[number]["id"];
 
 type Submission = {
   id: string;
@@ -164,7 +160,8 @@ type Submission = {
 };
 
 const getCardClass = (style: string, active: boolean) => {
-  const base = "relative text-left rounded-2xl border p-6 flex flex-col transition-all cursor-pointer";
+  const base =
+    "relative text-left rounded-2xl border p-6 flex flex-col transition-all cursor-pointer";
   const activeRing = active ? "ring-2" : "";
   switch (style) {
     case "trial":
@@ -184,43 +181,65 @@ const getCardClass = (style: string, active: boolean) => {
 
 const getPriceClass = (style: string) => {
   switch (style) {
-    case "trial": return "text-muted-foreground";
-    case "beginner": return "text-blue-500";
-    case "pro": return "text-violet-400";
-    case "business": return "text-amber-400";
-    case "agency": return "bg-gradient-to-r from-pink-500 via-violet-500 to-blue-500 bg-clip-text text-transparent";
-    default: return "text-foreground";
+    case "trial":
+      return "text-muted-foreground";
+    case "beginner":
+      return "text-blue-500";
+    case "pro":
+      return "text-violet-400";
+    case "business":
+      return "text-amber-400";
+    case "agency":
+      return "bg-gradient-to-r from-pink-500 via-violet-500 to-blue-500 bg-clip-text text-transparent";
+    default:
+      return "text-foreground";
   }
 };
 
 const getCheckClass = (style: string) => {
   switch (style) {
-    case "trial": return "text-muted-foreground";
-    case "beginner": return "text-blue-500";
-    case "pro": return "text-violet-500";
-    case "business": return "text-amber-500";
-    case "agency": return "text-pink-500";
-    default: return "text-primary";
+    case "trial":
+      return "text-muted-foreground";
+    case "beginner":
+      return "text-blue-500";
+    case "pro":
+      return "text-violet-500";
+    case "business":
+      return "text-amber-500";
+    case "agency":
+      return "text-pink-500";
+    default:
+      return "text-primary";
   }
 };
 
 const getIconClass = (style: string) => {
   switch (style) {
-    case "trial": return "bg-muted text-muted-foreground";
-    case "beginner": return "bg-blue-500/10 text-blue-500";
-    case "pro": return "bg-violet-500/10 text-violet-500";
-    case "business": return "bg-amber-500/10 text-amber-500";
-    case "agency": return "bg-pink-500/10 text-pink-500";
-    default: return "bg-primary/10 text-primary";
+    case "trial":
+      return "bg-muted text-muted-foreground";
+    case "beginner":
+      return "bg-blue-500/10 text-blue-500";
+    case "pro":
+      return "bg-violet-500/10 text-violet-500";
+    case "business":
+      return "bg-amber-500/10 text-amber-500";
+    case "agency":
+      return "bg-pink-500/10 text-pink-500";
+    default:
+      return "bg-primary/10 text-primary";
   }
 };
 
 const getBadgeClass = (style: string) => {
   switch (style) {
-    case "pro": return "bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white border-0";
-    case "business": return "bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0";
-    case "agency": return "bg-gradient-to-r from-pink-500 via-violet-500 to-blue-500 text-white border-0";
-    default: return "";
+    case "pro":
+      return "bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white border-0";
+    case "business":
+      return "bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0";
+    case "agency":
+      return "bg-gradient-to-r from-pink-500 via-violet-500 to-blue-500 text-white border-0";
+    default:
+      return "";
   }
 };
 
@@ -236,7 +255,7 @@ function UpgradePage() {
 
   const selectedPlan = PLANS.find((p) => p.id === plan)!;
 
-  const loadSubmissions = async () => {
+  const loadSubmissions = useCallback(async () => {
     if (!user) return;
     const { data } = await supabase
       .from("payment_submissions")
@@ -245,9 +264,11 @@ function UpgradePage() {
       .order("created_at", { ascending: false })
       .limit(5);
     setSubmissions(data ?? []);
-  };
+  }, [user]);
 
-  useEffect(() => { loadSubmissions(); }, [user]);
+  useEffect(() => {
+    loadSubmissions();
+  }, [user, loadSubmissions]);
 
   const copy = async (value: string, label: string) => {
     await navigator.clipboard.writeText(value);
@@ -257,9 +278,18 @@ function UpgradePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
-    if (!file) { toast.error("الرجاء رفع صورة الدفع"); return; }
-    if (!file.type.startsWith("image/")) { toast.error("يجب أن يكون الملف صورة"); return; }
-    if (file.size > 5 * 1024 * 1024) { toast.error("الصورة يجب أن تكون أقل من 5MB"); return; }
+    if (!file) {
+      toast.error("الرجاء رفع صورة الدفع");
+      return;
+    }
+    if (!file.type.startsWith("image/")) {
+      toast.error("يجب أن يكون الملف صورة");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("الصورة يجب أن تكون أقل من 5MB");
+      return;
+    }
 
     setSubmitting(true);
     const ext = file.name.split(".").pop()?.toLowerCase() || "png";
@@ -268,20 +298,25 @@ function UpgradePage() {
     const { error: upErr } = await supabase.storage
       .from("payment-proofs")
       .upload(path, file, { contentType: file.type, upsert: false });
-    if (upErr) { setSubmitting(false); toast.error(upErr.message); return; }
+    if (upErr) {
+      setSubmitting(false);
+      toast.error(upErr.message);
+      return;
+    }
 
-    const { error: insertErr } = await supabase
-      .from("payment_submissions")
-      .insert({
-        user_id: user.id,
-        plan,
-        amount: selectedPlan.price,
-        payment_method: method,
-        proof_url: path,
-      });
+    const { error: insertErr } = await supabase.from("payment_submissions").insert({
+      user_id: user.id,
+      plan,
+      amount: selectedPlan.price,
+      payment_method: method,
+      proof_url: path,
+    });
 
     setSubmitting(false);
-    if (insertErr) { toast.error(insertErr.message); return; }
+    if (insertErr) {
+      toast.error(insertErr.message);
+      return;
+    }
 
     toast.success("تم إرسال الدفع بنجاح. في انتظار موافقة الإدارة.");
     setFile(null);
@@ -307,7 +342,8 @@ function UpgradePage() {
           <div className="text-sm">
             <p className="font-medium text-foreground">الدفع قيد المراجعة</p>
             <p className="text-muted-foreground mt-0.5">
-              طلب {pendingSubmission.plan} بمبلغ {Number(pendingSubmission.amount).toLocaleString()} DA في انتظار موافقة الإدارة.
+              طلب {pendingSubmission.plan} بمبلغ {Number(pendingSubmission.amount).toLocaleString()}{" "}
+              DA في انتظار موافقة الإدارة.
             </p>
           </div>
         </div>
@@ -326,17 +362,23 @@ function UpgradePage() {
               className={getCardClass(p.style, active)}
             >
               {p.badge && (
-                <div className={`absolute -top-3 left-1/2 -translate-x-1/2 rounded-full text-xs font-medium px-3 py-1 whitespace-nowrap ${getBadgeClass(p.style)}`}>
+                <div
+                  className={`absolute -top-3 left-1/2 -translate-x-1/2 rounded-full text-xs font-medium px-3 py-1 whitespace-nowrap ${getBadgeClass(p.style)}`}
+                >
                   {p.badge}
                 </div>
               )}
 
               {/* Icon + active check */}
               <div className="flex items-center justify-between mb-4">
-                <div className={`grid size-9 place-items-center rounded-lg ${getIconClass(p.style)}`}>
+                <div
+                  className={`grid size-9 place-items-center rounded-lg ${getIconClass(p.style)}`}
+                >
                   <Icon className="size-4" />
                 </div>
-                <div className={`grid size-5 place-items-center rounded-full border transition-colors ${active ? "bg-primary border-primary text-primary-foreground" : "border-border"}`}>
+                <div
+                  className={`grid size-5 place-items-center rounded-full border transition-colors ${active ? "bg-primary border-primary text-primary-foreground" : "border-border"}`}
+                >
                   {active && <Check className="size-3" />}
                 </div>
               </div>
@@ -344,7 +386,9 @@ function UpgradePage() {
               <h3 className={`font-semibold ${p.style === "agency" ? "text-white" : ""}`}>
                 {p.name}
               </h3>
-              <p className={`text-xs mt-1 ${p.style === "agency" ? "text-white/50" : "text-muted-foreground"}`}>
+              <p
+                className={`text-xs mt-1 ${p.style === "agency" ? "text-white/50" : "text-muted-foreground"}`}
+              >
                 {p.description}
               </p>
 
@@ -356,7 +400,9 @@ function UpgradePage() {
                     <span className={`text-2xl font-bold ${getPriceClass(p.style)}`}>
                       {p.price.toLocaleString()}
                     </span>
-                    <span className={`text-xs ${p.style === "agency" ? "text-white/40" : "text-muted-foreground"}`}>
+                    <span
+                      className={`text-xs ${p.style === "agency" ? "text-white/40" : "text-muted-foreground"}`}
+                    >
                       {p.cadence}
                     </span>
                   </>
@@ -377,7 +423,9 @@ function UpgradePage() {
                   </li>
                 ))}
                 {p.perks.length > 4 && (
-                  <li className={`text-xs ${p.style === "agency" ? "text-white/40" : "text-muted-foreground"}`}>
+                  <li
+                    className={`text-xs ${p.style === "agency" ? "text-white/40" : "text-muted-foreground"}`}
+                  >
                     +{p.perks.length - 4} المزيد...
                   </li>
                 )}
@@ -389,12 +437,13 @@ function UpgradePage() {
 
       {/* Selected plan perks + payment */}
       <div className="grid gap-6 lg:grid-cols-2">
-
         {/* Selected plan full details */}
         <Card className="border-border/60 shadow-soft">
           <CardContent className="p-6 space-y-4">
             <div className="flex items-center gap-3">
-              <div className={`grid size-10 place-items-center rounded-lg ${getIconClass(selectedPlan.style)}`}>
+              <div
+                className={`grid size-10 place-items-center rounded-lg ${getIconClass(selectedPlan.style)}`}
+              >
                 <selectedPlan.icon className="size-5" />
               </div>
               <div>
@@ -437,16 +486,32 @@ function UpgradePage() {
                   {/* CCP info */}
                   <div className="rounded-xl border border-border/60 bg-muted/30 p-4 space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs uppercase tracking-wide text-muted-foreground">رقم CCP</span>
-                      <button type="button" onClick={() => copy(CCP_NUMBER, "رقم CCP")} className="text-xs text-primary hover:underline">نسخ</button>
+                      <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                        رقم CCP
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => copy(CCP_NUMBER, "رقم CCP")}
+                        className="text-xs text-primary hover:underline"
+                      >
+                        نسخ
+                      </button>
                     </div>
                     <p className="font-mono text-base font-semibold tracking-wider">
                       {CCP_NUMBER} <span className="text-muted-foreground">CLE {CCP_KEY}</span>
                     </p>
                     <Separator />
                     <div className="flex items-center justify-between">
-                      <span className="text-xs uppercase tracking-wide text-muted-foreground">اسم الحساب</span>
-                      <button type="button" onClick={() => copy(CCP_NAME, "اسم الحساب")} className="text-xs text-primary hover:underline">نسخ</button>
+                      <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                        اسم الحساب
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => copy(CCP_NAME, "اسم الحساب")}
+                        className="text-xs text-primary hover:underline"
+                      >
+                        نسخ
+                      </button>
                     </div>
                     <p className="font-medium">{CCP_NAME}</p>
                   </div>
@@ -486,7 +551,9 @@ function UpgradePage() {
                         {file ? (
                           <>
                             <p className="font-medium truncate">{file.name}</p>
-                            <p className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(0)} KB</p>
+                            <p className="text-xs text-muted-foreground">
+                              {(file.size / 1024).toFixed(0)} KB
+                            </p>
                           </>
                         ) : (
                           <>
@@ -496,7 +563,14 @@ function UpgradePage() {
                         )}
                       </div>
                     </label>
-                    <input id="proof" ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+                    <input
+                      id="proof"
+                      ref={fileRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                    />
                   </div>
                 </>
               )}
@@ -507,7 +581,11 @@ function UpgradePage() {
                 size="lg"
                 disabled={submitting || selectedPlan.price === 0}
               >
-                {submitting ? "جاري الإرسال…" : selectedPlan.price === 0 ? "مجاني - سيتم التفعيل تلقائياً" : "إرسال للمراجعة"}
+                {submitting
+                  ? "جاري الإرسال…"
+                  : selectedPlan.price === 0
+                    ? "مجاني - سيتم التفعيل تلقائياً"
+                    : "إرسال للمراجعة"}
               </Button>
             </form>
           </CardContent>
@@ -530,7 +608,10 @@ function UpgradePage() {
                     ? "text-amber-600 bg-amber-500/10"
                     : "text-destructive bg-destructive/10";
                 return (
-                  <div key={s.id} className="flex items-center justify-between gap-3 rounded-lg border border-border/60 p-3">
+                  <div
+                    key={s.id}
+                    className="flex items-center justify-between gap-3 rounded-lg border border-border/60 p-3"
+                  >
                     <div className="flex items-center gap-3 min-w-0">
                       <div className={`grid size-9 place-items-center rounded-md ${color}`}>
                         <Icon className="size-4" />
@@ -540,11 +621,14 @@ function UpgradePage() {
                           {s.plan} · {Number(s.amount).toLocaleString()} DA
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {new Date(s.created_at).toLocaleString()} · {s.payment_method.toUpperCase()}
+                          {new Date(s.created_at).toLocaleString()} ·{" "}
+                          {s.payment_method.toUpperCase()}
                         </p>
                       </div>
                     </div>
-                    <Badge variant="outline" className="capitalize">{s.status}</Badge>
+                    <Badge variant="outline" className="capitalize">
+                      {s.status}
+                    </Badge>
                   </div>
                 );
               })}

@@ -21,16 +21,25 @@ function QuestsPage() {
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) { setLoading(false); return; }
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session) {
+      setLoading(false);
+      return;
+    }
     try {
       const result = await callGet({ data: { accessToken: session.access_token } });
       setData(result);
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
     setLoading(false);
   }, [callGet]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+  }, [load]);
 
   if (loading) {
     return (
@@ -51,30 +60,46 @@ function QuestsPage() {
       <div className="space-y-3">
         {unclaimed.length > 0 && (
           <div>
-            <p className="text-xs font-semibold text-emerald-500 uppercase tracking-wider mb-2">{t("dashboard.quests.readyToClaim")}</p>
+            <p className="text-xs font-semibold text-emerald-500 uppercase tracking-wider mb-2">
+              {t("dashboard.quests.readyToClaim")}
+            </p>
             <div className="space-y-2">
-              {unclaimed.map((q) => <QuestCard key={q.id} quest={q} onClaimed={load} />)}
+              {unclaimed.map((q) => (
+                <QuestCard key={q.id} quest={q} onClaimed={load} />
+              ))}
             </div>
           </div>
         )}
         {inProgress.length > 0 && (
           <div>
-            {unclaimed.length > 0 && <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 mt-4">{t("dashboard.quests.inProgress")}</p>}
+            {unclaimed.length > 0 && (
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 mt-4">
+                {t("dashboard.quests.inProgress")}
+              </p>
+            )}
             <div className="space-y-2">
-              {inProgress.map((q) => <QuestCard key={q.id} quest={q} onClaimed={load} />)}
+              {inProgress.map((q) => (
+                <QuestCard key={q.id} quest={q} onClaimed={load} />
+              ))}
             </div>
           </div>
         )}
         {done.length > 0 && (
           <div>
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 mt-4">{t("dashboard.quests.completed")}</p>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 mt-4">
+              {t("dashboard.quests.completed")}
+            </p>
             <div className="space-y-2">
-              {done.map((q) => <QuestCard key={q.id} quest={q} onClaimed={load} />)}
+              {done.map((q) => (
+                <QuestCard key={q.id} quest={q} onClaimed={load} />
+              ))}
             </div>
           </div>
         )}
         {quests.length === 0 && (
-          <p className="text-sm text-muted-foreground text-center py-8">{t("dashboard.quests.noQuests")}</p>
+          <p className="text-sm text-muted-foreground text-center py-8">
+            {t("dashboard.quests.noQuests")}
+          </p>
         )}
       </div>
     );

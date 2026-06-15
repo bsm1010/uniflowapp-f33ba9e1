@@ -9,7 +9,17 @@ import { DHDService } from "./DHDService";
 import { ChronorexService } from "./ChronorexService";
 import { normalizeProviderKey } from "../registry";
 
-export { YalidineService, ZRExpressService, MaystroService, SherpaService, EcoCourierService, AndersonService, GuepexService, DHDService, ChronorexService };
+export {
+  YalidineService,
+  ZRExpressService,
+  MaystroService,
+  SherpaService,
+  EcoCourierService,
+  AndersonService,
+  GuepexService,
+  DHDService,
+  ChronorexService,
+};
 export type { ApiKeyValidationResult };
 
 /**

@@ -23,9 +23,7 @@ export function PageHeader({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between mb-8">
         <div>
           {eyebrow && (
-            <p className="text-xs uppercase tracking-wider text-primary font-semibold">
-              {eyebrow}
-            </p>
+            <p className="text-xs uppercase tracking-wider text-primary font-semibold">{eyebrow}</p>
           )}
           <h1 className="mt-1 text-2xl md:text-3xl font-bold font-display">{title}</h1>
           {description && (
@@ -101,14 +99,11 @@ export function PageHeader({
             )}
           </div>
         </div>
-        {actions && (
-          <div className="flex flex-wrap gap-2 shrink-0">{actions}</div>
-        )}
+        {actions && <div className="flex flex-wrap gap-2 shrink-0">{actions}</div>}
       </div>
     </section>
   );
 }
-
 
 export function EmptyState({
   icon: Icon,

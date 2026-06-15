@@ -23,21 +23,14 @@ import {
   Minimize2,
   type LucideIcon,
 } from "lucide-react";
-import {
-  GalleryView,
-  KanbanView,
-  CalendarView,
-} from "@/components/dashboard/database/TableViews";
+import { GalleryView, KanbanView, CalendarView } from "@/components/dashboard/database/TableViews";
 import {
   FilterSortBar,
   applyFilterSort,
   DEFAULT_FILTER_SORT,
   type FilterSortConfig,
 } from "@/components/dashboard/database/FilterSortBar";
-import {
-  ImageUploadCell,
-  FileUploadCell,
-} from "@/components/dashboard/database/UploadCells";
+import { ImageUploadCell, FileUploadCell } from "@/components/dashboard/database/UploadCells";
 import { AutomationsDialog } from "@/components/dashboard/database/AutomationsDialog";
 import { runAutomations } from "@/components/dashboard/database/automations";
 import { Zap } from "lucide-react";
@@ -331,9 +324,7 @@ function DatabasePage() {
     const rec = records.find((r) => r.id === recordId);
     if (!rec) return;
     const newData = { ...rec.data, [fieldId]: value };
-    setRecords((prev) =>
-      prev.map((r) => (r.id === recordId ? { ...r, data: newData } : r)),
-    );
+    setRecords((prev) => prev.map((r) => (r.id === recordId ? { ...r, data: newData } : r)));
     const { error } = await supabase
       .from("db_records")
       .update({ data: newData as never })
@@ -359,11 +350,7 @@ function DatabasePage() {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="relative"
-    >
+    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="relative">
       {isExpired && <ExpiredOverlay />}
       <PageHeader
         eyebrow={t("dashboard.database.eyebrow")}
@@ -418,19 +405,14 @@ function DatabasePage() {
                   <div
                     key={t.id}
                     className={`group flex items-center gap-2 rounded-md px-2 py-1.5 text-sm cursor-pointer transition-colors ${
-                      active
-                        ? "bg-accent text-accent-foreground font-medium"
-                        : "hover:bg-accent/50"
+                      active ? "bg-accent text-accent-foreground font-medium" : "hover:bg-accent/50"
                     }`}
                     onClick={() => setActiveTableId(t.id)}
                   >
                     <TableIcon className="h-4 w-4 shrink-0 opacity-70" />
                     <span className="truncate flex-1">{t.name}</span>
                     <DropdownMenu>
-                      <DropdownMenuTrigger
-                        asChild
-                        onClick={(e) => e.stopPropagation()}
-                      >
+                      <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                         <button className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-background">
                           <MoreHorizontal className="h-3.5 w-3.5" />
                         </button>
@@ -547,9 +529,7 @@ function TableDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{editing ? "Rename table" : "New table"}</DialogTitle>
-          <DialogDescription>
-            Tables hold records (rows) and fields (columns).
-          </DialogDescription>
+          <DialogDescription>Tables hold records (rows) and fields (columns).</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div>
@@ -575,9 +555,7 @@ function TableDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={() => onSave(name, description)}>
-            {editing ? "Save" : "Create"}
-          </Button>
+          <Button onClick={() => onSave(name, description)}>{editing ? "Save" : "Create"}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -596,11 +574,7 @@ function FieldDialog({
   onOpenChange: (o: boolean) => void;
   editing: DBField | null;
   otherTables: DBTable[];
-  onSave: (input: {
-    name: string;
-    field_type: FieldType;
-    options: DBField["options"];
-  }) => void;
+  onSave: (input: { name: string; field_type: FieldType; options: DBField["options"] }) => void;
 }) {
   const [name, setName] = useState("");
   const [fieldType, setFieldType] = useState<FieldType>("text");
@@ -657,10 +631,7 @@ function FieldDialog({
           </div>
           <div>
             <Label>Type</Label>
-            <Select
-              value={fieldType}
-              onValueChange={(v) => setFieldType(v as FieldType)}
-            >
+            <Select value={fieldType} onValueChange={(v) => setFieldType(v as FieldType)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -811,18 +782,14 @@ function TableGrid({
   return (
     <div
       className={
-        fullscreen
-          ? "fixed inset-0 z-50 bg-background p-4 overflow-auto space-y-3"
-          : "space-y-3"
+        fullscreen ? "fixed inset-0 z-50 bg-background p-4 overflow-auto space-y-3" : "space-y-3"
       }
     >
       <Card className="p-3 flex items-center justify-between gap-3 flex-wrap">
         <div className="min-w-0">
           <h2 className="font-semibold truncate">{table.name}</h2>
           {table.description && (
-            <p className="text-xs text-muted-foreground truncate">
-              {table.description}
-            </p>
+            <p className="text-xs text-muted-foreground truncate">{table.description}</p>
           )}
         </div>
         <div className="flex items-center gap-2 flex-wrap">
@@ -863,11 +830,7 @@ function TableGrid({
             onClick={() => setFullscreen((v) => !v)}
             title={fullscreen ? "Exit fullscreen (Esc)" : "Fullscreen"}
           >
-            {fullscreen ? (
-              <Minimize2 className="h-4 w-4" />
-            ) : (
-              <Maximize2 className="h-4 w-4" />
-            )}
+            {fullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
           </Button>
         </div>
       </Card>
@@ -986,9 +949,7 @@ function GridView({
                   <div className="flex items-center gap-2">
                     {(() => {
                       const Icon = FIELD_TYPE_ICONS[f.field_type];
-                      return (
-                        <Icon className="h-4 w-4 text-muted-foreground shrink-0" />
-                      );
+                      return <Icon className="h-4 w-4 text-muted-foreground shrink-0" />;
                     })()}
                     <span className="truncate">{f.name}</span>
                     <Badge variant="secondary" className="text-[10px] shrink-0">
@@ -1074,10 +1035,7 @@ function GridView({
             )}
             {fields.length > 0 && (
               <tr>
-                <td
-                  colSpan={fields.length + 2}
-                  className="p-0 border-b border-border"
-                >
+                <td colSpan={fields.length + 2} className="p-0 border-b border-border">
                   <button
                     onClick={onAddRecord}
                     className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors px-3 py-2 w-full hover:bg-accent/40"
@@ -1122,9 +1080,7 @@ function CellEditor({
         <Input
           type="number"
           value={(value as number | string) ?? ""}
-          onChange={(e) =>
-            onChange(e.target.value === "" ? null : Number(e.target.value))
-          }
+          onChange={(e) => onChange(e.target.value === "" ? null : Number(e.target.value))}
           className="h-8 border-transparent focus:border-input bg-transparent"
         />
       );
@@ -1138,19 +1094,11 @@ function CellEditor({
         />
       );
     case "boolean":
-      return (
-        <Checkbox
-          checked={!!value}
-          onCheckedChange={(c) => onChange(!!c)}
-        />
-      );
+      return <Checkbox checked={!!value} onCheckedChange={(c) => onChange(!!c)} />;
     case "select": {
       const choices = field.options.choices ?? [];
       return (
-        <Select
-          value={(value as string) ?? ""}
-          onValueChange={(v) => onChange(v)}
-        >
+        <Select value={(value as string) ?? ""} onValueChange={(v) => onChange(v)}>
           <SelectTrigger className="h-8 border-transparent bg-transparent">
             <SelectValue placeholder="—" />
           </SelectTrigger>
@@ -1228,10 +1176,7 @@ function MultiSelectCell({
       </button>
       {open && (
         <>
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setOpen(false)}
-          />
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
           <div className="absolute z-50 mt-1 w-48 bg-popover border border-border rounded-md shadow-md p-1">
             {choices.map((c) => {
               const checked = selected.includes(c);
@@ -1243,9 +1188,7 @@ function MultiSelectCell({
                   <Checkbox
                     checked={checked}
                     onCheckedChange={(v) => {
-                      const next = v
-                        ? [...selected, c]
-                        : selected.filter((x) => x !== c);
+                      const next = v ? [...selected, c] : selected.filter((x) => x !== c);
                       onChange(next);
                     }}
                   />

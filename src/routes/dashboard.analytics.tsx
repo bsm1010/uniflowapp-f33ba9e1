@@ -1,6 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { BarChart3, TrendingUp, ShoppingCart, DollarSign, Users, Package, Loader2 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import {
+  BarChart3,
+  TrendingUp,
+  ShoppingCart,
+  DollarSign,
+  Users,
+  Package,
+  Loader2,
+} from "lucide-react";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
@@ -36,7 +44,7 @@ function AnalyticsPage() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     if (!user) return;
     try {
       setLoading(true);
@@ -106,12 +114,12 @@ function AnalyticsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
     void load();
-  }, [user?.id]);
+  }, [user, load]);
 
   if (loading) {
     return (
@@ -133,14 +141,54 @@ function AnalyticsPage() {
   }
 
   const statCards = [
-    { label: "Orders (total)", value: String(stats?.totalOrders ?? 0), gradient: "from-violet-500 to-fuchsia-500", icon: ShoppingCart },
-    { label: "Revenue", value: formatPrice(stats?.totalRevenue ?? 0), gradient: "from-emerald-500 to-teal-500", icon: DollarSign },
-    { label: "Avg. order value", value: formatPrice(stats?.avgOrderValue ?? 0), gradient: "from-amber-500 to-orange-500", icon: TrendingUp },
-    { label: "Customers", value: String(stats?.totalCustomers ?? 0), gradient: "from-cyan-500 to-blue-500", icon: Users },
-    { label: "Products", value: String(stats?.totalProducts ?? 0), gradient: "from-pink-500 to-rose-500", icon: Package },
-    { label: "Delivered", value: String(stats?.deliveredOrders ?? 0), gradient: "from-green-500 to-emerald-500", icon: BarChart3 },
-    { label: "Pending", value: String(stats?.pendingOrders ?? 0), gradient: "from-amber-500 to-yellow-500", icon: BarChart3 },
-    { label: "Revenue (7d)", value: formatPrice(stats?.revenue7d ?? 0), gradient: "from-sky-500 to-indigo-500", icon: TrendingUp },
+    {
+      label: "Orders (total)",
+      value: String(stats?.totalOrders ?? 0),
+      gradient: "from-violet-500 to-fuchsia-500",
+      icon: ShoppingCart,
+    },
+    {
+      label: "Revenue",
+      value: formatPrice(stats?.totalRevenue ?? 0),
+      gradient: "from-emerald-500 to-teal-500",
+      icon: DollarSign,
+    },
+    {
+      label: "Avg. order value",
+      value: formatPrice(stats?.avgOrderValue ?? 0),
+      gradient: "from-amber-500 to-orange-500",
+      icon: TrendingUp,
+    },
+    {
+      label: "Customers",
+      value: String(stats?.totalCustomers ?? 0),
+      gradient: "from-cyan-500 to-blue-500",
+      icon: Users,
+    },
+    {
+      label: "Products",
+      value: String(stats?.totalProducts ?? 0),
+      gradient: "from-pink-500 to-rose-500",
+      icon: Package,
+    },
+    {
+      label: "Delivered",
+      value: String(stats?.deliveredOrders ?? 0),
+      gradient: "from-green-500 to-emerald-500",
+      icon: BarChart3,
+    },
+    {
+      label: "Pending",
+      value: String(stats?.pendingOrders ?? 0),
+      gradient: "from-amber-500 to-yellow-500",
+      icon: BarChart3,
+    },
+    {
+      label: "Revenue (7d)",
+      value: formatPrice(stats?.revenue7d ?? 0),
+      gradient: "from-sky-500 to-indigo-500",
+      icon: TrendingUp,
+    },
   ];
 
   return (
@@ -156,11 +204,15 @@ function AnalyticsPage() {
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
         {statCards.map((k) => (
           <Card key={k.label} className="relative overflow-hidden border-border/60 shadow-soft">
-            <div className={`absolute -top-12 -right-12 h-32 w-32 rounded-full blur-3xl opacity-25 bg-gradient-to-br ${k.gradient}`} />
+            <div
+              className={`absolute -top-12 -right-12 h-32 w-32 rounded-full blur-3xl opacity-25 bg-gradient-to-br ${k.gradient}`}
+            />
             <CardContent className="relative p-5">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">{k.label}</span>
-                <div className={`grid size-8 place-items-center rounded-lg text-white bg-gradient-to-br ${k.gradient}`}>
+                <div
+                  className={`grid size-8 place-items-center rounded-lg text-white bg-gradient-to-br ${k.gradient}`}
+                >
                   <k.icon className="h-3.5 w-3.5" />
                 </div>
               </div>

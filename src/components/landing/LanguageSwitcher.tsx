@@ -22,7 +22,9 @@ export function LanguageSwitcher() {
   const change = (code: string) => {
     try {
       window.localStorage.setItem("lang", code);
-    } catch {}
+    } catch (error) {
+      console.warn(error);
+    }
     i18n.changeLanguage(code);
     applyDirection(code);
   };

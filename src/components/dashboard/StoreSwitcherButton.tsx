@@ -22,9 +22,7 @@ export function StoreSwitcherButton() {
         )}
       </div>
       <div className="min-w-0 flex-1 text-left">
-        <div className="text-sm font-medium truncate">
-          {currentStore?.name ?? "Select store"}
-        </div>
+        <div className="text-sm font-medium truncate">{currentStore?.name ?? "Select store"}</div>
       </div>
       <ChevronsUpDown className="h-4 w-4 text-muted-foreground shrink-0" />
     </button>

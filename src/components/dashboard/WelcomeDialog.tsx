@@ -47,9 +47,7 @@ export function WelcomeDialog({ userId }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent
-        className="max-w-md overflow-hidden border-0 p-0 shadow-2xl sm:rounded-2xl"
-      >
+      <DialogContent className="max-w-md overflow-hidden border-0 p-0 shadow-2xl sm:rounded-2xl">
         {/* Illustration */}
         <div className="relative flex h-44 items-center justify-center overflow-hidden bg-gradient-to-br from-primary/15 via-primary/5 to-background">
           <div className="absolute -left-6 -top-6 h-24 w-24 rounded-full bg-primary/20 blur-2xl" />
@@ -70,9 +68,7 @@ export function WelcomeDialog({ userId }: Props) {
 
         {/* Body */}
         <div className="px-6 pb-6 pt-4 text-center">
-          <h2 className="text-2xl font-bold tracking-tight">
-            👋 مرحبا بك في Fennecly
-          </h2>
+          <h2 className="text-2xl font-bold tracking-tight">👋 مرحبا بك في Fennecly</h2>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
             في دقائق تقدر تنشئ متجرك وتبدأ تبيع في الجزائر 🇩🇿. راح نعاونك خطوة بخطوة.
           </p>

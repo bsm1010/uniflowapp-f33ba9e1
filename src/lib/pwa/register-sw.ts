@@ -21,19 +21,20 @@ export function registerServiceWorker() {
 
   if (inIframe || isPreviewHost) {
     // Make sure we never leave a stale SW around in preview contexts.
-    navigator.serviceWorker.getRegistrations().then((regs) => {
-      regs.forEach((r) => r.unregister());
-    }).catch(() => {});
+    navigator.serviceWorker
+      .getRegistrations()
+      .then((regs) => {
+        regs.forEach((r) => r.unregister());
+      })
+      .catch(() => {});
     return;
   }
 
   registered = true;
   window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("/service-worker.js", { scope: "/" })
-      .catch((err) => {
-        console.warn("SW registration failed", err);
-      });
+    navigator.serviceWorker.register("/service-worker.js", { scope: "/" }).catch((err) => {
+      console.warn("SW registration failed", err);
+    });
   });
 
   // Play custom sound when SW asks

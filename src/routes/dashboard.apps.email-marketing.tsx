@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   Mail,
@@ -82,16 +82,14 @@ function EmailMarketingApp() {
 
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
-  const [audience, setAudience] = useState<"all_customers" | "manual">(
-    "all_customers",
-  );
+  const [audience, setAudience] = useState<"all_customers" | "manual">("all_customers");
   const [manualList, setManualList] = useState("");
   const [customerCount, setCustomerCount] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
 
   const installed = isInstalled("email-marketing");
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     if (!user) return;
     const { data } = await supabase
       .from("email_campaigns")
@@ -100,11 +98,11 @@ function EmailMarketingApp() {
       .order("created_at", { ascending: false });
     setCampaigns((data ?? []) as Campaign[]);
     setLoading(false);
-  };
+  }, [user]);
 
   useEffect(() => {
     refresh();
-  }, [user]);
+  }, [user, refresh]);
 
   useEffect(() => {
     if (!user) return;
@@ -196,7 +194,7 @@ function EmailMarketingApp() {
       const msg =
         e?.message === "INSUFFICIENT_CREDITS"
           ? "Not enough credits. Top up to send campaigns."
-          : e?.message ?? "Failed to send campaign. Please try again.";
+          : (e?.message ?? "Failed to send campaign. Please try again.");
       toast.error(msg);
       refresh();
     } finally {
@@ -238,10 +236,7 @@ function EmailMarketingApp() {
   };
 
   const remove = async (id: string) => {
-    const { error } = await supabase
-      .from("email_campaigns")
-      .delete()
-      .eq("id", id);
+    const { error } = await supabase.from("email_campaigns").delete().eq("id", id);
     if (error) {
       toast.error("Failed to delete campaign. Please try again.");
       return;
@@ -255,9 +250,7 @@ function EmailMarketingApp() {
       <div className="max-w-3xl mx-auto text-center py-20 space-y-4">
         <Mail className="h-12 w-12 mx-auto text-muted-foreground" />
         <h1 className="text-2xl font-bold">Install Email Marketing first</h1>
-        <p className="text-muted-foreground">
-          Head to the App Store to install this app.
-        </p>
+        <p className="text-muted-foreground">Head to the App Store to install this app.</p>
         <Button asChild>
           <Link to="/dashboard/apps">Open App Store</Link>
         </Button>
@@ -388,7 +381,13 @@ function EmailMarketingApp() {
               icon={Mail}
               title="No campaigns yet"
               description="Create your first email campaign to reach your customers."
-              action={{ label: "Create campaign", onClick: () => { document.getElementById("subject")?.scrollIntoView({ behavior: "smooth" }); document.getElementById("subject")?.focus(); } }}
+              action={{
+                label: "Create campaign",
+                onClick: () => {
+                  document.getElementById("subject")?.scrollIntoView({ behavior: "smooth" });
+                  document.getElementById("subject")?.focus();
+                },
+              }}
             />
           ) : (
             <div className="space-y-3">
@@ -400,13 +399,9 @@ function EmailMarketingApp() {
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="font-medium truncate">{c.subject}</p>
-                      {c.status !== "sent" ? (
-                        <StatusBadge status={c.status} />
-                      ) : null}
+                      {c.status !== "sent" ? <StatusBadge status={c.status} /> : null}
                     </div>
-                    <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
-                      {c.message}
-                    </p>
+                    <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{c.message}</p>
                     <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
                       <span>
                         {c.audience_type === "all_customers"
@@ -422,13 +417,9 @@ function EmailMarketingApp() {
                         />
                       ) : null}
                       {c.error && (
-                        <span className="text-destructive truncate max-w-[300px]">
-                          {c.error}
-                        </span>
+                        <span className="text-destructive truncate max-w-[300px]">{c.error}</span>
                       )}
-                      <span>
-                        {new Date(c.sent_at ?? c.created_at).toLocaleString()}
-                      </span>
+                      <span>{new Date(c.sent_at ?? c.created_at).toLocaleString()}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
@@ -480,7 +471,12 @@ function EmailMarketingApp() {
                               <AlertDialogCancel onClick={() => setConfirmSendId(null)}>
                                 Cancel
                               </AlertDialogCancel>
-                              <AlertDialogAction onClick={() => { setConfirmSendId(null); send(c.id); }}>
+                              <AlertDialogAction
+                                onClick={() => {
+                                  setConfirmSendId(null);
+                                  send(c.id);
+                                }}
+                              >
                                 Send to all
                               </AlertDialogAction>
                             </AlertDialogFooter>
@@ -503,9 +499,7 @@ function EmailMarketingApp() {
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => remove(c.id)}>
-                            Delete
-                          </AlertDialogAction>
+                          <AlertDialogAction onClick={() => remove(c.id)}>Delete</AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>

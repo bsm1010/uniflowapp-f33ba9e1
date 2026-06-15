@@ -113,19 +113,17 @@ export const validateAndActivateDeliveryCompany = createServerFn({ method: "POST
           .neq("company_id", data.companyId);
       }
 
-      const { error: upsertErr } = await supabase
-        .from("store_delivery_companies")
-        .upsert(
-          {
-            store_id: userId,
-            company_id: data.companyId,
-            api_key: apiKey,
-            api_secret: apiSecret,
-            enabled: true,
-            is_default: data.setDefault ?? false,
-          },
-          { onConflict: "store_id,company_id" },
-        );
+      const { error: upsertErr } = await supabase.from("store_delivery_companies").upsert(
+        {
+          store_id: userId,
+          company_id: data.companyId,
+          api_key: apiKey,
+          api_secret: apiSecret,
+          enabled: true,
+          is_default: data.setDefault ?? false,
+        },
+        { onConflict: "store_id,company_id" },
+      );
 
       if (upsertErr) {
         return { ok: false, message: `Validated but failed to persist: ${upsertErr.message}` };

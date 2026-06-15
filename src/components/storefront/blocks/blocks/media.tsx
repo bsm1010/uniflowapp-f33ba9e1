@@ -79,17 +79,18 @@ export function BeforeAfter({ props }: BlockComponentProps<BeforeAfterProps>) {
     <Section>
       <SectionHeading title={props.title} />
       <div className="relative mx-auto aspect-video max-w-3xl overflow-hidden rounded-2xl border border-border">
-        <img src={props.afterUrl} alt="After" className="absolute inset-0 h-full w-full object-cover" />
+        <img
+          src={props.afterUrl}
+          alt="After"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
         <img
           src={props.beforeUrl}
           alt="Before"
           className="absolute inset-0 h-full w-full object-cover"
           style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }}
         />
-        <div
-          className="absolute top-0 h-full w-1 bg-white shadow-lg"
-          style={{ left: `${pos}%` }}
-        />
+        <div className="absolute top-0 h-full w-1 bg-white shadow-lg" style={{ left: `${pos}%` }} />
         <input
           type="range"
           min={0}
@@ -120,7 +121,11 @@ export function TikTokReels({ props }: BlockComponentProps<TikTokReelsProps>) {
             href={r.videoUrl}
             className="relative aspect-[9/16] w-48 shrink-0 snap-start overflow-hidden rounded-2xl border border-border"
           >
-            <img src={r.thumbnailUrl} alt={r.caption ?? ""} className="h-full w-full object-cover" />
+            <img
+              src={r.thumbnailUrl}
+              alt={r.caption ?? ""}
+              className="h-full w-full object-cover"
+            />
             {r.caption ? (
               <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-2 text-xs text-white">
                 {r.caption}

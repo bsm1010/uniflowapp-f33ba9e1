@@ -176,13 +176,22 @@ function AdminMarketplacePage() {
       <Tabs value={filter} onValueChange={(v) => setFilter(v as Filter)}>
         <TabsList>
           <TabsTrigger value="pending">
-            Pending <Badge variant="secondary" className="ml-2">{counts.pending}</Badge>
+            Pending{" "}
+            <Badge variant="secondary" className="ml-2">
+              {counts.pending}
+            </Badge>
           </TabsTrigger>
           <TabsTrigger value="approved">
-            Approved <Badge variant="secondary" className="ml-2">{counts.approved}</Badge>
+            Approved{" "}
+            <Badge variant="secondary" className="ml-2">
+              {counts.approved}
+            </Badge>
           </TabsTrigger>
           <TabsTrigger value="rejected">
-            Rejected <Badge variant="secondary" className="ml-2">{counts.rejected}</Badge>
+            Rejected{" "}
+            <Badge variant="secondary" className="ml-2">
+              {counts.rejected}
+            </Badge>
           </TabsTrigger>
           <TabsTrigger value="all">All</TabsTrigger>
         </TabsList>
@@ -220,9 +229,7 @@ function AdminMarketplacePage() {
                         <h3 className="font-semibold truncate">{app.title}</h3>
                         <StatusBadge status={app.status} />
                         <Badge variant="outline">{app.category}</Badge>
-                        <Badge variant="outline">
-                          {app.is_free ? "Free" : `$${app.price}`}
-                        </Badge>
+                        <Badge variant="outline">{app.is_free ? "Free" : `$${app.price}`}</Badge>
                       </div>
                       <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                         {app.short_description}
@@ -251,11 +258,7 @@ function AdminMarketplacePage() {
                       </Button>
                     )}
                     {app.status !== "approved" && (
-                      <Button
-                        size="sm"
-                        onClick={() => approve(app)}
-                        disabled={actingId === app.id}
-                      >
+                      <Button size="sm" onClick={() => approve(app)} disabled={actingId === app.id}>
                         {actingId === app.id ? (
                           <Loader2 className="h-3.5 w-3.5 animate-spin" />
                         ) : (
@@ -373,7 +376,10 @@ function AdminMarketplacePage() {
 }
 
 function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+  const map: Record<
+    string,
+    { label: string; variant: "default" | "secondary" | "destructive" | "outline" }
+  > = {
     pending: { label: "Pending", variant: "secondary" },
     approved: { label: "Approved", variant: "default" },
     rejected: { label: "Rejected", variant: "destructive" },

@@ -2,10 +2,7 @@ import { SherpaAdapter } from "../adapters/SherpaAdapter";
 import type { ApiKeyValidationResult } from "./YalidineService";
 
 export class SherpaService {
-  static async validateApiKey(
-    apiKey: string,
-    apiSecret = "",
-  ): Promise<ApiKeyValidationResult> {
+  static async validateApiKey(apiKey: string, apiSecret = ""): Promise<ApiKeyValidationResult> {
     if (!apiKey || !apiKey.trim()) {
       return { success: false, message: "API key is required." };
     }

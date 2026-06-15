@@ -16,9 +16,16 @@ export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
       { title: "Log in — Fennecly" },
-      { name: "description", content: "Log in to your Fennecly account to manage your online store, track orders, update products, and run your business from one dashboard." },
+      {
+        name: "description",
+        content:
+          "Log in to your Fennecly account to manage your online store, track orders, update products, and run your business from one dashboard.",
+      },
       { property: "og:title", content: "Log in — Fennecly" },
-      { property: "og:description", content: "Log in to your Fennecly account to manage products, orders, and your storefront." },
+      {
+        property: "og:description",
+        content: "Log in to your Fennecly account to manage products, orders, and your storefront.",
+      },
     ],
     links: [{ rel: "canonical", href: "https://fennecly.online/login" }],
   }),
@@ -95,34 +102,30 @@ function LoginPage() {
           />
           {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
         </div>
-   <div className="space-y-1.5">
-  <Label htmlFor="password">{t("auth.login.password")}</Label>
+        <div className="space-y-1.5">
+          <Label htmlFor="password">{t("auth.login.password")}</Label>
 
-  <Input
-    id="password"
-    type="password"
-    value={password}
-    onChange={(e) => setPassword(e.target.value)}
-    placeholder={t("auth.login.passwordPh")}
-    autoComplete="current-password"
-    disabled={loading}
-  />
+          <Input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder={t("auth.login.passwordPh")}
+            autoComplete="current-password"
+            disabled={loading}
+          />
 
-  <div className="flex justify-end">
-    <Link
-      to="/forgot-password"
-      className="text-sm text-purple-500 transition-colors hover:text-purple-400"
-    >
-      Forgot password?
-    </Link>
-  </div>
+          <div className="flex justify-end">
+            <Link
+              to="/forgot-password"
+              className="text-sm text-purple-500 transition-colors hover:text-purple-400"
+            >
+              Forgot password?
+            </Link>
+          </div>
 
-  {errors.password && (
-    <p className="text-xs text-destructive">
-      {errors.password}
-    </p>
-  )}
-</div>
+          {errors.password && <p className="text-xs text-destructive">{errors.password}</p>}
+        </div>
 
         {formError && (
           <motion.div
@@ -143,9 +146,7 @@ function LoginPage() {
         </Button>
       </form>
 
-      {showSuccess && (
-        <SuccessAnimation onComplete={() => navigate({ to: "/select-store" })} />
-      )}
+      {showSuccess && <SuccessAnimation onComplete={() => navigate({ to: "/select-store" })} />}
     </AuthLayout>
   );
 }

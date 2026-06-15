@@ -70,7 +70,8 @@ export class MaystroAdapter extends BaseDeliveryAdapter {
       },
     );
     return {
-      trackingNumber: data.trackingNumber ?? data.tracking ?? data.id ?? this.generateTrackingNumber("MAY"),
+      trackingNumber:
+        data.trackingNumber ?? data.tracking ?? data.id ?? this.generateTrackingNumber("MAY"),
       status: "created",
       raw: data,
     };

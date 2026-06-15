@@ -11,7 +11,8 @@ export const SECTION_PRESETS: SectionPreset[] = [
   {
     id: "hero-split-grid",
     name: "Split Hero + Feature Grid",
-    description: "A split hero with image on the right, followed by a 3-column feature grid with icons.",
+    description:
+      "A split hero with image on the right, followed by a 3-column feature grid with icons.",
     sections: [
       {
         id: "hero-1",
@@ -34,9 +35,21 @@ export const SECTION_PRESETS: SectionPreset[] = [
           title: "Why choose us",
           subtitle: "Every detail matters when it comes to your style.",
           items: [
-            { title: "Premium Materials", description: "Sourced from the finest suppliers worldwide.", icon: "Gem" },
-            { title: "Free Shipping", description: "On all orders over $100, delivered to your door.", icon: "Truck" },
-            { title: "24/7 Support", description: "Our team is here around the clock to help.", icon: "HeadphonesIcon" },
+            {
+              title: "Premium Materials",
+              description: "Sourced from the finest suppliers worldwide.",
+              icon: "Gem",
+            },
+            {
+              title: "Free Shipping",
+              description: "On all orders over $100, delivered to your door.",
+              icon: "Truck",
+            },
+            {
+              title: "24/7 Support",
+              description: "Our team is here around the clock to help.",
+              icon: "HeadphonesIcon",
+            },
           ],
         },
       },
@@ -52,7 +65,8 @@ export const SECTION_PRESETS: SectionPreset[] = [
         blockKey: "hero.centered",
         props: {
           title: "Elevate your everyday",
-          subtitle: "Curated pieces for the discerning eye. Where craftsmanship meets contemporary design.",
+          subtitle:
+            "Curated pieces for the discerning eye. Where craftsmanship meets contemporary design.",
           ctaLabel: "Explore Collection",
           ctaHref: "#shop",
           secondaryLabel: "Our Story",
@@ -70,9 +84,30 @@ export const SECTION_PRESETS: SectionPreset[] = [
         props: {
           title: "Loved by thousands",
           items: [
-            { name: "Sarah K.", role: "Verified Buyer", avatar: "", content: "Absolutely stunning quality. The fabric feels premium and the fit is perfect. Will definitely order again.", rating: 5 },
-            { name: "Marcus J.", role: "Verified Buyer", avatar: "", content: "Fast shipping and exactly as described. This is my go-to store for streetwear now.", rating: 5 },
-            { name: "Elena R.", role: "Verified Buyer", avatar: "", content: "The attention to detail is incredible. You can feel the quality the moment you unbox.", rating: 5 },
+            {
+              name: "Sarah K.",
+              role: "Verified Buyer",
+              avatar: "",
+              content:
+                "Absolutely stunning quality. The fabric feels premium and the fit is perfect. Will definitely order again.",
+              rating: 5,
+            },
+            {
+              name: "Marcus J.",
+              role: "Verified Buyer",
+              avatar: "",
+              content:
+                "Fast shipping and exactly as described. This is my go-to store for streetwear now.",
+              rating: 5,
+            },
+            {
+              name: "Elena R.",
+              role: "Verified Buyer",
+              avatar: "",
+              content:
+                "The attention to detail is incredible. You can feel the quality the moment you unbox.",
+              rating: 5,
+            },
           ],
         },
       },
@@ -103,7 +138,12 @@ export const SECTION_PRESETS: SectionPreset[] = [
       {
         id: "cta-1",
         blockKey: "cta.section",
-        props: { title: "Join the movement", subtitle: "Sign up for early access to our next drop and get 15% off your first order.", ctaLabel: "Get Early Access", ctaHref: "#" },
+        props: {
+          title: "Join the movement",
+          subtitle: "Sign up for early access to our next drop and get 15% off your first order.",
+          ctaLabel: "Get Early Access",
+          ctaHref: "#",
+        },
       },
     ],
   },

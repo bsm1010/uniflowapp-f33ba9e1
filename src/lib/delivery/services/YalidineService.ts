@@ -15,10 +15,7 @@ export class YalidineService {
    * Validate a Yalidine credential pair by issuing a lightweight authenticated
    * request. Yalidine requires both an API ID (apiSecret) and API token (apiKey).
    */
-  static async validateApiKey(
-    apiKey: string,
-    apiSecret = "",
-  ): Promise<ApiKeyValidationResult> {
+  static async validateApiKey(apiKey: string, apiSecret = ""): Promise<ApiKeyValidationResult> {
     if (!apiKey || !apiKey.trim()) {
       return { success: false, message: "API token is required." };
     }

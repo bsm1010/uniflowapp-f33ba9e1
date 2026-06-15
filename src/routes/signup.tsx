@@ -2,14 +2,32 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import { z } from "zod";
 import { motion } from "framer-motion";
-import { Loader2, User, Mail, Lock, Eye, EyeOff, Check, X, Phone, MapPin, Building2 } from "lucide-react";
+import {
+  Loader2,
+  User,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  Check,
+  X,
+  Phone,
+  MapPin,
+  Building2,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ALGERIA_GEO, getCitiesForWilaya, isValidAlgerianPhone } from "@/lib/algeriaWilayas";
 import { SuccessAnimation } from "@/components/auth/SuccessAnimation";
 
@@ -70,7 +88,9 @@ function SignUpPage() {
     name: z.string().trim().min(1, t("auth.signup.errName")).max(80, t("auth.signup.errNameLong")),
     email: z.string().trim().email(t("auth.login.errEmail")).max(255),
     password: z.string().min(8, t("auth.signup.errPasswordShort")).max(72),
-    phone: z.string().refine((v) => !v || isValidAlgerianPhone(v), "Numéro de téléphone algérien invalide"),
+    phone: z
+      .string()
+      .refine((v) => !v || isValidAlgerianPhone(v), "Numéro de téléphone algérien invalide"),
     wilaya: z.string().min(1, "Veuillez sélectionner une wilaya"),
     city: z.string().min(1, "Veuillez sélectionner une commune"),
   });
@@ -98,9 +118,10 @@ function SignUpPage() {
     }
 
     setLoading(true);
-    const refCode = typeof window !== "undefined"
-      ? new URLSearchParams(window.location.search).get("ref") ?? undefined
-      : undefined;
+    const refCode =
+      typeof window !== "undefined"
+        ? (new URLSearchParams(window.location.search).get("ref") ?? undefined)
+        : undefined;
     const { data, error } = await supabase.auth.signUp({
       email: parsed.data.email,
       password: parsed.data.password,
@@ -140,7 +161,13 @@ function SignUpPage() {
       }
     >
       <form onSubmit={handleSubmit} className="space-y-5">
-        <motion.div custom={0} variants={fieldVariants} initial="hidden" animate="visible" className="space-y-1.5">
+        <motion.div
+          custom={0}
+          variants={fieldVariants}
+          initial="hidden"
+          animate="visible"
+          className="space-y-1.5"
+        >
           <Label htmlFor="name">{t("auth.signup.name")}</Label>
           <div className="relative">
             <User className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -155,13 +182,23 @@ function SignUpPage() {
             />
           </div>
           {errors.name && (
-            <motion.p initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} className="text-xs text-destructive">
+            <motion.p
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="text-xs text-destructive"
+            >
               {errors.name}
             </motion.p>
           )}
         </motion.div>
 
-        <motion.div custom={1} variants={fieldVariants} initial="hidden" animate="visible" className="space-y-1.5">
+        <motion.div
+          custom={1}
+          variants={fieldVariants}
+          initial="hidden"
+          animate="visible"
+          className="space-y-1.5"
+        >
           <Label htmlFor="email">{t("auth.login.email")}</Label>
           <div className="relative">
             <Mail className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -177,13 +214,23 @@ function SignUpPage() {
             />
           </div>
           {errors.email && (
-            <motion.p initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} className="text-xs text-destructive">
+            <motion.p
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="text-xs text-destructive"
+            >
               {errors.email}
             </motion.p>
           )}
         </motion.div>
 
-        <motion.div custom={2} variants={fieldVariants} initial="hidden" animate="visible" className="space-y-1.5">
+        <motion.div
+          custom={2}
+          variants={fieldVariants}
+          initial="hidden"
+          animate="visible"
+          className="space-y-1.5"
+        >
           <Label htmlFor="password">{t("auth.login.password")}</Label>
           <div className="relative">
             <Lock className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -222,7 +269,9 @@ function SignUpPage() {
                     className={`h-full rounded-full ${pwStrength?.color}`}
                   />
                 </div>
-                <span className="text-xs text-muted-foreground min-w-[3rem] text-right">{pwStrength?.label}</span>
+                <span className="text-xs text-muted-foreground min-w-[3rem] text-right">
+                  {pwStrength?.label}
+                </span>
               </div>
 
               <div className="flex flex-wrap gap-x-4 gap-y-1">
@@ -242,13 +291,23 @@ function SignUpPage() {
           )}
 
           {errors.password && (
-            <motion.p initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} className="text-xs text-destructive">
+            <motion.p
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="text-xs text-destructive"
+            >
               {errors.password}
             </motion.p>
           )}
         </motion.div>
 
-        <motion.div custom={3} variants={fieldVariants} initial="hidden" animate="visible" className="space-y-1.5">
+        <motion.div
+          custom={3}
+          variants={fieldVariants}
+          initial="hidden"
+          animate="visible"
+          className="space-y-1.5"
+        >
           <Label htmlFor="phone">{t("auth.signup.phone", "Téléphone")}</Label>
           <div className="relative">
             <Phone className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -264,13 +323,23 @@ function SignUpPage() {
             />
           </div>
           {errors.phone && (
-            <motion.p initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} className="text-xs text-destructive">
+            <motion.p
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="text-xs text-destructive"
+            >
               {errors.phone}
             </motion.p>
           )}
         </motion.div>
 
-        <motion.div custom={4} variants={fieldVariants} initial="hidden" animate="visible" className="space-y-1.5">
+        <motion.div
+          custom={4}
+          variants={fieldVariants}
+          initial="hidden"
+          animate="visible"
+          className="space-y-1.5"
+        >
           <Label>Wilaya</Label>
           <Select
             value={wilaya}
@@ -295,29 +364,49 @@ function SignUpPage() {
             </SelectContent>
           </Select>
           {errors.wilaya && (
-            <motion.p initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} className="text-xs text-destructive">
+            <motion.p
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="text-xs text-destructive"
+            >
               {errors.wilaya}
             </motion.p>
           )}
         </motion.div>
 
-        <motion.div custom={5} variants={fieldVariants} initial="hidden" animate="visible" className="space-y-1.5">
+        <motion.div
+          custom={5}
+          variants={fieldVariants}
+          initial="hidden"
+          animate="visible"
+          className="space-y-1.5"
+        >
           <Label>Commune</Label>
           <Select value={city} onValueChange={setCity} disabled={loading || !wilaya}>
             <SelectTrigger className="h-10">
               <div className="flex items-center gap-2">
                 <Building2 className="h-4 w-4 text-muted-foreground shrink-0" />
-                <SelectValue placeholder={wilaya ? "Sélectionnez votre commune" : "Choisissez d'abord une wilaya"} />
+                <SelectValue
+                  placeholder={
+                    wilaya ? "Sélectionnez votre commune" : "Choisissez d'abord une wilaya"
+                  }
+                />
               </div>
             </SelectTrigger>
             <SelectContent>
               {cities.map((c) => (
-                <SelectItem key={c} value={c}>{c}</SelectItem>
+                <SelectItem key={c} value={c}>
+                  {c}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
           {errors.city && (
-            <motion.p initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} className="text-xs text-destructive">
+            <motion.p
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="text-xs text-destructive"
+            >
               {errors.city}
             </motion.p>
           )}

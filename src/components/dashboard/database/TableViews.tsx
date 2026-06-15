@@ -53,9 +53,7 @@ export function GalleryView({
   onAddRecord: () => void;
 }) {
   const imageFields = fields.filter((f) => f.field_type === "image");
-  const titleFields = fields.filter((f) =>
-    ["text", "number", "select"].includes(f.field_type),
-  );
+  const titleFields = fields.filter((f) => ["text", "number", "select"].includes(f.field_type));
 
   return (
     <div className="space-y-4">
@@ -82,29 +80,19 @@ export function GalleryView({
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {records.map((rec) => {
             const img = imageFieldId ? (rec.data[imageFieldId] as string) : "";
-            const title = titleFieldId
-              ? String(rec.data[titleFieldId] ?? "")
-              : "";
+            const title = titleFieldId ? String(rec.data[titleFieldId] ?? "") : "";
             return (
               <Card key={rec.id} className="overflow-hidden group">
                 <div className="aspect-square bg-muted flex items-center justify-center">
                   {img ? (
-                    <img
-                      src={img}
-                      alt={title}
-                      className="w-full h-full object-cover"
-                    />
+                    <img src={img} alt={title} className="w-full h-full object-cover" />
                   ) : (
                     <ImageIcon className="h-8 w-8 text-muted-foreground/40" />
                   )}
                 </div>
                 <div className="p-3">
-                  <p className="font-medium text-sm truncate">
-                    {title || "Untitled"}
-                  </p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">
-                    {fields.length} fields
-                  </p>
+                  <p className="font-medium text-sm truncate">{title || "Untitled"}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{fields.length} fields</p>
                 </div>
               </Card>
             );
@@ -131,9 +119,7 @@ export function KanbanView({
   onUpdateValue: (recordId: string, fieldId: string, value: unknown) => void;
   onAddRecord: () => void;
 }) {
-  const groupable = fields.filter((f) =>
-    ["select", "boolean"].includes(f.field_type),
-  );
+  const groupable = fields.filter((f) => ["select", "boolean"].includes(f.field_type));
   const groupField = fields.find((f) => f.id === groupFieldId) ?? null;
 
   const columns = useMemo(() => {
@@ -150,8 +136,7 @@ export function KanbanView({
     }));
   }, [groupField]);
 
-  const titleField =
-    fields.find((f) => f.field_type === "text") ?? fields[0] ?? null;
+  const titleField = fields.find((f) => f.field_type === "text") ?? fields[0] ?? null;
 
   function valueFor(rec: DBRecord) {
     if (!groupField) return "";
@@ -164,8 +149,7 @@ export function KanbanView({
     e.preventDefault();
     const recId = e.dataTransfer.getData("text/plain");
     if (!recId || !groupField) return;
-    const newVal =
-      groupField.field_type === "boolean" ? columnKey === "true" : columnKey;
+    const newVal = groupField.field_type === "boolean" ? columnKey === "true" : columnKey;
     onUpdateValue(recId, groupField.id, newVal);
   }
 
@@ -207,15 +191,11 @@ export function KanbanView({
                     <Card
                       key={rec.id}
                       draggable
-                      onDragStart={(e) =>
-                        e.dataTransfer.setData("text/plain", rec.id)
-                      }
+                      onDragStart={(e) => e.dataTransfer.setData("text/plain", rec.id)}
                       className="p-3 cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow"
                     >
                       <p className="text-sm font-medium truncate">
-                        {titleField
-                          ? String(rec.data[titleField.id] ?? "Untitled")
-                          : "Untitled"}
+                        {titleField ? String(rec.data[titleField.id] ?? "Untitled") : "Untitled"}
                       </p>
                       <div className="flex flex-wrap gap-1 mt-2">
                         {fields
@@ -228,11 +208,7 @@ export function KanbanView({
                           )
                           .slice(0, 2)
                           .map((f) => (
-                            <Badge
-                              key={f.id}
-                              variant="outline"
-                              className="text-[10px]"
-                            >
+                            <Badge key={f.id} variant="outline" className="text-[10px]">
                               {f.name}: {String(rec.data[f.id]).slice(0, 20)}
                             </Badge>
                           ))}
@@ -266,9 +242,7 @@ export function CalendarView({
   onChangeTitleField: (id: string) => void;
 }) {
   const dateFields = fields.filter((f) => f.field_type === "date");
-  const titleFields = fields.filter((f) =>
-    ["text", "number", "select"].includes(f.field_type),
-  );
+  const titleFields = fields.filter((f) => ["text", "number", "select"].includes(f.field_type));
 
   const [cursor, setCursor] = useState(() => {
     const d = new Date();
@@ -332,11 +306,7 @@ export function CalendarView({
             <Button
               variant="outline"
               size="sm"
-              onClick={() =>
-                setCursor(
-                  new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1),
-                )
-              }
+              onClick={() => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1))}
             >
               ←
             </Button>
@@ -344,11 +314,7 @@ export function CalendarView({
             <Button
               variant="outline"
               size="sm"
-              onClick={() =>
-                setCursor(
-                  new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1),
-                )
-              }
+              onClick={() => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1))}
             >
               →
             </Button>
@@ -363,8 +329,7 @@ export function CalendarView({
           <div className="grid grid-cols-7">
             {grid.map((day, i) => {
               const dayRecords = recordsForDay(day);
-              const isToday =
-                day && day.toDateString() === new Date().toDateString();
+              const isToday = day && day.toDateString() === new Date().toDateString();
               return (
                 <div
                   key={i}
@@ -376,9 +341,7 @@ export function CalendarView({
                     <>
                       <div
                         className={`text-[11px] mb-1 ${
-                          isToday
-                            ? "font-bold text-foreground"
-                            : "text-muted-foreground"
+                          isToday ? "font-bold text-foreground" : "text-muted-foreground"
                         }`}
                       >
                         {day.getDate()}
@@ -389,9 +352,7 @@ export function CalendarView({
                             key={r.id}
                             className="text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary truncate"
                           >
-                            {titleFieldId
-                              ? String(r.data[titleFieldId] ?? "Untitled")
-                              : "Record"}
+                            {titleFieldId ? String(r.data[titleFieldId] ?? "Untitled") : "Record"}
                           </div>
                         ))}
                         {dayRecords.length > 3 && (
@@ -436,9 +397,7 @@ function SettingSelect({
 }) {
   return (
     <div className="min-w-[180px]">
-      <label className="text-[11px] font-medium text-muted-foreground block mb-1">
-        {label}
-      </label>
+      <label className="text-[11px] font-medium text-muted-foreground block mb-1">{label}</label>
       {options.length === 0 ? (
         <div className="text-xs text-muted-foreground italic h-9 flex items-center px-3 rounded-md border border-dashed border-border">
           {emptyLabel}

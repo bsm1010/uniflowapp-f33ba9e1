@@ -15,7 +15,9 @@ function DarkModeToggle() {
       const stored = localStorage.getItem("theme");
       const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
       dark = stored === "dark" || (!stored && prefersDark);
-    } catch {}
+    } catch (error) {
+      console.warn(error);
+    }
     setIsDark(dark);
     document.documentElement.classList.toggle("dark", dark);
   }, []);
@@ -23,7 +25,11 @@ function DarkModeToggle() {
     const next = !isDark;
     setIsDark(next);
     document.documentElement.classList.toggle("dark", next);
-    try { localStorage.setItem("theme", next ? "dark" : "light"); } catch {}
+    try {
+      localStorage.setItem("theme", next ? "dark" : "light");
+    } catch (error) {
+      console.warn(error);
+    }
   };
   return (
     <Button
@@ -33,11 +39,7 @@ function DarkModeToggle() {
       className="h-9 w-9 rounded-xl text-muted-foreground hover:text-foreground"
       aria-label="Toggle dark mode"
     >
-      {isDark ? (
-        <Sun className="h-4 w-4 text-amber-400" />
-      ) : (
-        <Moon className="h-4 w-4" />
-      )}
+      {isDark ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4" />}
     </Button>
   );
 }
@@ -55,7 +57,9 @@ export function Navbar() {
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [mobileOpen]);
 
   const links = [
@@ -113,12 +117,7 @@ export function Navbar() {
               <LanguageSwitcher />
             </span>
             <DarkModeToggle />
-            <Button
-              variant="ghost"
-              size="sm"
-              asChild
-              className="hidden sm:inline-flex h-9"
-            >
+            <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex h-9">
               <Link to="/login">{t("nav.signIn")}</Link>
             </Button>
             <Button

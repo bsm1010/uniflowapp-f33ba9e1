@@ -158,12 +158,7 @@ export function OnboardingTour({ userId }: Props) {
                 />
               </mask>
             </defs>
-            <rect
-              width="100%"
-              height="100%"
-              fill="rgba(0,0,0,0.65)"
-              mask="url(#tour-mask)"
-            />
+            <rect width="100%" height="100%" fill="rgba(0,0,0,0.65)" mask="url(#tour-mask)" />
           </svg>
         ) : (
           <div className="absolute inset-0 bg-black/65" />
@@ -184,10 +179,7 @@ export function OnboardingTour({ userId }: Props) {
       )}
 
       {/* Tooltip card */}
-      <div
-        style={tooltipStyle}
-        className="rounded-2xl border bg-background p-5 shadow-2xl"
-      >
+      <div style={tooltipStyle} className="rounded-2xl border bg-background p-5 shadow-2xl">
         <div className="flex items-start justify-between gap-2">
           <div className="text-xs font-semibold text-muted-foreground">
             {stepIndex + 1} / {STEPS.length}

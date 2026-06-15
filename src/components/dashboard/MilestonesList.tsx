@@ -1,10 +1,28 @@
-import { Package, CheckCircle2, Layers, ShoppingBag, TrendingUp, Award, DollarSign, Zap, Lock, Circle } from "lucide-react";
+import {
+  Package,
+  CheckCircle2,
+  Layers,
+  ShoppingBag,
+  TrendingUp,
+  Award,
+  DollarSign,
+  Zap,
+  Lock,
+  Circle,
+} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { Milestone } from "@/lib/progress/get-progress";
 import { cn } from "@/lib/utils";
 
 const ICON_MAP: Record<string, LucideIcon> = {
-  Package, CheckCircle2, Layers, ShoppingBag, TrendingUp, Award, DollarSign, Zap,
+  Package,
+  CheckCircle2,
+  Layers,
+  ShoppingBag,
+  TrendingUp,
+  Award,
+  DollarSign,
+  Zap,
 };
 
 interface Props {
@@ -19,7 +37,9 @@ export function MilestonesList({ milestones, compact }: Props) {
       <div className="space-y-2">
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>Milestones</span>
-          <span className="font-medium">{unlocked}/{milestones.length}</span>
+          <span className="font-medium">
+            {unlocked}/{milestones.length}
+          </span>
         </div>
         <div className="h-1.5 rounded-full bg-muted overflow-hidden">
           <div
@@ -41,11 +61,7 @@ export function MilestonesList({ milestones, compact }: Props) {
                 )}
                 title={`${m.label}${m.unlocked ? "" : " — locked"}`}
               >
-                {m.unlocked ? (
-                  <Icon className="h-3 w-3" />
-                ) : (
-                  <Lock className="h-3 w-3" />
-                )}
+                {m.unlocked ? <Icon className="h-3 w-3" /> : <Lock className="h-3 w-3" />}
               </div>
             );
           })}
@@ -77,15 +93,16 @@ export function MilestonesList({ milestones, compact }: Props) {
                   : "bg-muted text-muted-foreground/50",
               )}
             >
-              {m.unlocked ? (
-                <Icon className="h-4.5 w-4.5" />
-              ) : (
-                <Lock className="h-4 w-4" />
-              )}
+              {m.unlocked ? <Icon className="h-4.5 w-4.5" /> : <Lock className="h-4 w-4" />}
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between gap-2">
-                <p className={cn("text-sm font-medium", m.unlocked ? "text-emerald-700" : "text-foreground")}>
+                <p
+                  className={cn(
+                    "text-sm font-medium",
+                    m.unlocked ? "text-emerald-700" : "text-foreground",
+                  )}
+                >
                   {m.label}
                 </p>
                 {m.unlocked && <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />}
