@@ -101,11 +101,11 @@ export const getProgress = createServerFn({ method: "POST" })
     );
 
     const setupItems: SetupItem[] = [
-      { key: "product", label: "", completed: productCount >= 1 },
-      { key: "published", label: "", completed: publishedCount >= 1 },
-      { key: "store_customized", label: "", completed: hasCustomized },
-      { key: "first_order", label: "", completed: orderCount >= 1 },
-      { key: "store_launched", label: "", completed: store?.is_active === true },
+      { key: "product", label: "إضافة منتج", completed: productCount >= 1 },
+      { key: "published", label: "نشر منتج", completed: publishedCount >= 1 },
+      { key: "store_customized", label: "تخصيص المتجر", completed: hasCustomized },
+      { key: "first_order", label: "استقبال أول طلب", completed: orderCount >= 1 },
+      { key: "store_launched", label: "إطلاق المتجر", completed: store?.is_active === true },
     ];
 
     const completedItems = setupItems.filter((i) => i.completed).length;

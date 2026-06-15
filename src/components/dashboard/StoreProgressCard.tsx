@@ -43,7 +43,9 @@ export function StoreProgressCard() {
         const result = await callGetProgress({ data: { accessToken: session.access_token, storeId: currentStore.id } });
         setItems(result.setupItems);
         setProgress(result.setupProgress);
-      } catch { /* ignore */ }
+      } catch (err) {
+        console.error("Failed to load progress:", err);
+      }
       setLoading(false);
     };
     load();
