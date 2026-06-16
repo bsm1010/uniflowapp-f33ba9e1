@@ -343,6 +343,96 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
       raw: data,
     };
   }
+
+  /**
+   * Fetch a bordereau (shipping label PDF) for a single colis.
+   * Tries multiple request shapes since the API docs are not public.
+   */
+  async getBordereau(colisId: string): Promise<Blob> {
+    const headers = this.authHeaders();
+    const token = (this.credentials.apiKey ?? "").trim();
+
+    // Approach 1: GET with query params (id)
+    try {
+      const url = `${ZR_BASE_URL}/get_bordereaux?token=${encodeURIComponent(token)}&id=${encodeURIComponent(colisId)}`;
+      const res = await fetch(url, { method: "GET", headers, signal: AbortSignal.timeout(30_000) });
+      if (res.ok) {
+        const ct = res.headers.get("content-type") || "";
+        if (ct.includes("application/pdf")) {
+          return await res.blob();
+        }
+        const body = await res.json().catch(() => null);
+        if (body) {
+          const result = await extractPDFFromResponseAsync(body);
+          if (result) return result;
+        }
+      }
+    } catch { /* try next */ }
+
+    // Approach 2: GET with query params (ids)
+    try {
+      const url = `${ZR_BASE_URL}/get_bordereaux?token=${encodeURIComponent(token)}&ids=${encodeURIComponent(colisId)}`;
+      const res = await fetch(url, { method: "GET", headers, signal: AbortSignal.timeout(30_000) });
+      if (res.ok) {
+        const ct = res.headers.get("content-type") || "";
+        if (ct.includes("application/pdf")) {
+          return await res.blob();
+        }
+        const body = await res.json().catch(() => null);
+        if (body) {
+          const result = await extractPDFFromResponseAsync(body);
+          if (result) return result;
+        }
+      }
+    } catch { /* try next */ }
+
+    // Approach 3: POST with JSON body
+    try {
+      const url = `${ZR_BASE_URL}/get_bordereaux`;
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { ...headers, "Content-Type": "application/json" },
+        body: JSON.stringify({ token, ids: [colisId] }),
+        signal: AbortSignal.timeout(30_000),
+      });
+      if (res.ok) {
+        const ct = res.headers.get("content-type") || "";
+        if (ct.includes("application/pdf")) {
+          return await res.blob();
+        }
+        const body = await res.json().catch(() => null);
+        if (body) {
+          const result = await extractPDFFromResponseAsync(body);
+          if (result) return result;
+        }
+      }
+    } catch { /* try next */ }
+
+    throw new Error(
+      `ZR Express: could not fetch bordereau for colis ${colisId}. All request approaches failed.`,
+    );
+  }
+
+  /**
+   * Fetch bordereaux for multiple colis IDs in parallel.
+   * Logs warnings for individual failures but continues the batch.
+   */
+  async getBordereaux(colisIds: string[]): Promise<Blob[]> {
+    const results = await Promise.allSettled(
+      colisIds.map((id) => this.getBordereau(id)),
+    );
+
+    const blobs: Blob[] = [];
+    for (let i = 0; i < results.length; i++) {
+      const r = results[i];
+      if (r.status === "fulfilled") {
+        blobs.push(r.value);
+      } else {
+        console.warn(`[ZRExpress] Bordereau failed for colis ${colisIds[i]}:`, r.reason);
+      }
+    }
+    return blobs;
+  }
 }
 
 function pickStr(obj: Record<string, unknown>, keys: string[]): string {
@@ -381,4 +471,56 @@ function mapZRStatus(status?: string): TrackingResult["status"] {
   if (s.includes("retour") || s.includes("echec")) return "failed";
   if (s.includes("pret") || s.includes("cree")) return "created";
   return "pending";
+}
+
+/**
+ * Try to extract a PDF Blob from various possible API response shapes.
+ * Handles direct PDF responses, base64-encoded data, and URL references.
+ */
+async function extractPDFFromResponseAsync(body: Record<string, unknown>): Promise<Blob | null> {
+  // 1. Direct URL field — fetch the PDF
+  const urlField = pickStr(body, ["url", "pdf", "pdfUrl", "bordereauUrl", "labelUrl", "fileUrl"]);
+  if (urlField && (urlField.startsWith("http://") || urlField.startsWith("https://"))) {
+    try {
+      const res = await fetch(urlField, { signal: AbortSignal.timeout(30_000) });
+      if (res.ok) return await res.blob();
+    } catch { /* ignore */ }
+  }
+
+  // 2. Base64-encoded PDF
+  const b64Field = pickStr(body, ["base64", "data", "content", "pdfBase64", "file"]);
+  if (b64Field && b64Field.length > 100) {
+    try {
+      const raw = b64Field.includes(",") ? b64Field.split(",")[1] : b64Field;
+      const binary = atob(raw);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      return new Blob([bytes], { type: "application/pdf" });
+    } catch { /* not valid base64 */ }
+  }
+
+  // 3. Nested data array with url/pdf fields
+  const items = Array.isArray(body.data) ? body.data : Array.isArray(body.items) ? body.items : null;
+  if (items && items.length > 0) {
+    const first = items[0] as Record<string, unknown>;
+    const nestedUrl = pickStr(first, ["url", "pdf", "pdfUrl", "bordereauUrl"]);
+    if (nestedUrl && (nestedUrl.startsWith("http://") || nestedUrl.startsWith("https://"))) {
+      try {
+        const res = await fetch(nestedUrl, { signal: AbortSignal.timeout(30_000) });
+        if (res.ok) return await res.blob();
+      } catch { /* ignore */ }
+    }
+    const nestedB64 = pickStr(first, ["base64", "data", "content"]);
+    if (nestedB64 && nestedB64.length > 100) {
+      try {
+        const raw = nestedB64.includes(",") ? nestedB64.split(",")[1] : nestedB64;
+        const binary = atob(raw);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        return new Blob([bytes], { type: "application/pdf" });
+      } catch { /* ignore */ }
+    }
+  }
+
+  return null;
 }

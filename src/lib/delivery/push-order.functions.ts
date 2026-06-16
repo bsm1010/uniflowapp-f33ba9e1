@@ -181,9 +181,26 @@ export async function pushOrderInternal(
       await supabase.from("shipments").insert(shipmentPayload);
     }
 
+    // Store colis ID if available (used by bordereau printing for ZR Express)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const rawResponse = (result as any).raw as Record<string, unknown> | undefined;
+    const colisId =
+      (typeof rawResponse?.id === "string" && rawResponse.id) ||
+      (typeof rawResponse?.colis_id === "string" && rawResponse.colis_id) ||
+      (typeof rawResponse?.data === "object" && rawResponse.data !== null
+        ? typeof (rawResponse.data as Record<string, unknown>).id === "string"
+          ? (rawResponse.data as Record<string, unknown>).id as string
+          : null
+        : null) ||
+      null;
+
     await supabase
       .from("orders")
-      .update({ tracking_number: result.trackingNumber, status: "confirmed" })
+      .update({
+        tracking_number: result.trackingNumber,
+        status: "confirmed",
+        ...(colisId ? { zr_colis_id: colisId } : {}),
+      })
       .eq("id", orderId);
 
     return {

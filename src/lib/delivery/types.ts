@@ -81,4 +81,9 @@ export interface DeliveryAdapter {
   createShipment(input: CreateShipmentInput): Promise<CreateShipmentResult>;
   trackShipment(trackingNumber: string): Promise<TrackingResult>;
   cancelShipment?(trackingNumber: string): Promise<boolean>;
+
+  /** Fetch a single bordereau (shipping label PDF) by colis ID. */
+  getBordereau?(colisId: string): Promise<Blob>;
+  /** Fetch multiple bordereaux in parallel. */
+  getBordereaux?(colisIds: string[]): Promise<Blob[]>;
 }

@@ -30,6 +30,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Img } from "@/components/ui/Img";
 import { WhatsAppCallButton } from "@/components/dashboard/WhatsAppCallButton";
 import { useCallLog } from "@/hooks/use-call-log";
+import { useBordereaux, type BordereauOrder } from "@/hooks/use-bordereaux";
 import { formatDistanceToNow } from "date-fns";
 
 import type { Tables } from "@/integrations/supabase/types";
@@ -54,7 +55,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-type Order = Tables<"orders">;
+type Order = Tables<"orders"> & { zr_colis_id?: string | null };
 type OrderItem = Tables<"order_items">;
 type Shipment = Tables<"shipments">;
 
@@ -106,6 +107,7 @@ function OrdersPage() {
   const [callLogs, setCallLogs] = useState<
     Record<string, { outcome: string; called_at: string; channel: string }>
   >({});
+  const { printBordereaux, loading: printingBordereaux } = useBordereaux();
 
   const importFromZRExpress = async () => {
     if (!user) return;
@@ -363,6 +365,18 @@ function OrdersPage() {
     setTimeout(() => win.print(), 250);
   };
 
+  const handlePrintBordereaux = () => {
+    const rows = selectedIds.size > 0 ? filtered.filter((o) => selectedIds.has(o.id)) : filtered;
+    const bordereauOrders: BordereauOrder[] = rows
+      .filter((o) => o.zr_colis_id)
+      .map((o) => ({
+        id: o.id,
+        zr_colis_id: o.zr_colis_id!,
+        customer_name: o.customer_name,
+      }));
+    printBordereaux(bordereauOrders);
+  };
+
   return (
     <div className="max-w-7xl mx-auto pb-24">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -442,6 +456,21 @@ function OrdersPage() {
                   <Printer className="h-4 w-4 mr-1.5" />
                   {selectedIds.size > 0 ? `Print ${selectedIds.size} labels` : "Print Labels"}
                 </Button>
+                {orders.some((o) => o.zr_colis_id) && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={handlePrintBordereaux}
+                    disabled={printingBordereaux}
+                  >
+                    {printingBordereaux ? (
+                      <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
+                    ) : (
+                      <Truck className="h-4 w-4 mr-1.5" />
+                    )}
+                    {selectedIds.size > 0 ? `Print ${selectedIds.size} bordereaux` : "Print bordereaux"}
+                  </Button>
+                )}
               </div>
             </div>
 
@@ -497,6 +526,14 @@ function OrdersPage() {
                                 className="bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30 text-[10px] px-1.5 py-0"
                               >
                                 ZRExpress
+                              </Badge>
+                            )}
+                            {o.zr_colis_id && (
+                              <Badge
+                                variant="outline"
+                                className="bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-500/30 text-[10px] px-1.5 py-0"
+                              >
+                                Label
                               </Badge>
                             )}
                           </div>

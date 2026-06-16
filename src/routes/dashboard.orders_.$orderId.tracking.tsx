@@ -27,11 +27,12 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { trackOrderShipment, type TrackingDTO } from "@/lib/delivery/track-shipment.functions";
 import { WhatsAppCallButton } from "@/components/dashboard/WhatsAppCallButton";
+import { useBordereaux, type BordereauOrder } from "@/hooks/use-bordereaux";
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
 import type { Tables } from "@/integrations/supabase/types";
 
-type Order = Tables<"orders">;
+type Order = Tables<"orders"> & { zr_colis_id?: string | null };
 
 export const Route = createFileRoute("/dashboard/orders_/$orderId/tracking")({
   component: TrackingPage,
@@ -120,6 +121,7 @@ function TrackingPage() {
   const [callHistory, setCallHistory] = useState<
     { id: string; outcome: string; called_at: string; channel: string; customer_name: string | null; note: string | null }[]
   >([]);
+  const { printBordereaux, loading: printingBordereau } = useBordereaux();
 
   const loadOrder = async () => {
     if (!user) return;
@@ -446,6 +448,33 @@ function TrackingPage() {
             <InfoRow icon={ClipboardCheck} label="Tracking">
               <span className="font-mono">{order.tracking_number || "—"}</span>
             </InfoRow>
+            {order.zr_colis_id && (
+              <div className="flex items-center gap-2 pt-1">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    const bo: BordereauOrder = {
+                      id: order.id,
+                      zr_colis_id: order.zr_colis_id!,
+                      customer_name: order.customer_name,
+                    };
+                    printBordereaux([bo]);
+                  }}
+                  disabled={printingBordereau}
+                >
+                  {printingBordereau ? (
+                    <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+                  ) : (
+                    <Truck className="h-3.5 w-3.5 mr-1.5" />
+                  )}
+                  Print bordereau
+                </Button>
+                <Badge variant="outline" className="bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-500/30 text-[10px] px-1.5 py-0">
+                  ZR label ready
+                </Badge>
+              </div>
+            )}
             <InfoRow icon={User} label="Customer">
               {order.customer_name}
             </InfoRow>

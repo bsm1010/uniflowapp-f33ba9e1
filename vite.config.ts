@@ -18,6 +18,9 @@ export default defineConfig({
     },
   },
   vite: {
+    server: {
+      host: true,
+    },
     build: {
       target: "es2022",
     },
