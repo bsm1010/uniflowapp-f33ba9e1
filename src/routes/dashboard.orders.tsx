@@ -28,12 +28,16 @@ import { pushOrderToProvider } from "@/lib/delivery/push-order.functions";
 import { importZRExpressOrders } from "@/lib/delivery/import-zr-orders.functions";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Img } from "@/components/ui/Img";
+import { WhatsAppCallButton } from "@/components/dashboard/WhatsAppCallButton";
+import { useCallLog } from "@/hooks/use-call-log";
+import { formatDistanceToNow } from "date-fns";
 
 import type { Tables } from "@/integrations/supabase/types";
 import { PageHeader, EmptyState } from "@/components/dashboard/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -99,6 +103,9 @@ function OrdersPage() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [pushingId, setPushingId] = useState<string | null>(null);
   const [importingZR, setImportingZR] = useState(false);
+  const [callLogs, setCallLogs] = useState<
+    Record<string, { outcome: string; called_at: string; channel: string }>
+  >({});
 
   const importFromZRExpress = async () => {
     if (!user) return;
@@ -169,9 +176,14 @@ function OrdersPage() {
       setOrders(list);
       if (list.length) {
         const ids = list.map((o) => o.id);
-        const [{ data: its }, { data: ships }] = await Promise.all([
+        const [{ data: its }, { data: ships }, { data: calls }] = await Promise.all([
           supabase.from("order_items").select("*").in("order_id", ids),
           supabase.from("shipments").select("*").in("order_id", ids),
+          (supabase as unknown as { from: (t: string) => ReturnType<typeof supabase.from> })
+            .from("call_logs")
+            .select("order_id, outcome, called_at, channel")
+            .in("order_id", ids)
+            .order("called_at", { ascending: false }),
         ]);
         const grouped: Record<string, OrderItem[]> = {};
         for (const it of its ?? []) (grouped[it.order_id] ??= []).push(it);
@@ -179,6 +191,11 @@ function OrdersPage() {
         const shipMap: Record<string, Shipment> = {};
         for (const s of ships ?? []) shipMap[s.order_id] = s;
         setShipments(shipMap);
+        const callMap: Record<string, { outcome: string; called_at: string; channel: string }> = {};
+        for (const c of calls ?? []) {
+          if (!callMap[c.order_id]) callMap[c.order_id] = c;
+        }
+        setCallLogs(callMap);
       } else {
         setItems({});
         setShipments({});
@@ -490,15 +507,46 @@ function OrdersPage() {
                           >
                             #{o.id.slice(0, 8).toUpperCase()}
                           </Link>
+                          {callLogs[o.id] && callLogs[o.id].outcome !== "pending" && (
+                            <div
+                              className={cn(
+                                "text-[11px] mt-0.5",
+                                callLogs[o.id].outcome === "answered" && "text-emerald-600 dark:text-emerald-400",
+                                callLogs[o.id].outcome === "no_answer" && "text-rose-600 dark:text-rose-400",
+                                callLogs[o.id].outcome === "callback" && "text-amber-600 dark:text-amber-400",
+                              )}
+                            >
+                              Called {formatDistanceToNow(new Date(callLogs[o.id].called_at), { addSuffix: true })}
+                              {" · "}
+                              {callLogs[o.id].outcome === "answered" && "Answered"}
+                              {callLogs[o.id].outcome === "no_answer" && "No answer"}
+                              {callLogs[o.id].outcome === "callback" && "Call back later"}
+                            </div>
+                          )}
                         </TableCell>
                         <TableCell>
-                          <a
-                            href={`tel:${o.shipping_address}`}
-                            className="inline-flex items-center gap-1.5 text-sm hover:text-primary"
-                          >
-                            <Phone className="h-3.5 w-3.5 text-muted-foreground" />
-                            {o.shipping_address}
-                          </a>
+                          <div className="flex items-center gap-1.5">
+                            <a
+                              href={`tel:${o.customer_phone || o.shipping_address}`}
+                              className="inline-flex items-center gap-1.5 text-sm hover:text-primary md:hidden"
+                            >
+                              <Phone className="h-3.5 w-3.5 text-muted-foreground" />
+                              {o.customer_phone || o.shipping_address}
+                            </a>
+                            <span className="hidden md:inline-flex items-center gap-1.5 text-sm">
+                              <Phone className="h-3.5 w-3.5 text-muted-foreground" />
+                              {o.customer_phone || o.shipping_address}
+                            </span>
+                            <span className="hidden md:inline-flex">
+                              <WhatsAppCallButton
+                                customerPhone={o.customer_phone || o.shipping_address}
+                                customerName={o.customer_name}
+                                orderId={o.id}
+                                orderNumber={`#${o.id.slice(0, 8).toUpperCase()}`}
+                                size="sm"
+                              />
+                            </span>
+                          </div>
                         </TableCell>
                         <TableCell>
                           <div className="inline-flex items-start gap-1.5 text-sm">

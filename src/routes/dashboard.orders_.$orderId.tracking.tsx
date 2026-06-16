@@ -14,6 +14,8 @@ import {
   ClipboardCheck,
   PackageCheck,
   Code2,
+  MessageCircle,
+  PhoneCall,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,6 +26,9 @@ import { useServerFn } from "@tanstack/react-start";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { trackOrderShipment, type TrackingDTO } from "@/lib/delivery/track-shipment.functions";
+import { WhatsAppCallButton } from "@/components/dashboard/WhatsAppCallButton";
+import { formatDistanceToNow } from "date-fns";
+import { cn } from "@/lib/utils";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Order = Tables<"orders">;
@@ -112,6 +117,9 @@ function TrackingPage() {
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
   const [showRaw, setShowRaw] = useState(false);
+  const [callHistory, setCallHistory] = useState<
+    { id: string; outcome: string; called_at: string; channel: string; customer_name: string | null; note: string | null }[]
+  >([]);
 
   const loadOrder = async () => {
     if (!user) return;
@@ -123,6 +131,15 @@ function TrackingPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const loadCallHistory = async () => {
+    const { data } = await (supabase as unknown as { from: (t: string) => ReturnType<typeof supabase.from> })
+      .from("call_logs")
+      .select("id, outcome, called_at, channel, customer_name, note")
+      .eq("order_id", orderId)
+      .order("called_at", { ascending: false });
+    setCallHistory((data ?? []) as typeof callHistory);
   };
 
   const refreshTracking = async () => {
@@ -166,6 +183,7 @@ function TrackingPage() {
   useEffect(() => {
     if (!user) return;
     void loadOrder();
+    void loadCallHistory();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id, orderId]);
 
@@ -240,8 +258,80 @@ function TrackingPage() {
               Updated {lastRefreshed.toLocaleTimeString()}
             </span>
           )}
-        </div>
       </div>
+
+      {/* Call history section */}
+      <Card className="border-border/60 shadow-soft mt-6">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base flex items-center gap-2">
+              <PhoneCall className="h-4 w-4" />
+              Call history
+            </CardTitle>
+            {order.customer_phone && (
+              <WhatsAppCallButton
+                customerPhone={order.customer_phone}
+                customerName={order.customer_name}
+                orderId={order.id}
+                orderNumber={`#${order.id.slice(0, 8).toUpperCase()}`}
+                size="md"
+              />
+            )}
+          </div>
+        </CardHeader>
+        <CardContent>
+          {callHistory.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No calls yet</p>
+          ) : (
+            <ol className="space-y-3">
+              {callHistory.map((call) => (
+                <li key={call.id} className="flex items-start gap-3">
+                  <div className="mt-0.5">
+                    {call.channel === "whatsapp" ? (
+                      <MessageCircle className="h-4 w-4 text-[#25D366]" />
+                    ) : (
+                      <Phone className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                      <span className="text-sm font-medium">
+                        Called {call.customer_name || "customer"}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {formatDistanceToNow(new Date(call.called_at), { addSuffix: true })}
+                      </span>
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          "text-[10px] px-1.5 py-0",
+                          call.outcome === "answered" &&
+                            "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30",
+                          call.outcome === "no_answer" &&
+                            "bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/30",
+                          call.outcome === "callback" &&
+                            "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30",
+                          call.outcome === "pending" &&
+                            "bg-muted text-muted-foreground border-border",
+                        )}
+                      >
+                        {call.outcome === "answered" && "Answered"}
+                        {call.outcome === "no_answer" && "No answer"}
+                        {call.outcome === "callback" && "Call back later"}
+                        {call.outcome === "pending" && "Pending"}
+                      </Badge>
+                    </div>
+                    {call.note && (
+                      <p className="text-xs text-muted-foreground mt-0.5">{call.note}</p>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ol>
+          )}
+        </CardContent>
+      </Card>
+    </div>
 
       {!order.tracking_number && (
         <Card className="border-amber-500/30 bg-amber-500/5 mb-6">
