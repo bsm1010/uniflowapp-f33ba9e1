@@ -41,14 +41,14 @@ export const Route = createFileRoute("/signup")({
   }),
 });
 
-const stagger = 0.08;
+const stagger = 0.06;
 
 const fieldVariants = {
-  hidden: { opacity: 0, y: 12 },
+  hidden: { opacity: 0, y: 10 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * stagger, duration: 0.4, ease: "easeOut" as const },
+    transition: { delay: i * stagger, duration: 0.35, ease: "easeOut" as const },
   }),
 };
 
@@ -154,23 +154,20 @@ function SignUpPage() {
       footer={
         <>
           {t("auth.signup.haveAccount")}{" "}
-          <Link to="/login" className="text-primary font-medium hover:underline">
+          <Link to="/login" className="text-violet-500 dark:text-violet-400 font-medium hover:underline">
             {t("auth.signup.login")}
           </Link>
         </>
       }
     >
-      <form onSubmit={handleSubmit} className="space-y-5">
-        <motion.div
-          custom={0}
-          variants={fieldVariants}
-          initial="hidden"
-          animate="visible"
-          className="space-y-1.5"
-        >
-          <Label htmlFor="name">{t("auth.signup.name")}</Label>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Name */}
+        <motion.div custom={0} variants={fieldVariants} initial="hidden" animate="visible" className="space-y-2">
+          <Label htmlFor="name" className="text-sm font-medium">
+            {t("auth.signup.name")}
+          </Label>
           <div className="relative">
-            <User className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <User className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               id="name"
               value={name}
@@ -178,30 +175,23 @@ function SignUpPage() {
               placeholder={t("auth.signup.namePh")}
               autoComplete="name"
               disabled={loading}
-              className="pl-9"
+              className="h-11 pl-10 rounded-xl border-border/60 bg-muted/30 focus:bg-background transition-colors"
             />
           </div>
           {errors.name && (
-            <motion.p
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="text-xs text-destructive"
-            >
+            <motion.p initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} className="text-xs text-destructive">
               {errors.name}
             </motion.p>
           )}
         </motion.div>
 
-        <motion.div
-          custom={1}
-          variants={fieldVariants}
-          initial="hidden"
-          animate="visible"
-          className="space-y-1.5"
-        >
-          <Label htmlFor="email">{t("auth.login.email")}</Label>
+        {/* Email */}
+        <motion.div custom={1} variants={fieldVariants} initial="hidden" animate="visible" className="space-y-2">
+          <Label htmlFor="email" className="text-sm font-medium">
+            {t("auth.login.email")}
+          </Label>
           <div className="relative">
-            <Mail className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Mail className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               id="email"
               type="email"
@@ -210,30 +200,23 @@ function SignUpPage() {
               placeholder={t("auth.login.emailPh")}
               autoComplete="email"
               disabled={loading}
-              className="pl-9"
+              className="h-11 pl-10 rounded-xl border-border/60 bg-muted/30 focus:bg-background transition-colors"
             />
           </div>
           {errors.email && (
-            <motion.p
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="text-xs text-destructive"
-            >
+            <motion.p initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} className="text-xs text-destructive">
               {errors.email}
             </motion.p>
           )}
         </motion.div>
 
-        <motion.div
-          custom={2}
-          variants={fieldVariants}
-          initial="hidden"
-          animate="visible"
-          className="space-y-1.5"
-        >
-          <Label htmlFor="password">{t("auth.login.password")}</Label>
+        {/* Password */}
+        <motion.div custom={2} variants={fieldVariants} initial="hidden" animate="visible" className="space-y-2">
+          <Label htmlFor="password" className="text-sm font-medium">
+            {t("auth.login.password")}
+          </Label>
           <div className="relative">
-            <Lock className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Lock className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               id="password"
               type={showPassword ? "text" : "password"}
@@ -242,12 +225,12 @@ function SignUpPage() {
               placeholder={t("auth.signup.passwordPh")}
               autoComplete="new-password"
               disabled={loading}
-              className="pl-9 pr-9"
+              className="h-11 pl-10 pr-10 rounded-xl border-border/60 bg-muted/30 focus:bg-background transition-colors"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
               tabIndex={-1}
             >
               {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -255,11 +238,7 @@ function SignUpPage() {
           </div>
 
           {password && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              className="space-y-2 pt-1"
-            >
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="space-y-2 pt-1">
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
                   <motion.div
@@ -273,13 +252,12 @@ function SignUpPage() {
                   {pwStrength?.label}
                 </span>
               </div>
-
               <div className="flex flex-wrap gap-x-4 gap-y-1">
                 {requirements.map((req) => (
                   <span
                     key={req.label}
                     className={`inline-flex items-center gap-1 text-xs transition-colors ${
-                      req.met ? "text-emerald-600" : "text-muted-foreground"
+                      req.met ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground"
                     }`}
                   >
                     {req.met ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
@@ -289,28 +267,20 @@ function SignUpPage() {
               </div>
             </motion.div>
           )}
-
           {errors.password && (
-            <motion.p
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="text-xs text-destructive"
-            >
+            <motion.p initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} className="text-xs text-destructive">
               {errors.password}
             </motion.p>
           )}
         </motion.div>
 
-        <motion.div
-          custom={3}
-          variants={fieldVariants}
-          initial="hidden"
-          animate="visible"
-          className="space-y-1.5"
-        >
-          <Label htmlFor="phone">{t("auth.signup.phone", "Téléphone")}</Label>
+        {/* Phone */}
+        <motion.div custom={3} variants={fieldVariants} initial="hidden" animate="visible" className="space-y-2">
+          <Label htmlFor="phone" className="text-sm font-medium">
+            {t("auth.signup.phone", "Téléphone")}
+          </Label>
           <div className="relative">
-            <Phone className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Phone className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               id="phone"
               type="tel"
@@ -319,28 +289,19 @@ function SignUpPage() {
               placeholder="+213 5XX XX XX XX"
               autoComplete="tel"
               disabled={loading}
-              className="pl-9"
+              className="h-11 pl-10 rounded-xl border-border/60 bg-muted/30 focus:bg-background transition-colors"
             />
           </div>
           {errors.phone && (
-            <motion.p
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="text-xs text-destructive"
-            >
+            <motion.p initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} className="text-xs text-destructive">
               {errors.phone}
             </motion.p>
           )}
         </motion.div>
 
-        <motion.div
-          custom={4}
-          variants={fieldVariants}
-          initial="hidden"
-          animate="visible"
-          className="space-y-1.5"
-        >
-          <Label>Wilaya</Label>
+        {/* Wilaya */}
+        <motion.div custom={4} variants={fieldVariants} initial="hidden" animate="visible" className="space-y-2">
+          <Label className="text-sm font-medium">Wilaya</Label>
           <Select
             value={wilaya}
             onValueChange={(v) => {
@@ -349,7 +310,7 @@ function SignUpPage() {
             }}
             disabled={loading}
           >
-            <SelectTrigger className="h-10">
+            <SelectTrigger className="h-11 rounded-xl border-border/60 bg-muted/30">
               <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
                 <SelectValue placeholder="Sélectionnez votre wilaya" />
@@ -364,26 +325,17 @@ function SignUpPage() {
             </SelectContent>
           </Select>
           {errors.wilaya && (
-            <motion.p
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="text-xs text-destructive"
-            >
+            <motion.p initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} className="text-xs text-destructive">
               {errors.wilaya}
             </motion.p>
           )}
         </motion.div>
 
-        <motion.div
-          custom={5}
-          variants={fieldVariants}
-          initial="hidden"
-          animate="visible"
-          className="space-y-1.5"
-        >
-          <Label>Commune</Label>
+        {/* City */}
+        <motion.div custom={5} variants={fieldVariants} initial="hidden" animate="visible" className="space-y-2">
+          <Label className="text-sm font-medium">Commune</Label>
           <Select value={city} onValueChange={setCity} disabled={loading || !wilaya}>
-            <SelectTrigger className="h-10">
+            <SelectTrigger className="h-11 rounded-xl border-border/60 bg-muted/30">
               <div className="flex items-center gap-2">
                 <Building2 className="h-4 w-4 text-muted-foreground shrink-0" />
                 <SelectValue
@@ -402,11 +354,7 @@ function SignUpPage() {
             </SelectContent>
           </Select>
           {errors.city && (
-            <motion.p
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="text-xs text-destructive"
-            >
+            <motion.p initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} className="text-xs text-destructive">
               {errors.city}
             </motion.p>
           )}
@@ -417,7 +365,7 @@ function SignUpPage() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
-            className="rounded-md bg-destructive/10 border border-destructive/30 px-3 py-2 text-xs text-destructive"
+            className="rounded-xl bg-destructive/10 border border-destructive/30 px-4 py-3 text-sm text-destructive"
           >
             {formError}
           </motion.div>
@@ -427,7 +375,7 @@ function SignUpPage() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
-            className="rounded-md bg-primary/10 border border-primary/30 px-3 py-2 text-xs text-foreground"
+            className="rounded-xl bg-emerald-500/10 border border-emerald-500/30 px-4 py-3 text-sm text-emerald-600 dark:text-emerald-400"
           >
             {success}
           </motion.div>
@@ -444,7 +392,7 @@ function SignUpPage() {
           <Button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-brand text-brand-foreground hover:opacity-90 shadow-glow"
+            className="w-full h-11 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white hover:from-violet-500 hover:to-fuchsia-500 shadow-lg shadow-violet-500/25 font-semibold"
           >
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("auth.signup.submit")}
           </Button>
