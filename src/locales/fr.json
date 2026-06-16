@@ -214,6 +214,12 @@
     "nativeUi": "Interface native",
     "alt": "Fennecly pour Windows — boîte de l'application bureau"
   },
+  "delivery": {
+    "kicker": "Intégration livraison",
+    "titleA": "Expédiez avec",
+    "titleB": "n'importe quel transporteur",
+    "subtitle": "Envoyez les commandes directement aux réseaux de livraison algériens — sans saisie manuelle."
+  },
   "auth": {
     "login": {
       "title": "Heureux de vous revoir",

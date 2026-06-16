@@ -214,6 +214,12 @@
     "nativeUi": "Native UI",
     "alt": "Fennecly for Windows desktop app box"
   },
+  "delivery": {
+    "kicker": "Delivery Integration",
+    "titleA": "Ship with",
+    "titleB": "any carrier",
+    "subtitle": "Send orders directly to Algeria's top delivery networks — no manual entry needed."
+  },
   "auth": {
     "login": {
       "title": "Welcome back",

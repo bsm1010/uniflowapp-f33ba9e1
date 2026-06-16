@@ -32,9 +32,9 @@ const CTA = lazy(() =>
     default: m.CTA,
   })),
 );
-const OutboundLottie = lazy(() =>
-  import("@/components/landing/OutboundLottie").then((m) => ({
-    default: m.OutboundLottie,
+const DeliveryNetwork = lazy(() =>
+  import("@/components/landing/DeliveryNetwork").then((m) => ({
+    default: m.DeliveryNetwork,
   })),
 );
 const WindowsDownload = lazy(() =>
@@ -112,7 +112,7 @@ function Index() {
           <WindowsDownload />
         </div>
         <div className="cv-auto">
-          <OutboundLottie />
+          <DeliveryNetwork />
         </div>
         <div className="cv-auto">
           <Features />
