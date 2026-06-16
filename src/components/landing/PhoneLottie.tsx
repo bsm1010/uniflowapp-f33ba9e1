@@ -33,7 +33,7 @@ export function PhoneLottie() {
   }, [visible, animationData]);
 
   return (
-    <div ref={ref} className="w-full overflow-hidden contain-paint" style={{ minHeight: 200 }}>
+    <div ref={ref} className="w-full overflow-hidden" style={{ minHeight: 200 }}>
       {animationData && (
         <Lottie
           lottieRef={lottieRef}

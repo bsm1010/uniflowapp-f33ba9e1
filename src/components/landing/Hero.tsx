@@ -3,15 +3,6 @@ import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, Store, Package, BarChart3 } from "lucide-react";
-import { lazy, Suspense } from "react";
-import heroScene from "@/assets/Scene_clean.json";
-
-const Lottie = lazy(() =>
-  import("lottie-react").then((m) => {
-    const Cmp: any = (m as any).default?.default ?? (m as any).default ?? (m as any);
-    return { default: Cmp };
-  }),
-) as any;
 
 export function Hero() {
   const { t } = useTranslation();

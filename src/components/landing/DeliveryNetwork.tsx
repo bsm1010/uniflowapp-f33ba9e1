@@ -47,42 +47,12 @@ export function DeliveryNetwork() {
         </div>
 
         <div className="relative mx-auto max-w-3xl" style={{ height: 320 }}>
+          {/* SVG lines */}
           <svg
             viewBox="0 0 100 40"
             className="absolute inset-0 w-full h-full"
             preserveAspectRatio="xMidYMid meet"
           >
-            {companies.map((c, i) => {
-              const delay = i * 0.4;
-              return (
-                <g key={c.name}>
-                  <line
-                    x1="50"
-                    y1="20"
-                    x2={c.x}
-                    y2={c.y + 10}
-                    stroke="url(#lineGrad)"
-                    strokeWidth="0.3"
-                    strokeLinecap="round"
-                    strokeDasharray="60"
-                    strokeDashoffset={inView ? 0 : 60}
-                    style={{
-                      transition: `stroke-dashoffset 1.2s ease ${delay}s`,
-                    }}
-                  />
-                  <circle
-                    cx={c.x}
-                    cy={c.y + 10}
-                    r={inView ? 1.2 : 0}
-                    fill={c.color}
-                    opacity={0.6}
-                    style={{
-                      transition: `r 0.4s ease ${delay + 0.8}s`,
-                    }}
-                  />
-                </g>
-              );
-            })}
             <defs>
               <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.6" />
@@ -90,29 +60,55 @@ export function DeliveryNetwork() {
                 <stop offset="100%" stopColor="#06b6d4" stopOpacity="0.6" />
               </linearGradient>
             </defs>
+            {companies.map((c, i) => (
+              <g key={c.name}>
+                <line
+                  x1="50"
+                  y1="20"
+                  x2={c.x}
+                  y2={c.y + 10}
+                  stroke="url(#lineGrad)"
+                  strokeWidth="0.3"
+                  strokeLinecap="round"
+                  strokeDasharray="60"
+                  strokeDashoffset={inView ? 0 : 60}
+                  style={{ transition: `stroke-dashoffset 1.2s ease ${i * 0.4}s` }}
+                />
+                <circle
+                  cx={c.x}
+                  cy={c.y + 10}
+                  r={inView ? 1.2 : 0}
+                  fill={c.color}
+                  opacity={0.6}
+                  style={{ transition: `r 0.4s ease ${i * 0.4 + 0.8}s` }}
+                />
+              </g>
+            ))}
           </svg>
 
-          <div
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10"
-          >
+          {/* Center icon */}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
             <div className={`relative flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-2xl shadow-violet-500/30 transition-all duration-700 ${inView ? "scale-100 opacity-100" : "scale-75 opacity-0"}`}>
               <Truck className="h-9 w-9 text-white" />
-              <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 blur-xl animate-pulse" />
             </div>
           </div>
 
+          {/* Delivery company logos */}
           {companies.map((c, i) => {
-            const delay = i * 0.3;
-            const topClass = i === 0 ? "top-[5%]" : i === 1 ? "top-0" : "top-[5%]";
-            const leftClass = i === 0 ? "left-0" : i === 1 ? "left-1/2 -translate-x-1/2" : "right-0";
+            const posClass =
+              i === 0
+                ? "left-0 top-[5%]"
+                : i === 1
+                  ? "left-1/2 -translate-x-1/2 top-0"
+                  : "right-0 top-[5%]";
             return (
               <div
                 key={c.name}
-                className={`absolute ${topClass} ${leftClass} z-10 transition-all duration-700 ${inView ? "translate-y-0 opacity-100" : "-translate-y-4 opacity-0"}`}
-                style={{ transitionDelay: `${delay + 0.5}s` }}
+                className={`absolute ${posClass} z-10 transition-all duration-700 ${inView ? "translate-y-0 opacity-100" : "-translate-y-4 opacity-0"}`}
+                style={{ transitionDelay: `${i * 0.3 + 0.5}s` }}
               >
                 <div className="flex flex-col items-center gap-2">
-                  <div className="w-16 h-16 rounded-2xl border border-border/60 bg-card/80 backdrop-blur-xl shadow-xl flex items-center justify-center p-2 hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-300">
+                  <div className="w-16 h-16 rounded-2xl border border-border/60 bg-card/80 backdrop-blur-xl shadow-xl flex items-center justify-center p-2">
                     <img
                       src={c.logo}
                       alt={c.name}
@@ -125,51 +121,8 @@ export function DeliveryNetwork() {
               </div>
             );
           })}
-
-          {[0, 1, 2].map((i) => {
-            const delay = i * 0.6;
-            return (
-              <div
-                key={`packet-${i}`}
-                className={`absolute z-20 ${inView ? "opacity-100" : "opacity-0"}`}
-                style={{
-                  left: "50%",
-                  top: "50%",
-                  transition: "opacity 0.3s ease",
-                  transitionDelay: `${delay + 1.2}s`,
-                }}
-              >
-                <div
-                  className="w-2 h-2 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 shadow-lg shadow-violet-500/50"
-                  style={{
-                    animation: inView ? `packet-${i} 2.5s ease-in-out infinite ${delay + 1.5}s` : "none",
-                  }}
-                />
-              </div>
-            );
-          })}
         </div>
       </div>
-
-      <style>{`
-        ${[0, 1, 2].map((i) => {
-          const targets = [
-            { x: "-50%", y: "-750%" },
-            { x: "0%", y: "-500%" },
-            { x: "50%", y: "-750%" },
-          ];
-          const t = targets[i];
-          return `
-            @keyframes packet-${i} {
-              0% { transform: translate(0, 0) scale(1); opacity: 0; }
-              15% { opacity: 1; }
-              50% { transform: translate(${t.x}, ${t.y}) scale(0.7); opacity: 1; }
-              85% { opacity: 1; }
-              100% { transform: translate(0, 0) scale(1); opacity: 0; }
-            }
-          `;
-        }).join("\n")}
-      `}</style>
     </section>
   );
 }
