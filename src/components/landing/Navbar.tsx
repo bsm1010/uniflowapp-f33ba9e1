@@ -8,6 +8,7 @@ import { FennecyLogo } from "@/components/ui/fennecy-logo";
 import { cn } from "@/lib/utils";
 
 function DarkModeToggle() {
+  const { t } = useTranslation();
   const [isDark, setIsDark] = useState(false);
   useEffect(() => {
     let dark = false;
@@ -37,7 +38,7 @@ function DarkModeToggle() {
       size="icon"
       onClick={toggle}
       className="h-9 w-9 rounded-xl text-muted-foreground hover:text-foreground"
-      aria-label="Toggle dark mode"
+      aria-label={t("nav.toggleDark")}
     >
       {isDark ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4" />}
     </Button>
@@ -67,7 +68,7 @@ export function Navbar() {
     { label: t("nav.how"), href: "#how" },
     { label: t("nav.pricing"), href: "#pricing" },
     { label: t("nav.testimonials"), href: "#testimonials" },
-    { label: "Themes", href: "/themes", isRoute: true },
+    { label: t("nav.themes"), href: "/themes", isRoute: true },
   ];
 
   return (
@@ -132,7 +133,7 @@ export function Navbar() {
               size="icon"
               className="md:hidden h-9 w-9 rounded-xl text-muted-foreground"
               onClick={() => setMobileOpen(!mobileOpen)}
-              aria-label="Toggle menu"
+              aria-label={t("nav.toggleMenu")}
             >
               {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </Button>

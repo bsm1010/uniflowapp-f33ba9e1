@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, Store, Package, BarChart3 } from "lucide-react";
 import { lazy, Suspense } from "react";
@@ -13,6 +14,7 @@ const Lottie = lazy(() =>
 ) as any;
 
 export function Hero() {
+  const { t } = useTranslation();
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
       {/* Animated mesh gradient background */}
@@ -41,7 +43,7 @@ export function Hero() {
           className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/60 backdrop-blur-xl px-4 py-2 text-sm text-muted-foreground shadow-lg"
         >
           <Sparkles className="h-4 w-4 text-violet-500" />
-          All-in-one e-commerce platform
+          {t("hero.badge")}
         </motion.div>
 
         <motion.h1
@@ -50,10 +52,10 @@ export function Hero() {
           transition={{ duration: 0.7, delay: 0.1 }}
           className="mt-8 text-5xl sm:text-6xl md:text-8xl font-bold tracking-tight leading-[1.05]"
         >
-          Build your store
+          {t("hero.titleA")}
           <br />
           <span className="bg-gradient-to-r from-violet-600 via-fuchsia-500 to-cyan-500 bg-clip-text text-transparent">
-            in minutes
+            {t("hero.titleB")}
           </span>
         </motion.h1>
 
@@ -63,8 +65,7 @@ export function Hero() {
           transition={{ duration: 0.6, delay: 0.25 }}
           className="mx-auto mt-6 max-w-2xl text-lg sm:text-xl text-muted-foreground leading-relaxed"
         >
-          Manage your entire e-commerce business from a single, intuitive dashboard — products,
-          orders, shipping, marketing, and more.
+          {t("hero.subtitle")}
         </motion.p>
 
         <motion.div
@@ -79,7 +80,7 @@ export function Hero() {
             className="bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white hover:from-violet-500 hover:to-fuchsia-500 shadow-lg shadow-violet-500/25 px-8 h-14 text-base font-semibold rounded-2xl group"
           >
             <Link to="/signup">
-              Get started free
+              {t("hero.getStarted")}
               <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
             </Link>
           </Button>
@@ -89,7 +90,7 @@ export function Hero() {
             asChild
             className="border-border bg-background/50 hover:bg-accent px-8 h-14 text-base rounded-2xl"
           >
-            <a href="#features">See features</a>
+            <a href="#features">{t("hero.seeFeatures")}</a>
           </Button>
         </motion.div>
 
@@ -110,10 +111,10 @@ export function Hero() {
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {[
-                  { icon: Store, label: "Active Stores", value: "3", color: "from-violet-500 to-fuchsia-500" },
-                  { icon: Package, label: "Products", value: "248", color: "from-cyan-500 to-blue-500" },
-                  { icon: BarChart3, label: "Revenue", value: "12.4K", color: "from-amber-500 to-orange-500" },
-                  { icon: ArrowRight, label: "Orders Today", value: "36", color: "from-green-500 to-emerald-500" },
+                  { icon: Store, label: t("hero.statStores"), value: "3", color: "from-violet-500 to-fuchsia-500" },
+                  { icon: Package, label: t("hero.statProducts"), value: "248", color: "from-cyan-500 to-blue-500" },
+                  { icon: BarChart3, label: t("hero.statRevenue"), value: "12.4K", color: "from-amber-500 to-orange-500" },
+                  { icon: ArrowRight, label: t("hero.statOrders"), value: "36", color: "from-green-500 to-emerald-500" },
                 ].map((stat, i) => (
                   <motion.div
                     key={stat.label}
@@ -139,8 +140,8 @@ export function Hero() {
               transition={{ duration: 0.6, delay: 1 }}
               className="hidden sm:block absolute -left-6 top-1/4 rounded-2xl border border-border/60 bg-card/80 backdrop-blur-xl px-4 py-3 shadow-xl"
             >
-              <div className="text-xs text-muted-foreground">New order</div>
-              <div className="text-sm font-semibold text-foreground">+2,450 DA</div>
+              <div className="text-xs text-muted-foreground">{t("hero.newOrder")}</div>
+              <div className="text-sm font-semibold text-foreground">{t("hero.orderValue")}</div>
             </motion.div>
             <motion.div
               initial={{ opacity: 0, x: 20 }}
@@ -148,8 +149,8 @@ export function Hero() {
               transition={{ duration: 0.6, delay: 1.2 }}
               className="hidden sm:block absolute -right-6 bottom-1/4 rounded-2xl border border-border/60 bg-card/80 backdrop-blur-xl px-4 py-3 shadow-xl"
             >
-              <div className="text-xs text-muted-foreground">Growth</div>
-              <div className="text-sm font-semibold text-green-500">+32% this week</div>
+              <div className="text-xs text-muted-foreground">{t("hero.growth")}</div>
+              <div className="text-sm font-semibold text-green-500">{t("hero.growthValue")}</div>
             </motion.div>
           </div>
         </motion.div>

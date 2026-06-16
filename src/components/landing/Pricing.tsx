@@ -21,91 +21,47 @@ export function Pricing() {
   const tiers: Tier[] = [
     {
       key: "beginner",
-      name: "Beginner",
-      desc: "Everything you need to launch your first store.",
+      name: t("pricing.beginner.name"),
+      desc: t("pricing.beginner.desc"),
       price: "2,500",
-      period: "DA / month",
-      cta: "Start Beginner",
+      period: t("pricing.monthPeriod"),
+      cta: t("pricing.beginner.cta"),
       style: "beginner",
       highlight: false,
-      features: [
-        "250 credits",
-        "1 online store",
-        "300 orders",
-        "SEO Optimizer",
-        "Abandoned Cart Recovery",
-        "Chatbot",
-        "Analytics Integration",
-        "1 domain",
-        "All delivery services",
-        "10 free themes",
-        "24/7 support chat",
-      ],
+      features: t("pricing.beginner.f", { returnObjects: true }) as string[],
     },
     {
       key: "pro",
-      name: "Pro",
-      desc: "For growing brands ready to scale with AI.",
+      name: t("pricing.pro.name"),
+      desc: t("pricing.pro.desc"),
       price: "4,900",
-      period: "DA / month",
-      cta: "Start Pro",
+      period: t("pricing.monthPeriod"),
+      cta: t("pricing.pro.cta"),
       style: "pro",
       highlight: true,
-      features: [
-        "600 credits",
-        "2 online stores",
-        "700 orders",
-        "AI Product Descriptions",
-        "AI Image Enhancer",
-        "AI Ad Generator",
-        "SEO Optimizer",
-        "Abandoned Cart Recovery",
-        "Chatbot",
-        "Analytics Integration",
-        "Developer access",
-        "2 domains",
-        "All delivery services",
-        "All premium themes",
-        "24/7 support chat",
-      ],
+      features: t("pricing.pro.f", { returnObjects: true }) as string[],
     },
     {
       key: "business",
-      name: "Business",
-      desc: "Advanced tools for serious sellers.",
+      name: t("pricing.business.name"),
+      desc: t("pricing.business.desc"),
       price: "9,000",
-      period: "DA / month",
-      cta: "Choose Business",
+      period: t("pricing.monthPeriod"),
+      cta: t("pricing.business.cta"),
       style: "business",
       highlight: false,
-      features: [
-        "1,200 credits",
-        "10 online stores",
-        "3,000 orders",
-        "Email Marketing",
-        "All AI apps",
-        "All Pro tools",
-        "Developer access",
-        "24/7 support chat",
-      ],
+      features: t("pricing.business.f", { returnObjects: true }) as string[],
     },
     {
       key: "agency",
-      name: "Agency",
-      desc: "Unlimited power for agencies and large teams.",
+      name: t("pricing.agency.name"),
+      desc: t("pricing.agency.desc"),
       price: "29,990",
-      period: "DA / month",
-      cta: "Contact sales",
+      period: t("pricing.monthPeriod"),
+      cta: t("pricing.agency.cta"),
       style: "agency",
       highlight: false,
-      features: [
-        "5,000 credits",
-        "Unlimited online stores",
-        "Unlimited orders",
-        "Everything in Business",
-        "100 customized boxes + 100 customized package bags",
-        "24/7 support chat",
-      ],
+      features: t("pricing.agency.f", { returnObjects: true }) as string[],
     },
   ];
 
@@ -153,19 +109,19 @@ export function Pricing() {
       case "pro":
         return (
           <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white text-xs font-semibold px-4 py-1 shadow-lg shadow-violet-500/30 whitespace-nowrap">
-            Most popular
+            {t("pricing.popular")}
           </div>
         );
       case "business":
         return (
           <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-semibold px-4 py-1 whitespace-nowrap">
-            Best value
+            {t("pricing.bestValue")}
           </div>
         );
       case "agency":
         return (
           <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-fuchsia-500 via-violet-500 to-cyan-500 text-white text-xs font-semibold px-4 py-1 whitespace-nowrap">
-            Exclusive
+            {t("pricing.exclusive")}
           </div>
         );
       default:
@@ -205,11 +161,11 @@ export function Pricing() {
             transition={{ delay: 0.1 }}
             className="mt-5 text-3xl md:text-5xl font-bold tracking-tight"
           >
-            Simple,{" "}
+            {t("pricing.titleA")}{" "}
             <span className="bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
-              transparent
+              {t("pricing.titleB")}
             </span>{" "}
-            pricing
+            {t("pricing.titleC")}
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 15 }}
@@ -218,7 +174,7 @@ export function Pricing() {
             transition={{ delay: 0.15 }}
             className="mt-4 text-muted-foreground text-lg"
           >
-            Start free, upgrade when you grow. No hidden fees, ever.
+            {t("pricing.subtitle")}
           </motion.p>
         </div>
 
@@ -233,22 +189,22 @@ export function Pricing() {
           >
             <div>
               <div className="flex items-center gap-3">
-                <span className="text-xl font-bold">Free Trial</span>
+                <span className="text-xl font-bold">{t("pricing.trial.title")}</span>
                 <span className="text-xs bg-muted text-muted-foreground px-3 py-1 rounded-full border border-border/60">
-                  No credit card
+                  {t("pricing.trial.noCard")}
                 </span>
               </div>
               <p className="text-sm text-muted-foreground mt-2">
-                Try Fennecly with 20 free credits — no commitment.
+                {t("pricing.trial.desc")}
               </p>
             </div>
             <div className="flex items-center gap-8">
               <div className="flex items-baseline gap-1.5">
                 <span className="text-3xl font-bold">20</span>
-                <span className="text-muted-foreground text-sm">credits</span>
+                <span className="text-muted-foreground text-sm">{t("pricing.trial.credits")}</span>
               </div>
               <Button variant="outline" className="rounded-xl px-6">
-                Start free
+                {t("pricing.trial.cta")}
               </Button>
             </div>
           </motion.div>

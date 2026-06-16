@@ -5,15 +5,26 @@
     "pricing": "Tarifs",
     "testimonials": "Avis clients",
     "signIn": "Connexion",
-    "getStarted": "Démarrer"
+    "getStarted": "Démarrer",
+    "themes": "Thèmes",
+    "toggleDark": "Basculer le mode sombre",
+    "toggleMenu": "Basculer le menu"
   },
   "hero": {
-    "badge": "Nouveau — Création de boutique par IA",
-    "titleA": "Lancez votre boutique en ligne",
+    "badge": "Plateforme e-commerce tout-en-un",
+    "titleA": "Créez votre boutique",
     "titleB": "en quelques minutes",
-    "subtitle": "Créez, personnalisez et lancez votre activité e-commerce sans une seule ligne de code. Tout pour vendre en ligne, réuni au même endroit.",
+    "subtitle": "Gérez toute votre activité e-commerce depuis un tableau de bord unique et intuitif — produits, commandes, livraison, marketing et plus encore.",
     "getStarted": "Démarrer gratuitement",
-    "viewDemo": "Voir la démo"
+    "seeFeatures": "Voir les fonctionnalités",
+    "statStores": "Boutiques actives",
+    "statProducts": "Produits",
+    "statRevenue": "Chiffre d'affaires",
+    "statOrders": "Commandes aujourd'hui",
+    "newOrder": "Nouvelle commande",
+    "orderValue": "+2 450 DA",
+    "growth": "Croissance",
+    "growthValue": "+32 % cette semaine"
   },
   "banner": {
     "kicker": "Commerce tout-en-un",
@@ -97,44 +108,69 @@
     "titleC": "et sans surprise",
     "subtitle": "Démarrez gratuitement, évoluez à votre rythme. Aucun frais caché.",
     "popular": "Le plus populaire",
-    "forever": "/à vie",
-    "month": "/mois",
+    "bestValue": "Meilleure valeur",
+    "exclusive": "Exclusif",
+    "monthPeriod": "DA / mois",
+    "trial": {
+      "title": "Essai gratuit",
+      "noCard": "Sans carte bancaire",
+      "desc": "Essayez Fennecly avec 20 crédits gratuits — sans engagement.",
+      "credits": "crédits",
+      "cta": "Démarrer gratuitement"
+    },
+    "beginner": {
+      "name": "Débutant",
+      "desc": "Tout ce qu'il faut pour lancer votre première boutique.",
+      "cta": "Commencer Débutant",
+      "f": ["250 crédits", "1 boutique en ligne", "300 commandes", "Optimiseur SEO", "Récupération de panier abandonné", "Chatbot", "Intégration analytique", "1 domaine", "Tous les services de livraison", "10 thèmes gratuits", "Support chat 24/7"]
+    },
+    "pro": {
+      "name": "Pro",
+      "desc": "Pour les marques en croissance prêtes à scaler avec l'IA.",
+      "cta": "Commencer Pro",
+      "f": ["600 crédits", "2 boutiques en ligne", "700 commandes", "Descriptions IA", "Améliorateur d'image IA", "Générateur d'annonces IA", "Optimiseur SEO", "Récupération de panier abandonné", "Chatbot", "Intégration analytique", "Accès développeur", "2 domaines", "Tous les services de livraison", "Tous les thèmes premium", "Support chat 24/7"]
+    },
+    "business": {
+      "name": "Business",
+      "desc": "Outils avancés pour les vendeurs aguerris.",
+      "cta": "Choisir Business",
+      "f": ["1 200 crédits", "10 boutiques en ligne", "3 000 commandes", "E-mail marketing", "Toutes les apps IA", "Tous les outils Pro", "Accès développeur", "Support chat 24/7"]
+    },
+    "agency": {
+      "name": "Agence",
+      "desc": "Puissance illimitée pour les agences et les grandes équipes.",
+      "cta": "Contacter les ventes",
+      "f": ["5 000 crédits", "Boutiques en ligne illimitées", "Commandes illimitées", "Tout le plan Business", "100 boîtes personnalisées + 100 sachets personnalisés", "Support chat 24/7"]
+    },
     "free": {
       "name": "Gratuit",
       "desc": "Idéal pour valider votre idée.",
       "cta": "Démarrer gratuitement",
       "f": ["1 boutique", "Jusqu'à 10 produits", "Thèmes essentiels", "Support communautaire"]
-    },
-    "pro": {
-      "name": "Pro",
-      "desc": "Pour les activités en pleine croissance.",
-      "cta": "Essayer Pro",
-      "f": [
-        "Produits illimités",
-        "Tous les thèmes premium",
-        "Domaine personnalisé",
-        "Analyses avancées",
-        "Support prioritaire"
-      ]
-    },
-    "business": {
-      "name": "Business",
-      "desc": "Outils avancés pour les vendeurs aguerris.",
-      "cta": "Contacter le service commercial",
-      "f": [
-        "Tout le plan Pro",
-        "Multi-boutique",
-        "Accès API",
-        "Responsable de compte dédié",
-        "SLA 99,99 %"
-      ]
     }
   },
   "testimonials": {
     "kicker": "Avis clients",
     "titleA": "Plébiscité par",
     "titleB": "10 000+",
-    "titleC": "entrepreneurs"
+    "titleC": "entrepreneurs",
+    "items": {
+      "sara": {
+        "quote": "Fennecly a mis ma boutique en ligne en un seul week-end. L'éditeur glisser-déposer est vraiment magique.",
+        "name": "Sara Mansour",
+        "role": "Fondatrice, Maison Lila"
+      },
+      "james": {
+        "quote": "Nous avons migré depuis Shopify et le chiffre d'affaires a bondi de 32 % dès le premier trimestre. Les analyses seules en valent la peine.",
+        "name": "James Okafor",
+        "role": "PDG, Northwind Goods"
+      },
+      "lina": {
+        "quote": "Des thèmes magnifiques, un paiement rapide et un support incroyable. C'est la plateforme que j'aurais voulu avoir il y a des années.",
+        "name": "Lina Haddad",
+        "role": "Directrice créative, Olive & Oak"
+      }
+    }
   },
   "cta": {
     "title": "Prêt à lancer votre boutique ?",
@@ -148,7 +184,35 @@
     "company": "Entreprise",
     "legal": "Mentions légales",
     "rights": "Tous droits réservés.",
-    "made": "Conçu avec passion pour les entrepreneurs du monde entier."
+    "made": "Conçu avec passion pour les entrepreneurs du monde entier.",
+    "features": "Fonctionnalités",
+    "pricing": "Tarifs",
+    "themes": "Thèmes",
+    "integrations": "Intégrations",
+    "about": "À propos",
+    "contact": "Contact",
+    "careers": "Carrières",
+    "blog": "Blog",
+    "privacy": "Confidentialité",
+    "terms": "Conditions",
+    "security": "Sécurité",
+    "cookies": "Cookies",
+    "socialTwitter": "Twitter",
+    "socialGithub": "GitHub",
+    "socialLinkedin": "LinkedIn",
+    "socialInstagram": "Instagram"
+  },
+  "windows": {
+    "badge": "Nouveau · Application Bureau",
+    "title": "Fennecly pour",
+    "titleHighlight": "Windows",
+    "desc": "Profitez de l'expérience bureau complète — plus rapide, plus fluide et toujours disponible. Gérez votre boutique nativement sur Windows avec accès hors ligne et lancement instantané.",
+    "cta": "Télécharger pour Windows",
+    "info": "Gratuit · Windows 10/11 · ~80 Mo",
+    "faster": "Plus rapide",
+    "secure": "Sécurisé",
+    "nativeUi": "Interface native",
+    "alt": "Fennecly pour Windows — boîte de l'application bureau"
   },
   "auth": {
     "login": {

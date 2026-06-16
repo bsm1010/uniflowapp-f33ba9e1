@@ -5,15 +5,26 @@
     "pricing": "Pricing",
     "testimonials": "Testimonials",
     "signIn": "Sign in",
-    "getStarted": "Get Started"
+    "getStarted": "Get Started",
+    "themes": "Themes",
+    "toggleDark": "Toggle dark mode",
+    "toggleMenu": "Toggle menu"
   },
   "hero": {
-    "badge": "New — AI-powered store generation",
-    "titleA": "Build Your Online Store",
-    "titleB": "in Minutes",
-    "subtitle": "Create, customize, and launch your e-commerce business without code. Everything you need to sell online — in one beautifully simple platform.",
-    "getStarted": "Get Started",
-    "viewDemo": "View Demo"
+    "badge": "All-in-one e-commerce platform",
+    "titleA": "Build your store",
+    "titleB": "in minutes",
+    "subtitle": "Manage your entire e-commerce business from a single, intuitive dashboard — products, orders, shipping, marketing, and more.",
+    "getStarted": "Get started free",
+    "seeFeatures": "See features",
+    "statStores": "Active Stores",
+    "statProducts": "Products",
+    "statRevenue": "Revenue",
+    "statOrders": "Orders Today",
+    "newOrder": "New order",
+    "orderValue": "+2,450 DA",
+    "growth": "Growth",
+    "growthValue": "+32% this week"
   },
   "banner": {
     "kicker": "All-in-one commerce",
@@ -97,38 +108,69 @@
     "titleC": "pricing",
     "subtitle": "Start free, upgrade when you grow. No hidden fees, ever.",
     "popular": "Most popular",
-    "forever": "/forever",
-    "month": "/month",
+    "bestValue": "Best value",
+    "exclusive": "Exclusive",
+    "monthPeriod": "DA / month",
+    "trial": {
+      "title": "Free Trial",
+      "noCard": "No credit card",
+      "desc": "Try Fennecly with 20 free credits — no commitment.",
+      "credits": "credits",
+      "cta": "Start free"
+    },
+    "beginner": {
+      "name": "Beginner",
+      "desc": "Everything you need to launch your first store.",
+      "cta": "Start Beginner",
+      "f": ["250 credits", "1 online store", "300 orders", "SEO Optimizer", "Abandoned Cart Recovery", "Chatbot", "Analytics Integration", "1 domain", "All delivery services", "10 free themes", "24/7 support chat"]
+    },
+    "pro": {
+      "name": "Pro",
+      "desc": "For growing brands ready to scale with AI.",
+      "cta": "Start Pro",
+      "f": ["600 credits", "2 online stores", "700 orders", "AI Product Descriptions", "AI Image Enhancer", "AI Ad Generator", "SEO Optimizer", "Abandoned Cart Recovery", "Chatbot", "Analytics Integration", "Developer access", "2 domains", "All delivery services", "All premium themes", "24/7 support chat"]
+    },
+    "business": {
+      "name": "Business",
+      "desc": "Advanced tools for serious sellers.",
+      "cta": "Choose Business",
+      "f": ["1,200 credits", "10 online stores", "3,000 orders", "Email Marketing", "All AI apps", "All Pro tools", "Developer access", "24/7 support chat"]
+    },
+    "agency": {
+      "name": "Agency",
+      "desc": "Unlimited power for agencies and large teams.",
+      "cta": "Contact sales",
+      "f": ["5,000 credits", "Unlimited online stores", "Unlimited orders", "Everything in Business", "100 customized boxes + 100 customized package bags", "24/7 support chat"]
+    },
     "free": {
       "name": "Free",
       "desc": "Perfect for testing your idea.",
       "cta": "Start free",
       "f": ["1 store", "Up to 10 products", "Basic themes", "Community support"]
-    },
-    "pro": {
-      "name": "Pro",
-      "desc": "For growing businesses ready to scale.",
-      "cta": "Start Pro trial",
-      "f": [
-        "Unlimited products",
-        "All premium themes",
-        "Custom domain",
-        "Advanced analytics",
-        "Priority support"
-      ]
-    },
-    "business": {
-      "name": "Business",
-      "desc": "Advanced tools for serious sellers.",
-      "cta": "Contact sales",
-      "f": ["Everything in Pro", "Multi-store", "API access", "Dedicated manager", "99.99% SLA"]
     }
   },
   "testimonials": {
     "kicker": "Testimonials",
     "titleA": "Loved by",
     "titleB": "10,000+",
-    "titleC": "founders"
+    "titleC": "founders",
+    "items": {
+      "sara": {
+        "quote": "Fennecly got my boutique online in a single weekend. The drag-and-drop builder is genuinely magical.",
+        "name": "Sara Mansour",
+        "role": "Founder, Maison Lila"
+      },
+      "james": {
+        "quote": "We migrated from Shopify and revenue jumped 32% in the first quarter. The analytics alone are worth it.",
+        "name": "James Okafor",
+        "role": "CEO, Northwind Goods"
+      },
+      "lina": {
+        "quote": "Beautiful themes, fast checkout, and incredible support. It's the platform I wish I had years ago.",
+        "name": "Lina Haddad",
+        "role": "Creative Director, Olive & Oak"
+      }
+    }
   },
   "cta": {
     "title": "Ready to build your store?",
@@ -142,7 +184,35 @@
     "company": "Company",
     "legal": "Legal",
     "rights": "All rights reserved.",
-    "made": "Made with care for founders worldwide."
+    "made": "Made with care for founders worldwide.",
+    "features": "Features",
+    "pricing": "Pricing",
+    "themes": "Themes",
+    "integrations": "Integrations",
+    "about": "About",
+    "contact": "Contact",
+    "careers": "Careers",
+    "blog": "Blog",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "security": "Security",
+    "cookies": "Cookies",
+    "socialTwitter": "Twitter",
+    "socialGithub": "GitHub",
+    "socialLinkedin": "LinkedIn",
+    "socialInstagram": "Instagram"
+  },
+  "windows": {
+    "badge": "New · Desktop App",
+    "title": "Fennecly for",
+    "titleHighlight": "Windows",
+    "desc": "Get the full desktop experience — faster, smoother, and always available. Manage your store natively on Windows with offline access and instant launch.",
+    "cta": "Download for Windows",
+    "info": "Free · Windows 10/11 · ~80 MB",
+    "faster": "Faster",
+    "secure": "Secure",
+    "nativeUi": "Native UI",
+    "alt": "Fennecly for Windows desktop app box"
   },
   "auth": {
     "login": {

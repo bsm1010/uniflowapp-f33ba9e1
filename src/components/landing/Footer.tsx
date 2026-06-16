@@ -1,19 +1,20 @@
 import { useTranslation } from "react-i18next";
 import { Twitter, Github, Linkedin, Instagram } from "lucide-react";
 
-const socials = [
-  { Icon: Twitter, href: "#", label: "Twitter" },
-  { Icon: Github, href: "#", label: "GitHub" },
-  { Icon: Linkedin, href: "#", label: "LinkedIn" },
-  { Icon: Instagram, href: "#", label: "Instagram" },
-];
-
 export function Footer() {
   const { t } = useTranslation();
+
+  const socials = [
+    { Icon: Twitter, href: "#", label: t("footer.socialTwitter") },
+    { Icon: Github, href: "#", label: t("footer.socialGithub") },
+    { Icon: Linkedin, href: "#", label: t("footer.socialLinkedin") },
+    { Icon: Instagram, href: "#", label: t("footer.socialInstagram") },
+  ];
+
   const sections = [
-    { title: t("footer.product"), links: ["Features", "Pricing", "Themes", "Integrations"] },
-    { title: t("footer.company"), links: ["About", "Contact", "Careers", "Blog"] },
-    { title: t("footer.legal"), links: ["Privacy", "Terms", "Security", "Cookies"] },
+    { title: t("footer.product"), links: [t("footer.features"), t("footer.pricing"), t("footer.themes"), t("footer.integrations")] },
+    { title: t("footer.company"), links: [t("footer.about"), t("footer.contact"), t("footer.careers"), t("footer.blog")] },
+    { title: t("footer.legal"), links: [t("footer.privacy"), t("footer.terms"), t("footer.security"), t("footer.cookies")] },
   ];
 
   return (

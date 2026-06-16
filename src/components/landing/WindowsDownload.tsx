@@ -1,4 +1,5 @@
 import { Download, Zap, Shield, Monitor } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import fenneclyBox from "@/assets/fennecly-windows-box.png";
 
@@ -6,6 +7,7 @@ const DOWNLOAD_URL =
   "https://github.com/bsm1010/FenneclySetup/releases/download/untagged-72b1a4a0dfc00bb66b82/FenneclySetup.exe";
 
 export function WindowsDownload() {
+  const { t } = useTranslation();
   return (
     <section className="py-16 md:py-24">
       <div className="mx-auto max-w-6xl px-4">
@@ -25,17 +27,16 @@ export function WindowsDownload() {
             {/* Left: copy */}
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white backdrop-blur">
-                <Sparkle /> New · Desktop App
+                <Sparkle /> {t("windows.badge")}
               </div>
               <h2 className="mt-5 text-4xl md:text-5xl font-bold font-display tracking-tight text-white">
-                Fennecly for{" "}
+                {t("windows.title")}{" "}
                 <span className="bg-gradient-to-r from-fuchsia-300 via-purple-200 to-indigo-200 bg-clip-text text-transparent">
-                  Windows
+                  {t("windows.titleHighlight")}
                 </span>
               </h2>
               <p className="mt-4 max-w-xl text-base md:text-lg text-purple-100/80 leading-relaxed">
-                Get the full desktop experience — faster, smoother, and always available. Manage
-                your store natively on Windows with offline access and instant launch.
+                {t("windows.desc")}
               </p>
 
               <div className="mt-7 flex flex-col sm:flex-row items-start sm:items-center gap-3">
@@ -47,16 +48,16 @@ export function WindowsDownload() {
                   <a href={DOWNLOAD_URL} download>
                     <WindowsLogo className="h-5 w-5" />
                     <Download className="h-5 w-5 transition-transform group-hover:translate-y-0.5" />
-                    Download for Windows
+                    {t("windows.cta")}
                   </a>
                 </Button>
-                <span className="text-xs text-purple-200/70">Free · Windows 10/11 · ~80 MB</span>
+                <span className="text-xs text-purple-200/70">{t("windows.info")}</span>
               </div>
 
               <div className="mt-8 grid grid-cols-3 gap-4 max-w-md">
-                <Feature icon={Zap} label="Faster" />
-                <Feature icon={Shield} label="Secure" />
-                <Feature icon={Monitor} label="Native UI" />
+                <Feature icon={Zap} label={t("windows.faster")} />
+                <Feature icon={Shield} label={t("windows.secure")} />
+                <Feature icon={Monitor} label={t("windows.nativeUi")} />
               </div>
             </div>
 
@@ -66,7 +67,7 @@ export function WindowsDownload() {
                 <div className="pointer-events-none absolute inset-0 -z-10 rounded-[2.5rem] bg-gradient-to-br from-primary/30 via-purple-500/20 to-blue-500/30 blur-3xl" />
                 <img
                   src={fenneclyBox}
-                  alt="Fennecly for Windows desktop app box"
+                  alt={t("windows.alt")}
                   loading="eager"
                   decoding="sync"
                   fetchPriority="high"

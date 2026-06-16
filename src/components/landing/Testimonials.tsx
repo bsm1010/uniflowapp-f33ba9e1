@@ -2,32 +2,29 @@ import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { Star, Quote } from "lucide-react";
 
-const testimonials = [
-  {
-    quote:
-      "Fennecly got my boutique online in a single weekend. The drag-and-drop builder is genuinely magical.",
-    name: "Sara Mansour",
-    role: "Founder, Maison Lila",
-    accent: "from-violet-400 to-fuchsia-400",
-  },
-  {
-    quote:
-      "We migrated from Shopify and revenue jumped 32% in the first quarter. The analytics alone are worth it.",
-    name: "James Okafor",
-    role: "CEO, Northwind Goods",
-    accent: "from-cyan-400 to-blue-400",
-  },
-  {
-    quote:
-      "Beautiful themes, fast checkout, and incredible support. It's the platform I wish I had years ago.",
-    name: "Lina Haddad",
-    role: "Creative Director, Olive & Oak",
-    accent: "from-amber-400 to-orange-400",
-  },
-];
-
 export function Testimonials() {
   const { t } = useTranslation();
+
+  const testimonials = [
+    {
+      quote: t("testimonials.items.sara.quote"),
+      name: t("testimonials.items.sara.name"),
+      role: t("testimonials.items.sara.role"),
+      accent: "from-violet-400 to-fuchsia-400",
+    },
+    {
+      quote: t("testimonials.items.james.quote"),
+      name: t("testimonials.items.james.name"),
+      role: t("testimonials.items.james.role"),
+      accent: "from-cyan-400 to-blue-400",
+    },
+    {
+      quote: t("testimonials.items.lina.quote"),
+      name: t("testimonials.items.lina.name"),
+      role: t("testimonials.items.lina.role"),
+      accent: "from-amber-400 to-orange-400",
+    },
+  ];
   return (
     <section id="testimonials" className="py-20 md:py-28 relative">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-violet-500/5 to-transparent pointer-events-none" />
