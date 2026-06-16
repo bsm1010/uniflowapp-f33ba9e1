@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Truck } from "lucide-react";
 import zrLogo from "@/assets/zrexpress-logo.png";
 import yalidineLogo from "@/assets/yalidine-logo.png";
-import maystroLogo from "@/assets/maystro-logo.png";
+import maystroLogo from "@/assets/maystro-logo.svg";
 
 const companies = [
   { name: "ZRexpress", logo: zrLogo, color: "#e11d48", x: 10, y: 20 },
