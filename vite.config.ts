@@ -23,6 +23,18 @@ export default defineConfig({
     },
     build: {
       target: "es2022",
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            "vendor-react": ["react", "react-dom"],
+            "vendor-ui": ["@radix-ui/react-dialog", "@radix-ui/react-dropdown-menu", "@radix-ui/react-select", "@radix-ui/react-tooltip", "@radix-ui/react-popover"],
+            "vendor-charts": ["recharts"],
+            "vendor-motion": ["framer-motion"],
+            "vendor-pdf": ["pdf-lib"],
+            "vendor-supabase": ["@supabase/supabase-js"],
+          },
+        },
+      },
     },
   },
 });

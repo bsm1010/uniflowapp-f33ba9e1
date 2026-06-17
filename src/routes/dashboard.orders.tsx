@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Loader2,
   Search,
@@ -31,6 +31,7 @@ import { Img } from "@/components/ui/Img";
 import { WhatsAppCallButton } from "@/components/dashboard/WhatsAppCallButton";
 import { useCallLog } from "@/hooks/use-call-log";
 import { useBordereaux, type BordereauOrder } from "@/hooks/use-bordereaux";
+import { useDebounce } from "@/hooks/use-debounce";
 import { formatDistanceToNow } from "date-fns";
 
 import type { Tables } from "@/integrations/supabase/types";
@@ -100,6 +101,7 @@ function OrdersPage() {
   const [items, setItems] = useState<Record<string, OrderItem[]>>({});
   const [shipments, setShipments] = useState<Record<string, Shipment>>({});
   const [query, setQuery] = useState("");
+  const debouncedQuery = useDebounce(query);
   const [shipOrder, setShipOrder] = useState<Order | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [pushingId, setPushingId] = useState<string | null>(null);
@@ -164,7 +166,7 @@ function OrdersPage() {
     }
   };
 
-  const loadOrders = async () => {
+  const loadOrders = useCallback(async () => {
     if (!user) return;
     try {
       let q = supabase
@@ -205,7 +207,7 @@ function OrdersPage() {
     } catch {
       toast.error("Failed to load orders");
     }
-  };
+  }, [user, currentStore?.id]);
 
   useEffect(() => {
     if (!user) return;
@@ -253,7 +255,7 @@ function OrdersPage() {
   const filtered = useMemo(
     () =>
       (orders ?? []).filter((o) => {
-        const q = query.trim().toLowerCase();
+        const q = debouncedQuery.trim().toLowerCase();
         if (!q) return true;
         return (
           o.customer_name.toLowerCase().includes(q) ||
@@ -263,7 +265,7 @@ function OrdersPage() {
           o.id.toLowerCase().startsWith(q)
         );
       }),
-    [orders, query],
+    [orders, debouncedQuery],
   );
 
   const toggle = (id: string) => {

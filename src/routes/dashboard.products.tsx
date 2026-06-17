@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
   ImageIcon,
@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useCurrentStore } from "@/hooks/use-current-store";
+import { useDebounce } from "@/hooks/use-debounce";
 import { useSubscription } from "@/hooks/use-subscription";
 import { ExpiredOverlay } from "@/components/dashboard/ExpiredOverlay";
 import { PageHeader, EmptyState } from "@/components/dashboard/PageHeader";
@@ -79,6 +80,7 @@ function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search);
   const [filterStatus, setFilterStatus] = useState<"all" | "draft" | "published">("all");
   const [filterCategory, setFilterCategory] = useState<string>("all");
   const [sortField, setSortField] = useState<SortField | null>(null);
@@ -180,13 +182,13 @@ function ProductsPage() {
     );
   };
 
-  const categories = Array.from(
+  const categories = useMemo(() => Array.from(
     new Set(products.map((p) => p.category).filter(Boolean)),
-  ) as string[];
+  ) as string[], [products]);
 
-  const filtered = products
+  const filtered = useMemo(() => products
     .filter((p) => {
-      const q = search.trim().toLowerCase();
+      const q = debouncedSearch.trim().toLowerCase();
       const matchSearch =
         !q || p.name.toLowerCase().includes(q) || (p.category ?? "").toLowerCase().includes(q);
       const matchStatus = filterStatus === "all" || p.status === filterStatus;
@@ -197,7 +199,7 @@ function ProductsPage() {
       if (!sortField) return 0;
       const dir = sortDir === "asc" ? 1 : -1;
       return (a[sortField] ?? 0) > (b[sortField] ?? 0) ? dir : -dir;
-    });
+    }), [products, debouncedSearch, filterStatus, filterCategory, sortField, sortDir]);
 
   const allSelected = filtered.length > 0 && filtered.every((p) => selected.has(p.id));
   const toggleAll = () => {

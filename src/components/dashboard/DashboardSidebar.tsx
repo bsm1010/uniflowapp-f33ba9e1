@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   LayoutDashboard,
@@ -113,7 +113,7 @@ export function DashboardSidebar() {
     }
   };
 
-  const groups: NavGroup[] = [
+  const groups: NavGroup[] = useMemo(() => [
     {
       label: "Workspace",
       items: [
@@ -384,7 +384,7 @@ export function DashboardSidebar() {
         },
       ],
     },
-  ];
+  ], [t]);
 
   useEffect(() => {
     if (!user) return;
@@ -400,7 +400,7 @@ export function DashboardSidebar() {
   const isActive = (url: string, end?: boolean) =>
     end ? pathname === url : pathname === url || pathname.startsWith(url + "/");
 
-  const renderIcon = (Icon: typeof LayoutDashboard, gradient: string, active: boolean) => (
+  const renderIcon = useCallback((Icon: typeof LayoutDashboard, gradient: string, active: boolean) => (
     <span
       className={`relative flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br ${gradient} text-white shadow-sm transition-all duration-200 ${
         active
@@ -410,9 +410,9 @@ export function DashboardSidebar() {
     >
       <Icon className="h-3.5 w-3.5" />
     </span>
-  );
+  ), []);
 
-  const renderMenuItem = (item: NavItem) => {
+  const renderMenuItem = useCallback((item: NavItem) => {
     const active = !item.external && isActive(item.url, item.end);
     const linkClass = `group/menu-item relative rounded-lg transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
       active
@@ -447,7 +447,7 @@ export function DashboardSidebar() {
         </SidebarMenuButton>
       </SidebarMenuItem>
     );
-  };
+  }, [pathname, renderIcon]);
 
   return (
     <Sidebar

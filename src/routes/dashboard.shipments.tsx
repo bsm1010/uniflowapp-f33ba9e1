@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Loader2, Truck, Search, Copy, CheckCircle2, MapPin } from "lucide-react";
 import deliveryMan from "@/assets/delivery-man.webp";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
+import { useDebounce } from "@/hooks/use-debounce";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import { PageHeader, EmptyState } from "@/components/dashboard/PageHeader";
@@ -59,9 +60,10 @@ function ShipmentsPage() {
   const [orders, setOrders] = useState<Record<string, Order>>({});
   const [companies, setCompanies] = useState<Record<string, Company>>({});
   const [query, setQuery] = useState("");
+  const debouncedQuery = useDebounce(query);
   const [loadError, setLoadError] = useState<string | null>(null);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     if (!user) return;
     try {
       const { data: ships, error: shipErr } = await supabase
@@ -102,7 +104,7 @@ function ShipmentsPage() {
       setLoadError("Failed to load shipments");
       setShipments([]);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
@@ -146,7 +148,7 @@ function ShipmentsPage() {
   const filtered = useMemo(
     () =>
       (shipments ?? []).filter((s) => {
-        const q = query.trim().toLowerCase();
+        const q = debouncedQuery.trim().toLowerCase();
         if (!q) return true;
         const o = orders[s.order_id];
         return (
@@ -156,7 +158,7 @@ function ShipmentsPage() {
           s.id.toLowerCase().startsWith(q)
         );
       }),
-    [shipments, orders, query],
+    [shipments, orders, debouncedQuery],
   );
 
   return (

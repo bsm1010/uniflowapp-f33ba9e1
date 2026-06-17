@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
 import { useCurrentStore } from "@/hooks/use-current-store";
+import { useDebounce } from "@/hooks/use-debounce";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice as fmtPrice } from "@/lib/storeTheme";
 
@@ -56,6 +57,7 @@ function CustomersPage() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [q, setQ] = useState("");
+  const debouncedQ = useDebounce(q);
   const [selected, setSelected] = useState<CustomerProfile | null>(null);
 
   const load = useCallback(async () => {
@@ -146,7 +148,7 @@ function CustomersPage() {
   }, [user, load]);
 
   const filtered = useMemo(() => {
-    const needle = q.toLowerCase().trim();
+    const needle = debouncedQ.toLowerCase().trim();
     if (!needle) return customers;
     return customers.filter(
       (c) =>
@@ -155,7 +157,7 @@ function CustomersPage() {
         c.phone.includes(needle) ||
         c.wilaya.toLowerCase().includes(needle),
     );
-  }, [customers, q]);
+  }, [customers, debouncedQ]);
 
   const totalCustomers = customers.length;
   const totalRevenue = customers.reduce((s, c) => s + c.totalSpent, 0);

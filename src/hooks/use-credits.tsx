@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -61,19 +61,22 @@ export function CreditsProvider({ children }: { children: ReactNode }) {
 
   const triggerPaywall = useCallback(() => setShowPaywall(true), []);
 
+  const value = useMemo(
+    () => ({
+      credits,
+      plan,
+      referralCode,
+      loading,
+      refresh,
+      showPaywall,
+      setShowPaywall,
+      triggerPaywall,
+    }),
+    [credits, plan, referralCode, loading, refresh, showPaywall, triggerPaywall],
+  );
+
   return (
-    <Ctx.Provider
-      value={{
-        credits,
-        plan,
-        referralCode,
-        loading,
-        refresh,
-        showPaywall,
-        setShowPaywall,
-        triggerPaywall,
-      }}
-    >
+    <Ctx.Provider value={value}>
       {children}
     </Ctx.Provider>
   );
