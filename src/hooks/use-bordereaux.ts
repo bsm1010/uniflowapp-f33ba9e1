@@ -7,7 +7,8 @@ import { toast } from "sonner";
 
 export type BordereauOrder = {
   id: string;
-  zr_colis_id: string;
+  zr_colis_id?: string | null;
+  tracking_number?: string | null;
   customer_name: string;
 };
 
@@ -18,7 +19,13 @@ export function useBordereaux() {
 
   const printBordereaux = useCallback(
     async (orders: BordereauOrder[]) => {
-      const eligible = orders.filter((o) => !!o.zr_colis_id);
+      // Use zr_colis_id if available, otherwise fall back to tracking_number
+      const eligible = orders
+        .filter((o) => o.zr_colis_id || o.tracking_number)
+        .map((o) => ({
+          ...o,
+          colisId: o.zr_colis_id || o.tracking_number || "",
+        }));
 
       if (eligible.length === 0) {
         toast.error(
@@ -69,7 +76,7 @@ export function useBordereaux() {
 
         for (const order of eligible) {
           try {
-            const blob = await adapter.getBordereau(order.zr_colis_id);
+            const blob = await adapter.getBordereau(order.colisId);
             blobs.push(blob);
           } catch (err) {
             console.warn(`Failed to fetch bordereau for ${order.customer_name}:`, err);

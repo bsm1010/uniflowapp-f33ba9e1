@@ -456,7 +456,8 @@ function TrackingPage() {
                   onClick={() => {
                     const bo: BordereauOrder = {
                       id: order.id,
-                      zr_colis_id: order.zr_colis_id!,
+                      zr_colis_id: order.zr_colis_id,
+                      tracking_number: order.tracking_number,
                       customer_name: order.customer_name,
                     };
                     printBordereaux([bo]);

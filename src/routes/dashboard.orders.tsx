@@ -368,10 +368,11 @@ function OrdersPage() {
   const handlePrintBordereaux = () => {
     const rows = selectedIds.size > 0 ? filtered.filter((o) => selectedIds.has(o.id)) : filtered;
     const bordereauOrders: BordereauOrder[] = rows
-      .filter((o) => o.zr_colis_id)
+      .filter((o) => o.tracking_number || o.zr_colis_id)
       .map((o) => ({
         id: o.id,
-        zr_colis_id: o.zr_colis_id!,
+        zr_colis_id: o.zr_colis_id,
+        tracking_number: o.tracking_number,
         customer_name: o.customer_name,
       }));
     printBordereaux(bordereauOrders);
@@ -456,7 +457,7 @@ function OrdersPage() {
                   <Printer className="h-4 w-4 mr-1.5" />
                   {selectedIds.size > 0 ? `Print ${selectedIds.size} labels` : "Print Labels"}
                 </Button>
-                {orders.some((o) => o.zr_colis_id) && (
+                {orders.some((o) => o.tracking_number || o.zr_colis_id) && (
                   <Button
                     size="sm"
                     variant="outline"
