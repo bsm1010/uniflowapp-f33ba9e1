@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "@tanstack/react-router";
 import { ShoppingBag, Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Img } from "@/components/ui/Img";
 import type { StoreTokens, NavLink } from "@/lib/storeTheme";
 
 interface HamburgerNavbarProps {
@@ -57,7 +58,7 @@ export function HamburgerNavbar({
             className="flex items-center gap-2.5 absolute left-1/2 -translate-x-1/2"
           >
             {logo ? (
-              <img src={logo} alt={brand} className="h-7 w-auto" />
+              <Img src={logo} alt={brand} className="h-7 w-auto" objectFit="contain" />
             ) : (
               <span
                 className="text-base font-bold font-display tracking-tight"

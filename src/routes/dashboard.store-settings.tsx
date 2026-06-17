@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Img } from "@/components/ui/Img";
 import {
   Select,
   SelectContent,
@@ -156,7 +157,7 @@ function StoreSettingsPage() {
             <div className="mt-1 flex items-center gap-3">
               <div className="h-16 w-16 rounded-xl bg-muted overflow-hidden flex items-center justify-center">
                 {logoUrl ? (
-                  <img src={logoUrl} alt="Store logo preview" className="h-full w-full object-cover" />
+                  <Img src={logoUrl} alt="Store logo preview" className="h-full w-full" />
                 ) : (
                   <StoreIcon className="h-6 w-6 text-muted-foreground" />
                 )}

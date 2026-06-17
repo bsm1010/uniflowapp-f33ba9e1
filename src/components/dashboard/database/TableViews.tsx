@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Plus, Image as ImageIcon } from "lucide-react";
+import { Img } from "@/components/ui/Img";
 
 export type FieldType =
   | "text"
@@ -85,7 +86,7 @@ export function GalleryView({
               <Card key={rec.id} className="overflow-hidden group">
                 <div className="aspect-square bg-muted flex items-center justify-center">
                   {img ? (
-                    <img src={img} alt={title} className="w-full h-full object-cover" />
+                    <Img src={img} alt={title} className="w-full h-full" />
                   ) : (
                     <ImageIcon className="h-8 w-8 text-muted-foreground/40" />
                   )}

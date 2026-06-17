@@ -6,6 +6,7 @@ import { useCurrentStore, type Store } from "@/hooks/use-current-store";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { CreateStoreWizard } from "@/components/dashboard/CreateStoreWizard";
 import { cn } from "@/lib/utils";
+import { Img } from "@/components/ui/Img";
 
 export function StorePickerDialog() {
   const { stores, currentStore, setCurrent, pickerOpen, closePicker, refresh } = useCurrentStore();
@@ -62,7 +63,7 @@ export function StorePickerDialog() {
                 <div className="flex items-start gap-3 mb-3">
                   <div className="h-12 w-12 rounded-xl bg-gray-100 dark:bg-white/5 overflow-hidden flex items-center justify-center shrink-0">
                     {s.logo_url ? (
-                      <img src={s.logo_url} alt={(s.name || "Store") + " logo"} className="h-full w-full object-cover" />
+                      <Img src={s.logo_url} alt={(s.name || "Store") + " logo"} className="h-full w-full" />
                     ) : (
                       <StoreIcon className="h-5 w-5 text-gray-400" />
                     )}

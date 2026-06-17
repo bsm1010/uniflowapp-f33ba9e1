@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Card } from "@/components/ui/card";
+import { Img } from "@/components/ui/Img";
 
 export const Route = createFileRoute("/dashboard/apps/submit")({
   component: SubmitAppPage,
@@ -325,7 +326,7 @@ function SubmitAppPage() {
             <Label>Icon</Label>
             <div className="flex items-center gap-4">
               {iconUrl ? (
-                <img src={iconUrl} alt="App icon preview" className="h-16 w-16 rounded-xl object-cover border" />
+                <Img src={iconUrl} alt="App icon preview" className="h-16 w-16 rounded-xl border" />
               ) : (
                 <div className="h-16 w-16 rounded-xl border border-dashed flex items-center justify-center text-muted-foreground">
                   <Upload className="h-5 w-5" />

@@ -5,6 +5,7 @@ import { Plus, Store as StoreIcon, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { CreateStoreWizard } from "@/components/dashboard/CreateStoreWizard";
+import { Img } from "@/components/ui/Img";
 
 export const Route = createFileRoute("/select-store")({
   component: SelectStorePage,
@@ -116,7 +117,7 @@ function SelectStorePage() {
             >
               <div className="w-14 h-14 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center text-lg font-bold mb-5 overflow-hidden">
                 {store.logo_url ? (
-                  <img src={store.logo_url} alt={(store.name || "Store") + " logo"} className="h-full w-full object-cover" />
+                  <Img src={store.logo_url} alt={(store.name || "Store") + " logo"} className="h-full w-full" />
                 ) : (
                   store.name.charAt(0).toUpperCase()
                 )}

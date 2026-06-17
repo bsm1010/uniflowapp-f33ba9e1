@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Img } from "@/components/ui/Img";
 import type { StoreSettings } from "@/lib/storeTheme";
 import { getStoreTokens } from "@/lib/storeTheme";
 
@@ -184,7 +185,7 @@ function AboutEditor() {
                 <Label>Image (optional)</Label>
                 {imageUrl ? (
                   <div className="relative rounded-lg border border-border overflow-hidden group">
-                    <img src={imageUrl} alt="About" className="w-full h-48 object-cover" />
+                    <Img src={imageUrl} alt="About" className="w-full h-48" />
                     <button
                       onClick={() => {
                         setImageUrl(null);

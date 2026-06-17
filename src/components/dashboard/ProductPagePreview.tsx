@@ -16,6 +16,7 @@ import {
   formatPrice,
   type StoreSettings,
 } from "@/lib/storeTheme";
+import { Img } from "@/components/ui/Img";
 
 interface Props {
   settings: StoreSettings;
@@ -128,7 +129,7 @@ export function ProductPagePreview({ settings, products = [] }: Props) {
                 }}
               >
                 {product.images?.[i] && (
-                  <img src={product.images[i]} alt={product.name ? product.name + " image " + (i + 1) : "Product image"} className="h-full w-full object-cover" />
+                  <Img src={product.images[i]} alt={product.name ? product.name + " image " + (i + 1) : "Product image"} className="h-full w-full" />
                 )}
               </div>
             ))}
@@ -237,7 +238,7 @@ export function ProductPagePreview({ settings, products = [] }: Props) {
                 }}
               >
                 {p.images?.[0] ? (
-                  <img src={p.images[0]} alt={p.name} className="h-full w-full object-cover" />
+                  <Img src={p.images[0]} alt={p.name} className="h-full w-full" />
                 ) : (
                   <div
                     className="h-full w-full"

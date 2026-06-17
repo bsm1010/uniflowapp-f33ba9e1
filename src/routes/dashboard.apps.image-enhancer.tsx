@@ -17,6 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
 import { enhanceImage } from "@/lib/ai/enhance-image";
 import { RequireApp } from "@/components/dashboard/RequireApp";
+import { Img } from "@/components/ui/Img";
 
 export const Route = createFileRoute("/dashboard/apps/image-enhancer")({
   component: () => (
@@ -150,7 +151,7 @@ function ImageEnhancerPage() {
               <Label>Original</Label>
               <div className="aspect-square rounded-lg border bg-muted/30 flex items-center justify-center overflow-hidden">
                 {original ? (
-                  <img src={original} alt="Original" className="object-contain w-full h-full" />
+                  <Img src={original} alt="Original" className="w-full h-full" objectFit="contain" />
                 ) : (
                   <span className="text-xs text-muted-foreground">No image</span>
                 )}
@@ -160,7 +161,7 @@ function ImageEnhancerPage() {
               <Label>Enhanced</Label>
               <div className="aspect-square rounded-lg border bg-muted/30 flex items-center justify-center overflow-hidden">
                 {result ? (
-                  <img src={result} alt="Enhanced" className="object-contain w-full h-full" />
+                  <Img src={result} alt="Enhanced" className="w-full h-full" objectFit="contain" />
                 ) : (
                   <span className="text-xs text-muted-foreground">
                     {busy ? "Working…" : "Result will appear here"}

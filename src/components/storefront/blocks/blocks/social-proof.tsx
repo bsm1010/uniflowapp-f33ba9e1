@@ -1,4 +1,5 @@
 import { Star } from "lucide-react";
+import { Img } from "@/components/ui/Img";
 import { Section, SectionHeading } from "../shared";
 import type { BlockComponentProps } from "../types";
 
@@ -25,7 +26,7 @@ export function Testimonials({ props }: BlockComponentProps<TestimonialsProps>) 
             <blockquote className="text-foreground">&ldquo;{t.quote}&rdquo;</blockquote>
             <figcaption className="mt-4 flex items-center gap-3">
               {t.avatarUrl ? (
-                <img src={t.avatarUrl} alt={t.name || "Reviewer avatar"} className="h-10 w-10 rounded-full object-cover" />
+                <Img src={t.avatarUrl} alt={t.name || "Reviewer avatar"} className="h-10 w-10 rounded-full" />
               ) : (
                 <div className="h-10 w-10 rounded-full bg-muted" />
               )}
@@ -86,7 +87,7 @@ export function BrandLogos({ props }: BlockComponentProps<BrandLogosProps>) {
       <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-6 opacity-70">
         {props.logos.map((l, i) =>
           l.url ? (
-            <img key={i} src={l.url} alt={l.name} className="h-8 w-auto" />
+            <Img key={i} src={l.url} alt={l.name} className="h-8 w-auto" objectFit="contain" />
           ) : (
             <span key={i} className="font-display text-xl font-semibold">
               {l.name}

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "@tanstack/react-router";
 import { ShoppingBag, Menu, X } from "lucide-react";
+import { Img } from "@/components/ui/Img";
 import type { StoreTokens, NavLink } from "@/lib/storeTheme";
 
 interface CenteredNavbarProps {
@@ -45,7 +46,7 @@ export function CenteredNavbar({
           <div className="w-20 md:w-32" />
           <Link to="/s/$slug" params={{ slug }} className="flex items-center gap-2.5">
             {logo ? (
-              <img src={logo} alt={brand} className="h-8 w-auto" />
+              <Img src={logo} alt={brand} className="h-8 w-auto" objectFit="contain" />
             ) : (
               <span
                 className="text-xl font-bold font-display tracking-tight"
