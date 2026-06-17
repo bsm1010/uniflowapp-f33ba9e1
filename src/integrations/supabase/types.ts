@@ -486,50 +486,6 @@ export type Database = {
         }
         Relationships: []
       }
-      call_logs: {
-        Row: {
-          called_at: string | null
-          channel: string | null
-          customer_name: string | null
-          customer_phone: string
-          id: string
-          merchant_id: string
-          note: string | null
-          order_id: string | null
-          outcome: string | null
-        }
-        Insert: {
-          called_at?: string | null
-          channel?: string | null
-          customer_name?: string | null
-          customer_phone: string
-          id?: string
-          merchant_id: string
-          note?: string | null
-          order_id?: string | null
-          outcome?: string | null
-        }
-        Update: {
-          called_at?: string | null
-          channel?: string | null
-          customer_name?: string | null
-          customer_phone?: string
-          id?: string
-          merchant_id?: string
-          note?: string | null
-          order_id?: string | null
-          outcome?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "call_logs_order_id_fkey"
-            columns: ["order_id"]
-            isOneToOne: false
-            referencedRelation: "orders"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       category_images: {
         Row: {
           category_name: string
@@ -1885,6 +1841,7 @@ export type Database = {
       }
       orders: {
         Row: {
+          bordereau_fetched_at: string | null
           created_at: string
           customer_email: string
           customer_name: string
@@ -1906,8 +1863,10 @@ export type Database = {
           total: number
           tracking_number: string | null
           updated_at: string
+          zr_colis_id: string | null
         }
         Insert: {
+          bordereau_fetched_at?: string | null
           created_at?: string
           customer_email: string
           customer_name: string
@@ -1929,8 +1888,10 @@ export type Database = {
           total?: number
           tracking_number?: string | null
           updated_at?: string
+          zr_colis_id?: string | null
         }
         Update: {
+          bordereau_fetched_at?: string | null
           created_at?: string
           customer_email?: string
           customer_name?: string
@@ -1952,6 +1913,7 @@ export type Database = {
           total?: number
           tracking_number?: string | null
           updated_at?: string
+          zr_colis_id?: string | null
         }
         Relationships: [
           {
@@ -2604,6 +2566,7 @@ export type Database = {
       }
       shipments: {
         Row: {
+          bordereau_fetched_at: string | null
           company_id: string | null
           created_at: string
           delivery_type: string
@@ -2616,8 +2579,10 @@ export type Database = {
           store_id: string
           tracking_number: string
           updated_at: string
+          zr_colis_id: string | null
         }
         Insert: {
+          bordereau_fetched_at?: string | null
           company_id?: string | null
           created_at?: string
           delivery_type?: string
@@ -2630,8 +2595,10 @@ export type Database = {
           store_id: string
           tracking_number?: string
           updated_at?: string
+          zr_colis_id?: string | null
         }
         Update: {
+          bordereau_fetched_at?: string | null
           company_id?: string | null
           created_at?: string
           delivery_type?: string
@@ -2644,6 +2611,7 @@ export type Database = {
           store_id?: string
           tracking_number?: string
           updated_at?: string
+          zr_colis_id?: string | null
         }
         Relationships: [
           {
