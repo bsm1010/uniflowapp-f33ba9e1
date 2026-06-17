@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TrustRouteImport } from './routes/trust'
 import { Route as ThemesRouteImport } from './routes/themes'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SignupRouteImport } from './routes/signup'
@@ -110,6 +111,11 @@ import { Route as ApiDbTableIdRecordIdRouteImport } from './routes/api.db.$table
 import { Route as ApiAuthInstagramMediaRouteImport } from './routes/api.auth.instagram.media'
 import { Route as ApiAuthInstagramCallbackRouteImport } from './routes/api.auth.instagram.callback'
 
+const TrustRoute = TrustRouteImport.update({
+  id: '/trust',
+  path: '/trust',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ThemesRoute = ThemesRouteImport.update({
   id: '/themes',
   path: '/themes',
@@ -650,6 +656,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/themes': typeof ThemesRoute
+  '/trust': typeof TrustRoute
   '/dashboard/about': typeof DashboardAboutRoute
   '/dashboard/achievements': typeof DashboardAchievementsRoute
   '/dashboard/ai-agent': typeof DashboardAiAgentRoute
@@ -751,6 +758,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/themes': typeof ThemesRoute
+  '/trust': typeof TrustRoute
   '/dashboard/about': typeof DashboardAboutRoute
   '/dashboard/achievements': typeof DashboardAchievementsRoute
   '/dashboard/ai-agent': typeof DashboardAiAgentRoute
@@ -852,6 +860,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/themes': typeof ThemesRoute
+  '/trust': typeof TrustRoute
   '/dashboard/about': typeof DashboardAboutRoute
   '/dashboard/achievements': typeof DashboardAchievementsRoute
   '/dashboard/ai-agent': typeof DashboardAiAgentRoute
@@ -956,6 +965,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/themes'
+    | '/trust'
     | '/dashboard/about'
     | '/dashboard/achievements'
     | '/dashboard/ai-agent'
@@ -1057,6 +1067,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/themes'
+    | '/trust'
     | '/dashboard/about'
     | '/dashboard/achievements'
     | '/dashboard/ai-agent'
@@ -1157,6 +1168,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/themes'
+    | '/trust'
     | '/dashboard/about'
     | '/dashboard/achievements'
     | '/dashboard/ai-agent'
@@ -1260,6 +1272,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ThemesRoute: typeof ThemesRoute
+  TrustRoute: typeof TrustRoute
   ApiDbTableIdRoute: typeof ApiDbTableIdRouteWithChildren
   SSlugAboutRoute: typeof SSlugAboutRoute
   SSlugCartRoute: typeof SSlugCartRoute
@@ -1286,6 +1299,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/trust': {
+      id: '/trust'
+      path: '/trust'
+      fullPath: '/trust'
+      preLoaderRoute: typeof TrustRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/themes': {
       id: '/themes'
       path: '/themes'
@@ -2186,6 +2206,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ThemesRoute: ThemesRoute,
+  TrustRoute: TrustRoute,
   ApiDbTableIdRoute: ApiDbTableIdRouteWithChildren,
   SSlugAboutRoute: SSlugAboutRoute,
   SSlugCartRoute: SSlugCartRoute,
@@ -2213,13 +2234,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
