@@ -8,8 +8,8 @@ export function Hero() {
   const { t } = useTranslation();
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-      {/* Animated mesh gradient background */}
-      <div className="absolute inset-0">
+      {/* Desktop: animated mesh gradient background */}
+      <div className="absolute inset-0 hidden md:block">
         <div className="absolute inset-0 bg-gradient-to-br from-violet-500/15 via-fuchsia-500/8 to-cyan-500/15 dark:from-violet-500/20 dark:via-fuchsia-500/10 dark:to-cyan-500/20" />
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-violet-400/20 dark:bg-violet-500/30 rounded-full blur-[120px] animate-pulse" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-fuchsia-400/15 dark:bg-fuchsia-500/25 rounded-full blur-[120px] animate-pulse [animation-delay:1s]" />
@@ -24,6 +24,13 @@ export function Hero() {
             backgroundSize: "60px 60px",
           }}
         />
+      </div>
+
+      {/* Mobile: lightweight static gradient background (no blur, no animation) */}
+      <div className="absolute inset-0 md:hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 via-fuchsia-500/5 to-cyan-500/10 dark:from-violet-500/15 dark:via-fuchsia-500/8 dark:to-cyan-500/15" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-violet-400/10 rounded-full blur-[60px]" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-cyan-400/8 rounded-full blur-[60px]" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-6xl px-4 text-center py-20">
