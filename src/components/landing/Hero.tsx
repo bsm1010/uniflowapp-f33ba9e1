@@ -8,11 +8,12 @@ export function Hero() {
   const { t } = useTranslation();
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-      {/* Subtle gradient background — no blur filters for mobile safety */}
+      {/* Colorful gradient background — using backdrop-blur (GPU-composited, mobile-safe) */}
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 via-fuchsia-500/5 to-cyan-500/10 dark:from-violet-500/15 dark:via-fuchsia-500/8 dark:to-cyan-500/15" />
-        <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-violet-400/10 dark:bg-violet-500/15 rounded-full" />
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-fuchsia-400/8 dark:bg-fuchsia-500/12 rounded-full" />
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-500/15 via-fuchsia-500/8 to-cyan-500/15 dark:from-violet-500/20 dark:via-fuchsia-500/10 dark:to-cyan-500/20" />
+        <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-violet-400/20 dark:bg-violet-500/25 rounded-full backdrop-blur-[60px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-fuchsia-400/15 dark:bg-fuchsia-500/20 rounded-full backdrop-blur-[60px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-cyan-400/10 dark:bg-cyan-500/15 rounded-full backdrop-blur-[80px]" />
         {/* Grid pattern */}
         <div
           aria-hidden

@@ -65,7 +65,7 @@ export function WindowsDownload() {
             {/* Right: visual */}
             <div className="relative flex items-center justify-center">
               <div className="relative">
-                <div className="pointer-events-none absolute inset-0 -z-10 rounded-[2.5rem] bg-gradient-to-br from-primary/20 via-purple-500/10 to-blue-500/20" />
+                <div className="pointer-events-none absolute inset-0 -z-10 rounded-[2.5rem] bg-gradient-to-br from-primary/20 via-purple-500/10 to-blue-500/20 backdrop-blur-[40px]" />
                 <Img
                   src={fenneclyBox}
                   alt={t("windows.alt")}
