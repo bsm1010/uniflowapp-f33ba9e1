@@ -335,9 +335,11 @@ function DashboardHome() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="rounded-2xl border border-border/50 p-6 sm:p-8"
+        className="relative overflow-hidden rounded-2xl border border-border/50 bg-gradient-to-br from-background via-background to-primary/5 p-6 sm:p-8"
       >
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="absolute -top-20 -right-20 h-60 w-60 rounded-full bg-primary/5 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-10 -left-10 h-40 w-40 rounded-full bg-violet-500/5 blur-3xl pointer-events-none" />
+        <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-primary">
               <TrendingUp className="h-3 w-3" />
@@ -683,10 +685,13 @@ function StatCard({
     <Card
       className={
         isFilled
-          ? `relative overflow-hidden border-0 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 ${gradient}`
+          ? `relative overflow-hidden border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${gradient}`
           : "relative overflow-hidden border-border/50 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5"
       }
     >
+      {isFilled && (
+        <div className="pointer-events-none absolute -top-12 -right-12 h-32 w-32 rounded-full bg-white/15 blur-2xl" />
+      )}
       {isRevenue && (
         <div className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shine" />
       )}
@@ -695,8 +700,8 @@ function StatCard({
           <span
             className={
               isFilled
-                ? "text-sm text-white/90 font-medium"
-                : "text-sm text-muted-foreground font-medium"
+                ? "text-xs font-semibold uppercase tracking-wider text-white/80"
+                : "text-xs font-semibold uppercase tracking-wider text-muted-foreground"
             }
           >
             {label}
@@ -704,8 +709,8 @@ function StatCard({
           <div
             className={
               isFilled
-                ? "h-9 w-9 rounded-xl bg-white/20 text-white flex items-center justify-center"
-                : "h-9 w-9 rounded-xl bg-muted text-muted-foreground flex items-center justify-center"
+                ? "h-9 w-9 rounded-xl bg-white/20 backdrop-blur-sm text-white flex items-center justify-center"
+                : "h-9 w-9 rounded-xl bg-muted/50 text-muted-foreground flex items-center justify-center"
             }
           >
             <Icon className="h-4 w-4" />

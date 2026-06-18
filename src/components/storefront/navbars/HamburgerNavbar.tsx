@@ -37,15 +37,16 @@ export function HamburgerNavbar({
       <header
         className="sticky top-0 z-40 transition-all duration-300"
         style={{
-          backgroundColor: scrolled || mobileOpen ? `${t.bg}dd` : "transparent",
-          backdropFilter: scrolled || mobileOpen ? "blur(12px)" : "none",
+          backgroundColor: scrolled || mobileOpen ? `${t.bg}ee` : "transparent",
+          backdropFilter: scrolled || mobileOpen ? "blur(20px) saturate(180%)" : "none",
           borderBottom: mobileOpen || scrolled ? `1px solid ${t.border}` : "none",
+          boxShadow: scrolled && !mobileOpen ? `0 1px 3px ${t.border}40` : "none",
         }}
       >
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-200 hover:bg-white/5"
+            className="flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-200 hover:bg-white/8"
             style={{ color: t.fg }}
           >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -54,10 +55,10 @@ export function HamburgerNavbar({
           <Link
             to="/s/$slug"
             params={{ slug }}
-            className="flex items-center gap-2.5 absolute left-1/2 -translate-x-1/2"
+            className="flex items-center gap-2.5 absolute left-1/2 -translate-x-1/2 transition-transform duration-200 hover:scale-105"
           >
             {logo ? (
-              <img src={logo} alt={brand} className="h-7 w-auto" />
+              <img src={logo} alt={brand} className="h-8 w-auto" />
             ) : (
               <span
                 className="text-base font-bold font-display tracking-tight"
@@ -70,13 +71,13 @@ export function HamburgerNavbar({
 
           <button
             onClick={onCartOpen}
-            className="relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-200 hover:bg-white/5"
+            className="relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-200 hover:bg-white/8"
             style={{ color: t.fg }}
           >
             <ShoppingBag className="h-5 w-5" />
             {cartCount > 0 && (
               <span
-                className="absolute -top-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full text-[11px] font-bold"
+                className="absolute -top-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold shadow-sm"
                 style={{ backgroundColor: t.primary, color: t.onPrimary }}
               >
                 {cartCount}
@@ -89,22 +90,22 @@ export function HamburgerNavbar({
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             className="fixed inset-0 top-16 z-30"
             style={{ backgroundColor: t.bg }}
           >
-            <nav className="flex flex-col items-center justify-center h-full gap-2 px-8">
+            <nav className="flex flex-col items-center justify-center h-full gap-3 px-8">
               {links.map((link, i) => (
                 <motion.a
                   key={link.href}
                   href={link.href}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                  className="text-2xl font-display font-bold py-3 transition-colors hover:opacity-60"
+                  initial={{ opacity: 0, y: 24, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ delay: i * 0.06, type: "spring", stiffness: 300, damping: 25 }}
+                  className="text-3xl font-display font-bold py-3 transition-all duration-200 hover:opacity-60 hover:scale-105"
                   style={{ color: t.fg }}
                   onClick={() => setMobileOpen(false)}
                 >

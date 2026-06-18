@@ -402,26 +402,26 @@ export function DashboardSidebar() {
 
   const renderIcon = (Icon: typeof LayoutDashboard, gradient: string, active: boolean) => (
     <span
-      className={`relative flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br ${gradient} text-white shadow-sm transition-all duration-200 ${
+      className={`relative flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${gradient} text-white shadow-sm transition-all duration-200 ${
         active
-          ? "shadow-md scale-105"
-          : "opacity-85 group-hover/menu-item:opacity-100 group-hover/menu-item:scale-105"
+          ? "shadow-lg shadow-primary/20 scale-110 ring-2 ring-white/15"
+          : "opacity-80 group-hover/menu-item:opacity-100 group-hover/menu-item:scale-105 group-hover/menu-item:shadow-md"
       }`}
     >
-      <Icon className="h-3.5 w-3.5" />
+      <Icon className="h-4 w-4 drop-shadow-sm" />
     </span>
   );
 
   const renderMenuItem = (item: NavItem) => {
     const active = !item.external && isActive(item.url, item.end);
-    const linkClass = `group/menu-item relative rounded-lg transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
+    const linkClass = `group/menu-item relative rounded-xl transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
       active
-        ? "bg-gradient-to-r from-sidebar-accent to-sidebar-accent/40 text-sidebar-accent-foreground font-medium shadow-sm"
-        : "hover:bg-sidebar-accent/50"
+        ? "bg-gradient-to-r from-primary/10 to-primary/5 text-sidebar-accent-foreground font-semibold shadow-sm border border-primary/10"
+        : "hover:bg-sidebar-accent/50 hover:shadow-sm"
     }`;
     return (
       <SidebarMenuItem key={item.title}>
-        <SidebarMenuButton asChild isActive={active} tooltip={item.title} className="h-9">
+        <SidebarMenuButton asChild isActive={active} tooltip={item.title} className="h-10">
           {item.external ? (
             <a
               href={item.url}
@@ -431,17 +431,17 @@ export function DashboardSidebar() {
               data-tour={item.tourId}
             >
               {renderIcon(item.icon, item.gradient, active)}
-              <span className="text-sm">{item.title}</span>
+              <span className="text-[13px]">{item.title}</span>
             </a>
           ) : (
             <Link to={item.url} className={linkClass} data-tour={item.tourId} data-sound="click">
               {active && (
                 <span
-                  className={`absolute left-0 top-1.5 bottom-1.5 w-0.5 rounded-full bg-gradient-to-b ${item.gradient}`}
+                  className={`absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-gradient-to-b ${item.gradient} shadow-sm`}
                 />
               )}
               {renderIcon(item.icon, item.gradient, active)}
-              <span className="text-sm">{item.title}</span>
+              <span className="text-[13px]">{item.title}</span>
             </Link>
           )}
         </SidebarMenuButton>
@@ -480,7 +480,7 @@ export function DashboardSidebar() {
       <SidebarContent className="px-1.5 py-2">
         {groups.map((group) => (
           <SidebarGroup key={group.label}>
-            <SidebarGroupLabel className="text-[10px] font-semibold uppercase tracking-wider text-sidebar-foreground/70 px-2">
+            <SidebarGroupLabel className="text-[10px] font-bold uppercase tracking-[0.15em] text-sidebar-foreground/50 px-2 mb-0.5">
               {group.label}
             </SidebarGroupLabel>
             <SidebarGroupContent>
@@ -495,7 +495,7 @@ export function DashboardSidebar() {
               <CollapsibleTrigger asChild>
                 <SidebarGroupLabel
                   asChild
-                  className="cursor-pointer hover:bg-sidebar-accent/40 rounded-md transition-colors text-[10px] font-semibold uppercase tracking-wider text-sidebar-foreground/70"
+                  className="cursor-pointer hover:bg-sidebar-accent/40 rounded-md transition-colors text-[10px] font-bold uppercase tracking-[0.15em] text-sidebar-foreground/50"
                 >
                   <button className="w-full flex items-center justify-between px-2">
                     <span>{t("dashboard.groupApps")}</span>
@@ -515,22 +515,22 @@ export function DashboardSidebar() {
                       const gradient = "from-violet-500 to-fuchsia-500";
                       return (
                         <SidebarMenuItem key={app.key}>
-                          <SidebarMenuButton
+                            <SidebarMenuButton
                             asChild
                             isActive={active}
                             tooltip={app.name}
-                            className="h-9"
+                            className="h-10"
                           >
                             <Link
                               to={url}
-                              className={`group/menu-item relative rounded-lg transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
+                              className={`group/menu-item relative rounded-xl transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
                                 active
-                                  ? "bg-gradient-to-r from-sidebar-accent to-sidebar-accent/40 text-sidebar-accent-foreground font-medium shadow-sm"
-                                  : "hover:bg-sidebar-accent/50"
+                                  ? "bg-gradient-to-r from-primary/10 to-primary/5 text-sidebar-accent-foreground font-semibold shadow-sm border border-primary/10"
+                                  : "hover:bg-sidebar-accent/50 hover:shadow-sm"
                               }`}
                             >
                               {renderIcon(Icon, gradient, active)}
-                              <span className="text-sm">{app.name}</span>
+                              <span className="text-[13px]">{app.name}</span>
                             </Link>
                           </SidebarMenuButton>
                         </SidebarMenuItem>
@@ -545,7 +545,7 @@ export function DashboardSidebar() {
 
         {isAdmin && (
           <SidebarGroup>
-            <SidebarGroupLabel className="text-[10px] font-semibold uppercase tracking-wider text-sidebar-foreground/70 px-2">
+            <SidebarGroupLabel className="text-[10px] font-bold uppercase tracking-[0.15em] text-sidebar-foreground/50 px-2 mb-0.5">
               {t("dashboard.groupAdmin")}
             </SidebarGroupLabel>
             <SidebarGroupContent>
@@ -555,14 +555,14 @@ export function DashboardSidebar() {
                     asChild
                     isActive={isActive("/dashboard/admin/payments")}
                     tooltip={t("dashboard.nav.payments")}
-                    className="h-9"
+                    className="h-10"
                   >
                     <Link
                       to="/dashboard/admin/payments"
-                      className={`group/menu-item relative rounded-lg transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
+                      className={`group/menu-item relative rounded-xl transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
                         isActive("/dashboard/admin/payments")
-                          ? "bg-gradient-to-r from-sidebar-accent to-sidebar-accent/40 text-sidebar-accent-foreground font-medium shadow-sm"
-                          : "hover:bg-sidebar-accent/50"
+                          ? "bg-gradient-to-r from-primary/10 to-primary/5 text-sidebar-accent-foreground font-semibold shadow-sm border border-primary/10"
+                          : "hover:bg-sidebar-accent/50 hover:shadow-sm"
                       }`}
                     >
                       {renderIcon(
@@ -570,7 +570,7 @@ export function DashboardSidebar() {
                         "from-red-500 to-orange-500",
                         isActive("/dashboard/admin/payments"),
                       )}
-                      <span className="text-sm">{t("dashboard.nav.payments")}</span>
+                      <span className="text-[13px]">{t("dashboard.nav.payments")}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -579,14 +579,14 @@ export function DashboardSidebar() {
                     asChild
                     isActive={isActive("/dashboard/admin/marketplace")}
                     tooltip="Marketplace Review"
-                    className="h-9"
+                    className="h-10"
                   >
                     <Link
                       to="/dashboard/admin/marketplace"
-                      className={`group/menu-item relative rounded-lg transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
+                      className={`group/menu-item relative rounded-xl transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
                         isActive("/dashboard/admin/marketplace")
-                          ? "bg-gradient-to-r from-sidebar-accent to-sidebar-accent/40 text-sidebar-accent-foreground font-medium shadow-sm"
-                          : "hover:bg-sidebar-accent/50"
+                          ? "bg-gradient-to-r from-primary/10 to-primary/5 text-sidebar-accent-foreground font-semibold shadow-sm border border-primary/10"
+                          : "hover:bg-sidebar-accent/50 hover:shadow-sm"
                       }`}
                     >
                       {renderIcon(
@@ -594,7 +594,7 @@ export function DashboardSidebar() {
                         "from-purple-500 to-pink-500",
                         isActive("/dashboard/admin/marketplace"),
                       )}
-                      <span className="text-sm">Marketplace Review</span>
+                      <span className="text-[13px]">Marketplace Review</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -603,14 +603,14 @@ export function DashboardSidebar() {
                     asChild
                     isActive={isActive("/dashboard/admin/dropship-orders")}
                     tooltip="Dropship Orders"
-                    className="h-9"
+                    className="h-10"
                   >
                     <Link
                       to="/dashboard/admin/dropship-orders"
                       className={`group/menu-item relative rounded-lg transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
                         isActive("/dashboard/admin/dropship-orders")
-                          ? "bg-gradient-to-r from-sidebar-accent to-sidebar-accent/40 text-sidebar-accent-foreground font-medium shadow-sm"
-                          : "hover:bg-sidebar-accent/50"
+                          ? "bg-gradient-to-r from-primary/10 to-primary/5 text-sidebar-accent-foreground font-semibold shadow-sm border border-primary/10"
+                          : "hover:bg-sidebar-accent/50 hover:shadow-sm"
                       }`}
                     >
                       {renderIcon(
@@ -618,7 +618,7 @@ export function DashboardSidebar() {
                         "from-rose-500 to-fuchsia-500",
                         isActive("/dashboard/admin/dropship-orders"),
                       )}
-                      <span className="text-sm">Dropship Orders</span>
+                      <span className="text-[13px]">Dropship Orders</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -627,14 +627,14 @@ export function DashboardSidebar() {
                     asChild
                     isActive={isActive("/dashboard/admin/wallet-topups")}
                     tooltip="Wallet Top-ups"
-                    className="h-9"
+                    className="h-10"
                   >
                     <Link
                       to="/dashboard/admin/wallet-topups"
                       className={`group/menu-item relative rounded-lg transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
                         isActive("/dashboard/admin/wallet-topups")
-                          ? "bg-gradient-to-r from-sidebar-accent to-sidebar-accent/40 text-sidebar-accent-foreground font-medium shadow-sm"
-                          : "hover:bg-sidebar-accent/50"
+                          ? "bg-gradient-to-r from-primary/10 to-primary/5 text-sidebar-accent-foreground font-semibold shadow-sm border border-primary/10"
+                          : "hover:bg-sidebar-accent/50 hover:shadow-sm"
                       }`}
                     >
                       {renderIcon(
@@ -642,7 +642,7 @@ export function DashboardSidebar() {
                         "from-violet-500 to-purple-500",
                         isActive("/dashboard/admin/wallet-topups"),
                       )}
-                      <span className="text-sm">Wallet Top-ups</span>
+                      <span className="text-[13px]">Wallet Top-ups</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -651,14 +651,14 @@ export function DashboardSidebar() {
                     asChild
                     isActive={isActive("/dashboard/admin/supply-marketplace")}
                     tooltip={t("dashboard.nav.adminSupplyMarketplace", { defaultValue: "سوق التوريد" })}
-                    className="h-9"
+                    className="h-10"
                   >
                     <Link
                       to="/dashboard/admin/supply-marketplace"
                       className={`group/menu-item relative rounded-lg transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
                         isActive("/dashboard/admin/supply-marketplace")
-                          ? "bg-gradient-to-r from-sidebar-accent to-sidebar-accent/40 text-sidebar-accent-foreground font-medium shadow-sm"
-                          : "hover:bg-sidebar-accent/50"
+                          ? "bg-gradient-to-r from-primary/10 to-primary/5 text-sidebar-accent-foreground font-semibold shadow-sm border border-primary/10"
+                          : "hover:bg-sidebar-accent/50 hover:shadow-sm"
                       }`}
                     >
                       {renderIcon(
@@ -666,7 +666,7 @@ export function DashboardSidebar() {
                         "from-amber-500 to-orange-500",
                         isActive("/dashboard/admin/supply-marketplace"),
                       )}
-                      <span className="text-sm">{t("dashboard.nav.adminSupplyMarketplace", { defaultValue: "سوق التوريد" })}</span>
+                      <span className="text-[13px]">{t("dashboard.nav.adminSupplyMarketplace", { defaultValue: "سوق التوريد" })}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -675,14 +675,14 @@ export function DashboardSidebar() {
                     asChild
                     isActive={isActive("/dashboard/admin/apps")}
                     tooltip="Built-in Apps"
-                    className="h-9"
+                    className="h-10"
                   >
                     <Link
                       to="/dashboard/admin/apps"
                       className={`group/menu-item relative rounded-lg transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
                         isActive("/dashboard/admin/apps")
-                          ? "bg-gradient-to-r from-sidebar-accent to-sidebar-accent/40 text-sidebar-accent-foreground font-medium shadow-sm"
-                          : "hover:bg-sidebar-accent/50"
+                          ? "bg-gradient-to-r from-primary/10 to-primary/5 text-sidebar-accent-foreground font-semibold shadow-sm border border-primary/10"
+                          : "hover:bg-sidebar-accent/50 hover:shadow-sm"
                       }`}
                     >
                       {renderIcon(
@@ -690,7 +690,7 @@ export function DashboardSidebar() {
                         "from-blue-500 to-cyan-500",
                         isActive("/dashboard/admin/apps"),
                       )}
-                      <span className="text-sm">Built-in Apps</span>
+                      <span className="text-[13px]">Built-in Apps</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

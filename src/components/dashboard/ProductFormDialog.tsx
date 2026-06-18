@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Loader2, Upload, X, Mic, Plus, ImageIcon } from "lucide-react";
+import { Loader2, Upload, X, Mic, Plus, ImageIcon, ArrowRight, ArrowLeft, Package, DollarSign, Layers, Image, Settings } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
@@ -8,6 +8,7 @@ import { playSound } from "@/lib/sounds";
 import { useAuth } from "@/hooks/use-auth";
 import { useCurrentStore } from "@/hooks/use-current-store";
 import { generateVoice } from "@/lib/ai/voice-generator";
+import { cn } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -84,9 +85,18 @@ interface Props {
   onSaved: () => void;
 }
 
+const WIZARD_STEPS = [
+  { label: "Details", icon: Package },
+  { label: "Pricing", icon: DollarSign },
+  { label: "Variants", icon: Layers },
+  { label: "Media", icon: Image },
+  { label: "Settings", icon: Settings },
+];
+
 export function ProductFormDialog({ open, onOpenChange, product, onSaved }: Props) {
   const { user } = useAuth();
   const { currentStore } = useCurrentStore();
+  const [step, setStep] = useState(0);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("0");
@@ -109,6 +119,7 @@ export function ProductFormDialog({ open, onOpenChange, product, onSaved }: Prop
 
   useEffect(() => {
     if (open) {
+      setStep(0);
       setName(product?.name ?? "");
       setDescription(product?.description ?? "");
       setPrice(product ? String(product.price) : "0");
@@ -285,333 +296,391 @@ export function ProductFormDialog({ open, onOpenChange, product, onSaved }: Prop
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>{product ? "Edit product" : "Add product"}</DialogTitle>
-          <DialogDescription>
-            {product
-              ? "Update the details of this product."
-              : "Fill in the details to add a new product to your store."}
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="grid gap-5 py-2">
-          {/* Name & SKU */}
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="name">Product name</Label>
-              <Input
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. Classic White Tee"
-                maxLength={120}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="sku">SKU</Label>
-              <Input
-                id="sku"
-                value={sku}
-                onChange={(e) => setSku(e.target.value)}
-                placeholder="e.g. CWT-001"
-                maxLength={100}
-              />
-            </div>
-          </div>
-
-          {/* Description */}
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Tell customers what makes this product special…"
-              rows={4}
-              maxLength={2000}
-            />
-          </div>
-
-          {/* Price, Sale Price, Stock */}
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div className="space-y-2">
-              <Label htmlFor="price">Price (DA)</Label>
-              <Input
-                id="price"
-                type="number"
-                step="0.01"
-                min="0"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="sale_price">Sale Price (DA)</Label>
-              <Input
-                id="sale_price"
-                type="number"
-                step="0.01"
-                min="0"
-                value={salePrice}
-                onChange={(e) => setSalePrice(e.target.value)}
-                placeholder="Optional"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="stock">Stock</Label>
-              <Input
-                id="stock"
-                type="number"
-                min="0"
-                step="1"
-                value={stock}
-                onChange={(e) => setStock(e.target.value)}
-              />
-            </div>
-          </div>
-
-          {/* Category & Weight */}
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="category">Category</Label>
-              <Select value={category} onValueChange={setCategory}>
-                <SelectTrigger id="category">
-                  <SelectValue placeholder="Choose…" />
-                </SelectTrigger>
-                <SelectContent>
-                  {CATEGORIES.map((c) => (
-                    <SelectItem key={c} value={c}>
-                      {c}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="weight">Weight (kg)</Label>
-              <Input
-                id="weight"
-                type="number"
-                step="0.01"
-                min="0"
-                value={weight}
-                onChange={(e) => setWeight(e.target.value)}
-                placeholder="Optional"
-              />
-            </div>
-          </div>
-
-          {/* Tags */}
-          <div className="space-y-2">
-            <Label>Tags</Label>
-            <div className="flex gap-2">
-              <Input
-                value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    addTag();
-                  }
-                }}
-                placeholder="Type a tag and press Enter"
-              />
-              <Button type="button" variant="secondary" onClick={addTag}>
-                Add
-              </Button>
-            </div>
-            {tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {tags.map((t) => (
-                  <Badge key={t} variant="secondary" className="gap-1 pr-1">
-                    {t}
-                    <button
-                      type="button"
-                      onClick={() => removeTag(t)}
-                      className="ml-1 hover:text-destructive"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Variants */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label>Variants</Label>
-              <Button type="button" variant="secondary" size="sm" onClick={addVariant}>
-                <Plus className="h-3.5 w-3.5" /> Add variant
-              </Button>
-            </div>
-            {variants.map((v, i) => (
-              <div
-                key={i}
-                className="grid gap-2 sm:grid-cols-[1fr_2fr_auto] items-end rounded-lg border border-border p-3"
-              >
-                <div className="space-y-1">
-                  <Label className="text-xs">Type</Label>
-                  <Input
-                    value={v.type}
-                    onChange={(e) => updateVariantType(i, e.target.value)}
-                    placeholder="e.g. Color"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs">Options (comma separated)</Label>
-                  <Input
-                    value={v.options.join(", ")}
-                    onChange={(e) => updateVariantOptions(i, e.target.value)}
-                    placeholder="e.g. Red, Blue, Green"
-                  />
-                </div>
-                <Button type="button" variant="ghost" size="icon" onClick={() => removeVariant(i)}>
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
-          </div>
-
-          {/* Status toggle */}
-          <div className="flex items-center justify-between rounded-lg border border-border p-4">
-            <div>
-              <Label className="text-sm font-medium">Published</Label>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                {status === "published"
-                  ? "Visible in your store"
-                  : "Hidden from your store (draft)"}
-              </p>
-            </div>
-            <Switch
-              checked={status === "published"}
-              onCheckedChange={(v) => setStatus(v ? "published" : "draft")}
-            />
-          </div>
-
-          {/* Voice */}
-          <div className="space-y-2 rounded-lg border border-border bg-muted/30 p-4">
-            <div className="flex items-center justify-between gap-3 flex-wrap">
-              <div>
-                <Label className="text-sm font-medium">Product audio narration</Label>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Generate an AI voice-over from the product title and description.
-                </p>
-              </div>
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                onClick={handleGenerateVoice}
-                disabled={generatingVoice || !name.trim()}
-              >
-                {generatingVoice ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Generating…
-                  </>
-                ) : (
-                  <>
-                    <Mic className="h-4 w-4" />
-                    Generate Product Voice
-                  </>
-                )}
-              </Button>
-            </div>
-            {voiceUrl && <audio key={voiceUrl} src={voiceUrl} controls className="w-full mt-2" />}
-          </div>
-
-          {/* Images */}
-          <div className="space-y-2">
-            <Label>Images</Label>
-            {instagramOpen ? (
-              <div className="rounded-lg border border-border p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Import from Instagram</span>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setInstagramOpen(false)}
-                  >
-                    Back to upload
-                  </Button>
-                </div>
-                <InstagramMediaPicker
-                  onSelect={addInstagramPhotos}
-                  onClose={() => setInstagramOpen(false)}
-                />
-              </div>
-            ) : (
-              <>
-                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                  {images.map((url) => (
-                    <div
-                      key={url}
-                      className="relative aspect-square rounded-lg overflow-hidden border border-border bg-muted group"
-                    >
-                      <img src={url} alt="Product" className="h-full w-full object-cover" />
-                      <button
-                        type="button"
-                        onClick={() => removeImage(url)}
-                        className="absolute top-1.5 right-1.5 h-6 w-6 rounded-full bg-background/90 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-soft"
-                        aria-label="Remove image"
-                      >
-                        <X className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  ))}
-                  {images.length < MAX_IMAGES && (
-                    <label
-                      className={`aspect-square rounded-lg border border-dashed border-border flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-primary hover:bg-accent/40 transition-colors text-muted-foreground text-xs ${uploading ? "opacity-50 pointer-events-none" : ""}`}
-                    >
-                      {uploading ? (
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                      ) : (
-                        <Upload className="h-5 w-5" />
-                      )}
-                      <span>{uploading ? "Uploading…" : "Add image"}</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        className="hidden"
-                        onChange={(e) => handleFiles(e.target.files)}
-                      />
-                    </label>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden p-0">
+        {/* Step indicator */}
+        <div className="px-6 pt-5 pb-0">
+          <DialogHeader className="mb-4">
+            <DialogTitle>{product ? "Edit product" : "Add product"}</DialogTitle>
+            <DialogDescription>
+              {product
+                ? "Update the details of this product."
+                : "Fill in the details to add a new product to your store."}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex items-center gap-1 mb-4">
+            {WIZARD_STEPS.map((s, i) => {
+              const StepIcon = s.icon;
+              return (
+                <button
+                  key={s.label}
+                  type="button"
+                  onClick={() => setStep(i)}
+                  className={cn(
+                    "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all",
+                    i === step
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : i < step
+                        ? "bg-primary/10 text-primary"
+                        : "bg-muted text-muted-foreground hover:bg-muted/80",
                   )}
-                </div>
-                <div className="flex items-center justify-between">
-                  <p className="text-xs text-muted-foreground">
-                    Up to {MAX_IMAGES} images, max 5 MB each. PNG, JPG, or WEBP.
-                  </p>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setInstagramOpen(true)}
-                    className="gap-1.5"
-                  >
-                    <ImageIcon className="h-3.5 w-3.5" />
-                    Instagram
-                  </Button>
-                </div>
-              </>
-            )}
+                >
+                  <StepIcon className="h-3 w-3" />
+                  <span className="hidden sm:inline">{s.label}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
+        <div className="px-6 pb-2 overflow-y-auto max-h-[calc(90vh-200px)]">
+          {/* Step 1: Details */}
+          {step === 0 && (
+            <div className="grid gap-4 animate-in fade-in slide-in-from-right-2 duration-200">
+              <div className="space-y-2">
+                <Label htmlFor="name">Product name</Label>
+                <Input
+                  id="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="e.g. Classic White Tee"
+                  maxLength={120}
+                  autoFocus
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="sku">SKU</Label>
+                <Input
+                  id="sku"
+                  value={sku}
+                  onChange={(e) => setSku(e.target.value)}
+                  placeholder="e.g. CWT-001"
+                  maxLength={100}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Tell customers what makes this product special…"
+                  rows={4}
+                  maxLength={2000}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Step 2: Pricing & Stock */}
+          {step === 1 && (
+            <div className="grid gap-4 animate-in fade-in slide-in-from-right-2 duration-200">
+              <div className="grid gap-4 sm:grid-cols-3">
+                <div className="space-y-2">
+                  <Label htmlFor="price">Price (DA)</Label>
+                  <Input
+                    id="price"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="sale_price">Sale Price (DA)</Label>
+                  <Input
+                    id="sale_price"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={salePrice}
+                    onChange={(e) => setSalePrice(e.target.value)}
+                    placeholder="Optional"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="stock">Stock</Label>
+                  <Input
+                    id="stock"
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={stock}
+                    onChange={(e) => setStock(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="category">Category</Label>
+                  <Select value={category} onValueChange={setCategory}>
+                    <SelectTrigger id="category">
+                      <SelectValue placeholder="Choose…" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CATEGORIES.map((c) => (
+                        <SelectItem key={c} value={c}>
+                          {c}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="weight">Weight (kg)</Label>
+                  <Input
+                    id="weight"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={weight}
+                    onChange={(e) => setWeight(e.target.value)}
+                    placeholder="Optional"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 3: Variants & Tags */}
+          {step === 2 && (
+            <div className="grid gap-4 animate-in fade-in slide-in-from-right-2 duration-200">
+              <div className="space-y-2">
+                <Label>Tags</Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        addTag();
+                      }
+                    }}
+                    placeholder="Type a tag and press Enter"
+                  />
+                  <Button type="button" variant="secondary" onClick={addTag}>
+                    Add
+                  </Button>
+                </div>
+                {tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {tags.map((t) => (
+                      <Badge key={t} variant="secondary" className="gap-1 pr-1">
+                        {t}
+                        <button
+                          type="button"
+                          onClick={() => removeTag(t)}
+                          className="ml-1 hover:text-destructive"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label>Variants</Label>
+                  <Button type="button" variant="secondary" size="sm" onClick={addVariant}>
+                    <Plus className="h-3.5 w-3.5" /> Add variant
+                  </Button>
+                </div>
+                {variants.map((v, i) => (
+                  <div
+                    key={i}
+                    className="grid gap-2 sm:grid-cols-[1fr_2fr_auto] items-end rounded-lg border border-border p-3"
+                  >
+                    <div className="space-y-1">
+                      <Label className="text-xs">Type</Label>
+                      <Input
+                        value={v.type}
+                        onChange={(e) => updateVariantType(i, e.target.value)}
+                        placeholder="e.g. Color"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">Options (comma separated)</Label>
+                      <Input
+                        value={v.options.join(", ")}
+                        onChange={(e) => updateVariantOptions(i, e.target.value)}
+                        placeholder="e.g. Red, Blue, Green"
+                      />
+                    </div>
+                    <Button type="button" variant="ghost" size="icon" onClick={() => removeVariant(i)}>
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Step 4: Images & Media */}
+          {step === 3 && (
+            <div className="space-y-4 animate-in fade-in slide-in-from-right-2 duration-200">
+              <div className="space-y-2 rounded-lg border border-border bg-muted/30 p-4">
+                <div className="flex items-center justify-between gap-3 flex-wrap">
+                  <div>
+                    <Label className="text-sm font-medium">Product audio narration</Label>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Generate an AI voice-over from the product title and description.
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    onClick={handleGenerateVoice}
+                    disabled={generatingVoice || !name.trim()}
+                  >
+                    {generatingVoice ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Generating…
+                      </>
+                    ) : (
+                      <>
+                        <Mic className="h-4 w-4" />
+                        Generate Voice
+                      </>
+                    )}
+                  </Button>
+                </div>
+                {voiceUrl && <audio key={voiceUrl} src={voiceUrl} controls className="w-full mt-2" />}
+              </div>
+              <div className="space-y-2">
+                <Label>Images</Label>
+                {instagramOpen ? (
+                  <div className="rounded-lg border border-border p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Import from Instagram</span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setInstagramOpen(false)}
+                      >
+                        Back to upload
+                      </Button>
+                    </div>
+                    <InstagramMediaPicker
+                      onSelect={addInstagramPhotos}
+                      onClose={() => setInstagramOpen(false)}
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                      {images.map((url) => (
+                        <div
+                          key={url}
+                          className="relative aspect-square rounded-lg overflow-hidden border border-border bg-muted group"
+                        >
+                          <img src={url} alt="Product" className="h-full w-full object-cover" />
+                          <button
+                            type="button"
+                            onClick={() => removeImage(url)}
+                            className="absolute top-1.5 right-1.5 h-6 w-6 rounded-full bg-background/90 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-soft"
+                            aria-label="Remove image"
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                      {images.length < MAX_IMAGES && (
+                        <label
+                          className={`aspect-square rounded-lg border border-dashed border-border flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-primary hover:bg-accent/40 transition-colors text-muted-foreground text-xs ${uploading ? "opacity-50 pointer-events-none" : ""}`}
+                        >
+                          {uploading ? (
+                            <Loader2 className="h-5 w-5 animate-spin" />
+                          ) : (
+                            <Upload className="h-5 w-5" />
+                          )}
+                          <span>{uploading ? "Uploading…" : "Add image"}</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            className="hidden"
+                            onChange={(e) => handleFiles(e.target.files)}
+                          />
+                        </label>
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs text-muted-foreground">
+                        Up to {MAX_IMAGES} images, max 5 MB each. PNG, JPG, or WEBP.
+                      </p>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setInstagramOpen(true)}
+                        className="gap-1.5"
+                      >
+                        <ImageIcon className="h-3.5 w-3.5" />
+                        Instagram
+                      </Button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Step 5: Settings */}
+          {step === 4 && (
+            <div className="space-y-4 animate-in fade-in slide-in-from-right-2 duration-200">
+              <div className="flex items-center justify-between rounded-lg border border-border p-4">
+                <div>
+                  <Label className="text-sm font-medium">Published</Label>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {status === "published"
+                      ? "Visible in your store"
+                      : "Hidden from your store (draft)"}
+                  </p>
+                </div>
+                <Switch
+                  checked={status === "published"}
+                  onCheckedChange={(v) => setStatus(v ? "published" : "draft")}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Footer with navigation */}
+        <div className="px-6 py-4 border-t border-border flex items-center justify-between">
+          <Button
+            variant="ghost"
+            onClick={() => setStep((s) => Math.max(0, s - 1))}
+            disabled={step === 0}
+          >
+            <ArrowLeft className="h-4 w-4 mr-1" />
+            Back
           </Button>
-          <Button onClick={save} disabled={saving || uploading}>
-            {saving && <Loader2 className="h-4 w-4 animate-spin" />}
-            {product ? "Save changes" : "Create product"}
-          </Button>
-        </DialogFooter>
+          <div className="text-xs text-muted-foreground">
+            Step {step + 1} of {WIZARD_STEPS.length}
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={() => onOpenChange(false)}>
+              Cancel
+            </Button>
+            {step < WIZARD_STEPS.length - 1 ? (
+              <Button onClick={() => setStep((s) => Math.min(WIZARD_STEPS.length - 1, s + 1))}>
+                Next
+                <ArrowRight className="h-4 w-4 ml-1" />
+              </Button>
+            ) : (
+              <Button onClick={save} disabled={saving || uploading}>
+                {saving && <Loader2 className="h-4 w-4 animate-spin" />}
+                {product ? "Save changes" : "Create product"}
+              </Button>
+            )}
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );

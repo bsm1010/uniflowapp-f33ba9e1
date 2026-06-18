@@ -31,17 +31,23 @@ export function EmptyState({
     >
       <div
         aria-hidden
-        className="absolute -top-20 left-1/2 -translate-x-1/2 h-48 w-48 rounded-full blur-3xl opacity-20 bg-gradient-to-br from-violet-500 via-fuchsia-500 to-pink-500 animate-[pulse_6s_ease-in-out_infinite]"
+        className="absolute -top-24 left-1/2 -translate-x-1/2 h-56 w-56 rounded-full bg-gradient-to-br from-violet-500/10 via-fuchsia-500/10 to-pink-500/10 blur-3xl"
+      />
+      <div
+        aria-hidden
+        className="absolute -bottom-12 right-1/4 h-32 w-32 rounded-full bg-gradient-to-br from-sky-500/10 to-blue-500/10 blur-3xl"
       />
       <div className="relative">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 via-fuchsia-500 to-pink-500 text-white shadow-[0_4px_20px_rgba(139,92,246,0.4)]">
-          <Icon className="h-8 w-8" />
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 via-fuchsia-500 to-pink-500 text-white shadow-[0_4px_24px_rgba(139,92,246,0.35)] transition-transform duration-300 hover:scale-105">
+          <Icon className="h-8 w-8 drop-shadow-sm" />
         </div>
-        <h3 className="mt-4 text-lg font-semibold">{title}</h3>
-        <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">{description}</p>
+        <h3 className="mt-5 text-lg font-bold tracking-tight">{title}</h3>
+        <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground leading-relaxed">
+          {description}
+        </p>
         {action && (
           <div className="mt-6 flex justify-center">
-            <Button variant={action.variant ?? "default"} onClick={action.onClick}>
+            <Button variant={action.variant ?? "default"} onClick={action.onClick} className="gap-1.5">
               {action.label}
             </Button>
           </div>

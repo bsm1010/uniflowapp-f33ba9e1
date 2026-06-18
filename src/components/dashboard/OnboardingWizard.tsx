@@ -319,11 +319,11 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className="w-full max-w-lg rounded-2xl border bg-card shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+      <div className="w-full max-w-lg rounded-3xl border border-border/50 bg-card shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
         {/* Progress bar */}
-        <div className="h-1 bg-muted">
+        <div className="h-1 bg-muted/50">
           <div
-            className="h-full bg-primary transition-all duration-500 ease-out"
+            className="h-full bg-gradient-to-r from-primary to-primary/80 transition-all duration-500 ease-out"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -331,11 +331,11 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
         <div className="p-6 sm:p-8">
           {/* Step indicator */}
           <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-2">
-              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Icon className="h-5 w-5 text-primary" />
+            <div className="flex items-center gap-3">
+              <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center border border-primary/10">
+                <Icon className="h-6 w-6 text-primary" />
               </div>
-              <div className="text-xs font-medium text-muted-foreground">
+              <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Step {step + 1} of {steps.length}
               </div>
             </div>
@@ -344,12 +344,12 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
                 <div
                   key={i}
                   className={cn(
-                    "h-1.5 rounded-full transition-all duration-300",
+                    "h-2 rounded-full transition-all duration-300",
                     i < step
-                      ? "w-1.5 bg-primary"
+                      ? "w-2 bg-primary"
                       : i === step
-                        ? "w-6 bg-primary"
-                        : "w-1.5 bg-muted",
+                        ? "w-8 bg-primary"
+                        : "w-2 bg-muted",
                   )}
                 />
               ))}
@@ -359,13 +359,13 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
           {/* Header */}
           <div className="mb-6">
             {step === 0 && (
-              <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-primary/10 border border-primary/10 px-3 py-1 text-xs font-semibold text-primary animate-in fade-in slide-in-from-top-2 duration-300">
                 <Sparkles className="h-3 w-3" />
                 Welcome! Let's set up your experience
               </div>
             )}
             <h2 className="text-2xl font-bold tracking-tight">{current.title}</h2>
-            <p className="mt-1 text-sm text-muted-foreground">{current.subtitle}</p>
+            <p className="mt-1.5 text-sm text-muted-foreground">{current.subtitle}</p>
           </div>
 
           {/* Step content with slide transition */}
@@ -388,18 +388,18 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
                       type="button"
                       onClick={() => setSource(value)}
                       className={cn(
-                        "group flex items-center gap-2.5 rounded-lg border p-3 text-left text-sm transition-all",
+                        "group flex items-center gap-2.5 rounded-xl border p-3 text-left text-sm transition-all",
                         selected
-                          ? "border-primary bg-primary/5 ring-2 ring-primary/20"
-                          : "border-border hover:border-primary/40 hover:bg-muted/40",
+                          ? "border-primary bg-primary/5 ring-2 ring-primary/20 shadow-sm"
+                          : "border-border hover:border-primary/40 hover:bg-muted/40 hover:shadow-sm",
                       )}
                     >
                       <div
                         className={cn(
-                          "h-8 w-8 rounded-md flex items-center justify-center shrink-0 transition-colors",
+                          "h-9 w-9 rounded-xl flex items-center justify-center shrink-0 transition-all duration-200",
                           selected
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-muted text-muted-foreground",
+                            ? "bg-primary text-primary-foreground shadow-sm"
+                            : "bg-muted text-muted-foreground group-hover:bg-muted/80",
                         )}
                       >
                         <SrcIcon className="h-4 w-4" />
@@ -426,7 +426,7 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
                     className="ps-9"
                   />
                 </div>
-                <div className="max-h-48 overflow-y-auto rounded-md border border-input bg-background">
+                <div className="max-h-48 overflow-y-auto rounded-xl border border-border bg-background">
                   {filteredWilayas.length === 0 ? (
                     <div className="p-3 text-sm text-muted-foreground text-center">No matches</div>
                   ) : (
@@ -438,7 +438,7 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
                           type="button"
                           onClick={() => setWilaya(w)}
                           className={cn(
-                            "w-full flex items-center justify-between px-3 py-2 text-sm text-left transition-colors",
+                            "w-full flex items-center justify-between px-3 py-2.5 text-sm text-left transition-colors",
                             selected
                               ? "bg-primary/10 text-primary font-medium"
                               : "hover:bg-muted/60",
@@ -515,7 +515,7 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
                   id="currency-select"
                   value={currency}
                   onChange={(e) => setCurrency(e.target.value)}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  className="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                 >
                   {CURRENCIES.map((c) => (
                     <option key={c.code} value={c.code}>
@@ -530,7 +530,7 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
               <div className="space-y-3">
                 <Label>Logo (optional)</Label>
                 <div className="flex items-center gap-4">
-                  <div className="h-20 w-20 rounded-xl border-2 border-dashed border-border flex items-center justify-center bg-muted/30 overflow-hidden shrink-0">
+                  <div className="h-20 w-20 rounded-2xl border-2 border-dashed border-border flex items-center justify-center bg-muted/30 overflow-hidden shrink-0">
                     {logoPreview ? (
                       <img
                         src={logoPreview}
@@ -579,21 +579,21 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
               Back
             </Button>
             {step < steps.length - 1 ? (
-              <Button onClick={next} disabled={!current.valid}>
+              <Button onClick={next} disabled={!current.valid} className="gap-1.5">
                 Next
-                <ArrowRight className="h-4 w-4 ml-1" />
+                <ArrowRight className="h-4 w-4" />
               </Button>
             ) : (
-              <Button onClick={finish} disabled={submitting}>
+              <Button onClick={finish} disabled={submitting} className="gap-1.5">
                 {submitting ? (
                   <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    <Loader2 className="h-4 w-4 animate-spin" />
                     Setting up…
                   </>
                 ) : (
                   <>
                     Finish
-                    <Check className="h-4 w-4 ml-1" />
+                    <Check className="h-4 w-4" />
                   </>
                 )}
               </Button>

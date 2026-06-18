@@ -67,26 +67,31 @@ export const Route = createFileRoute("/dashboard/orders")({
 const STATUS_FLOW = ["pending", "confirmed", "shipped", "delivered"] as const;
 type Status = (typeof STATUS_FLOW)[number];
 
-const STATUS_VARIANT: Record<string, { label: string; className: string }> = {
+const STATUS_VARIANT: Record<string, { label: string; className: string; dotColor: string }> = {
   pending: {
     label: "Pending",
     className: "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30",
+    dotColor: "bg-amber-500",
   },
   confirmed: {
     label: "Confirmed",
     className: "bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-500/30",
+    dotColor: "bg-sky-500",
   },
   shipped: {
     label: "Shipped",
     className: "bg-violet-500/10 text-violet-700 dark:text-violet-400 border-violet-500/30",
+    dotColor: "bg-violet-500",
   },
   delivered: {
     label: "Delivered",
     className: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30",
+    dotColor: "bg-emerald-500",
   },
   cancelled: {
     label: "Cancelled",
     className: "bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/30",
+    dotColor: "bg-rose-500",
   },
 };
 
@@ -633,8 +638,9 @@ function OrdersPage() {
                             <SelectTrigger className="h-8 w-[130px] border-0 p-0 focus:ring-0 shadow-none bg-transparent [&>svg]:opacity-50">
                               <Badge
                                 variant="outline"
-                                className={`${status.className} font-medium`}
+                                className={`${status.className} font-medium gap-1.5`}
                               >
+                                <span className={`h-1.5 w-1.5 rounded-full ${status.dotColor} shrink-0`} />
                                 {status.label}
                               </Badge>
                             </SelectTrigger>
@@ -723,10 +729,16 @@ function OrdersPage() {
       )}
 
       {selectedIds.size > 0 && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-card border border-border shadow-xl rounded-full px-4 py-2 flex items-center gap-2">
-          <span className="text-sm font-medium px-2">{selectedIds.size} selected</span>
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-card/95 backdrop-blur-xl border border-border shadow-2xl rounded-2xl px-5 py-3 flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
+              <span className="text-xs font-bold text-primary">{selectedIds.size}</span>
+            </div>
+            <span className="text-sm font-medium">selected</span>
+          </div>
+          <div className="h-6 w-px bg-border" />
           <Select onValueChange={(v) => bulkUpdateStatus(v as Status)}>
-            <SelectTrigger className="h-8 w-[130px] sm:w-[150px]">
+            <SelectTrigger className="h-9 w-[140px] sm:w-[160px] border-border/60">
               <SelectValue placeholder="Update status" />
             </SelectTrigger>
             <SelectContent>
@@ -738,7 +750,7 @@ function OrdersPage() {
               <SelectItem value="cancelled">Cancelled</SelectItem>
             </SelectContent>
           </Select>
-          <Button size="sm" variant="ghost" onClick={() => setSelectedIds(new Set())}>
+          <Button size="sm" variant="ghost" onClick={() => setSelectedIds(new Set())} className="h-9 w-9 p-0">
             <X className="h-4 w-4" />
           </Button>
         </div>

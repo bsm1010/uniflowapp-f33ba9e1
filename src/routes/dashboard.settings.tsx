@@ -317,10 +317,11 @@ function SettingsPage() {
       />
 
       {/* Store */}
-      <Card className="border-border/60 shadow-soft">
+      <Card className="border-border/50 shadow-sm overflow-hidden">
+        <div className="h-1 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-pink-500" />
         <CardHeader>
           <div className="flex items-center gap-3">
-            <div className="grid size-9 place-items-center rounded-lg bg-primary/10 text-primary">
+            <div className="grid size-10 place-items-center rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white shadow-sm">
               <Store className="size-4" />
             </div>
             <div>
@@ -361,10 +362,11 @@ function SettingsPage() {
       </Card>
 
       {/* Domain / URL */}
-      <Card className="border-border/60 shadow-soft">
+      <Card className="border-border/50 shadow-sm overflow-hidden">
+        <div className="h-1 bg-gradient-to-r from-sky-500 via-blue-500 to-indigo-500" />
         <CardHeader>
           <div className="flex items-center gap-3">
-            <div className="grid size-9 place-items-center rounded-lg bg-primary/10 text-primary">
+            <div className="grid size-10 place-items-center rounded-xl bg-gradient-to-br from-sky-500 to-blue-500 text-white shadow-sm">
               <Globe className="size-4" />
             </div>
             <div>
@@ -435,10 +437,11 @@ function SettingsPage() {
       </Card>
 
       {/* Payments */}
-      <Card className="border-border/60 shadow-soft">
+      <Card className="border-border/50 shadow-sm overflow-hidden">
+        <div className="h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500" />
         <CardHeader>
           <div className="flex items-center gap-3">
-            <div className="grid size-9 place-items-center rounded-lg bg-primary/10 text-primary">
+            <div className="grid size-10 place-items-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-sm">
               <CreditCard className="size-4" />
             </div>
             <div>
@@ -504,10 +507,11 @@ function SettingsPage() {
       </Card>
 
       {/* Profile */}
-      <Card className="border-border/60 shadow-soft">
+      <Card className="border-border/50 shadow-sm overflow-hidden">
+        <div className="h-1 bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500" />
         <CardHeader>
           <div className="flex items-center gap-3">
-            <div className="grid size-9 place-items-center rounded-lg bg-primary/10 text-primary">
+            <div className="grid size-10 place-items-center rounded-xl bg-gradient-to-br from-orange-500 to-amber-500 text-white shadow-sm">
               <User className="size-4" />
             </div>
             <div>

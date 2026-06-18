@@ -203,20 +203,23 @@ function AnalyticsPage() {
 
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
         {statCards.map((k) => (
-          <Card key={k.label} className="relative overflow-hidden border-border/60 shadow-soft">
-            <div
-              className={`absolute -top-12 -right-12 h-32 w-32 rounded-full blur-3xl opacity-25 bg-gradient-to-br ${k.gradient}`}
-            />
+          <Card
+            key={k.label}
+            className={`relative overflow-hidden border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br ${k.gradient}`}
+          >
+            <div className="absolute -top-12 -right-12 h-32 w-32 rounded-full bg-white/15 blur-2xl pointer-events-none" />
             <CardContent className="relative p-5">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">{k.label}</span>
-                <div
-                  className={`grid size-8 place-items-center rounded-lg text-white bg-gradient-to-br ${k.gradient}`}
-                >
-                  <k.icon className="h-3.5 w-3.5" />
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-white/80">
+                  {k.label}
+                </span>
+                <div className="h-9 w-9 rounded-xl bg-white/20 backdrop-blur-sm text-white flex items-center justify-center">
+                  <k.icon className="h-4 w-4" />
                 </div>
               </div>
-              <div className="mt-2 text-xl font-bold font-display">{k.value}</div>
+              <div className="mt-3 text-2xl font-bold font-display tabular-nums text-white">
+                {k.value}
+              </div>
             </CardContent>
           </Card>
         ))}

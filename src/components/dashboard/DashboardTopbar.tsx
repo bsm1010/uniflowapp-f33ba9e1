@@ -252,7 +252,7 @@ export function DashboardTopbar({ name, avatarUrl }: { name: string; avatarUrl?:
 
   return (
     <>
-    <header className="h-16 border-b border-border/60 bg-background/80 backdrop-blur-xl sticky top-0 z-30 flex items-center gap-3 px-4">
+    <header className="h-16 border-b border-border/50 bg-background/80 backdrop-blur-xl sticky top-0 z-30 flex items-center gap-3 px-4">
       <SidebarTrigger />
       <StoreSwitcherButton />
       <div className="hidden md:flex items-center gap-2 max-w-md flex-1">
@@ -267,7 +267,7 @@ export function DashboardTopbar({ name, avatarUrl }: { name: string; avatarUrl?:
             }}
             onFocus={() => query && setOpen(true)}
             onKeyDown={onKeyDown}
-            className="ps-9 bg-muted/50 border-transparent focus-visible:bg-background"
+            className="ps-9 bg-muted/40 border-transparent focus-visible:bg-background focus-visible:border-border/50"
           />
           {open && query && (
             <div className="absolute left-0 right-0 top-full mt-2 rounded-lg border border-border bg-popover shadow-lg overflow-hidden z-40">
