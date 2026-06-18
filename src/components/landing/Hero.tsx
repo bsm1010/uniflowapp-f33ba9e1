@@ -8,12 +8,12 @@ export function Hero() {
   const { t } = useTranslation();
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-      {/* Animated mesh gradient background — GPU-composited, mobile-safe */}
+      {/* Animated mesh gradient background */}
       <div className="absolute inset-0">
-        <div className="absolute inset-0 animate-mesh-gradient bg-gradient-to-br from-violet-600/20 via-fuchsia-500/10 to-cyan-500/20 dark:from-violet-600/25 dark:via-fuchsia-500/15 dark:to-cyan-500/25" />
-        <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-violet-500/20 dark:bg-violet-500/25 rounded-full animate-mesh-gradient [animation-delay:0s]" />
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-fuchsia-500/15 dark:bg-fuchsia-500/20 rounded-full animate-mesh-gradient [animation-delay:-3s]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] bg-cyan-500/10 dark:bg-cyan-500/15 rounded-full animate-mesh-gradient [animation-delay:-5s]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-500/15 via-fuchsia-500/8 to-cyan-500/15 dark:from-violet-500/20 dark:via-fuchsia-500/10 dark:to-cyan-500/20" />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-violet-400/20 dark:bg-violet-500/30 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-fuchsia-400/15 dark:bg-fuchsia-500/25 rounded-full blur-[120px] animate-pulse [animation-delay:1s]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-400/10 dark:bg-cyan-500/15 rounded-full blur-[150px] animate-pulse [animation-delay:2s]" />
         {/* Grid pattern */}
         <div
           aria-hidden
@@ -45,7 +45,7 @@ export function Hero() {
         >
           {t("hero.titleA")}
           <br />
-          <span className="bg-gradient-to-r from-violet-600 via-fuchsia-500 to-cyan-500 animate-gradient-text">
+          <span className="bg-gradient-to-r from-violet-600 via-fuchsia-500 to-cyan-500 bg-clip-text text-transparent">
             {t("hero.titleB")}
           </span>
         </motion.h1>

@@ -24,7 +24,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Img } from "@/components/ui/Img";
 import {
   Table,
   TableBody,
@@ -723,7 +722,7 @@ function CategoriesPage() {
               </Label>
               {newImagePreview ? (
                 <div className="relative w-full h-32 rounded-lg overflow-hidden border border-border/60">
-                  <Img src={newImagePreview} alt="Preview" className="w-full h-full" />
+                  <img src={newImagePreview} alt="Preview" className="w-full h-full object-cover" />
                   <button
                     onClick={() => {
                       setNewImageFile(null);

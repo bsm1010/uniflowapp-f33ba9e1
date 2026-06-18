@@ -40,8 +40,7 @@ function StockAlertsPage() {
         .from("products")
         .select("*")
         .eq("user_id", user.id)
-        .order("stock", { ascending: true })
-        .limit(200);
+        .order("stock", { ascending: true });
       if (error) {
         toast.error("Failed to load products");
         setProducts([]);

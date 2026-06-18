@@ -94,22 +94,16 @@ export function CurrentStoreProvider({ children }: { children: ReactNode }) {
     [stores, currentId],
   );
 
-  const openPicker = useCallback(() => setPickerOpen(true), []);
-  const closePicker = useCallback(() => setPickerOpen(false), []);
-
-  const value: Ctx = useMemo(
-    () => ({
-      stores,
-      currentStore,
-      loading,
-      setCurrent,
-      refresh: load,
-      pickerOpen,
-      openPicker,
-      closePicker,
-    }),
-    [stores, currentStore, loading, setCurrent, load, pickerOpen, openPicker, closePicker],
-  );
+  const value: Ctx = {
+    stores,
+    currentStore,
+    loading,
+    setCurrent,
+    refresh: load,
+    pickerOpen,
+    openPicker: () => setPickerOpen(true),
+    closePicker: () => setPickerOpen(false),
+  };
 
   return <CurrentStoreCtx.Provider value={value}>{children}</CurrentStoreCtx.Provider>;
 }

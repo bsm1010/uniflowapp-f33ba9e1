@@ -1,10 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Loader2, Truck, Search, Copy, CheckCircle2, MapPin } from "lucide-react";
 import deliveryMan from "@/assets/delivery-man.webp";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
-import { useDebounce } from "@/hooks/use-debounce";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import { PageHeader, EmptyState } from "@/components/dashboard/PageHeader";
@@ -60,18 +59,16 @@ function ShipmentsPage() {
   const [orders, setOrders] = useState<Record<string, Order>>({});
   const [companies, setCompanies] = useState<Record<string, Company>>({});
   const [query, setQuery] = useState("");
-  const debouncedQuery = useDebounce(query);
   const [loadError, setLoadError] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
+  const load = async () => {
     if (!user) return;
     try {
       const { data: ships, error: shipErr } = await supabase
         .from("shipments")
         .select("*")
         .eq("store_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(200);
+        .order("created_at", { ascending: false });
       if (shipErr) {
         setLoadError(shipErr.message);
         setShipments([]);
@@ -105,7 +102,7 @@ function ShipmentsPage() {
       setLoadError("Failed to load shipments");
       setShipments([]);
     }
-  }, [user]);
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -149,7 +146,7 @@ function ShipmentsPage() {
   const filtered = useMemo(
     () =>
       (shipments ?? []).filter((s) => {
-        const q = debouncedQuery.trim().toLowerCase();
+        const q = query.trim().toLowerCase();
         if (!q) return true;
         const o = orders[s.order_id];
         return (
@@ -159,7 +156,7 @@ function ShipmentsPage() {
           s.id.toLowerCase().startsWith(q)
         );
       }),
-    [shipments, orders, debouncedQuery],
+    [shipments, orders, query],
   );
 
   return (

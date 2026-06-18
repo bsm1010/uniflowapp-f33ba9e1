@@ -68,6 +68,11 @@ export const Route = createRootRoute({
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
+        rel: "preload",
+        as: "style",
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&family=Tajawal:wght@400;500;700&display=swap&font-display=swap",
+      },
+      {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&family=Tajawal:wght@400;500;700&display=swap&font-display=swap",
       },
@@ -106,7 +111,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "setTimeout(function(){document.documentElement.classList.add('app-booted')},100);",
+              "setTimeout(function(){document.documentElement.classList.add('app-booted')},3000);",
           }}
         />
         {children}

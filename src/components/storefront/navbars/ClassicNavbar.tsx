@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "@tanstack/react-router";
 import { ShoppingBag, Menu, X } from "lucide-react";
-import { Img } from "@/components/ui/Img";
 import type { StoreTokens, NavLink } from "@/lib/storeTheme";
 
 interface ClassicNavbarProps {
@@ -44,7 +43,7 @@ export function ClassicNavbar({
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
         <Link to="/s/$slug" params={{ slug }} className="flex items-center gap-2.5 shrink-0">
           {logo ? (
-            <Img src={logo} alt={brand} className="h-8 w-auto" objectFit="contain" />
+            <img src={logo} alt={brand} className="h-8 w-auto" />
           ) : (
             <span className="text-lg font-bold font-display" style={{ color: t.fg }}>
               {brand}

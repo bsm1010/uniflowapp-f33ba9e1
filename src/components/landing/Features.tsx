@@ -14,8 +14,8 @@ export function Features() {
   const { t } = useTranslation();
   return (
     <section id="features" className="py-20 md:py-28 relative">
-      <div className="absolute top-1/2 left-0 w-64 h-64 bg-violet-500/10 dark:bg-violet-500/12 rounded-full animate-mesh-gradient [animation-delay:-1s] pointer-events-none" />
-      <div className="absolute top-1/3 right-0 w-64 h-64 bg-fuchsia-500/10 dark:bg-fuchsia-500/12 rounded-full animate-mesh-gradient [animation-delay:-4s] pointer-events-none" />
+      <div className="absolute top-1/2 left-0 w-72 h-72 bg-violet-400/10 dark:bg-violet-500/10 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-1/3 right-0 w-72 h-72 bg-fuchsia-400/10 dark:bg-fuchsia-500/10 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="relative mx-auto max-w-6xl px-4">
         <div className="mx-auto max-w-2xl text-center">

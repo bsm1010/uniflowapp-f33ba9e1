@@ -74,31 +74,6 @@
   animation: pageFadeOut 0.15s ease forwards;
 }
 
-/* Animated gradient background — GPU-composited (no filter:blur), mobile-safe */
-@keyframes meshGradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-.animate-mesh-gradient {
-  background-size: 200% 200%;
-  animation: meshGradient 8s ease infinite;
-}
-
-/* Animated gradient text */
-@keyframes gradientText {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-.animate-gradient-text {
-  background-size: 200% 200%;
-  animation: gradientText 4s ease infinite;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
 @source "../src";
 @import "tw-animate-css";
 /* Fonts loaded via <link> in __root.tsx */

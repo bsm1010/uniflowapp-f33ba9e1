@@ -1,7 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import { ChevronsUpDown, Store as StoreIcon } from "lucide-react";
 import { useCurrentStore } from "@/hooks/use-current-store";
-import { Img } from "@/components/ui/Img";
 
 export function StoreSwitcherButton() {
   const { currentStore, stores } = useCurrentStore();
@@ -17,7 +16,7 @@ export function StoreSwitcherButton() {
     >
       <div className="h-7 w-7 rounded-md bg-muted overflow-hidden flex items-center justify-center shrink-0">
         {currentStore?.logo_url ? (
-          <Img src={currentStore.logo_url} alt={(currentStore?.name || "Store") + " logo"} className="h-full w-full" />
+          <img src={currentStore.logo_url} alt={(currentStore?.name || "Store") + " logo"} className="h-full w-full object-cover" />
         ) : (
           <StoreIcon className="h-4 w-4 text-muted-foreground" />
         )}

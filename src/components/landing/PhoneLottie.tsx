@@ -6,7 +6,6 @@ export function PhoneLottie() {
   const [visible, setVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const lottieRef = useRef<LottieRefCurrentProps>(null);
-  const loadedRef = useRef(false);
 
   useEffect(() => {
     const el = ref.current;
@@ -15,8 +14,7 @@ export function PhoneLottie() {
       (entries) => {
         const inView = entries[0].isIntersecting;
         setVisible(inView);
-        if (inView && !loadedRef.current) {
-          loadedRef.current = true;
+        if (inView && !animationData) {
           import("@/assets/phone.json").then((data) => {
             setAnimationData(data.default);
           });
@@ -26,7 +24,7 @@ export function PhoneLottie() {
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [animationData]);
 
   useEffect(() => {
     if (!lottieRef.current) return;
@@ -40,7 +38,7 @@ export function PhoneLottie() {
         <Lottie
           lottieRef={lottieRef}
           animationData={animationData}
-          loop={false}
+          loop
           autoplay={false}
           className="w-full max-w-lg mx-auto"
           rendererSettings={{

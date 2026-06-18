@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate, useLocation } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useState, useMemo } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -54,10 +54,28 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function AnimatedOutlet() {
+  const location = useLocation();
+  const [displayLocation, setDisplayLocation] = useState(location);
+  const [transitionStage, setTransitionStage] = useState<"fadeIn" | "fadeOut">("fadeIn");
+
+  useEffect(() => {
+    if (location.pathname !== displayLocation.pathname) {
+      setTransitionStage("fadeOut");
+    }
+  }, [location, displayLocation]);
+
   return (
-    <div className="page-fade-in">
-      <Outlet />
-    </div>
+      <div
+        className={transitionStage === "fadeIn" ? "page-fade-in" : "page-fade-out"}
+        onAnimationEnd={() => {
+          if (transitionStage === "fadeOut") {
+            setDisplayLocation(location);
+            setTransitionStage("fadeIn");
+          }
+        }}
+      >
+        <Outlet />
+      </div>
   );
 }
 
@@ -79,11 +97,9 @@ function DashboardLayout() {
     [],
   );
 
-  const [profile, setProfile] = useState<{
-    name: string;
-    avatarUrl: string | null;
-    onboardingCompleted: boolean | null;
-  }>({ name: "", avatarUrl: null, onboardingCompleted: null });
+  const [name, setName] = useState<string>("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [onboardingCompleted, setOnboardingCompleted] = useState<boolean | null>(null);
 
   const [selectedStore, setSelectedStore] = useState<string | null>(null);
   const [storeHydrated, setStoreHydrated] = useState(false);
@@ -133,11 +149,9 @@ function DashboardLayout() {
         .eq("id", user.id)
         .maybeSingle();
 
-      setProfile({
-        name: data?.name ?? "",
-        avatarUrl: data?.avatar_url ?? null,
-        onboardingCompleted: data?.onboarding_completed ?? false,
-      });
+      setName(data?.name ?? "");
+      setAvatarUrl(data?.avatar_url ?? null);
+      setOnboardingCompleted(data?.onboarding_completed ?? false);
     };
 
     load();
@@ -157,8 +171,8 @@ function DashboardLayout() {
 
   if (!user) return null;
 
-  const showWizard = profile.onboardingCompleted === false;
-  const isLoadingOnboarding = profile.onboardingCompleted === null;
+  const showWizard = onboardingCompleted === false;
+  const isLoadingOnboarding = onboardingCompleted === null;
 
   if (isLoadingOnboarding) {
     return <LogoLoader />;
@@ -167,11 +181,11 @@ function DashboardLayout() {
   if (showWizard) {
     return (
       <div className="min-h-screen bg-background">
-          <OnboardingWizard
-            userId={user.id}
-            initialName={profile.name}
-            onComplete={() => setProfile((p) => ({ ...p, onboardingCompleted: true }))}
-          />
+        <OnboardingWizard
+          userId={user.id}
+          initialName={name}
+          onComplete={() => setOnboardingCompleted(true)}
+        />
       </div>
     );
   }
@@ -187,7 +201,7 @@ function DashboardLayout() {
               <SidebarInset className="flex-1 flex flex-col min-w-0">
                 <IOSInstallBanner />
 
-                <DashboardTopbar name={profile.name} avatarUrl={profile.avatarUrl} />
+                <DashboardTopbar name={name} avatarUrl={avatarUrl} />
 
                 <main className="flex-1 p-4 md:p-8 min-h-0 overflow-y-auto overflow-x-hidden">
                   <AnimatedOutlet />

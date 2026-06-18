@@ -30,7 +30,6 @@ import { PageHeader } from "@/components/dashboard/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Img } from "@/components/ui/Img";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -297,7 +296,7 @@ function StorePage() {
         <CardContent className="p-6 -mt-10 relative">
           <div className="h-20 w-20 rounded-2xl bg-background border-4 border-background shadow-soft flex items-center justify-center overflow-hidden">
             {settings?.logo_url ? (
-              <Img src={settings.logo_url} alt="Store logo" className="h-full w-full" />
+              <img src={settings.logo_url} alt="Store logo" className="h-full w-full object-cover" />
             ) : (
               <div
                 className="h-12 w-12 rounded-xl"

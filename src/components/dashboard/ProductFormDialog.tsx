@@ -23,7 +23,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { InstagramMediaPicker } from "@/components/dashboard/InstagramMediaPicker";
-import { Img } from "@/components/ui/Img";
 import {
   Select,
   SelectContent,
@@ -553,7 +552,7 @@ export function ProductFormDialog({ open, onOpenChange, product, onSaved }: Prop
                       key={url}
                       className="relative aspect-square rounded-lg overflow-hidden border border-border bg-muted group"
                     >
-                      <Img src={url} alt="Product" className="h-full w-full" />
+                      <img src={url} alt="Product" className="h-full w-full object-cover" />
                       <button
                         type="button"
                         onClick={() => removeImage(url)}

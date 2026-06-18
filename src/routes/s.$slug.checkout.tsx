@@ -10,7 +10,6 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/compone
 import { StorefrontShell, getStoreTokens } from "@/components/storefront/StorefrontShell";
 import { useCart } from "@/hooks/use-cart";
 import { ALGERIA_GEO, getCitiesForWilaya } from "@/lib/algeriaWilayas";
-import { Img } from "@/components/ui/Img";
 
 type DeliveryType = "domicile" | "stopdesk";
 const tariffKey = (companyId: string, wilaya: string, city: string, type: DeliveryType) =>
@@ -660,7 +659,7 @@ function CheckoutPage() {
                           }}
                         >
                           {item.image && (
-                            <Img src={item.image} alt={item.name || "Cart item"} className="h-full w-full" />
+                            <img src={item.image} alt={item.name || "Cart item"} className="h-full w-full object-cover" />
                           )}
                         </div>
                         <div className="flex-1 min-w-0">

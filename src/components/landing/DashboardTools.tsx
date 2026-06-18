@@ -36,8 +36,8 @@ export function DashboardTools() {
 
   return (
     <section className="relative py-24 md:py-32 overflow-hidden">
-      <div className="absolute top-0 right-0 w-72 h-72 bg-violet-500/10 dark:bg-violet-500/12 rounded-full animate-mesh-gradient [animation-delay:-2s] pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-72 h-72 bg-fuchsia-500/10 dark:bg-fuchsia-500/12 rounded-full animate-mesh-gradient [animation-delay:-5s] pointer-events-none" />
+      <div className="absolute top-0 right-0 w-96 h-96 bg-violet-400/10 dark:bg-violet-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-fuchsia-400/10 dark:bg-fuchsia-500/10 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid items-center gap-16 lg:grid-cols-2">

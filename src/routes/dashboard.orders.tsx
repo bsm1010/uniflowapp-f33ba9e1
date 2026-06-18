@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Loader2,
   Search,
@@ -31,7 +31,6 @@ import { Img } from "@/components/ui/Img";
 import { WhatsAppCallButton } from "@/components/dashboard/WhatsAppCallButton";
 import { useCallLog } from "@/hooks/use-call-log";
 import { useBordereaux, type BordereauOrder } from "@/hooks/use-bordereaux";
-import { useDebounce } from "@/hooks/use-debounce";
 import { formatDistanceToNow } from "date-fns";
 
 import type { Tables } from "@/integrations/supabase/types";
@@ -101,7 +100,6 @@ function OrdersPage() {
   const [items, setItems] = useState<Record<string, OrderItem[]>>({});
   const [shipments, setShipments] = useState<Record<string, Shipment>>({});
   const [query, setQuery] = useState("");
-  const debouncedQuery = useDebounce(query);
   const [shipOrder, setShipOrder] = useState<Order | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [pushingId, setPushingId] = useState<string | null>(null);
@@ -166,15 +164,14 @@ function OrdersPage() {
     }
   };
 
-  const loadOrders = useCallback(async () => {
+  const loadOrders = async () => {
     if (!user) return;
     try {
       let q = supabase
         .from("orders")
         .select("*")
         .eq("store_owner_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(200);
+        .order("created_at", { ascending: false });
       if (currentStore?.id) q = q.eq("store_id", currentStore.id);
       const { data: ords } = await q;
       const list = ords ?? [];
@@ -208,7 +205,7 @@ function OrdersPage() {
     } catch {
       toast.error("Failed to load orders");
     }
-  }, [user, currentStore?.id]);
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -217,28 +214,11 @@ function OrdersPage() {
       .channel(`orders-${user.id}`)
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "orders", filter: `store_owner_id=eq.${user.id}` },
-        (payload) => {
-          // Optimistically add new order to the top
-          const newOrder = payload.new as Order;
-          setOrders((cur) => cur ? [newOrder, ...cur].slice(0, 200) : cur);
-        },
+        { event: "*", schema: "public", table: "orders", filter: `store_owner_id=eq.${user.id}` },
+        () => loadOrders(),
       )
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "orders", filter: `store_owner_id=eq.${user.id}` },
-        (payload) => {
-          const updated = payload.new as Order;
-          setOrders((cur) => cur ? cur.map((o) => o.id === updated.id ? updated : o) : cur);
-        },
-      )
-      .on(
-        "postgres_changes",
-        { event: "DELETE", schema: "public", table: "orders", filter: `store_owner_id=eq.${user.id}` },
-        (payload) => {
-          const deleted = payload.old as { id: string };
-          setOrders((cur) => cur ? cur.filter((o) => o.id !== deleted.id) : cur);
-        },
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "order_items" }, () =>
+        loadOrders(),
       )
       .subscribe();
     return () => {
@@ -273,7 +253,7 @@ function OrdersPage() {
   const filtered = useMemo(
     () =>
       (orders ?? []).filter((o) => {
-        const q = debouncedQuery.trim().toLowerCase();
+        const q = query.trim().toLowerCase();
         if (!q) return true;
         return (
           o.customer_name.toLowerCase().includes(q) ||
@@ -283,7 +263,7 @@ function OrdersPage() {
           o.id.toLowerCase().startsWith(q)
         );
       }),
-    [orders, debouncedQuery],
+    [orders, query],
   );
 
   const toggle = (id: string) => {

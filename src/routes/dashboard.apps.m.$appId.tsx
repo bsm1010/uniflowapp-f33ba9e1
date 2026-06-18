@@ -7,7 +7,6 @@ import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Img } from "@/components/ui/Img";
 
 export const Route = createFileRoute("/dashboard/apps/m/$appId")({
   component: MarketplaceAppPage,
@@ -126,7 +125,7 @@ function MarketplaceAppPage() {
         <Card className="p-5 h-fit lg:sticky lg:top-4 space-y-4">
           <div className="h-20 w-20 rounded-2xl bg-muted overflow-hidden flex items-center justify-center mx-auto">
             {app.icon_url ? (
-              <Img src={app.icon_url} alt={app.title} className="h-full w-full" />
+              <img src={app.icon_url} alt={app.title} className="h-full w-full object-cover" />
             ) : (
               <Store className="h-10 w-10 text-muted-foreground" />
             )}
@@ -173,7 +172,7 @@ function MarketplaceAppPage() {
         <div className="space-y-6 min-w-0">
           {hero && (
             <div className="rounded-2xl overflow-hidden bg-muted aspect-video">
-              <Img src={hero} alt={app?.title || "App screenshot"} className="w-full h-full" />
+              <img src={hero} alt={app?.title || "App screenshot"} className="w-full h-full object-cover" />
             </div>
           )}
           {app.screenshots.length > 1 && (
@@ -188,7 +187,7 @@ function MarketplaceAppPage() {
                       : "border-transparent opacity-70 hover:opacity-100"
                   }`}
                 >
-                  <Img src={s} alt={(app?.title || "App") + " screenshot " + (i + 1)} className="w-full h-full" />
+                  <img src={s} alt={(app?.title || "App") + " screenshot " + (i + 1)} className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>
