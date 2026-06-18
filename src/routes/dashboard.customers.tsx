@@ -71,7 +71,8 @@ function CustomersPage() {
           "id, customer_name, customer_email, customer_phone, shipping_address, shipping_city, shipping_wilaya, total, status, delivery_type, created_at",
         )
         .eq("store_owner_id", user.id)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(500);
       if (error) {
         setLoadError(error.message);
         setLoading(false);

@@ -68,7 +68,8 @@ export function AlgeriaOrdersMap() {
         .from("orders")
         .select("shipping_city, shipping_postal_code")
         .eq("store_id", currentStore.id)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(500);
 
       if (cancelled) return;
       const next: Record<string, number> = {};
@@ -82,7 +83,7 @@ export function AlgeriaOrdersMap() {
 
     void load();
 
-    // ── Live updates: re-fetch on any INSERT ──────────────────────────────────
+    // ── Live updates: incrementally add new orders ────────────────────────────
     const channel = supabase
       .channel(`algeria-map-orders-${currentStore.id}`)
       .on(
@@ -93,7 +94,13 @@ export function AlgeriaOrdersMap() {
           table: "orders",
           filter: `store_id=eq.${currentStore.id}`,
         },
-        () => void load(),
+        (payload) => {
+          const newOrder = payload.new as { shipping_city: string; shipping_postal_code: string };
+          const wilaya = resolveWilaya(newOrder.shipping_city, newOrder.shipping_postal_code);
+          if (wilaya) {
+            setOrdersByWilaya((prev) => ({ ...prev, [wilaya]: (prev[wilaya] ?? 0) + 1 }));
+          }
+        },
       )
       .subscribe();
 

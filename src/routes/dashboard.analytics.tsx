@@ -55,7 +55,9 @@ function AnalyticsPage() {
         supabase
           .from("orders")
           .select("id, total, status, customer_email, customer_phone, customer_name, created_at")
-          .eq("store_owner_id", user.id),
+          .eq("store_owner_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(500),
         supabase
           .from("products")
           .select("id", { count: "exact", head: true })
@@ -64,7 +66,8 @@ function AnalyticsPage() {
           .from("orders")
           .select("id, total, status")
           .eq("store_owner_id", user.id)
-          .gte("created_at", sevenDaysAgo),
+          .gte("created_at", sevenDaysAgo)
+          .limit(200),
       ]);
 
       if (ordersRes.error || productsRes.error || recentRes.error) {

@@ -138,7 +138,7 @@ function DashboardHome() {
         .select("customer_email,total")
         .eq("store_owner_id", user.id)
         .order("created_at", { ascending: false })
-        .limit(5000);
+        .limit(500);
       if (storeId) q = q.eq("store_id", storeId);
       return q;
     };
@@ -270,14 +270,40 @@ function DashboardHome() {
       .on(
         "postgres_changes",
         {
-          event: "*",
+          event: "INSERT",
           schema: "public",
           table: "orders",
           filter: `store_owner_id=eq.${user.id}`,
         },
-        () => loadDashboard(),
+        (payload) => {
+          // Incrementally update stats instead of full reload
+          const newOrder = payload.new as { total?: number; customer_email?: string };
+          setCounts((prev) => ({
+            ...prev,
+            orders: prev.orders + 1,
+            revenue: prev.revenue + Number(newOrder.total ?? 0),
+          }));
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "orders",
+          filter: `store_owner_id=eq.${user.id}`,
+        },
+        () => {
+          // Status changes — debounced reload (only every 10s)
+          const now = Date.now();
+          if (now - lastDashboardReload > 10_000) {
+            lastDashboardReload = now;
+            loadDashboard();
+          }
+        },
       )
       .subscribe();
+    let lastDashboardReload = Date.now();
     let lastFocusReload = Date.now();
     const onFocus = () => {
       if (Date.now() - lastFocusReload > 30_000) {

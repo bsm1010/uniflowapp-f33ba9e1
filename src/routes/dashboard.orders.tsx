@@ -173,7 +173,8 @@ function OrdersPage() {
         .from("orders")
         .select("*")
         .eq("store_owner_id", user.id)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(200);
       if (currentStore?.id) q = q.eq("store_id", currentStore.id);
       const { data: ords } = await q;
       const list = ords ?? [];
@@ -216,11 +217,28 @@ function OrdersPage() {
       .channel(`orders-${user.id}`)
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "orders", filter: `store_owner_id=eq.${user.id}` },
-        () => loadOrders(),
+        { event: "INSERT", schema: "public", table: "orders", filter: `store_owner_id=eq.${user.id}` },
+        (payload) => {
+          // Optimistically add new order to the top
+          const newOrder = payload.new as Order;
+          setOrders((cur) => cur ? [newOrder, ...cur].slice(0, 200) : cur);
+        },
       )
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "order_items" }, () =>
-        loadOrders(),
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "orders", filter: `store_owner_id=eq.${user.id}` },
+        (payload) => {
+          const updated = payload.new as Order;
+          setOrders((cur) => cur ? cur.map((o) => o.id === updated.id ? updated : o) : cur);
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "DELETE", schema: "public", table: "orders", filter: `store_owner_id=eq.${user.id}` },
+        (payload) => {
+          const deleted = payload.old as { id: string };
+          setOrders((cur) => cur ? cur.filter((o) => o.id !== deleted.id) : cur);
+        },
       )
       .subscribe();
     return () => {

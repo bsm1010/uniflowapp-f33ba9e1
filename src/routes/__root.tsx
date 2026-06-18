@@ -111,7 +111,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "setTimeout(function(){document.documentElement.classList.add('app-booted')},3000);",
+              "setTimeout(function(){document.documentElement.classList.add('app-booted')},100);",
           }}
         />
         {children}

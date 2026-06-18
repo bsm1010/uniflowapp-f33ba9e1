@@ -70,7 +70,8 @@ function ShipmentsPage() {
         .from("shipments")
         .select("*")
         .eq("store_id", user.id)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(200);
       if (shipErr) {
         setLoadError(shipErr.message);
         setShipments([]);
