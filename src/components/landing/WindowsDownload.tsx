@@ -1,6 +1,7 @@
 import { Download, Zap, Shield, Monitor } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { Img } from "@/components/ui/Img";
 import fenneclyBox from "@/assets/fennecly-windows-box.png";
 
 const DOWNLOAD_URL =
@@ -64,13 +65,10 @@ export function WindowsDownload() {
             {/* Right: visual */}
             <div className="relative flex items-center justify-center">
               <div className="relative">
-                <div className="pointer-events-none absolute inset-0 -z-10 rounded-[2.5rem] bg-gradient-to-br from-primary/30 via-purple-500/20 to-blue-500/30 blur-3xl" />
-                <img
+                <div className="pointer-events-none absolute inset-0 -z-10 rounded-[2.5rem] bg-gradient-to-br from-primary/20 via-purple-500/10 to-blue-500/20" />
+                <Img
                   src={fenneclyBox}
                   alt={t("windows.alt")}
-                  loading="eager"
-                  decoding="sync"
-                  fetchPriority="high"
                   className="h-auto w-full max-w-md drop-shadow-2xl"
                 />
               </div>
