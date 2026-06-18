@@ -141,8 +141,8 @@ export function Pricing() {
 
   return (
     <section id="pricing" className="py-20 md:py-28 relative">
-      <div className="absolute top-0 left-1/4 w-72 h-72 bg-violet-400/10 dark:bg-violet-500/10 rounded-full backdrop-blur-[50px] pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-fuchsia-400/10 dark:bg-fuchsia-500/10 rounded-full backdrop-blur-[50px] pointer-events-none" />
+      <div className="absolute top-0 left-1/4 w-72 h-72 bg-violet-500/10 dark:bg-violet-500/12 rounded-full animate-mesh-gradient [animation-delay:-3s] pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-fuchsia-500/10 dark:bg-fuchsia-500/12 rounded-full animate-mesh-gradient [animation-delay:-6s] pointer-events-none" />
 
       <div className="relative mx-auto max-w-7xl px-4">
         <div className="mx-auto max-w-2xl text-center">
