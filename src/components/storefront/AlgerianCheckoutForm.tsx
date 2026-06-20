@@ -177,10 +177,6 @@ export function AlgerianCheckoutForm({
       setErrors(errs);
       return false;
     }
-    if (shippingPrice === null && !shippingLoading) {
-      toast.error(tr("storefront.cod.errCity"));
-      return false;
-    }
     setErrors({});
     return true;
   };
