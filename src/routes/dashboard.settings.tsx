@@ -14,6 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { deleteAccount } from "@/lib/account/delete-account";
+import { InlineEditable } from "@/components/ui/inline-editable";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -336,27 +337,50 @@ function SettingsPage() {
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="storeName">Store name</Label>
-              <Input
-                id="storeName"
+              <InlineEditable
                 value={storeName}
-                onChange={(e) => setStoreName(e.target.value)}
+                onSave={async (val) => {
+                  if (!user) return;
+                  setSavingStore(true);
+                  const { error } = await supabase
+                    .from("store_settings")
+                    .update({ store_name: val })
+                    .eq("user_id", user.id);
+                  setSavingStore(false);
+                  if (error) {
+                    toast.error(error.message);
+                  } else {
+                    setStoreName(val);
+                    toast.success("Store name updated");
+                  }
+                }}
                 placeholder="My Store"
+                maxLength={60}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="tagline">Tagline</Label>
-              <Input
-                id="tagline"
+              <InlineEditable
                 value={tagline}
-                onChange={(e) => setTagline(e.target.value)}
+                onSave={async (val) => {
+                  if (!user) return;
+                  setSavingStore(true);
+                  const { error } = await supabase
+                    .from("store_settings")
+                    .update({ tagline: val })
+                    .eq("user_id", user.id);
+                  setSavingStore(false);
+                  if (error) {
+                    toast.error(error.message);
+                  } else {
+                    setTagline(val);
+                    toast.success("Tagline updated");
+                  }
+                }}
                 placeholder="Beautiful things, thoughtfully made."
+                maxLength={120}
               />
             </div>
-          </div>
-          <div className="flex justify-end">
-            <Button onClick={saveStore} disabled={savingStore}>
-              {savingStore ? "Saving…" : "Save store"}
-            </Button>
           </div>
         </CardContent>
       </Card>

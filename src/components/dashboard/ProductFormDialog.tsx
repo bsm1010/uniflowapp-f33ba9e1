@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Loader2, Upload, X, Mic, Plus, ImageIcon, ArrowRight, ArrowLeft, Package, DollarSign, Layers, Image, Settings } from "lucide-react";
+import { Loader2, Upload, X, Mic, Plus, ImageIcon, ArrowRight, ArrowLeft, Package, DollarSign, Layers, Image, Settings, GripVertical } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
@@ -9,6 +9,23 @@ import { useAuth } from "@/hooks/use-auth";
 import { useCurrentStore } from "@/hooks/use-current-store";
 import { generateVoice } from "@/lib/ai/voice-generator";
 import { cn } from "@/lib/utils";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  rectSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import {
   Dialog,
   DialogContent,
@@ -83,6 +100,45 @@ interface Props {
   onOpenChange: (o: boolean) => void;
   product: Product | null;
   onSaved: () => void;
+}
+
+function SortableImage({ url, onRemove }: { url: string; onRemove: (url: string) => void }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: url });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 10 : undefined,
+    opacity: isDragging ? 0.8 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={cn(
+        "relative aspect-square rounded-lg overflow-hidden border border-border bg-muted group",
+        isDragging && "shadow-xl ring-2 ring-primary/30",
+      )}
+    >
+      <img src={url} alt="Product" className="h-full w-full object-cover" />
+      <button
+        type="button"
+        onClick={() => onRemove(url)}
+        className="absolute top-1.5 right-1.5 h-6 w-6 rounded-full bg-background/90 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-soft"
+        aria-label="Remove image"
+      >
+        <X className="h-3.5 w-3.5" />
+      </button>
+      <div
+        {...attributes}
+        {...listeners}
+        className="absolute top-1.5 left-1.5 h-6 w-6 rounded-full bg-background/90 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-soft cursor-grab active:cursor-grabbing"
+        aria-label="Drag to reorder"
+      >
+        <GripVertical className="h-3.5 w-3.5" />
+      </div>
+    </div>
+  );
 }
 
 const WIZARD_STEPS = [
@@ -236,6 +292,22 @@ export function ProductFormDialog({ open, onOpenChange, product, onSaved }: Prop
   };
 
   const removeImage = (url: string) => setImages((prev) => prev.filter((u) => u !== url));
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (active.id !== over?.id) {
+      setImages((items) => {
+        const oldIndex = items.indexOf(active.id as string);
+        const newIndex = items.indexOf(over!.id as string);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  };
 
   const addInstagramPhotos = (urls: string[]) => {
     const available = MAX_IMAGES - images.length;
@@ -572,47 +644,38 @@ export function ProductFormDialog({ open, onOpenChange, product, onSaved }: Prop
                   </div>
                 ) : (
                   <>
-                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                      {images.map((url) => (
-                        <div
-                          key={url}
-                          className="relative aspect-square rounded-lg overflow-hidden border border-border bg-muted group"
-                        >
-                          <img src={url} alt="Product" className="h-full w-full object-cover" />
-                          <button
-                            type="button"
-                            onClick={() => removeImage(url)}
-                            className="absolute top-1.5 right-1.5 h-6 w-6 rounded-full bg-background/90 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-soft"
-                            aria-label="Remove image"
-                          >
-                            <X className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
-                      ))}
-                      {images.length < MAX_IMAGES && (
-                        <label
-                          className={`aspect-square rounded-lg border border-dashed border-border flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-primary hover:bg-accent/40 transition-colors text-muted-foreground text-xs ${uploading ? "opacity-50 pointer-events-none" : ""}`}
-                        >
-                          {uploading ? (
-                            <Loader2 className="h-5 w-5 animate-spin" />
-                          ) : (
-                            <Upload className="h-5 w-5" />
+                    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                      <SortableContext items={images} strategy={rectSortingStrategy}>
+                        <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                          {images.map((url) => (
+                            <SortableImage key={url} url={url} onRemove={removeImage} />
+                          ))}
+                          {images.length < MAX_IMAGES && (
+                            <label
+                              className={`aspect-square rounded-lg border border-dashed border-border flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-primary hover:bg-accent/40 transition-colors text-muted-foreground text-xs ${uploading ? "opacity-50 pointer-events-none" : ""}`}
+                            >
+                              {uploading ? (
+                                <Loader2 className="h-5 w-5 animate-spin" />
+                              ) : (
+                                <Upload className="h-5 w-5" />
+                              )}
+                              <span>{uploading ? "Uploading…" : "Add image"}</span>
+                              <input
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                className="hidden"
+                                onChange={(e) => handleFiles(e.target.files)}
+                              />
+                            </label>
                           )}
-                          <span>{uploading ? "Uploading…" : "Add image"}</span>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            multiple
-                            className="hidden"
-                            onChange={(e) => handleFiles(e.target.files)}
-                          />
-                        </label>
-                      )}
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <p className="text-xs text-muted-foreground">
-                        Up to {MAX_IMAGES} images, max 5 MB each. PNG, JPG, or WEBP.
-                      </p>
+                        </div>
+                      </SortableContext>
+                    </DndContext>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Drag to reorder. Up to {MAX_IMAGES} images, max 5 MB each. PNG, JPG, or WEBP.
+                    </p>
+                    <div className="flex justify-end mt-2">
                       <Button
                         type="button"
                         variant="outline"

@@ -22,6 +22,7 @@ import {
   Zap,
   Wallet,
   Loader2,
+  Pencil,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useCurrentStore } from "@/hooks/use-current-store";
@@ -39,6 +40,7 @@ import { Img } from "@/components/ui/Img";
 import { GamificationHub } from "@/components/dashboard/core-loop/GamificationHub";
 import { useServerFn } from "@tanstack/react-start";
 import { getGamification, type GamificationData } from "@/lib/core-loop";
+import { InlineEditable } from "@/components/ui/inline-editable";
 import {
   getZRExpressBalance,
   type ZRExpressBalanceResult,
@@ -346,7 +348,19 @@ function DashboardHome() {
               {t("dashboard.home.kicker")}
             </div>
             <h1 className="mt-3 text-3xl md:text-4xl font-bold font-display">
-              {t("dashboard.home.welcome")} <span className="aurora-text">{displayName}</span>
+              {t("dashboard.home.welcome")}{" "}
+              <InlineEditable
+                value={displayName}
+                onSave={async (val) => {
+                  if (!user) return;
+                  const { error } = await supabase.from("profiles").update({ name: val }).eq("id", user.id);
+                  if (!error) setName(val);
+                }}
+                placeholder="Your name"
+                className="aurora-text"
+                inputClassName="text-3xl md:text-4xl font-bold font-display bg-transparent"
+                maxLength={60}
+              />
             </h1>
             <p className="mt-1.5 text-muted-foreground/80 text-sm">
               {t("dashboard.home.subtitle")}

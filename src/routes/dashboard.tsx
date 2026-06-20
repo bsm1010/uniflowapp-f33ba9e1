@@ -13,6 +13,7 @@ import { IOSInstallBanner } from "@/components/dashboard/IOSInstallBanner";
 import { registerServiceWorker } from "@/lib/pwa/register-sw";
 import { playSound } from "@/lib/sounds";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { CommandPalette } from "@/components/dashboard/CommandPalette";
 
 const WelcomeDialog = lazy(() =>
   import("@/components/dashboard/WelcomeDialog").then((m) => ({
@@ -103,6 +104,7 @@ function DashboardLayout() {
 
   const [selectedStore, setSelectedStore] = useState<string | null>(null);
   const [storeHydrated, setStoreHydrated] = useState(false);
+  const [cmdOpen, setCmdOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -210,6 +212,7 @@ function DashboardLayout() {
             </div>
 
             <PaywallDialog />
+            <CommandPalette open={cmdOpen} onOpenChange={setCmdOpen} />
 
             <Suspense fallback={null}>
               <WelcomeDialog userId={user.id} />

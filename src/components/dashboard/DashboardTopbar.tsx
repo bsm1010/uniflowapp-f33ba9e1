@@ -265,7 +265,13 @@ export function DashboardTopbar({ name, avatarUrl }: { name: string; avatarUrl?:
               setQuery(e.target.value);
               setOpen(true);
             }}
-            onFocus={() => query && setOpen(true)}
+            onFocus={() => {
+              if (!query) {
+                document.dispatchEvent(new CustomEvent("command-palette:open"));
+                return;
+              }
+              setOpen(true);
+            }}
             onKeyDown={onKeyDown}
             className="ps-9 bg-muted/40 border-transparent focus-visible:bg-background focus-visible:border-border/50"
           />
