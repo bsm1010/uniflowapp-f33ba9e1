@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Loader2,
   Search,
@@ -17,7 +17,9 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import { StorefrontShell } from "@/components/storefront/StorefrontShell";
 import { StorefrontHero } from "@/components/storefront/StorefrontHero";
-import { ProductCard } from "@/components/storefront/ProductCard";
+import { ProductCard, type ProductCardData } from "@/components/storefront/ProductCard";
+import { ProductQuickView } from "@/components/storefront/ProductQuickView";
+import { FloatingCartDrawer } from "@/components/storefront/FloatingCartDrawer";
 import { LAYOUT_COMPONENTS, type LayoutTemplate } from "@/components/storefront/layouts";
 import {
   getStoreTokens,
@@ -144,6 +146,8 @@ function StorefrontHome() {
   const [sort, setSort] = useState<SortKey>("newest");
   const [newsletterEmail, setNewsletterEmail] = useState("");
   const [newsletterLoading, setNewsletterLoading] = useState(false);
+  const [quickViewProduct, setQuickViewProduct] = useState<ProductCardData | null>(null);
+  const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -278,15 +282,34 @@ function StorefrontHome() {
 
   const isAlgerianLayout = ALGERIAN_LAYOUTS.has(template);
 
-  const handleQuickAdd = (p: { id: string; name: string; price: number; images: string[] }) => {
-    cart.add({
-      productId: p.id,
-      name: p.name,
-      price: Number(p.price),
-      image: p.images[0] ?? null,
-    });
-    toast.success(tr("storefront.product.addedToCart", { name: p.name }));
-  };
+  const handleQuickAdd = useCallback(
+    (p: { id: string; name: string; price: number; images: string[] }) => {
+      cart.add({
+        productId: p.id,
+        name: p.name,
+        price: Number(p.price),
+        image: p.images[0] ?? null,
+      });
+      toast.success(tr("storefront.product.addedToCart", { name: p.name }));
+    },
+    [cart, tr],
+  );
+
+  const handleQuickViewAdd = useCallback(
+    (p: ProductCardData, qty: number) => {
+      cart.add(
+        {
+          productId: p.id,
+          name: p.name,
+          price: Number(p.price),
+          image: p.images[0] ?? null,
+        },
+        qty,
+      );
+      toast.success(tr("storefront.product.addedToCart", { name: p.name }));
+    },
+    [cart, tr],
+  );
 
   // ── Algerian layout rendering ──
   if (isAlgerianLayout) {
@@ -446,7 +469,7 @@ function StorefrontHome() {
               {labels.view_all} <ArrowRight className="h-3.5 w-3.5" />
             </a>
           </div>
-          <div className={`grid ${gridClass}`}>
+          <div className={`grid ${gridClass} stagger-reveal`}>
             {featured.map((p) => (
               <ProductCard
                 key={p.id}
@@ -457,6 +480,7 @@ function StorefrontHome() {
                 currency={currency}
                 addLabel={labels.add_to_cart}
                 onAdd={handleQuickAdd}
+                onQuickView={setQuickViewProduct}
               />
             ))}
           </div>
@@ -567,6 +591,55 @@ function StorefrontHome() {
       {/* ── TikTok Pixel (injected if seller has set a pixel ID) ── */}
       {tiktokPixelId && <TikTokPixel pixelId={tiktokPixelId} />}
 
+      {/* ── Quick View Modal ── */}
+      {quickViewProduct && (
+        <ProductQuickView
+          product={quickViewProduct}
+          tokens={t}
+          currency={currency}
+          slug={slug}
+          addLabel={labels.add_to_cart}
+          onClose={() => setQuickViewProduct(null)}
+          onAdd={handleQuickViewAdd}
+        />
+      )}
+
+      {/* ── Floating Cart Drawer ── */}
+      <FloatingCartDrawer
+        slug={slug}
+        tokens={t}
+        currency={currency}
+        open={cartDrawerOpen}
+        onClose={() => setCartDrawerOpen(false)}
+      />
+
+      {/* ── Floating Cart Button ── */}
+      {cart.count > 0 && (
+        <button
+          onClick={() => setCartDrawerOpen(true)}
+          className="fixed bottom-6 right-6 z-[100] h-14 w-14 flex items-center justify-center shadow-2xl transition-all duration-200 hover:scale-110 active:scale-95"
+          style={{
+            backgroundColor: t.primary,
+            color: t.onPrimary,
+            borderRadius: t.buttonRadius,
+            boxShadow: `0 12px 40px -8px ${t.primary}66`,
+          }}
+          aria-label="Open cart"
+        >
+          <ShoppingBag className="h-5 w-5" />
+          <span
+            className="absolute -top-1 -right-1 h-5 min-w-[20px] px-1 flex items-center justify-center text-[11px] font-bold"
+            style={{
+              backgroundColor: t.accent,
+              color: t.onAccent,
+              borderRadius: 999,
+            }}
+          >
+            {cart.count}
+          </span>
+        </button>
+      )}
+
       <div style={{ backgroundColor: t.bg, color: t.fg }}>
         {sectionOrder.map((key) => sectionRenderers[key]())}
 
@@ -667,7 +740,7 @@ function StorefrontHome() {
               </p>
             </div>
           ) : (
-            <div className={`grid ${gridClass}`}>
+            <div className={`grid ${gridClass} stagger-reveal`}>
               {filtered.map((p) => (
                 <ProductCard
                   key={p.id}
@@ -678,6 +751,7 @@ function StorefrontHome() {
                   currency={currency}
                   addLabel={labels.add_to_cart}
                   onAdd={handleQuickAdd}
+                  onQuickView={setQuickViewProduct}
                 />
               ))}
             </div>

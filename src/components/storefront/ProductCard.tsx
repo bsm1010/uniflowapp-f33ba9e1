@@ -23,6 +23,7 @@ interface Props {
   currency: string;
   addLabel: string;
   onAdd?: (p: ProductCardData) => void;
+  onQuickView?: (p: ProductCardData) => void;
 }
 
 export function ProductCard({
@@ -33,6 +34,7 @@ export function ProductCard({
   currency,
   addLabel,
   onAdd,
+  onQuickView,
 }: Props) {
   const { t: tr } = useTranslation();
   const out = (product.stock ?? 1) <= 0;
@@ -141,19 +143,21 @@ export function ProductCard({
               {addLabel}
             </button>
           )}
-          <Link
-            to="/s/$slug/p/$productId"
-            params={{ slug, productId: product.id }}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onQuickView?.(product);
+            }}
             className="inline-flex items-center justify-center h-[44px] w-[44px] backdrop-blur-md transition-all duration-200 hover:scale-110"
             style={{
               backgroundColor: t.bg + "cc",
               color: t.fg,
               borderRadius: t.buttonRadius,
             }}
-            onClick={(e) => e.stopPropagation()}
           >
             <Eye className="h-4 w-4" />
-          </Link>
+          </button>
         </div>
       </Link>
 

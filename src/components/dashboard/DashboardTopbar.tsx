@@ -1,5 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
-import { LogOut, Search, User as UserIcon, X } from "lucide-react";
+import { LogOut, Search, User as UserIcon, X, Keyboard } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -307,6 +307,13 @@ export function DashboardTopbar({ name, avatarUrl }: { name: string; avatarUrl?:
           )}
         </div>
       </div>
+      <kbd
+        className="hidden lg:inline-flex items-center justify-center h-6 min-w-[24px] px-1.5 text-[10px] font-mono font-semibold text-muted-foreground bg-muted/60 border border-border/50 rounded-md cursor-pointer hover:bg-muted transition-colors"
+        onClick={() => document.dispatchEvent(new KeyboardEvent("keydown", { key: "?" }))}
+        title="Keyboard shortcuts"
+      >
+        ?
+      </kbd>
       <div className="flex-1" />
       <div className="flex items-center gap-2 ms-auto">
         <CreditsBadge />

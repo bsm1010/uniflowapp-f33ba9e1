@@ -14,6 +14,7 @@ import { registerServiceWorker } from "@/lib/pwa/register-sw";
 import { playSound } from "@/lib/sounds";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { CommandPalette } from "@/components/dashboard/CommandPalette";
+import { KeyboardShortcutsGuide, useKeyboardShortcutsGuide } from "@/components/storefront/KeyboardShortcutsGuide";
 
 const WelcomeDialog = lazy(() =>
   import("@/components/dashboard/WelcomeDialog").then((m) => ({
@@ -105,6 +106,7 @@ function DashboardLayout() {
   const [selectedStore, setSelectedStore] = useState<string | null>(null);
   const [storeHydrated, setStoreHydrated] = useState(false);
   const [cmdOpen, setCmdOpen] = useState(false);
+  const shortcutsGuide = useKeyboardShortcutsGuide();
 
   useEffect(() => {
     try {
@@ -213,6 +215,7 @@ function DashboardLayout() {
 
             <PaywallDialog />
             <CommandPalette open={cmdOpen} onOpenChange={setCmdOpen} />
+            <KeyboardShortcutsGuide open={shortcutsGuide.open} onClose={() => shortcutsGuide.setOpen(false)} />
 
             <Suspense fallback={null}>
               <WelcomeDialog userId={user.id} />
