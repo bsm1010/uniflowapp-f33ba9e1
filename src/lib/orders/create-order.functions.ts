@@ -13,7 +13,7 @@ const OrderItemSchema = z.object({
 const CreateOrderSchema = z.object({
   storeSlug: z.string().min(1).max(100),
   customerName: z.string().trim().min(1).max(200),
-  customerEmail: z.string().trim().min(1).max(300),
+  customerEmail: z.string().trim().max(300).default(""),
   customerPhone: z.string().trim().min(1).max(50).optional(),
   shippingAddress: z.string().trim().min(1).max(500),
   shippingCity: z.string().trim().min(1).max(200),
