@@ -1,52 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { lazy, Suspense } from "react";
 import { Navbar } from "@/components/landing/Navbar";
 import { Hero } from "@/components/landing/Hero";
-const DashboardTools = lazy(() =>
-  import("@/components/landing/DashboardTools").then((m) => ({
-    default: m.DashboardTools,
-  })),
-);
-const Features = lazy(() =>
-  import("@/components/landing/Features").then((m) => ({
-    default: m.Features,
-  })),
-);
-const HowItWorks = lazy(() =>
-  import("@/components/landing/HowItWorks").then((m) => ({
-    default: m.HowItWorks,
-  })),
-);
-const Pricing = lazy(() =>
-  import("@/components/landing/Pricing").then((m) => ({
-    default: m.Pricing,
-  })),
-);
-const Testimonials = lazy(() =>
-  import("@/components/landing/Testimonials").then((m) => ({
-    default: m.Testimonials,
-  })),
-);
-const CTA = lazy(() =>
-  import("@/components/landing/CTA").then((m) => ({
-    default: m.CTA,
-  })),
-);
-const DeliveryNetwork = lazy(() =>
-  import("@/components/landing/DeliveryNetwork").then((m) => ({
-    default: m.DeliveryNetwork,
-  })),
-);
-const WindowsDownload = lazy(() =>
-  import("@/components/landing/WindowsDownload").then((m) => ({
-    default: m.WindowsDownload,
-  })),
-);
-const Footer = lazy(() =>
-  import("@/components/landing/Footer").then((m) => ({
-    default: m.Footer,
-  })),
-);
+import { DashboardTools } from "@/components/landing/DashboardTools";
+import { WindowsDownload } from "@/components/landing/WindowsDownload";
+import { DeliveryNetwork } from "@/components/landing/DeliveryNetwork";
+import { Features } from "@/components/landing/Features";
+import { HowItWorks } from "@/components/landing/HowItWorks";
+import { Pricing } from "@/components/landing/Pricing";
+import { Testimonials } from "@/components/landing/Testimonials";
+import { CTA } from "@/components/landing/CTA";
+import { Footer } from "@/components/landing/Footer";
+
 export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
@@ -91,57 +55,37 @@ export const Route = createFileRoute("/")({
     ],
   }),
 });
-function SectionFallback() {
-  return <div className="h-[400px]" aria-hidden />;
-}
+
 function Index() {
   return (
     <main className="min-h-screen bg-background text-foreground">
       <Navbar />
       <Hero />
-      <Suspense fallback={<SectionFallback />}>
-        <div className="cv-auto">
-          <DashboardTools />
-        </div>
-      </Suspense>
-      <Suspense fallback={null}>
-        <div className="cv-auto">
-          <WindowsDownload />
-        </div>
-      </Suspense>
-      <Suspense fallback={null}>
-        <div className="cv-auto">
-          <DeliveryNetwork />
-        </div>
-      </Suspense>
-      <Suspense fallback={null}>
-        <div className="cv-auto">
-          <Features />
-        </div>
-      </Suspense>
-      <Suspense fallback={null}>
-        <div className="cv-auto">
-          <HowItWorks />
-        </div>
-      </Suspense>
-      <Suspense fallback={null}>
-        <div className="cv-auto">
-          <Pricing />
-        </div>
-      </Suspense>
-      <Suspense fallback={null}>
-        <div className="cv-auto">
-          <Testimonials />
-        </div>
-      </Suspense>
-      <Suspense fallback={null}>
-        <div className="cv-auto">
-          <CTA />
-        </div>
-      </Suspense>
-      <Suspense fallback={null}>
-        <Footer />
-      </Suspense>
+      <div className="cv-auto">
+        <DashboardTools />
+      </div>
+      <div className="cv-auto">
+        <WindowsDownload />
+      </div>
+      <div className="cv-auto">
+        <DeliveryNetwork />
+      </div>
+      <div className="cv-auto">
+        <Features />
+      </div>
+      <div className="cv-auto">
+        <HowItWorks />
+      </div>
+      <div className="cv-auto">
+        <Pricing />
+      </div>
+      <div className="cv-auto">
+        <Testimonials />
+      </div>
+      <div className="cv-auto">
+        <CTA />
+      </div>
+      <Footer />
     </main>
   );
 }
