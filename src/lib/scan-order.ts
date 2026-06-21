@@ -83,35 +83,44 @@ export async function scanOrderWithGemini(
     throw new Error("Gemini API key not configured. Add VITE_GEMINI_API_KEY to your .env file.");
   }
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      contents: [
-        {
-          parts: [
-            {
-              inline_data: {
-                mime_type: mediaType || "image/jpeg",
-                data: base64,
+  let res: Response;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              {
+                inline_data: {
+                  mime_type: mediaType || "image/jpeg",
+                  data: base64,
+                },
               },
-            },
-            { text: PROMPT },
-          ],
-        },
-      ],
-    }),
-  });
-
-  if (!res.ok) {
-    const errBody = await res.text().catch(() => "unknown");
-    console.error("[scan-order] API error:", res.status, errBody);
-    throw new Error(`Gemini API error ${res.status}: ${errBody.slice(0, 200)}`);
+              { text: PROMPT },
+            ],
+          },
+        ],
+      }),
+    });
+    if (res.status === 429) {
+      const delay = Math.min(1000 * (attempt + 1), 5000);
+      await new Promise((r) => setTimeout(r, delay));
+      continue;
+    }
+    break;
   }
 
-  const data = await res.json();
+  if (!res!.ok) {
+    const errBody = await res!.text().catch(() => "unknown");
+    console.error("[scan-order] API error:", res!.status, errBody);
+    throw new Error(`Gemini API error ${res!.status}: ${errBody.slice(0, 200)}`);
+  }
+
+  const data = await res!.json();
   console.log("[scan-order] Gemini response:", data);
 
   const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
