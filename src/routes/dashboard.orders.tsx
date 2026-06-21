@@ -35,6 +35,17 @@ import { useCallLog } from "@/hooks/use-call-log";
 import { useBordereaux, type BordereauOrder } from "@/hooks/use-bordereaux";
 import { formatDistanceToNow } from "date-fns";
 
+let callLogsTableOk: boolean | null = null;
+async function checkCallLogsTable(): Promise<boolean> {
+  if (callLogsTableOk !== null) return callLogsTableOk;
+  try {
+    const { error } = await (supabase as unknown as { from: (t: string) => ReturnType<typeof supabase.from> })
+      .from("call_logs").select("id").limit(1);
+    callLogsTableOk = !error || error.code !== "42P01";
+  } catch { callLogsTableOk = false; }
+  return callLogsTableOk;
+}
+
 import type { Tables } from "@/integrations/supabase/types";
 import { PageHeader, EmptyState } from "@/components/dashboard/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
@@ -191,15 +202,13 @@ function OrdersPage() {
           supabase.from("shipments").select("*").in("order_id", ids),
         ]);
         let calls: { order_id: string; outcome: string; called_at: string; channel: string }[] | null = null;
-        try {
+        if (await checkCallLogsTable()) {
           const { data } = await (supabase as unknown as { from: (t: string) => ReturnType<typeof supabase.from> })
             .from("call_logs")
             .select("order_id, outcome, called_at, channel")
             .in("order_id", ids)
             .order("called_at", { ascending: false });
           calls = data;
-        } catch {
-          // call_logs table may not exist yet
         }
         const grouped: Record<string, OrderItem[]> = {};
         for (const it of its ?? []) (grouped[it.order_id] ??= []).push(it);
