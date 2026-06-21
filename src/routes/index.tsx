@@ -103,27 +103,43 @@ function Index() {
         <div className="cv-auto">
           <DashboardTools />
         </div>
+      </Suspense>
+      <Suspense fallback={null}>
         <div className="cv-auto">
           <WindowsDownload />
         </div>
+      </Suspense>
+      <Suspense fallback={null}>
         <div className="cv-auto">
           <DeliveryNetwork />
         </div>
+      </Suspense>
+      <Suspense fallback={null}>
         <div className="cv-auto">
           <Features />
         </div>
+      </Suspense>
+      <Suspense fallback={null}>
         <div className="cv-auto">
           <HowItWorks />
         </div>
+      </Suspense>
+      <Suspense fallback={null}>
         <div className="cv-auto">
           <Pricing />
         </div>
+      </Suspense>
+      <Suspense fallback={null}>
         <div className="cv-auto">
           <Testimonials />
         </div>
+      </Suspense>
+      <Suspense fallback={null}>
         <div className="cv-auto">
           <CTA />
         </div>
+      </Suspense>
+      <Suspense fallback={null}>
         <Footer />
       </Suspense>
     </main>
