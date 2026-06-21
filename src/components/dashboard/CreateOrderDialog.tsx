@@ -18,6 +18,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useCurrentStore } from "@/hooks/use-current-store";
 import { ALGERIA_WILAYAS, getCitiesForWilaya, WILAYA_LIST } from "@/lib/algeriaWilayas";
+import { scanOrderWithGemini, type ScannedData } from "@/lib/scan-order";
 import {
   Dialog,
   DialogContent,
@@ -46,18 +47,6 @@ type LineItem = {
   quantity: number;
   unit_price: number;
   image_url: string | null;
-};
-
-type ScannedData = {
-  customer_name: string | null;
-  customer_phone: string | null;
-  wilaya: string | null;
-  city: string | null;
-  address: string | null;
-  delivery_type: "domicile" | "stopdesk" | null;
-  items: { product_name: string; quantity: number; unit_price: number | null }[];
-  notes: string | null;
-  confidence: "high" | "medium" | "low";
 };
 
 type Product = {
@@ -280,10 +269,6 @@ export function CreateOrderDialog({ open, onClose, onCreated }: Props) {
     if (!scanFile || !user) return;
     setScanning(true);
     try {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const token = sessionData.session?.access_token;
-      if (!token) throw new Error("Not authenticated");
-
       const reader = new FileReader();
       const base64 = await new Promise<string>((resolve) => {
         reader.onload = () => {
@@ -294,25 +279,7 @@ export function CreateOrderDialog({ open, onClose, onCreated }: Props) {
       });
 
       const mediaType = scanFile.type || "image/jpeg";
-
-      const res = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/scan-order`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ image: base64, media_type: mediaType }),
-        },
-      );
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error ?? `Scan failed (${res.status})`);
-      }
-
-      const data: ScannedData = await res.json();
+      const data = await scanOrderWithGemini(base64, mediaType);
       setScannedConfidence(data.confidence);
 
       // Pre-fill form
