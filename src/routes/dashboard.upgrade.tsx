@@ -438,7 +438,7 @@ function UpgradePage() {
       {/* Selected plan perks + payment */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Selected plan full details */}
-        <Card className="border-border/60 shadow-soft">
+        <Card className="border-border/60">
           <CardContent className="p-6 space-y-4">
             <div className="flex items-center gap-3">
               <div
@@ -464,7 +464,7 @@ function UpgradePage() {
         </Card>
 
         {/* Payment form */}
-        <Card className="border-border/60 shadow-soft">
+        <Card className="border-border/60">
           <CardContent className="p-6">
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="flex items-center gap-3">
@@ -594,7 +594,7 @@ function UpgradePage() {
 
       {/* Recent submissions */}
       {submissions.length > 0 && (
-        <Card className="border-border/60 shadow-soft">
+        <Card className="border-border/60">
           <CardContent className="p-6">
             <h3 className="font-semibold mb-4">الطلبات الأخيرة</h3>
             <div className="space-y-3">

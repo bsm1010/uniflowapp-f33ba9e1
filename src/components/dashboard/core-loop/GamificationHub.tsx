@@ -34,7 +34,7 @@ export function GamificationHub({ data, loading, compact }: GamificationHubProps
 
   if (loading) {
     return (
-      <Card className="border-border/50 shadow-sm overflow-hidden">
+      <Card className="border-border/50 overflow-hidden">
         <CardContent className="p-5">
           <div className="animate-pulse space-y-3">
             <div className="h-4 w-24 bg-muted rounded" />
@@ -55,7 +55,7 @@ export function GamificationHub({ data, loading, compact }: GamificationHubProps
   if (compact) {
     return (
       <Card
-        className="border-border/50 shadow-sm overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
+        className="border-border/50 overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
         onClick={() => navigate({ to: "/dashboard/gamification" })}
       >
         <CardContent className="p-5 space-y-3">
@@ -98,7 +98,7 @@ export function GamificationHub({ data, loading, compact }: GamificationHubProps
   return (
     <div className="space-y-6">
       {/* XP & Level Card */}
-      <Card className="border-0 shadow-soft overflow-hidden bg-gradient-to-br from-violet-600 via-fuchsia-600 to-indigo-700 text-white">
+      <Card className="border-0 overflow-hidden bg-gradient-to-br from-violet-600 via-fuchsia-600 to-indigo-700 text-white">
         <CardContent className="p-6 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -159,7 +159,7 @@ export function GamificationHub({ data, loading, compact }: GamificationHubProps
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.08 }}
-            className="rounded-xl border border-border/60 bg-card p-4 flex items-center gap-3 shadow-soft"
+            className="rounded-xl border border-border/60 bg-card p-4 flex items-center gap-3"
           >
             <div className="h-10 w-10 rounded-xl bg-muted flex items-center justify-center">
               <s.icon className={`h-5 w-5 ${s.color}`} />
@@ -174,7 +174,7 @@ export function GamificationHub({ data, loading, compact }: GamificationHubProps
 
       {/* Quests section */}
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="border-0 shadow-soft">
+        <Card className="border-0">
           <CardContent className="p-5 space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="font-semibold text-sm flex items-center gap-2">
@@ -212,7 +212,7 @@ export function GamificationHub({ data, loading, compact }: GamificationHubProps
           </CardContent>
         </Card>
 
-        <Card className="border-0 shadow-soft">
+        <Card className="border-0">
           <CardContent className="p-5 space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="font-semibold text-sm flex items-center gap-2">
@@ -252,7 +252,7 @@ export function GamificationHub({ data, loading, compact }: GamificationHubProps
       </div>
 
       {/* Recent activity */}
-      <Card className="border-0 shadow-soft">
+      <Card className="border-0">
         <CardContent className="p-5">
           <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
             <Trophy className="h-4 w-4 text-amber-500" />

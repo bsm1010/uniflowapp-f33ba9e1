@@ -296,7 +296,7 @@ function ProductsPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <Card className="border-border/60 shadow-soft overflow-hidden">
+          <Card className="border-border/60 overflow-hidden">
             {/* Filter bar */}
             <div className="p-4 border-b border-border/60 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between flex-wrap">
               <div className="relative w-full sm:max-w-xs">

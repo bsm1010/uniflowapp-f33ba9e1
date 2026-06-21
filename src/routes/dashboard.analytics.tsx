@@ -205,7 +205,7 @@ function AnalyticsPage() {
         {statCards.map((k) => (
           <Card
             key={k.label}
-            className={`relative overflow-hidden border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br ${k.gradient}`}
+            className={`relative overflow-hidden border-0 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br ${k.gradient}`}
           >
             <div className="absolute -top-12 -right-12 h-32 w-32 rounded-full bg-white/15 blur-2xl pointer-events-none" />
             <CardContent className="relative p-5">
@@ -228,7 +228,7 @@ function AnalyticsPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <AlgeriaOrdersMap />
 
-        <Card className="border-border/60 shadow-soft">
+        <Card className="border-border/60">
           <CardContent className="p-5">
             <h3 className="font-semibold text-sm">7-day snapshot</h3>
             <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-4">

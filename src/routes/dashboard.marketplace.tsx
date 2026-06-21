@@ -237,7 +237,7 @@ function MarketplacePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <Card className="border-border/60 shadow-soft">
+            <Card className="border-border/60">
               {/* Filter bar */}
               <div className="p-4 border-b border-border/60 flex flex-col lg:flex-row gap-3 lg:items-center">
                 <div className="relative w-full lg:max-w-xs">
@@ -482,10 +482,10 @@ function StatCard({
   gradient: string;
 }) {
   return (
-    <Card className="border-border/60 shadow-soft overflow-hidden">
+    <Card className="border-border/60 overflow-hidden">
       <div className="p-4 flex items-center gap-3">
         <div
-          className={`h-11 w-11 rounded-xl bg-gradient-to-br ${gradient} text-white grid place-items-center shadow-sm shrink-0`}
+          className={`h-11 w-11 rounded-xl bg-gradient-to-br ${gradient} text-white grid place-items-center shrink-0`}
         >
           <Icon className="h-5 w-5" />
         </div>
@@ -520,7 +520,7 @@ function ProductCard({
   const margin = price > 0 ? ((suggestedPrice - price) / price) * 100 : 0;
 
   return (
-    <Card className="border-border/60 shadow-soft overflow-hidden flex flex-col">
+    <Card className="border-border/60 overflow-hidden flex flex-col">
       {/* Image carousel */}
       <div className="relative bg-muted/40">
         {images.length === 0 ? (
@@ -547,12 +547,12 @@ function ProductCard({
           </Carousel>
         )}
         {alreadyAdded && (
-          <Badge className="absolute top-2 end-2 bg-emerald-500/95 text-white border-0 shadow-md">
+          <Badge className="absolute top-2 end-2 bg-emerald-500/95 text-white border-0">
             <Check className="h-3 w-3 me-1" /> مضاف لمتجري
           </Badge>
         )}
         {product.stock <= 0 && (
-          <Badge className="absolute top-2 start-2 bg-rose-500/95 text-white border-0 shadow-md">
+          <Badge className="absolute top-2 start-2 bg-rose-500/95 text-white border-0">
             نفد المخزون
           </Badge>
         )}
@@ -643,7 +643,7 @@ function MyListingsTable({
 }) {
   if (loading) {
     return (
-      <Card className="border-border/60 shadow-soft p-10">
+      <Card className="border-border/60 p-10">
         <div className="flex items-center justify-center">
           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
         </div>
@@ -653,7 +653,7 @@ function MyListingsTable({
 
   if (listings.length === 0) {
     return (
-      <Card className="border-border/60 shadow-soft">
+      <Card className="border-border/60">
         <EmptyState
           icon={StoreIcon}
           title="لا توجد منتجات مضافة"
@@ -669,7 +669,7 @@ function MyListingsTable({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <Card className="border-border/60 shadow-soft overflow-hidden">
+      <Card className="border-border/60 overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>

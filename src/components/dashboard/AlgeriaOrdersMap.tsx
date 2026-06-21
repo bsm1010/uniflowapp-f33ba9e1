@@ -119,7 +119,7 @@ export function AlgeriaOrdersMap() {
   );
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-card shadow-soft">
+    <div className="overflow-hidden rounded-xl border border-border bg-card">
       {/* ── Header ── */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 px-6 py-5">
         <div>

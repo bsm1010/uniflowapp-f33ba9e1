@@ -522,8 +522,8 @@ function DashboardHome() {
               <div
                 className={
                   zrBalance.ok
-                    ? "h-11 w-11 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white shadow-sm"
-                    : "h-11 w-11 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white shadow-sm"
+                    ? "h-11 w-11 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white"
+                    : "h-11 w-11 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white"
                 }
               >
                 <Wallet className="h-5 w-5" />
@@ -588,7 +588,7 @@ function DashboardHome() {
           transition={{ duration: 0.4, delay: 0.24 }}
         >
           {gamiLoading ? (
-            <Card className="border-border/50 shadow-sm overflow-hidden">
+            <Card className="border-border/50 overflow-hidden">
               <CardContent className="p-5 animate-pulse space-y-3">
                 <div className="h-4 w-24 bg-muted rounded" />
                 <div className="h-2 bg-muted rounded w-full" />
@@ -625,9 +625,9 @@ function DashboardHome() {
             { to: "/dashboard/voice-generator", icon: Mic, gradient: "from-rose-500 to-pink-500", label: t("dashboard.home.shortcuts.voiceGenerator"), desc: t("dashboard.home.shortcuts.voiceGeneratorDesc") },
           ].map((s) => (
             <Link key={s.to} to={s.to as never} className="block group">
-              <Card className="border-border/50 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md overflow-hidden h-full">
+              <Card className="border-border/50 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md overflow-hidden h-full">
                 <CardContent className="p-4 flex flex-col items-center text-center gap-2.5">
-                  <div className={`h-10 w-10 rounded-xl bg-gradient-to-br ${s.gradient} flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-300`}>
+                  <div className={`h-10 w-10 rounded-xl bg-gradient-to-br ${s.gradient} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
                     <s.icon className="h-5 w-5 text-white" />
                   </div>
                   <div>
@@ -680,7 +680,7 @@ function DashboardHome() {
         className="grid gap-4 lg:grid-cols-3"
       >
         {/* Recent Orders Table */}
-        <Card className="lg:col-span-2 border-border/50 shadow-sm overflow-hidden">
+        <Card className="lg:col-span-2 border-border/50 overflow-hidden">
           <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
@@ -804,9 +804,9 @@ function DashboardHome() {
         </Card>
 
         {/* Launch Checklist */}
-        <Card className="border-violet-200/50 dark:border-violet-800/30 bg-violet-50/30 dark:bg-violet-950/10 shadow-sm overflow-hidden">
+        <Card className="border-violet-200/50 dark:border-violet-800/30 bg-violet-50/30 dark:bg-violet-950/10 overflow-hidden">
           <CardContent className="p-5 sm:p-6 flex flex-col h-full">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center shadow-sm">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center">
               <Rocket className="h-5 w-5 text-white" />
             </div>
             <h3 className="mt-4 text-lg sm:text-xl font-bold font-display text-foreground flex items-center gap-1.5">
@@ -898,8 +898,8 @@ function StatCard({
     <Card
       className={
         isFilled
-          ? `relative overflow-hidden border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${gradient}`
-          : "relative overflow-hidden border-border/50 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5"
+          ? `relative overflow-hidden border-0 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${gradient}`
+          : "relative overflow-hidden border-border/50 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5"
       }
     >
       {isFilled && (
@@ -961,10 +961,10 @@ function QuickAction({
   external?: boolean;
 }) {
   const inner = (
-    <Card className="border-border/50 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md cursor-pointer overflow-hidden bg-card">
+    <Card className="border-border/50 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md cursor-pointer overflow-hidden bg-card">
       <CardContent className="p-5 flex items-start gap-4">
         <div
-          className={`h-11 w-11 rounded-xl bg-gradient-to-br ${iconGradient} flex items-center justify-center shrink-0 shadow-sm`}
+          className={`h-11 w-11 rounded-xl bg-gradient-to-br ${iconGradient} flex items-center justify-center shrink-0`}
         >
           <Icon className="h-5 w-5 text-white" />
         </div>
@@ -1005,7 +1005,7 @@ function SubscriptionStatusCard({
 
   if (status === "active") {
     return (
-      <Card className="border-emerald-500/20 shadow-sm overflow-hidden">
+      <Card className="border-emerald-500/20 overflow-hidden">
         <CardContent className="p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="grid size-10 place-items-center rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 ring-1 ring-emerald-500/20">
@@ -1025,7 +1025,7 @@ function SubscriptionStatusCard({
 
   if (hasPendingPayment) {
     return (
-      <Card className="border-amber-500/20 shadow-sm overflow-hidden">
+      <Card className="border-amber-500/20 overflow-hidden">
         <CardContent className="p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="grid size-10 place-items-center rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 ring-1 ring-amber-500/20">
@@ -1060,7 +1060,7 @@ function SubscriptionStatusCard({
       : t("dashboard.home.trialExpiredDesc");
     const cta = hadPaidSubscription ? t("dashboard.home.renew") : t("dashboard.home.upgradeNow");
     return (
-      <Card className="border-red-500/20 shadow-sm overflow-hidden">
+      <Card className="border-red-500/20 overflow-hidden">
         <CardContent className="p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="grid size-10 place-items-center rounded-xl bg-red-500/15 text-red-600 dark:text-red-400 ring-1 ring-red-500/20">
@@ -1083,7 +1083,7 @@ function SubscriptionStatusCard({
   }
 
   return (
-    <Card className="border-primary/20 shadow-sm overflow-hidden">
+    <Card className="border-primary/20 overflow-hidden">
       <CardContent className="p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="grid size-10 place-items-center rounded-xl bg-primary/15 text-primary ring-1 ring-primary/20">

@@ -154,7 +154,7 @@ function ThemeManagerPage() {
             className={cn(
               "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all",
               activeTab === tab.id
-                ? "bg-foreground text-background shadow-lg"
+                ? "bg-foreground text-background"
                 : "bg-muted text-muted-foreground hover:bg-muted/80",
             )}
           >
@@ -173,7 +173,7 @@ function ThemeManagerPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.08 }}
             >
-              <Card className="border-border/60 shadow-soft overflow-hidden group hover:shadow-glow/20 transition-all">
+              <Card className="border-border/60 overflow-hidden group hover:shadow-glow/20 transition-all">
                 <div
                   className="h-32 flex items-center justify-center relative"
                   style={{ backgroundColor: preset.preview.bg }}
@@ -233,7 +233,7 @@ function ThemeManagerPage() {
             <Card
               key={config.style}
               className={cn(
-                "border-border/60 shadow-soft cursor-pointer transition-all hover:shadow-glow/20",
+                "border-border/60 cursor-pointer transition-all hover:shadow-glow/20",
                 currentNav === config.style && "ring-2 ring-violet-500",
               )}
               onClick={() => applyNavbar(config.style)}
@@ -272,7 +272,7 @@ function ThemeManagerPage() {
             <Card
               key={config.style}
               className={cn(
-                "border-border/60 shadow-soft cursor-pointer transition-all hover:shadow-glow/20",
+                "border-border/60 cursor-pointer transition-all hover:shadow-glow/20",
                 currentFooter === config.style && "ring-2 ring-violet-500",
               )}
               onClick={() => applyFooter(config.style)}
@@ -308,7 +308,7 @@ function ThemeManagerPage() {
       {activeTab === "sections" && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {SECTION_PRESETS.map((preset) => (
-            <Card key={preset.id} className="border-border/60 shadow-soft">
+            <Card key={preset.id} className="border-border/60">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm">{preset.name}</CardTitle>
               </CardHeader>

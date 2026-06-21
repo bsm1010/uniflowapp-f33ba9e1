@@ -277,7 +277,7 @@ function ReferralsPage() {
             className="absolute inset-0 bg-gradient-to-br from-pink-500/5 to-transparent"
           />
           <CardContent className="relative p-5 flex items-center gap-4">
-            <div className="size-12 grid place-items-center rounded-xl bg-gradient-to-br from-pink-500 to-rose-500 text-white shadow-lg shadow-pink-500/30">
+            <div className="size-12 grid place-items-center rounded-xl bg-gradient-to-br from-pink-500 to-rose-500 text-white">
               <Users className="size-6" />
             </div>
             <div>
@@ -299,7 +299,7 @@ function ReferralsPage() {
             className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent"
           />
           <CardContent className="relative p-5 flex items-center gap-4">
-            <div className="size-12 grid place-items-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-500/30">
+            <div className="size-12 grid place-items-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 text-white">
               <Coins className="size-6" />
             </div>
             <div>
@@ -321,7 +321,7 @@ function ReferralsPage() {
             className="absolute inset-0 bg-gradient-to-br from-violet-500/5 to-transparent"
           />
           <CardContent className="relative p-5 flex items-center gap-4">
-            <div className="size-12 grid place-items-center rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white shadow-lg shadow-violet-500/30">
+            <div className="size-12 grid place-items-center rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white">
               <Gift className="size-6" />
             </div>
             <div>
@@ -339,7 +339,7 @@ function ReferralsPage() {
       </div>
 
       {/* Referral link section */}
-      <Card className="relative overflow-hidden border-border/60 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.15)]">
+      <Card className="relative overflow-hidden border-border/60">
         <div
           aria-hidden
           className="absolute inset-0 bg-gradient-to-br from-pink-500/5 via-transparent to-orange-500/5"
@@ -351,7 +351,7 @@ function ReferralsPage() {
 
         <CardContent className="relative p-6 sm:p-8 space-y-6">
           <div className="flex items-start gap-4">
-            <div className="size-12 grid place-items-center rounded-2xl bg-gradient-to-br from-pink-600 to-orange-500 text-white shadow-lg shadow-pink-500/30 shrink-0">
+            <div className="size-12 grid place-items-center rounded-2xl bg-gradient-to-br from-pink-600 to-orange-500 text-white shrink-0">
               <Share2 className="size-6" />
             </div>
             <div>
@@ -459,7 +459,7 @@ function ReferralsPage() {
                 <CardContent className="relative p-6 text-center space-y-4">
                   <div className="relative mx-auto">
                     <div
-                      className={`size-16 grid place-items-center rounded-2xl bg-gradient-to-br ${item.gradient} text-white shadow-lg mx-auto`}
+                      className={`size-16 grid place-items-center rounded-2xl bg-gradient-to-br ${item.gradient} text-white mx-auto`}
                     >
                       <item.icon className="size-7" />
                     </div>
@@ -492,7 +492,7 @@ function ReferralsPage() {
           />
           <CardContent className="relative p-6 sm:p-8 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="size-10 grid place-items-center rounded-xl bg-gradient-to-br from-pink-500 to-rose-500 text-white shadow-lg">
+              <div className="size-10 grid place-items-center rounded-xl bg-gradient-to-br from-pink-500 to-rose-500 text-white">
                 <Clock className="size-5" />
               </div>
               <div>

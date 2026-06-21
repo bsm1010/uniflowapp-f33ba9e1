@@ -453,7 +453,7 @@ function OrdersPage() {
           }
         />
       ) : (
-        <Card className="border-border/60 shadow-soft">
+        <Card className="border-border/60">
           <CardContent className="p-0">
             {/* ── Toolbar ── */}
             <div className="p-4 border-b border-border/60 flex flex-wrap items-center gap-3">

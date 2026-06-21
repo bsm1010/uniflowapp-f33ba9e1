@@ -75,7 +75,7 @@ export function AchievementCard({ achievement, onShared }: AchievementCardProps)
   return (
     <Card
       className={cn(
-        "border-border/60 shadow-soft transition-all",
+        "border-border/60 transition-all",
         achievement.earned
           ? "bg-gradient-to-br from-emerald-500/[0.04] to-transparent"
           : "opacity-60",

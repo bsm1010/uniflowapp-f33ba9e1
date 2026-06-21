@@ -282,7 +282,7 @@ function StorePage() {
       />
 
       {/* ── Store identity card ── */}
-      <Card className="border-border/60 shadow-soft overflow-hidden">
+      <Card className="border-border/60 overflow-hidden">
         <div
           className="h-32 relative"
           style={{
@@ -294,7 +294,7 @@ function StorePage() {
           <div className="absolute inset-0 bg-soft-radial opacity-60" />
         </div>
         <CardContent className="p-6 -mt-10 relative">
-          <div className="h-20 w-20 rounded-2xl bg-background border-4 border-background shadow-soft flex items-center justify-center overflow-hidden">
+          <div className="h-20 w-20 rounded-2xl bg-background border-4 border-background flex items-center justify-center overflow-hidden">
             {settings?.logo_url ? (
               <img src={settings.logo_url} alt="Store logo" className="h-full w-full object-cover" />
             ) : (
@@ -339,7 +339,7 @@ function StorePage() {
         <h3 className="font-semibold mb-4">Store stats</h3>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {stats.map((s) => (
-            <Card key={s.label} className="relative overflow-hidden border-border/60 shadow-soft">
+            <Card key={s.label} className="relative overflow-hidden border-border/60">
               <div
                 className={`absolute inset-0 bg-gradient-to-br ${s.color} pointer-events-none`}
               />
@@ -360,7 +360,7 @@ function StorePage() {
       {/* ── Store health + QR ── */}
       <div className="grid gap-4 md:grid-cols-2">
         {/* Health score */}
-        <Card className="border-border/60 shadow-soft">
+        <Card className="border-border/60">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold">Store health</h3>
@@ -409,7 +409,7 @@ function StorePage() {
         </Card>
 
         {/* QR code */}
-        <Card className="border-border/60 shadow-soft">
+        <Card className="border-border/60">
           <CardContent className="p-6 flex flex-col items-center justify-center gap-4 text-center h-full">
             <div className="h-10 w-10 rounded-xl bg-accent flex items-center justify-center">
               <QrCode className="h-5 w-5 text-accent-foreground" />
@@ -457,7 +457,7 @@ function StorePage() {
             <Link to="/dashboard/orders">View all</Link>
           </Button>
         </div>
-        <Card className="border-border/60 shadow-soft">
+        <Card className="border-border/60">
           <CardContent className="p-0">
             {recentOrders.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-center gap-3">
@@ -498,7 +498,7 @@ function StorePage() {
         <div className="grid gap-3">
           {checklist.map((item) => {
             const card = (
-              <Card className="border-border/60 shadow-soft hover:border-primary/40 transition-colors">
+              <Card className="border-border/60 hover:border-primary/40 transition-colors">
                 <CardContent className="p-4 flex items-center gap-4">
                   <div
                     className={`h-10 w-10 rounded-xl flex items-center justify-center ${item.done ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" : "bg-accent text-accent-foreground"}`}
@@ -539,7 +539,7 @@ function StorePage() {
           <AlertTriangle className="h-4 w-4" />
           Danger zone
         </h3>
-        <Card className="border-destructive/30 shadow-soft">
+        <Card className="border-destructive/30">
           <CardContent className="p-5 space-y-4">
             {/* Toggle visibility */}
             <div className="flex items-center justify-between gap-4 flex-wrap">

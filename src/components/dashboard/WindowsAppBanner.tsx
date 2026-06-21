@@ -46,7 +46,7 @@ export function WindowsAppBanner() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }}
           transition={{ duration: 0.3 }}
-          className="relative mt-6 overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-r from-[#0078D4]/10 via-primary/5 to-[#50E6FF]/10 p-5 shadow-soft"
+          className="relative mt-6 overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-r from-[#0078D4]/10 via-primary/5 to-[#50E6FF]/10 p-5"
         >
           <div className="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-[#0078D4]/30 blur-3xl" />
           <button

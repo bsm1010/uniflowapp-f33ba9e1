@@ -146,7 +146,7 @@ function StoreSettingsPage() {
       />
 
       {/* ── General Settings ── */}
-      <Card className="border-border/60 shadow-soft">
+      <Card className="border-border/60">
         <CardContent className="p-6 space-y-5">
           <div>
             <Label>Logo</Label>
@@ -238,7 +238,7 @@ function StoreSettingsPage() {
       </Card>
 
       {/* ── TikTok Pixel ── */}
-      <Card className="border-border/60 shadow-soft mt-6">
+      <Card className="border-border/60 mt-6">
         <CardContent className="p-6 space-y-4">
           <div className="flex items-center gap-3">
             {/* TikTok icon */}

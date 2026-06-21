@@ -114,7 +114,7 @@ function PresetsPage() {
               transition={{ duration: 0.35, delay: idx * 0.05 }}
             >
               <Card
-                className={`group overflow-hidden border-border/60 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${
+                className={`group overflow-hidden border-border/60 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${
                   active ? "ring-2 ring-primary border-primary/60" : ""
                 }`}
               >
@@ -255,7 +255,7 @@ function PresetsPage() {
 
             <div className="flex-1 min-h-0 bg-muted/40 p-3 sm:p-5 overflow-hidden">
               <div
-                className="mx-auto h-full bg-background rounded-xl border border-border overflow-hidden shadow-soft"
+                className="mx-auto h-full bg-background rounded-xl border border-border overflow-hidden"
                 style={{ maxWidth: 1180 }}
               >
                 <TabsContent value="home" className="h-full m-0 data-[state=inactive]:hidden">

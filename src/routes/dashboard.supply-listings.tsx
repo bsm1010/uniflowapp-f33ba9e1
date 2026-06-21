@@ -141,9 +141,9 @@ function SupplyListingsPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-2 mb-6">
-        <Card className="border-border/60 shadow-soft overflow-hidden">
+        <Card className="border-border/60 overflow-hidden">
           <div className="p-3 flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 text-white grid place-items-center shadow-sm shrink-0">
+            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 text-white grid place-items-center shrink-0">
               <Package className="h-4 w-4" />
             </div>
             <div className="min-w-0">
@@ -154,9 +154,9 @@ function SupplyListingsPage() {
             </div>
           </div>
         </Card>
-        <Card className="border-border/60 shadow-soft overflow-hidden">
+        <Card className="border-border/60 overflow-hidden">
           <div className="p-3 flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 text-white grid place-items-center shadow-sm shrink-0">
+            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 text-white grid place-items-center shrink-0">
               <Eye className="h-4 w-4" />
             </div>
             <div className="min-w-0">
@@ -167,9 +167,9 @@ function SupplyListingsPage() {
             </div>
           </div>
         </Card>
-        <Card className="border-border/60 shadow-soft overflow-hidden">
+        <Card className="border-border/60 overflow-hidden">
           <div className="p-3 flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-zinc-500 to-slate-500 text-white grid place-items-center shadow-sm shrink-0">
+            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-zinc-500 to-slate-500 text-white grid place-items-center shrink-0">
               <EyeOff className="h-4 w-4" />
             </div>
             <div className="min-w-0">
@@ -182,7 +182,7 @@ function SupplyListingsPage() {
         </Card>
       </div>
 
-      <Card className="border-border/60 shadow-soft overflow-hidden">
+      <Card className="border-border/60 overflow-hidden">
         {/* Filters */}
         <div className="p-4 border-b border-border/60 flex flex-col sm:flex-row gap-3 sm:items-center">
           <div className="relative w-full sm:max-w-xs">

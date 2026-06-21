@@ -140,7 +140,7 @@ function ContactEditor() {
       ) : (
         <div className="grid gap-6 lg:grid-cols-2">
           {/* EDITOR */}
-          <Card className="border-border/60 shadow-soft h-fit">
+          <Card className="border-border/60 h-fit">
             <CardContent className="p-6 space-y-5">
               <div className="flex items-center gap-2 pb-2 border-b border-border/60">
                 <MessageSquare className="h-4 w-4 text-primary" />
@@ -247,7 +247,7 @@ function ContactEditor() {
           </Card>
 
           {/* PREVIEW */}
-          <Card className="border-border/60 shadow-soft h-fit lg:sticky lg:top-20">
+          <Card className="border-border/60 h-fit lg:sticky lg:top-20">
             <CardContent className="p-0 overflow-hidden rounded-lg">
               <div className="px-4 py-2 border-b border-border/60 text-xs uppercase tracking-wider text-muted-foreground bg-muted/40">
                 Live preview

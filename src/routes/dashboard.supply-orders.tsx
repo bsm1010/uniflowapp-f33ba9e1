@@ -186,9 +186,9 @@ function SupplyOrdersPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-6">
-        <Card className="border-border/60 shadow-soft overflow-hidden">
+        <Card className="border-border/60 overflow-hidden">
           <div className="p-3 flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white grid place-items-center shadow-sm shrink-0">
+            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white grid place-items-center shrink-0">
               <Wallet className="h-4 w-4" />
             </div>
             <div className="min-w-0">
@@ -199,9 +199,9 @@ function SupplyOrdersPage() {
             </div>
           </div>
         </Card>
-        <Card className="border-border/60 shadow-soft overflow-hidden">
+        <Card className="border-border/60 overflow-hidden">
           <div className="p-3 flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 text-white grid place-items-center shadow-sm shrink-0">
+            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 text-white grid place-items-center shrink-0">
               <Clock className="h-4 w-4" />
             </div>
             <div className="min-w-0">
@@ -212,9 +212,9 @@ function SupplyOrdersPage() {
             </div>
           </div>
         </Card>
-        <Card className="border-border/60 shadow-soft overflow-hidden">
+        <Card className="border-border/60 overflow-hidden">
           <div className="p-3 flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-sky-500 to-blue-500 text-white grid place-items-center shadow-sm shrink-0">
+            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-sky-500 to-blue-500 text-white grid place-items-center shrink-0">
               <Package className="h-4 w-4" />
             </div>
             <div className="min-w-0">
@@ -225,9 +225,9 @@ function SupplyOrdersPage() {
             </div>
           </div>
         </Card>
-        <Card className="border-border/60 shadow-soft overflow-hidden">
+        <Card className="border-border/60 overflow-hidden">
           <div className="p-3 flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 text-white grid place-items-center shadow-sm shrink-0">
+            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 text-white grid place-items-center shrink-0">
               <Truck className="h-4 w-4" />
             </div>
             <div className="min-w-0">
@@ -238,9 +238,9 @@ function SupplyOrdersPage() {
             </div>
           </div>
         </Card>
-        <Card className="border-border/60 shadow-soft overflow-hidden">
+        <Card className="border-border/60 overflow-hidden">
           <div className="p-3 flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 text-white grid place-items-center shadow-sm shrink-0">
+            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 text-white grid place-items-center shrink-0">
               <PackageCheck className="h-4 w-4" />
             </div>
             <div className="min-w-0">
@@ -254,7 +254,7 @@ function SupplyOrdersPage() {
       </div>
 
       {/* Filter */}
-      <Card className="border-border/60 shadow-soft">
+      <Card className="border-border/60">
         <div className="p-4 border-b border-border/60 flex flex-col sm:flex-row gap-3 sm:items-center">
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-48">

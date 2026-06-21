@@ -354,7 +354,7 @@ function DropshipOrdersPage() {
 
         {/* ORDERS TAB */}
         <TabsContent value="orders">
-          <Card className="border-border/60 shadow-soft">
+          <Card className="border-border/60">
             <div className="p-4 border-b border-border/60 flex flex-col sm:flex-row gap-3 sm:items-center">
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-48">
@@ -481,7 +481,7 @@ function DropshipOrdersPage() {
 
         {/* TOPUP REQUESTS TAB */}
         <TabsContent value="topups">
-          <Card className="border-border/60 shadow-soft overflow-hidden">
+          <Card className="border-border/60 overflow-hidden">
             {topupRequests.length === 0 ? (
               <div className="p-10">
                 <EmptyState
@@ -554,7 +554,7 @@ function DropshipOrdersPage() {
 
         {/* LEDGER TAB */}
         <TabsContent value="ledger">
-          <Card className="border-border/60 shadow-soft overflow-hidden">
+          <Card className="border-border/60 overflow-hidden">
             {walletTx.length === 0 ? (
               <div className="p-10">
                 <EmptyState
@@ -768,10 +768,10 @@ function StatCard({
   gradient: string;
 }) {
   return (
-    <Card className="border-border/60 shadow-soft overflow-hidden">
+    <Card className="border-border/60 overflow-hidden">
       <div className="p-3 sm:p-4 flex items-center gap-3">
         <div
-          className={`h-10 w-10 sm:h-11 sm:w-11 rounded-xl bg-gradient-to-br ${gradient} text-white grid place-items-center shadow-sm shrink-0`}
+          className={`h-10 w-10 sm:h-11 sm:w-11 rounded-xl bg-gradient-to-br ${gradient} text-white grid place-items-center shrink-0`}
         >
           <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
         </div>

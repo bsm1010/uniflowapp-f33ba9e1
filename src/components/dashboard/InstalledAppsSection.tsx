@@ -80,7 +80,7 @@ export function InstalledAppsSection() {
       {loading ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[0, 1, 2].map((i) => (
-            <Card key={i} className="border-border/50 shadow-sm">
+            <Card key={i} className="border-border/50">
               <CardContent className="p-5">
                 <div className="h-12 w-12 animate-pulse rounded-xl bg-muted" />
                 <div className="mt-4 h-4 w-36 animate-pulse rounded bg-muted" />
@@ -90,7 +90,7 @@ export function InstalledAppsSection() {
           ))}
         </div>
       ) : installed.length === 0 ? (
-        <Card className="border-border/50 shadow-sm">
+        <Card className="border-border/50">
           <CardContent className="flex flex-col items-center justify-center p-10 text-center">
             <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-muted">
               <Blocks className="h-6 w-6 text-muted-foreground" />
@@ -118,12 +118,12 @@ export function InstalledAppsSection() {
             return (
               <Card
                 key={app.key}
-                className="border-border/50 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
+                className="border-border/50 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
               >
                 <CardContent className="flex flex-col gap-4 p-5">
                   <div className="flex items-start justify-between">
                     <div
-                      className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${app.gradient} shadow-sm`}
+                      className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${app.gradient}`}
                     >
                       <Icon className="h-6 w-6 text-white" />
                     </div>

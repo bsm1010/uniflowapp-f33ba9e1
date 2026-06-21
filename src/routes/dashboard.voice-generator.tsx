@@ -219,7 +219,7 @@ function VoiceGeneratorPage() {
       <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
         {/* Main generator */}
         <div className="space-y-6">
-          <Card className="border-border/60 shadow-sm">
+          <Card className="border-border/60">
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between gap-4">
                 <div>
@@ -413,7 +413,7 @@ function VoiceGeneratorPage() {
         </div>
 
         {/* History sidebar */}
-        <Card className="border-border/60 shadow-sm h-fit lg:sticky lg:top-4">
+        <Card className="border-border/60 h-fit lg:sticky lg:top-4">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2 text-base">

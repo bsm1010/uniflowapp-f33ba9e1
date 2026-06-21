@@ -96,7 +96,7 @@ function StockAlertsPage() {
   );
 
   const renderTable = (list: Product[]) => (
-    <Card className="border-border/60 shadow-soft">
+    <Card className="border-border/60">
       <CardContent className="p-0">
         <div className="overflow-x-auto">
           <Table>

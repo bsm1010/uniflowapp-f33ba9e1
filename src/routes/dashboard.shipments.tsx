@@ -242,7 +242,7 @@ function ShipmentsPage() {
           description="Create a shipment from the Orders page once an order is placed."
         />
       ) : (
-        <Card className="border-border/60 shadow-soft">
+        <Card className="border-border/60">
           <CardContent className="p-0">
             <div className="p-4 border-b border-border/60 flex items-center gap-3">
               <div className="relative flex-1 max-w-sm">

@@ -142,7 +142,7 @@ function ReturnsPage() {
           description="When customers request a return, it will appear here."
         />
       ) : (
-        <Card className="border-border/60 shadow-soft">
+        <Card className="border-border/60">
           <CardContent className="p-0">
             <div className="p-4 border-b border-border/60 flex items-center gap-3">
               <div className="relative flex-1 max-w-sm">

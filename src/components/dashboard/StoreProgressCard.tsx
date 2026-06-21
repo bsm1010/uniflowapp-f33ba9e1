@@ -79,7 +79,7 @@ export function StoreProgressCard() {
   if (loading) return null;
 
   return (
-    <Card className="border-border/50 shadow-sm overflow-hidden">
+    <Card className="border-border/50 overflow-hidden">
       <CardContent className="p-5 space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">

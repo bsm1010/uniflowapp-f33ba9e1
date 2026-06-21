@@ -86,7 +86,7 @@ function SortableRow({ sectionKey, index }: { sectionKey: SectionKey; index: num
         transition,
         zIndex: isDragging ? 10 : "auto",
       }}
-      className={`group flex items-center gap-3 rounded-lg border border-border bg-card p-3 shadow-soft ${
+      className={`group flex items-center gap-3 rounded-lg border border-border bg-card p-3 ${
         isDragging ? "opacity-90 ring-2 ring-primary" : ""
       }`}
     >

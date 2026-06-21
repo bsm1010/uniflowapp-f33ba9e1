@@ -280,7 +280,7 @@ function EmailMarketingApp() {
       </div>
 
       {/* Editor */}
-      <Card className="border-border/60 shadow-soft">
+      <Card className="border-border/60">
         <CardHeader>
           <CardTitle className="text-base">New campaign</CardTitle>
         </CardHeader>
@@ -369,7 +369,7 @@ function EmailMarketingApp() {
       </Card>
 
       {/* History */}
-      <Card className="border-border/60 shadow-soft">
+      <Card className="border-border/60">
         <CardHeader>
           <CardTitle className="text-base">Campaign history</CardTitle>
         </CardHeader>

@@ -402,9 +402,9 @@ export function DashboardSidebar() {
 
   const renderIcon = (Icon: typeof LayoutDashboard, gradient: string, active: boolean) => (
     <span
-      className={`relative flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${gradient} text-white shadow-sm transition-all duration-200 ${
+      className={`relative flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${gradient} text-white transition-all duration-200 ${
         active
-          ? "shadow-lg shadow-primary/20 scale-110 ring-2 ring-white/15"
+          ? "scale-110 ring-2 ring-white/15"
           : "opacity-80 group-hover/menu-item:opacity-100 group-hover/menu-item:scale-105 group-hover/menu-item:shadow-md"
       }`}
     >
@@ -416,7 +416,7 @@ export function DashboardSidebar() {
     const active = !item.external && isActive(item.url, item.end);
     const linkClass = `group/menu-item relative rounded-xl transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
       active
-        ? "bg-gradient-to-r from-primary/10 to-primary/5 text-sidebar-accent-foreground font-semibold shadow-sm border border-primary/10"
+        ? "bg-gradient-to-r from-primary/10 to-primary/5 text-sidebar-accent-foreground font-semibold border border-primary/10"
         : "hover:bg-sidebar-accent/50 hover:shadow-sm"
     }`;
     return (
@@ -437,7 +437,7 @@ export function DashboardSidebar() {
             <Link to={item.url} className={linkClass} data-tour={item.tourId} data-sound="click">
               {active && (
                 <span
-                  className={`absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-gradient-to-b ${item.gradient} shadow-sm`}
+                  className={`absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-gradient-to-b ${item.gradient}`}
                 />
               )}
               {renderIcon(item.icon, item.gradient, active)}
@@ -525,7 +525,7 @@ export function DashboardSidebar() {
                               to={url}
                               className={`group/menu-item relative rounded-xl transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
                                 active
-                                  ? "bg-gradient-to-r from-primary/10 to-primary/5 text-sidebar-accent-foreground font-semibold shadow-sm border border-primary/10"
+                                  ? "bg-gradient-to-r from-primary/10 to-primary/5 text-sidebar-accent-foreground font-semibold border border-primary/10"
                                   : "hover:bg-sidebar-accent/50 hover:shadow-sm"
                               }`}
                             >
@@ -561,7 +561,7 @@ export function DashboardSidebar() {
                       to="/dashboard/admin/payments"
                       className={`group/menu-item relative rounded-xl transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
                         isActive("/dashboard/admin/payments")
-                          ? "bg-gradient-to-r from-primary/10 to-primary/5 text-sidebar-accent-foreground font-semibold shadow-sm border border-primary/10"
+                          ? "bg-gradient-to-r from-primary/10 to-primary/5 text-sidebar-accent-foreground font-semibold border border-primary/10"
                           : "hover:bg-sidebar-accent/50 hover:shadow-sm"
                       }`}
                     >
@@ -585,7 +585,7 @@ export function DashboardSidebar() {
                       to="/dashboard/admin/marketplace"
                       className={`group/menu-item relative rounded-xl transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
                         isActive("/dashboard/admin/marketplace")
-                          ? "bg-gradient-to-r from-primary/10 to-primary/5 text-sidebar-accent-foreground font-semibold shadow-sm border border-primary/10"
+                          ? "bg-gradient-to-r from-primary/10 to-primary/5 text-sidebar-accent-foreground font-semibold border border-primary/10"
                           : "hover:bg-sidebar-accent/50 hover:shadow-sm"
                       }`}
                     >
@@ -609,7 +609,7 @@ export function DashboardSidebar() {
                       to="/dashboard/admin/dropship-orders"
                       className={`group/menu-item relative rounded-lg transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
                         isActive("/dashboard/admin/dropship-orders")
-                          ? "bg-gradient-to-r from-primary/10 to-primary/5 text-sidebar-accent-foreground font-semibold shadow-sm border border-primary/10"
+                          ? "bg-gradient-to-r from-primary/10 to-primary/5 text-sidebar-accent-foreground font-semibold border border-primary/10"
                           : "hover:bg-sidebar-accent/50 hover:shadow-sm"
                       }`}
                     >
@@ -657,7 +657,7 @@ export function DashboardSidebar() {
                       to="/dashboard/admin/supply-marketplace"
                       className={`group/menu-item relative rounded-lg transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
                         isActive("/dashboard/admin/supply-marketplace")
-                          ? "bg-gradient-to-r from-primary/10 to-primary/5 text-sidebar-accent-foreground font-semibold shadow-sm border border-primary/10"
+                          ? "bg-gradient-to-r from-primary/10 to-primary/5 text-sidebar-accent-foreground font-semibold border border-primary/10"
                           : "hover:bg-sidebar-accent/50 hover:shadow-sm"
                       }`}
                     >
@@ -681,7 +681,7 @@ export function DashboardSidebar() {
                       to="/dashboard/admin/apps"
                       className={`group/menu-item relative rounded-lg transition-all duration-200 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 ${
                         isActive("/dashboard/admin/apps")
-                          ? "bg-gradient-to-r from-primary/10 to-primary/5 text-sidebar-accent-foreground font-semibold shadow-sm border border-primary/10"
+                          ? "bg-gradient-to-r from-primary/10 to-primary/5 text-sidebar-accent-foreground font-semibold border border-primary/10"
                           : "hover:bg-sidebar-accent/50 hover:shadow-sm"
                       }`}
                     >

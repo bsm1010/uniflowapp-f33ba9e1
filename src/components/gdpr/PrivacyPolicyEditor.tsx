@@ -74,7 +74,7 @@ export function PrivacyPolicyEditor() {
 
   if (loading) {
     return (
-      <Card className="border-border/60 shadow-soft">
+      <Card className="border-border/60">
         <CardContent className="p-6">
           <div className="h-32 animate-pulse rounded-lg bg-muted" />
         </CardContent>
@@ -83,7 +83,7 @@ export function PrivacyPolicyEditor() {
   }
 
   return (
-    <Card className="border-border/60 shadow-soft">
+    <Card className="border-border/60">
       <CardHeader>
         <div className="flex items-center gap-3">
           <div className="grid place-items-center h-10 w-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-md">

@@ -263,7 +263,7 @@ function TrackingPage() {
       </div>
 
       {/* Call history section */}
-      <Card className="border-border/60 shadow-soft mt-6">
+      <Card className="border-border/60 mt-6">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-base flex items-center gap-2">
@@ -352,7 +352,7 @@ function TrackingPage() {
 
       {/* Provider status banner */}
       {tracking && (
-        <Card className="mb-6 border-border/60 shadow-soft">
+        <Card className="mb-6 border-border/60">
           <CardContent className="p-4">
             <div className="flex flex-wrap items-center gap-3">
               <div className="flex items-center gap-2">
@@ -373,7 +373,7 @@ function TrackingPage() {
       )}
 
       {/* Progress stepper */}
-      <Card className="border-border/60 shadow-soft mb-6">
+      <Card className="border-border/60 mb-6">
         <CardHeader>
           <CardTitle className="text-base">Delivery progress</CardTitle>
         </CardHeader>
@@ -440,7 +440,7 @@ function TrackingPage() {
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Order info */}
-        <Card className="border-border/60 shadow-soft">
+        <Card className="border-border/60">
           <CardHeader>
             <CardTitle className="text-base">Order details</CardTitle>
           </CardHeader>
@@ -508,7 +508,7 @@ function TrackingPage() {
         </Card>
 
         {/* History — ZRExpress exact statements */}
-        <Card className="border-border/60 shadow-soft">
+        <Card className="border-border/60">
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="text-base">Tracking history</CardTitle>

@@ -492,7 +492,7 @@ function renderSection(
               {c.features.map((f, i) => (
                 <div
                   key={i}
-                  className="rounded-xl border border-border bg-card p-5 shadow-soft hover:shadow-md transition"
+                   className="rounded-xl border border-border bg-card p-5 hover:shadow-md transition"
                 >
                   <div className="h-10 w-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-bold mb-3">
                     {i + 1}
@@ -561,7 +561,7 @@ function renderSection(
             <h3 className="text-2xl md:text-3xl font-bold text-center mb-10">آراء عملائنا</h3>
             <div className="grid gap-4 md:grid-cols-3">
               {c.testimonials.map((t, i) => (
-                <div key={i} className="rounded-xl bg-card border border-border p-5 shadow-soft">
+                <div key={i} className="rounded-xl bg-card border border-border p-5">
                   <div className="text-amber-500 mb-2">★★★★★</div>
                   <Editable
                     as="p"
@@ -601,7 +601,7 @@ function renderSection(
               {c.faq.map((q, i) => (
                 <details
                   key={i}
-                  className="group rounded-lg border border-border bg-card p-4 [&[open]]:shadow-soft"
+                   className="group rounded-lg border border-border bg-card p-4"
                 >
                   <summary className="cursor-pointer font-semibold flex items-center justify-between">
                     <Editable

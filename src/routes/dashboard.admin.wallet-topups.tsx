@@ -194,7 +194,7 @@ function AdminWalletTopupsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2 }}
           >
-            <Card className="border-border/60 shadow-soft overflow-hidden">
+            <Card className="border-border/60 overflow-hidden">
               {isLoading ? (
                 <div className="flex h-64 items-center justify-center">
                   <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />

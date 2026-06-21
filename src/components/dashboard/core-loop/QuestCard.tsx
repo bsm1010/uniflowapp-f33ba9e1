@@ -85,7 +85,7 @@ export function QuestCard({ quest, onClaimed }: QuestCardProps) {
   return (
     <Card
       className={cn(
-        "border-border/60 shadow-soft transition-all",
+        "border-border/60 transition-all",
         quest.completed && quest.claimed && "opacity-60",
       )}
     >

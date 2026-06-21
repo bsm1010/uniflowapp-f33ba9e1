@@ -328,7 +328,7 @@ function ProgressPage() {
         <div className="relative flex items-center gap-5">
           <div
             className={cn(
-              "h-16 w-16 rounded-2xl flex items-center justify-center bg-gradient-to-br shadow-lg shrink-0",
+              "h-16 w-16 rounded-2xl flex items-center justify-center bg-gradient-to-br shrink-0",
               currentLevelDef.color,
             )}
           >
@@ -410,7 +410,7 @@ function ProgressPage() {
             <div className="flex items-center gap-3">
               <div
                 className={cn(
-                  "h-10 w-10 rounded-xl flex items-center justify-center bg-gradient-to-br shadow-sm",
+                  "h-10 w-10 rounded-xl flex items-center justify-center bg-gradient-to-br",
                   s.color,
                 )}
               >
@@ -431,7 +431,7 @@ function ProgressPage() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <Card className="border-border/40 bg-card/50 backdrop-blur-sm shadow-md overflow-hidden">
+          <Card className="border-border/40 bg-card/50 backdrop-blur-sm overflow-hidden">
             <div className="h-1 bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-500" />
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
@@ -522,7 +522,7 @@ function ProgressPage() {
                   animate={{ opacity: 1, scale: 0.9 }}
                   className="text-center py-3"
                 >
-                  <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs px-4 py-1.5 shadow-lg">
+                   <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs px-4 py-1.5">
                     <Trophy className="h-3.5 w-3.5 mr-1.5" />
                     {t("dashboard.progress.allDone")}
                   </Badge>
@@ -537,7 +537,7 @@ function ProgressPage() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.25 }}
         >
-          <Card className="border-border/40 bg-card/50 backdrop-blur-sm shadow-md overflow-hidden">
+          <Card className="border-border/40 bg-card/50 backdrop-blur-sm overflow-hidden">
             <div className="h-1 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500" />
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
@@ -573,7 +573,7 @@ function ProgressPage() {
                         className={cn(
                           "h-9 w-9 rounded-xl flex items-center justify-center shrink-0 transition-all",
                           isUnlocked
-                            ? "bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-sm"
+                            ? "bg-gradient-to-br from-emerald-500 to-teal-500 text-white"
                             : "bg-muted/50 text-muted-foreground/40",
                         )}
                       >
@@ -637,7 +637,7 @@ function ProgressPage() {
                         className={cn(
                           "rounded-xl p-3 text-center transition-all border",
                           reached
-                            ? "bg-gradient-to-br border-violet-500/20 shadow-sm shadow-violet-500/5"
+                            ? "bg-gradient-to-br border-violet-500/20"
                             : "bg-muted/20 border-border/40 opacity-50",
                         )}
                       >
@@ -673,7 +673,7 @@ function ProgressPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
       >
-        <Card className="border-border/50 shadow-sm overflow-hidden">
+        <Card className="border-border/50 overflow-hidden">
           <div className="h-1 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-500" />
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
@@ -711,7 +711,7 @@ function ProgressPage() {
                       className={cn(
                         "h-9 w-9 rounded-xl flex items-center justify-center shrink-0 transition-all bg-gradient-to-br",
                         unlocked
-                          ? `${r.color} text-white shadow-sm`
+                          ? `${r.color} text-white`
                           : "from-muted to-muted text-muted-foreground/40",
                       )}
                     >
@@ -793,7 +793,7 @@ function ProgressPage() {
                         className={cn(
                           "h-8 w-8 rounded-xl flex items-center justify-center shrink-0",
                           unlocked
-                            ? "bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-sm"
+                            ? "bg-gradient-to-br from-amber-400 to-orange-500 text-white"
                             : "bg-muted/50 text-muted-foreground/40",
                         )}
                       >

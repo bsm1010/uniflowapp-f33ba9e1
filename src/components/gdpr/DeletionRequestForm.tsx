@@ -48,7 +48,7 @@ export function DeletionRequestForm({ storeId, storeName }: Props) {
 
   if (submitted) {
     return (
-      <Card className="border-border/60 shadow-soft max-w-lg mx-auto">
+      <Card className="border-border/60 max-w-lg mx-auto">
         <CardContent className="p-8 text-center">
           <div className="mx-auto h-14 w-14 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-white shadow-lg mb-4">
             <Trash2 className="h-7 w-7" />
@@ -65,7 +65,7 @@ export function DeletionRequestForm({ storeId, storeName }: Props) {
   }
 
   return (
-    <Card className="border-border/60 shadow-soft max-w-lg mx-auto">
+    <Card className="border-border/60 max-w-lg mx-auto">
       <CardHeader>
         <div className="flex items-center gap-3">
           <div className="grid place-items-center h-10 w-10 rounded-xl bg-gradient-to-br from-red-500 to-rose-500 text-white shadow-md">

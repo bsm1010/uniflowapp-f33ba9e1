@@ -316,7 +316,7 @@ function AdminSupplyMarketplacePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2 }}
           >
-            <Card className="border-border/60 shadow-soft overflow-hidden">
+            <Card className="border-border/60 overflow-hidden">
               {/* Filters */}
               <div className="p-4 border-b border-border/60 flex flex-col lg:flex-row gap-3 lg:items-center">
                 <div className="relative w-full lg:max-w-xs">
@@ -478,7 +478,7 @@ function AdminSupplyMarketplacePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2 }}
           >
-            <Card className="border-border/60 shadow-soft overflow-hidden">
+            <Card className="border-border/60 overflow-hidden">
               {ordersLoading ? (
                 <div className="flex h-64 items-center justify-center">
                   <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -1076,10 +1076,10 @@ function StatCard({
   gradient: string;
 }) {
   return (
-    <Card className="border-border/60 shadow-soft overflow-hidden">
+    <Card className="border-border/60 overflow-hidden">
       <div className="p-3 flex items-center gap-2.5">
         <div
-          className={`h-9 w-9 rounded-lg bg-gradient-to-br ${gradient} text-white grid place-items-center shadow-sm shrink-0`}
+          className={`h-9 w-9 rounded-lg bg-gradient-to-br ${gradient} text-white grid place-items-center shrink-0`}
         >
           <Icon className="h-4 w-4" />
         </div>

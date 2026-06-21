@@ -237,7 +237,7 @@ function CreditsPage() {
             className="absolute inset-0 bg-gradient-to-br from-violet-500/5 to-transparent"
           />
           <CardContent className="relative p-5 flex items-center gap-4">
-            <div className="size-12 grid place-items-center rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white shadow-lg shadow-violet-500/30">
+            <div className="size-12 grid place-items-center rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white">
               <Coins className="size-6" />
             </div>
             <div>
@@ -254,7 +254,7 @@ function CreditsPage() {
             className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent"
           />
           <CardContent className="relative p-5 flex items-center gap-4">
-            <div className="size-12 grid place-items-center rounded-xl bg-gradient-to-br from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/30">
+            <div className="size-12 grid place-items-center rounded-xl bg-gradient-to-br from-cyan-500 to-blue-500 text-white">
               <Sparkles className="size-6" />
             </div>
             <div>
@@ -271,7 +271,7 @@ function CreditsPage() {
             className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent"
           />
           <CardContent className="relative p-5 flex items-center gap-4">
-            <div className="size-12 grid place-items-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-500/30 group-hover:scale-110 transition-transform">
+            <div className="size-12 grid place-items-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 text-white group-hover:scale-110 transition-transform">
               <Gift className="size-6" />
             </div>
             <div className="flex-1">
@@ -291,12 +291,12 @@ function CreditsPage() {
 
       {/* Tabs */}
       <div className="flex justify-center">
-        <div className="inline-flex items-center p-1 rounded-full border border-border/60 bg-card shadow-soft">
+        <div className="inline-flex items-center p-1 rounded-full border border-border/60 bg-card">
           <button
             onClick={() => setTab("packs")}
             className={`px-6 py-2.5 text-sm font-semibold rounded-full transition-all ${
               tab === "packs"
-                ? "bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-md"
+                ? "bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -306,7 +306,7 @@ function CreditsPage() {
             onClick={() => setTab("plans")}
             className={`px-6 py-2.5 text-sm font-semibold rounded-full transition-all ${
               tab === "plans"
-                ? "bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-md"
+                ? "bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -343,13 +343,13 @@ function CreditsPage() {
                 <div className="relative">
                   <div className="flex justify-between items-start mb-4">
                     <div
-                      className={`size-12 grid place-items-center rounded-2xl bg-gradient-to-br ${p.gradient} text-white shadow-lg`}
+                      className={`size-12 grid place-items-center rounded-2xl bg-gradient-to-br ${p.gradient} text-white`}
                     >
                       <Icon className="size-6" />
                     </div>
                     {p.badge && (
                       <Badge
-                        className={`bg-gradient-to-r ${p.gradient} text-white border-0 shadow-md`}
+                        className={`bg-gradient-to-r ${p.gradient} text-white border-0`}
                       >
                         {t(`dashboard.credits.${p.badge}`)}
                       </Badge>
@@ -418,13 +418,13 @@ function CreditsPage() {
                 <div className="relative">
                   <div className="flex justify-between items-start mb-4">
                     <div
-                      className={`size-12 grid place-items-center rounded-2xl bg-gradient-to-br ${p.gradient} text-white shadow-lg`}
+                      className={`size-12 grid place-items-center rounded-2xl bg-gradient-to-br ${p.gradient} text-white`}
                     >
                       <Icon className="size-6" />
                     </div>
                     {p.highlight && (
                       <Badge
-                        className={`bg-gradient-to-r ${p.gradient} text-white border-0 shadow-md`}
+                        className={`bg-gradient-to-r ${p.gradient} text-white border-0`}
                       >
                         {t("dashboard.credits.best")}
                       </Badge>
@@ -478,7 +478,7 @@ function CreditsPage() {
       )}
 
       {/* Payment proof card */}
-      <Card className="relative overflow-hidden border-border/60 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.15)]">
+      <Card className="relative overflow-hidden border-border/60">
         <div
           aria-hidden
           className="absolute inset-0 bg-gradient-to-br from-violet-500/5 via-transparent to-fuchsia-500/5"
@@ -490,7 +490,7 @@ function CreditsPage() {
 
         <CardContent className="relative p-6 sm:p-8 space-y-6">
           <div className="flex items-start gap-4">
-            <div className="size-12 grid place-items-center rounded-2xl bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white shadow-lg shadow-violet-500/30 shrink-0">
+            <div className="size-12 grid place-items-center rounded-2xl bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white shrink-0">
               <ShieldCheck className="size-6" />
             </div>
             <div>
@@ -546,7 +546,7 @@ function CreditsPage() {
               <div
                 className={`grid size-12 place-items-center rounded-xl shrink-0 transition-all ${
                   file
-                    ? "bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white shadow-lg"
+                    ? "bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white"
                     : "bg-muted border border-border"
                 }`}
               >

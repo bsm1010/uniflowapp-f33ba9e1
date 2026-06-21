@@ -105,7 +105,7 @@ export function DeletionRequestsSection() {
   };
 
   return (
-    <Card className="border-border/60 shadow-soft">
+    <Card className="border-border/60">
       <CardHeader>
         <div className="flex items-center gap-3">
           <div className="grid place-items-center h-10 w-10 rounded-xl bg-gradient-to-br from-red-500 to-rose-500 text-white shadow-md">
