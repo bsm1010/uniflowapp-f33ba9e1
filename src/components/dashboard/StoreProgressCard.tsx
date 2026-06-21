@@ -185,7 +185,7 @@ export function StoreProgressCard() {
                           className={cn(
                             "text-sm font-semibold",
                             item.completed
-                              ? "text-muted-foreground line-through"
+                              ? "text-muted-foreground"
                               : "text-foreground",
                           )}
                         >

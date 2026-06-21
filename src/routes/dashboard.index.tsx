@@ -117,6 +117,9 @@ function DashboardHome() {
   } | null>(null);
   const [zrBalance, setZrBalance] = useState<ZRExpressBalanceResult | null>(null);
   const callZrBalance = useServerFn(getZRExpressBalance);
+  const [previewProducts, setPreviewProducts] = useState<
+    Array<{ id: string; name: string; image_url: string | null }>
+  >([]);
 
   const loadDashboard = useCallback(() => {
     if (!user) return;
@@ -150,6 +153,18 @@ function DashboardHome() {
       .then(({ data }) => {
         if (!cancelled) setHasPendingPayment((data?.length ?? 0) > 0);
       });
+
+    let previewQ = supabase
+      .from("products")
+      .select("id,name,image_url")
+      .eq("user_id", user.id)
+      .eq("status", "published")
+      .order("created_at", { ascending: false })
+      .limit(3);
+    if (storeId) previewQ = previewQ.eq("store_id", storeId);
+    previewQ.then(({ data }) => {
+      if (!cancelled) setPreviewProducts(data ?? []);
+    });
 
     const scopedProducts = () => {
       let q = supabase
@@ -657,34 +672,82 @@ function DashboardHome() {
             <div className="flex-1 rounded-xl border border-border/50 bg-muted/30 overflow-hidden">
               {/* Mini navbar */}
               <div className="h-8 bg-background border-b border-border/30 flex items-center px-3 gap-2">
-                <div className="w-4 h-4 rounded bg-gradient-to-br from-violet-500 to-fuchsia-500" />
+                {storeSettings?.logo_url ? (
+                  <Img
+                    src={storeSettings.logo_url}
+                    alt=""
+                    width={32}
+                    className="w-4 h-4 rounded shrink-0"
+                  />
+                ) : (
+                  <div className="w-4 h-4 rounded bg-gradient-to-br from-violet-500 to-fuchsia-500 shrink-0" />
+                )}
                 <span className="text-[10px] font-semibold text-foreground truncate">
                   {storeSettings?.store_name || currentStore?.slug || "Your Store"}
                 </span>
               </div>
               {/* Mini hero */}
-              <div className="h-16 bg-gradient-to-br from-violet-100 to-fuchsia-50 dark:from-violet-950/30 dark:to-fuchsia-950/20 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-[10px] font-bold text-foreground">
-                    {storeSettings?.store_name || "Your Store"}
-                  </div>
-                  <div className="text-[8px] text-muted-foreground mt-0.5">
-                    Welcome to our store
+              <div
+                className="h-16 flex items-center justify-center"
+                style={{
+                  background: storeSettings?.theme && storeSettings.theme !== "default"
+                    ? `linear-gradient(135deg, hsl(var(--primary) / 0.08), hsl(var(--primary) / 0.03))`
+                    : undefined,
+                }}
+              >
+                <div className="bg-gradient-to-br from-violet-100 to-fuchsia-50 dark:from-violet-950/30 dark:to-fuchsia-950/20 h-full w-full flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="text-[10px] font-bold text-foreground">
+                      {storeSettings?.store_name || currentStore?.slug || "Your Store"}
+                    </div>
+                    <div className="text-[8px] text-muted-foreground mt-0.5">
+                      Welcome to our store
+                    </div>
                   </div>
                 </div>
               </div>
-              {/* Mini products grid */}
-              <div className="p-2 grid grid-cols-3 gap-1.5">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="aspect-square rounded-md bg-background border border-border/30" />
-                ))}
-              </div>
+              {/* Real product thumbnails or empty state */}
+              {previewProducts.length > 0 ? (
+                <div className="p-2 grid grid-cols-3 gap-1.5">
+                  {previewProducts.map((p) => (
+                    <div key={p.id} className="aspect-square rounded-md bg-background border border-border/30 overflow-hidden">
+                      {p.image_url ? (
+                        <Img
+                          src={p.image_url}
+                          alt={p.name}
+                          width={120}
+                          quality={60}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-muted/50">
+                          <Package className="h-3 w-3 text-muted-foreground" />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-3 text-center">
+                  <Package className="h-5 w-5 text-muted-foreground/50 mx-auto mb-1" />
+                  <p className="text-[9px] text-muted-foreground leading-tight">
+                    No products yet
+                  </p>
+                  <Link to="/dashboard/products" className="text-[9px] text-violet-600 dark:text-violet-400 font-medium hover:underline">
+                    Add your first product
+                  </Link>
+                </div>
+              )}
             </div>
             <Button variant="outline" size="sm" asChild className="w-full mt-3 gap-1.5">
-              <Link to="/dashboard/store">
+              <a
+                href={currentStore?.slug ? `${window.location.origin}/s/${currentStore.slug}` : "#"}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <ExternalLink className="h-3.5 w-3.5" />
                 {t("dashboard.home.actions.viewStore.title")}
-              </Link>
+              </a>
             </Button>
           </CardContent>
         </Card>

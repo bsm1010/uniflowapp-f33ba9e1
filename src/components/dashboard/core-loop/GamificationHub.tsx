@@ -289,28 +289,28 @@ export function GamificationHub({ compact = false, data: propData }: Gamificatio
             </div>
 
             {/* Circular progress + Level info */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               {/* SVG Circular Progress Ring */}
               <div className="relative shrink-0">
                 <svg
-                  width="80"
-                  height="80"
-                  viewBox="0 0 80 80"
+                  width="72"
+                  height="72"
+                  viewBox="0 0 72 72"
                   className="-rotate-90"
                 >
                   <circle
-                    cx="40"
-                    cy="40"
-                    r="36"
+                    cx="36"
+                    cy="36"
+                    r="32"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="4"
                     className="text-muted/50"
                   />
                   <motion.circle
-                    cx="40"
-                    cy="40"
-                    r="36"
+                    cx="36"
+                    cy="36"
+                    r="32"
                     fill="none"
                     stroke="url(#progress-gradient)"
                     strokeWidth="4"
@@ -334,7 +334,7 @@ export function GamificationHub({ compact = false, data: propData }: Gamificatio
                   </defs>
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-lg font-bold text-foreground">
+                  <span className="text-base font-bold text-foreground">
                     {data.level}
                   </span>
                 </div>
@@ -342,66 +342,66 @@ export function GamificationHub({ compact = false, data: propData }: Gamificatio
 
               {/* Level info + XP */}
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
+                <div className="flex items-baseline gap-1.5 mb-1.5">
+                  <span className="text-xs font-semibold text-amber-600 dark:text-amber-400 whitespace-nowrap">
                     {t("dashboard.gamification.level")} {data.level}
                   </span>
-                  <span className="text-[11px] text-muted-foreground">
+                  <span className="text-[10px] text-muted-foreground truncate min-w-0">
                     {levelTitle}
                   </span>
                 </div>
-                <Progress value={xpProgressPercent} className="h-1.5 mb-1" />
-                <div className="flex justify-between text-[11px] text-muted-foreground">
-                  <span>
+                <Progress value={xpProgressPercent} className="h-1.5" />
+                <div className="flex justify-between text-[10px] text-muted-foreground mt-1">
+                  <span className="truncate min-w-0">
                     {data.xpForNext - data.xp} XP {t("dashboard.gamification.next")}
                   </span>
-                  <span>{Math.round(xpProgressPercent)}%</span>
+                  <span className="whitespace-nowrap ml-1">{Math.round(xpProgressPercent)}%</span>
                 </div>
               </div>
             </div>
 
             {/* Stats row */}
-            <div className="grid grid-cols-3 gap-3">
-              <div className="text-center p-2 rounded-lg bg-muted/30">
-                <div className="flex items-center justify-center gap-1 mb-1">
+            <div className="grid grid-cols-3 gap-2">
+              <div className="text-center p-1.5 rounded-lg bg-muted/30 min-w-0">
+                <div className="flex items-center justify-center mb-0.5">
                   <Flame className="h-3.5 w-3.5 text-amber-500" />
                 </div>
-                <div className="text-sm font-bold text-foreground">
+                <div className="text-sm font-bold text-foreground leading-tight">
                   {data.currentStreak}
                 </div>
-                <div className="text-[10px] text-muted-foreground">
+                <div className="text-[9px] text-muted-foreground leading-tight">
                   {t("dashboard.gamification.streakDays")}
                 </div>
               </div>
 
-              <div className="text-center p-2 rounded-lg bg-muted/30">
-                <div className="flex items-center justify-center gap-1 mb-1">
+              <div className="text-center p-1.5 rounded-lg bg-muted/30 min-w-0">
+                <div className="flex items-center justify-center mb-0.5">
                   <Trophy className="h-3.5 w-3.5 text-emerald-500" />
                 </div>
-                <div className="text-sm font-bold text-foreground">
+                <div className="text-sm font-bold text-foreground leading-tight">
                   {earnedAchievements}
                 </div>
-                <div className="text-[10px] text-muted-foreground">
+                <div className="text-[9px] text-muted-foreground leading-tight">
                   {t("dashboard.gamification.badges")}
                 </div>
               </div>
 
-              <div className="text-center p-2 rounded-lg bg-muted/30">
-                <div className="flex items-center justify-center gap-1 mb-1">
+              <div className="text-center p-1.5 rounded-lg bg-muted/30 min-w-0">
+                <div className="flex items-center justify-center mb-0.5">
                   {nextUnlockable ? (
                     <Gift className="h-3.5 w-3.5 text-violet-500" />
                   ) : (
                     <CheckCircle className="h-3.5 w-3.5 text-emerald-500" />
                   )}
                 </div>
-                <div className="text-sm font-bold text-foreground truncate">
+                <div className="text-[11px] font-bold text-foreground truncate leading-tight">
                   {nextUnlockable
                     ? nextUnlockable.name
                     : t("dashboard.gamification.allUnlocked")}
                 </div>
-                <div className="text-[10px] text-muted-foreground">
+                <div className="text-[9px] text-muted-foreground leading-tight">
                   {nextUnlockable
-                    ? `${t("dashboard.gamification.next")}`
+                    ? t("dashboard.gamification.reward")
                     : t("dashboard.gamification.reward")}
                 </div>
               </div>
