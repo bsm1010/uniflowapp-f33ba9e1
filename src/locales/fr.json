@@ -310,11 +310,27 @@
       },
       "recentOrders": "Commandes récentes",
       "viewAll": "Tout voir",
+      "viewAllOrders": "Voir toutes les commandes",
       "noOrders": "Aucune commande pour l'instant",
       "noOrdersDesc": "Vos commandes apparaîtront ici dès vos premières ventes.",
+      "unknownOrder": "Commande",
+      "tableHeaders": {
+        "order": "Commande",
+        "customer": "Client",
+        "date": "Date",
+        "status": "Statut",
+        "amount": "Montant"
+      },
       "checklist": "Préparez votre lancement",
       "checklistDesc": "Quelques étapes simples pour mettre votre boutique en orbite.",
       "continueSetup": "Poursuivre la configuration",
+      "checklistSteps": {
+        "storeInfo": { "title": "Ajouter les informations du magasin", "desc": "Définissez le nom, le logo et les détails de votre entreprise." },
+        "products": { "title": "Ajouter des produits", "desc": "Ajoutez votre premier produit ou importez depuis le catalogue." },
+        "payments": { "title": "Configurer les paiements", "desc": "Configurez les méthodes de paiement pour recevoir les paiements." },
+        "customize": { "title": "Personnaliser votre magasin", "desc": "Choisissez un thème et rendez-le unique." },
+        "launch": { "title": "Lancer votre magasin", "desc": "Vérifiez tout et lancez-vous pour vos clients." }
+      },
       "subActive": "Abonnement actif",
       "subActiveDesc": "Votre offre est active. Toutes les fonctionnalités sont à votre disposition.",
       "subPending": "Paiement en cours de vérification",

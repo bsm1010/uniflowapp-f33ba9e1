@@ -301,11 +301,27 @@
       },
       "recentOrders": "Recent orders",
       "viewAll": "View all",
+      "viewAllOrders": "View all orders",
       "noOrders": "No orders yet",
       "noOrdersDesc": "Orders will appear here once your customers start shopping.",
+      "unknownOrder": "Order",
+      "tableHeaders": {
+        "order": "Order",
+        "customer": "Customer",
+        "date": "Date",
+        "status": "Status",
+        "amount": "Amount"
+      },
       "checklist": "Launch checklist",
       "checklistDesc": "Complete a few steps to get your store ready for customers.",
       "continueSetup": "Continue setup",
+      "checklistSteps": {
+        "storeInfo": { "title": "Add store information", "desc": "Set your store name, logo and business details." },
+        "products": { "title": "Add products", "desc": "Add your first product or import from catalog." },
+        "payments": { "title": "Configure payments", "desc": "Set up payment methods to receive payments." },
+        "customize": { "title": "Customize your store", "desc": "Choose a theme and make it uniquely yours." },
+        "launch": { "title": "Launch your store", "desc": "Review everything and go live for your customers." }
+      },
       "subActive": "Subscription active",
       "subActiveDesc": "Your plan is active. All features are unlocked.",
       "subPending": "Payment under review",
