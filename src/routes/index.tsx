@@ -42,11 +42,6 @@ const WindowsDownload = lazy(() =>
     default: m.WindowsDownload,
   })),
 );
-const PhoneLottie = lazy(() =>
-  import("@/components/landing/PhoneLottie").then((m) => ({
-    default: m.PhoneLottie,
-  })),
-);
 const Footer = lazy(() =>
   import("@/components/landing/Footer").then((m) => ({
     default: m.Footer,
@@ -128,9 +123,6 @@ function Index() {
         </div>
         <div className="cv-auto">
           <CTA />
-        </div>
-        <div className="cv-auto">
-          <PhoneLottie />
         </div>
         <Footer />
       </Suspense>
