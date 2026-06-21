@@ -330,7 +330,7 @@ export function CreateOrderDialog({ open, onClose, onCreated }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl w-[calc(100vw-1.5rem)] max-h-[90vh] overflow-y-auto p-4 sm:p-6">
         <DialogHeader>
           <DialogTitle>Create order</DialogTitle>
           <DialogDescription>
@@ -344,26 +344,26 @@ export function CreateOrderDialog({ open, onClose, onCreated }: Props) {
             type="button"
             onClick={() => setMode("manual")}
             className={cn(
-              "flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors",
+              "flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-lg transition-colors",
               mode === "manual"
                 ? "bg-primary text-primary-foreground"
                 : "bg-muted text-muted-foreground hover:text-foreground",
             )}
           >
-            <FileText className="h-4 w-4" />
+            <FileText className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             Manual entry
           </button>
           <button
             type="button"
             onClick={() => setMode("scan")}
             className={cn(
-              "flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors",
+              "flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-lg transition-colors",
               mode === "scan"
                 ? "bg-primary text-primary-foreground"
                 : "bg-muted text-muted-foreground hover:text-foreground",
             )}
           >
-            <Camera className="h-4 w-4" />
+            <Camera className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             Scan order
           </button>
         </div>
@@ -604,7 +604,7 @@ export function CreateOrderDialog({ open, onClose, onCreated }: Props) {
 
           {/* Items section */}
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                 Items
               </h4>
@@ -688,44 +688,92 @@ export function CreateOrderDialog({ open, onClose, onCreated }: Props) {
               </div>
             ) : (
               <div className="space-y-2">
-                {items.map((item, idx) => (
+                {items.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-center gap-2 p-3 border rounded-lg bg-muted/30"
+                    className="flex flex-col sm:flex-row sm:items-center gap-2 p-3 border rounded-lg bg-muted/30"
                   >
-                    <div className="h-10 w-10 rounded bg-muted overflow-hidden shrink-0">
-                      {item.image_url && (
-                        <img src={item.image_url} alt="" className="h-full w-full object-cover" />
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0 grid grid-cols-[1fr_70px_90px_80px_auto] gap-2 items-center">
+                    {/* Mobile: stacked layout */}
+                    <div className="flex items-center gap-2 sm:hidden w-full">
+                      <div className="h-10 w-10 rounded bg-muted overflow-hidden shrink-0">
+                        {item.image_url && (
+                          <img src={item.image_url} alt="" className="h-full w-full object-cover" />
+                        )}
+                      </div>
                       <Input
                         value={item.product_name}
                         onChange={(e) => updateItem(item.id, "product_name", e.target.value)}
                         placeholder="Product name"
-                        className="h-8 text-sm"
+                        className="h-8 text-sm flex-1"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeItem(item.id)}
+                        className="h-7 w-7 flex items-center justify-center rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors shrink-0"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                    <div className="flex items-center gap-2 sm:hidden w-full">
+                      <div className="flex items-center gap-1 flex-1">
+                        <Label className="text-xs text-muted-foreground whitespace-nowrap">Qty</Label>
+                        <Input
+                          type="number"
+                          min={1}
+                          value={item.quantity}
+                          onChange={(e) => updateItem(item.id, "quantity", Math.max(1, Number(e.target.value)))}
+                          className="h-8 text-sm w-16"
+                        />
+                      </div>
+                      <div className="flex items-center gap-1 flex-1">
+                        <Label className="text-xs text-muted-foreground whitespace-nowrap">Price</Label>
+                        <Input
+                          type="number"
+                          min={0}
+                          value={item.unit_price}
+                          onChange={(e) => updateItem(item.id, "unit_price", Math.max(0, Number(e.target.value)))}
+                          className="h-8 text-sm flex-1"
+                        />
+                      </div>
+                      <span className="text-sm font-medium tabular-nums whitespace-nowrap">
+                        {(item.unit_price * item.quantity).toFixed(0)} DA
+                      </span>
+                    </div>
+
+                    {/* Desktop: inline layout */}
+                    <div className="hidden sm:flex sm:items-center sm:gap-2 sm:flex-1 sm:min-w-0">
+                      <div className="h-10 w-10 rounded bg-muted overflow-hidden shrink-0">
+                        {item.image_url && (
+                          <img src={item.image_url} alt="" className="h-full w-full object-cover" />
+                        )}
+                      </div>
+                      <Input
+                        value={item.product_name}
+                        onChange={(e) => updateItem(item.id, "product_name", e.target.value)}
+                        placeholder="Product name"
+                        className="h-8 text-sm flex-1 min-w-0"
                       />
                       <Input
                         type="number"
                         min={1}
                         value={item.quantity}
                         onChange={(e) => updateItem(item.id, "quantity", Math.max(1, Number(e.target.value)))}
-                        className="h-8 text-sm"
+                        className="h-8 text-sm w-16 shrink-0"
                       />
                       <Input
                         type="number"
                         min={0}
                         value={item.unit_price}
                         onChange={(e) => updateItem(item.id, "unit_price", Math.max(0, Number(e.target.value)))}
-                        className="h-8 text-sm"
+                        className="h-8 text-sm w-20 shrink-0"
                       />
-                      <span className="text-sm font-medium tabular-nums text-right">
+                      <span className="text-sm font-medium tabular-nums text-right whitespace-nowrap shrink-0">
                         {(item.unit_price * item.quantity).toFixed(2)} DA
                       </span>
                       <button
                         type="button"
                         onClick={() => removeItem(item.id)}
-                        className="h-7 w-7 flex items-center justify-center rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                        className="h-7 w-7 flex items-center justify-center rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors shrink-0"
                       >
                         <X className="h-4 w-4" />
                       </button>
@@ -750,16 +798,16 @@ export function CreateOrderDialog({ open, onClose, onCreated }: Props) {
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-between pt-4 border-t">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t">
             <div>
               <div className="text-sm text-muted-foreground">Total</div>
               <div className="text-xl font-bold tabular-nums">{subtotal.toFixed(2)} DA</div>
             </div>
             <div className="flex gap-2">
-              <Button type="button" variant="outline" onClick={handleClose} disabled={submitting}>
+              <Button type="button" variant="outline" onClick={handleClose} disabled={submitting} className="flex-1 sm:flex-none">
                 Cancel
               </Button>
-              <Button type="button" onClick={handleSubmit} disabled={submitting}>
+              <Button type="button" onClick={handleSubmit} disabled={submitting} className="flex-1 sm:flex-none">
                 {submitting ? (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                 ) : (
