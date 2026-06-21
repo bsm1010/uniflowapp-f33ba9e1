@@ -14,10 +14,12 @@ import {
   Send,
   AlertCircle,
   RefreshCw,
+  Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CreateShipmentDialog } from "@/components/dashboard/CreateShipmentDialog";
+import { CreateOrderDialog } from "@/components/dashboard/CreateOrderDialog";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
 import { useCurrentStore } from "@/hooks/use-current-store";
@@ -109,6 +111,7 @@ function OrdersPage() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [pushingId, setPushingId] = useState<string | null>(null);
   const [importingZR, setImportingZR] = useState(false);
+  const [createOrderOpen, setCreateOrderOpen] = useState(false);
   const [callLogs, setCallLogs] = useState<
     Record<string, { outcome: string; called_at: string; channel: string }>
   >({});
@@ -393,7 +396,15 @@ function OrdersPage() {
           icon={ShoppingBag}
           gradient="from-emerald-500 via-teal-500 to-cyan-500"
         />
-        <div className="pt-6">
+        <div className="pt-6 flex gap-2">
+          <Button
+            type="button"
+            onClick={() => setCreateOrderOpen(true)}
+            className="gap-1.5"
+          >
+            <Plus className="h-4 w-4" />
+            Create order
+          </Button>
           <Button
             type="button"
             variant="outline"
@@ -760,6 +771,11 @@ function OrdersPage() {
         order={shipOrder}
         open={!!shipOrder}
         onOpenChange={(v) => !v && setShipOrder(null)}
+        onCreated={loadOrders}
+      />
+      <CreateOrderDialog
+        open={createOrderOpen}
+        onClose={() => setCreateOrderOpen(false)}
         onCreated={loadOrders}
       />
     </div>
