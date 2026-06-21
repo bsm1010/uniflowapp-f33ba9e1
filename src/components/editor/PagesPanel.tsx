@@ -31,17 +31,9 @@ export function PagesPanel() {
             />
           </Field>
           <Field label={tr("editor.pages.currency")}>
-            <select
-              value={settings.currency || "DZD"}
-              onChange={(e) => updateSettings({ currency: e.target.value })}
-              className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-            >
-              {["DZD", "USD", "EUR", "MAD", "TND", "GBP", "SAR", "AED"].map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
+            <div className="w-full rounded-md border bg-muted/50 px-3 py-2 text-sm text-muted-foreground">
+              DZD
+            </div>
           </Field>
           <Field label={tr("editor.pages.urlSlug")}>
             <input

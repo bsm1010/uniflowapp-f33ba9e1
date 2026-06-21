@@ -7,7 +7,6 @@ import {
   Upload,
   Store,
   Link2,
-  DollarSign,
   ImageIcon,
   Sparkles,
   Facebook,
@@ -33,20 +32,6 @@ interface Props {
   initialName?: string;
   onComplete: () => void;
 }
-
-const CURRENCIES = [
-  { code: "DZD", label: "Algerian Dinar (DA)" },
-  { code: "EUR", label: "Euro (€)" },
-  { code: "GBP", label: "British Pound (£)" },
-  { code: "DZD", label: "Algerian Dinar (DA)" },
-  { code: "MAD", label: "Moroccan Dirham (DH)" },
-  { code: "TND", label: "Tunisian Dinar (DT)" },
-  { code: "EGP", label: "Egyptian Pound (E£)" },
-  { code: "SAR", label: "Saudi Riyal (SR)" },
-  { code: "AED", label: "UAE Dirham (AED)" },
-  { code: "CAD", label: "Canadian Dollar (C$)" },
-  { code: "AUD", label: "Australian Dollar (A$)" },
-];
 
 const SOURCES = [
   { value: "facebook", label: "Facebook", Icon: Facebook },
@@ -137,7 +122,6 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
   const [slugTouched, setSlugTouched] = useState(false);
   const [slugChecking, setSlugChecking] = useState(false);
   const [slugAvailable, setSlugAvailable] = useState<boolean | null>(null);
-  const [currency, setCurrency] = useState("DZD");
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -213,12 +197,6 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
       valid: slug.length >= 3 && slugAvailable === true,
     },
     {
-      title: "Pick a currency",
-      subtitle: "We'll use this for product prices across your store.",
-      icon: DollarSign,
-      valid: currency.length > 0,
-    },
-    {
       title: "Add a logo",
       subtitle: "Optional — you can upload one later from Settings.",
       icon: ImageIcon,
@@ -265,7 +243,7 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
           user_id: userId,
           slug,
           store_name: storeName.trim(),
-          currency,
+          currency: "DZD",
           ...(logoUrl ? { logo_url: logoUrl } : {}),
         },
         { onConflict: "user_id" },
@@ -509,24 +487,6 @@ export function OnboardingWizard({ userId, initialName, onComplete }: Props) {
             )}
 
             {step === 4 && (
-              <div className="space-y-2">
-                <Label htmlFor="currency-select">Default currency</Label>
-                <select
-                  id="currency-select"
-                  value={currency}
-                  onChange={(e) => setCurrency(e.target.value)}
-                  className="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                >
-                  {CURRENCIES.map((c) => (
-                    <option key={c.code} value={c.code}>
-                      {c.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-
-            {step === 5 && (
               <div className="space-y-3">
                 <Label>Logo (optional)</Label>
                 <div className="flex items-center gap-4">

@@ -28,8 +28,6 @@ const CATEGORIES = [
   "general",
 ];
 
-const CURRENCIES = ["DZD", "USD", "EUR", "MAD", "TND", "GBP", "SAR", "AED"];
-
 interface Props {
   open: boolean;
   onClose: () => void;
@@ -42,7 +40,6 @@ export function CreateStoreWizard({ open, onClose, onCreated }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [name, setName] = useState("");
   const [category, setCategory] = useState("general");
-  const [currency, setCurrency] = useState("DZD");
   const [description, setDescription] = useState("");
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -51,7 +48,6 @@ export function CreateStoreWizard({ open, onClose, onCreated }: Props) {
     setStep(1);
     setName("");
     setCategory("general");
-    setCurrency("DZD");
     setDescription("");
     setLogoUrl(null);
   };
@@ -95,7 +91,7 @@ export function CreateStoreWizard({ open, onClose, onCreated }: Props) {
         name: name.trim(),
         slug,
         category,
-        currency,
+        currency: "DZD",
         description: description.trim(),
         logo_url: logoUrl,
         is_default: false,
@@ -147,21 +143,6 @@ export function CreateStoreWizard({ open, onClose, onCreated }: Props) {
                 <SelectContent>
                   {CATEGORIES.map((c) => (
                     <SelectItem key={c} value={c} className="capitalize">
-                      {c}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>Currency</Label>
-              <Select value={currency} onValueChange={setCurrency}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {CURRENCIES.map((c) => (
-                    <SelectItem key={c} value={c}>
                       {c}
                     </SelectItem>
                   ))}
@@ -229,7 +210,7 @@ export function CreateStoreWizard({ open, onClose, onCreated }: Props) {
                 <div>
                   <div className="font-semibold">{name || "Untitled store"}</div>
                   <div className="text-xs text-muted-foreground capitalize">
-                    {category} • {currency}
+                    {category} • DZD
                   </div>
                 </div>
               </div>

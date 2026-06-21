@@ -41,7 +41,6 @@ const CATEGORIES = [
   "toys",
   "general",
 ];
-const CURRENCIES = ["DZD", "USD", "EUR", "MAD", "TND", "GBP", "SAR", "AED"];
 
 export const Route = createFileRoute("/dashboard/store-settings")({
   component: StoreSettingsPage,
@@ -54,7 +53,6 @@ function StoreSettingsPage() {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [category, setCategory] = useState("general");
-  const [currency, setCurrency] = useState("DZD");
   const [description, setDescription] = useState("");
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [tiktokPixelId, setTiktokPixelId] = useState("");
@@ -65,7 +63,6 @@ function StoreSettingsPage() {
     if (!currentStore) return;
     setName(currentStore.name);
     setCategory(currentStore.category);
-    setCurrency(currentStore.currency);
     setDescription(currentStore.description);
     setLogoUrl(currentStore.logo_url);
     setTiktokPixelId((currentStore as any).tiktok_pixel_id ?? "");
@@ -105,7 +102,7 @@ function StoreSettingsPage() {
       .update({
         name: name.trim(),
         category,
-        currency,
+        currency: "DZD",
         description: description.trim(),
         logo_url: logoUrl,
         tiktok_pixel_id: tiktokPixelId.trim() || null,
@@ -194,21 +191,6 @@ function StoreSettingsPage() {
               <SelectContent>
                 {CATEGORIES.map((c) => (
                   <SelectItem key={c} value={c} className="capitalize">
-                    {c}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label>Currency</Label>
-            <Select value={currency} onValueChange={setCurrency}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {CURRENCIES.map((c) => (
-                  <SelectItem key={c} value={c}>
                     {c}
                   </SelectItem>
                 ))}

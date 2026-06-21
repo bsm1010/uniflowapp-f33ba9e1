@@ -53,7 +53,6 @@ function SettingsPage() {
 
   // Payments preferences (persisted in Supabase `payment_settings`)
   const [paymentsEnabled, setPaymentsEnabled] = useState(false);
-  const [currency, setCurrency] = useState("DZD");
   const [payoutEmail, setPayoutEmail] = useState("");
   const [paymentsLoaded, setPaymentsLoaded] = useState(false);
   const [savingPayments, setSavingPayments] = useState(false);
@@ -106,7 +105,6 @@ function SettingsPage() {
 
       if (data) {
         setPaymentsEnabled(!!data.enabled);
-        setCurrency(data.currency || "DZD");
         setPayoutEmail(data.payout_email || user.email || "");
       } else {
         if (error && error.code !== "PGRST116") {
@@ -114,7 +112,6 @@ function SettingsPage() {
         }
         if (localFallback) {
           setPaymentsEnabled(!!localFallback.enabled);
-          setCurrency(localFallback.currency ?? "DZD");
           setPayoutEmail(localFallback.payoutEmail ?? user.email ?? "");
         } else {
           setPayoutEmail(user.email ?? "");
@@ -126,7 +123,7 @@ function SettingsPage() {
           {
             user_id: user.id,
             enabled: !!localFallback.enabled,
-            currency: localFallback.currency ?? "DZD",
+            currency: "DZD",
             payout_email: localFallback.payoutEmail ?? user.email ?? "",
           },
           { onConflict: "user_id" },
@@ -247,13 +244,12 @@ function SettingsPage() {
   const savePayments = async () => {
     if (!user) return;
     setSavingPayments(true);
-    const cleanedCurrency = (currency || "DZD").toUpperCase().slice(0, 3);
     const cleanedEmail = payoutEmail.trim();
     const { error } = await supabase.from("payment_settings").upsert(
       {
         user_id: user.id,
         enabled: paymentsEnabled,
-        currency: cleanedCurrency,
+        currency: "DZD",
         payout_email: cleanedEmail,
       },
       { onConflict: "user_id" },
@@ -263,7 +259,6 @@ function SettingsPage() {
       toast.error(error.message);
       return;
     }
-    setCurrency(cleanedCurrency);
     setPayoutEmail(cleanedEmail);
     localStorage.removeItem(`payments:${user.id}`);
     toast.success("Payment preferences saved");
@@ -488,13 +483,9 @@ function SettingsPage() {
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="currency">Currency</Label>
-              <Input
-                id="currency"
-                value={currency}
-                onChange={(e) => setCurrency(e.target.value.toUpperCase())}
-                maxLength={3}
-                placeholder="DZD"
-              />
+              <div className="flex h-10 w-full rounded-md border bg-muted/50 px-3 py-2 text-sm text-muted-foreground">
+                DZD
+              </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="payoutEmail">Payout email</Label>
