@@ -186,15 +186,21 @@ function OrdersPage() {
       setOrders(list);
       if (list.length) {
         const ids = list.map((o) => o.id);
-        const [{ data: its }, { data: ships }, { data: calls }] = await Promise.all([
+        const [{ data: its }, { data: ships }] = await Promise.all([
           supabase.from("order_items").select("*").in("order_id", ids),
           supabase.from("shipments").select("*").in("order_id", ids),
-          (supabase as unknown as { from: (t: string) => ReturnType<typeof supabase.from> })
+        ]);
+        let calls: { order_id: string; outcome: string; called_at: string; channel: string }[] | null = null;
+        try {
+          const { data } = await (supabase as unknown as { from: (t: string) => ReturnType<typeof supabase.from> })
             .from("call_logs")
             .select("order_id, outcome, called_at, channel")
             .in("order_id", ids)
-            .order("called_at", { ascending: false }),
-        ]);
+            .order("called_at", { ascending: false });
+          calls = data;
+        } catch {
+          // call_logs table may not exist yet
+        }
         const grouped: Record<string, OrderItem[]> = {};
         for (const it of its ?? []) (grouped[it.order_id] ??= []).push(it);
         setItems(grouped);

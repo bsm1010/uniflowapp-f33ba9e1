@@ -34,7 +34,10 @@ export function useCallLog() {
       .select("id")
       .single();
 
-    if (error) throw new Error(`Failed to log call: ${error.message}`);
+    if (error) {
+      console.warn("call_logs table may not exist:", error.message);
+      return "";
+    }
     return (data as { id: string }).id;
   };
 
@@ -48,7 +51,9 @@ export function useCallLog() {
       .update({ outcome, note: note || null })
       .eq("id", callLogId);
 
-    if (error) throw new Error(`Failed to update call outcome: ${error.message}`);
+    if (error) {
+      console.warn("call_logs table may not exist:", error.message);
+    }
   };
 
   const getLastCall = async (
@@ -68,7 +73,7 @@ export function useCallLog() {
       .limit(1)
       .maybeSingle();
 
-    if (error) throw new Error(`Failed to fetch last call: ${error.message}`);
+    if (error) return null;
     return data as { outcome: string; called_at: string; channel: string } | null;
   };
 

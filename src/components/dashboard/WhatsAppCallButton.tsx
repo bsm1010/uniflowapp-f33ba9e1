@@ -48,7 +48,7 @@ export function WhatsAppCallButton({
       });
       setCallLogId(id);
       window.open(buildWhatsAppCallUrl(customerPhone), "_blank");
-      setTimeout(() => setModalOpen(true), 1500);
+      if (id) setTimeout(() => setModalOpen(true), 1500);
     } catch {
       // silently fail — still open WhatsApp
       window.open(buildWhatsAppCallUrl(customerPhone), "_blank");
