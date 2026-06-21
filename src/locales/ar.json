@@ -330,7 +330,7 @@
       "trialDesc": "ارقَ في أي وقت للحصول على وصول غير محدود.",
       "upgrade": "ترقية",
       "shortcuts": {
-        "title": "اختصارات سريعة",
+        "title": "إجراءات سريعة",
         "subtitle": "انتقل مباشرة إلى الأدوات التي تستخدمها أكثر.",
         "products": "المنتجات",
         "productsDesc": "إدارة الكتالوج",
@@ -344,6 +344,9 @@
         "deliveryDesc": "الشحن والتتبع",
         "voiceGenerator": "مولد الصوت",
         "voiceGeneratorDesc": "إنشاء محتوى صوتي"
+      },
+      "storePreview": {
+        "title": "معاينة المتجر"
       }
     },
     "progress": {

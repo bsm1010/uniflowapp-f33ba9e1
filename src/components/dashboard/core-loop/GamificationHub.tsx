@@ -1,287 +1,548 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { motion } from "framer-motion";
 import {
   Zap,
-  Flame,
-  CheckCircle2,
-  Gift,
-  TrendingUp,
-  ArrowRight,
   Trophy,
-  Users,
+  Flame,
+  Star,
+  ArrowRight,
+  Eye,
+  Lock,
+  Crown,
+  ChevronRight,
+  Sparkles,
+  Shield,
+  Target,
+  Award,
+  Medal,
+  PartyPopper,
+  CalendarCheck,
+  Timer,
+  CheckCircle,
+  LockOpen,
+  BookOpen,
+  Lightbulb,
+  Heart,
+  Share2,
+  Gift,
+  LockIcon,
+  Check,
+  RotateCcw,
   Package,
-  ShoppingBag,
+  Rocket,
+  Palette,
 } from "lucide-react";
-import { useNavigate } from "@tanstack/react-router";
-import type { GamificationData } from "@/lib/core-loop";
-import { XPBar } from "./XPBar";
+import { useServerFn } from "@tanstack/react-start";
+import { supabase } from "@/integrations/supabase/client";
+import { useCurrentStore } from "@/hooks/use-current-store";
+import {
+  getGamification,
+  type GamificationData,
+} from "@/lib/core-loop/get-gamification";
 import { StreakFlame } from "./StreakFlame";
-import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
 interface GamificationHubProps {
-  data: GamificationData;
-  loading?: boolean;
   compact?: boolean;
+  data?: GamificationData | null;
 }
 
-export function GamificationHub({ data, loading, compact }: GamificationHubProps) {
-  const { t } = useTranslation();
+export function GamificationHub({ compact = false, data: propData }: GamificationHubProps) {
   const navigate = useNavigate();
-  const [showLevelUp, setShowLevelUp] = useState(false);
+  const { t } = useTranslation();
+  const { currentStore } = useCurrentStore();
+  const callGetGamification = useServerFn(getGamification);
+
+  const [fetchedData, setFetchedData] = useState<GamificationData | null>(null);
+  const [loading, setLoading] = useState(!propData);
+
+  const data = propData ?? fetchedData;
+
+  useEffect(() => {
+    if (propData) {
+      setLoading(false);
+      return;
+    }
+    const load = async () => {
+      if (!currentStore?.id) {
+        setLoading(false);
+        return;
+      }
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const result = await callGetGamification({
+          data: {
+            accessToken: session.access_token,
+            storeId: currentStore.id,
+          },
+        });
+        setFetchedData(result);
+      } catch (err) {
+        console.error("Failed to load gamification:", err);
+      }
+      setLoading(false);
+    };
+    load();
+  }, [currentStore?.id, callGetGamification, propData]);
+
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showAllAchievements, setShowAllAchievements] = useState(false);
+  const [selectedAchievement, setSelectedAchievement] = useState<any>(null);
+  const [showUnlockables, setShowUnlockables] = useState(false);
+  const [sharingAchievement, setSharingAchievement] = useState<string | null>(
+    null
+  );
+  const [shareMessage, setShareMessage] = useState<string | null>(null);
+
+  const dailyCompleted = data
+    ? data.dailyQuests.filter((q) => q.completed).length
+    : 0;
+  const weeklyCompleted = data
+    ? data.weeklyQuests.filter((q) => q.completed).length
+    : 0;
+  const earnedAchievements = data
+    ? data.achievements.filter((a) => a.earned).length
+    : 0;
+  const totalAchievements = data ? data.achievements.length : 0;
+
+  const xpProgressPercent = data
+    ? ((data.xp - data.xpForCurrent) / (data.xpForNext - data.xpForCurrent)) *
+      100
+    : 0;
+
+  const nextUnlockable = data?.unlockables.find((u) => !u.unlocked);
+  const recentUnlocks = data?.achievements.filter((a) => a.earned) || [];
+
+  const levelTitle = data
+    ? data.level >= 100
+      ? "Legendary Store Owner"
+      : data.level >= 50
+        ? "Master Merchant"
+        : data.level >= 25
+          ? "Expert Seller"
+          : data.level >= 10
+            ? "Growing Business"
+            : data.level >= 5
+              ? "Rising Star"
+              : "New Entrepreneur"
+    : "";
+
+  const getAchievementIcon = (key: string) => {
+    switch (key) {
+      case "first_product":
+        return Package;
+      case "products_10":
+      case "products_50":
+        return Target;
+      case "first_order":
+      case "orders_10":
+        return Trophy;
+      case "revenue_1000":
+      case "revenue_5000":
+      case "revenue_10000":
+        return Crown;
+      case "store_launched":
+        return Rocket;
+      case "store_customized":
+        return Palette;
+      case "first_share":
+        return Share2;
+      case "referrals_5":
+      case "referrals_10":
+        return Heart;
+      default:
+        return Award;
+    }
+  };
+
+  const getUnlockableIcon = (key: string) => {
+    switch (key) {
+      case "store_customized":
+      case "store_customized_2":
+        return Palette;
+      case "revenue_milestone":
+        return Crown;
+      case "orders_milestone":
+        return Trophy;
+      default:
+        return Gift;
+    }
+  };
+
+  const handleShare = async (achievement: any) => {
+    setSharingAchievement(achievement.key);
+    const shareData = {
+      title: `${achievement.title} Achievement Unlocked!`,
+      text: `I just unlocked the "${achievement.title}" achievement on Fennecly! ${achievement.description} #Fennecly #Ecommerce`,
+      url: window.location.origin,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+        setShareMessage("Achievement shared successfully!");
+        setTimeout(() => setShareMessage(null), 3000);
+      } catch (err) {
+        console.error("Share error:", err);
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(
+          `${shareData.text}\n${shareData.url}`
+        );
+        setShareMessage("Achievement copied to clipboard!");
+        setTimeout(() => setShareMessage(null), 3000);
+      } catch (err) {
+        console.error("Clipboard error:", err);
+      }
+    }
+    setSharingAchievement(null);
+  };
 
   if (loading) {
     return (
-      <Card className="border-border/50 overflow-hidden">
-        <CardContent className="p-5">
-          <div className="animate-pulse space-y-3">
-            <div className="h-4 w-24 bg-muted rounded" />
-            <div className="h-2 bg-muted rounded" />
-            <div className="h-4 w-32 bg-muted rounded" />
+      <Card className="border-border/50 border-l-2 border-l-amber-500 overflow-hidden">
+        <CardContent className="p-5 space-y-4">
+          <div className="flex items-start gap-3">
+            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shrink-0">
+              <Zap className="h-4.5 w-4.5 text-white" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-sm font-semibold">Your Progress</h3>
+              <div className="space-y-3 mt-4">
+                {[1, 2].map((i) => (
+                  <div key={i} className="animate-pulse">
+                    <div className="h-3 bg-muted rounded w-3/4 mb-1" />
+                    <div className="h-2 bg-muted rounded w-1/2" />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
     );
   }
 
-  const dailyCompleted = data.dailyQuests.filter((q) => q.completed).length;
-  const weeklyCompleted = data.weeklyQuests.filter((q) => q.completed).length;
-  const achievementCompleted = data.achievementQuests.filter((q) => q.completed).length;
-  const earnedAchievements = data.achievements.filter((a) => a.earned).length;
-  const earnedUnlocks = data.unlockables.filter((u) => u.unlocked).length;
+  if (!data) return null;
 
   if (compact) {
+    const circumference = 2 * Math.PI * 36;
+    const strokeDashoffset =
+      circumference - (xpProgressPercent / 100) * circumference;
+
     return (
-      <Card
-        className="border-border/50 overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
-        onClick={() => navigate({ to: "/dashboard/gamification" })}
-      >
-        <CardContent className="p-5 space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center">
-                <Zap className="h-3.5 w-3.5 text-white" />
+      <>
+        <Card className="border-border/50 border-l-2 border-l-amber-500 overflow-hidden">
+          <CardContent className="p-5 space-y-4">
+            {/* Header */}
+            <div className="flex items-start justify-between">
+              <div className="flex items-start gap-3">
+                <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shrink-0">
+                  <Zap className="h-4.5 w-4.5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground">
+                    {t("dashboard.gamification.yourProgress")}
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {t("dashboard.gamification.yourProgressDesc")}
+                  </p>
+                </div>
               </div>
-              <span className="text-sm font-semibold text-foreground">
-                {t("dashboard.gamification.yourProgress")}
-              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="gap-1.5 text-xs text-violet-600 dark:text-violet-400"
+                onClick={() =>
+                  navigate({ to: "/dashboard/gamification" })
+                }
+              >
+                {t("dashboard.gamification.viewAll")}
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Button>
             </div>
-            <div className="flex items-center gap-1 text-xs text-muted-foreground group-hover:text-foreground transition-colors">
-              {t("dashboard.gamification.view")} <ArrowRight className="h-3 w-3" />
+
+            {/* Circular progress + Level info */}
+            <div className="flex items-center gap-4">
+              {/* SVG Circular Progress Ring */}
+              <div className="relative shrink-0">
+                <svg
+                  width="80"
+                  height="80"
+                  viewBox="0 0 80 80"
+                  className="-rotate-90"
+                >
+                  <circle
+                    cx="40"
+                    cy="40"
+                    r="36"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    className="text-muted/50"
+                  />
+                  <motion.circle
+                    cx="40"
+                    cy="40"
+                    r="36"
+                    fill="none"
+                    stroke="url(#progress-gradient)"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    strokeDasharray={circumference}
+                    initial={{ strokeDashoffset: circumference }}
+                    animate={{ strokeDashoffset }}
+                    transition={{ duration: 1.2, ease: "easeOut" }}
+                  />
+                  <defs>
+                    <linearGradient
+                      id="progress-gradient"
+                      x1="0%"
+                      y1="0%"
+                      x2="100%"
+                      y2="100%"
+                    >
+                      <stop offset="0%" stopColor="rgb(245, 158, 11)" />
+                      <stop offset="100%" stopColor="rgb(249, 115, 22)" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-lg font-bold text-foreground">
+                    {data.level}
+                  </span>
+                </div>
+              </div>
+
+              {/* Level info + XP */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
+                    {t("dashboard.gamification.level")} {data.level}
+                  </span>
+                  <span className="text-[11px] text-muted-foreground">
+                    {levelTitle}
+                  </span>
+                </div>
+                <Progress value={xpProgressPercent} className="h-1.5 mb-1" />
+                <div className="flex justify-between text-[11px] text-muted-foreground">
+                  <span>
+                    {data.xpForNext - data.xp} XP {t("dashboard.gamification.next")}
+                  </span>
+                  <span>{Math.round(xpProgressPercent)}%</span>
+                </div>
+              </div>
             </div>
-          </div>
-          <XPBar
-            xp={data.xp}
-            level={data.level}
-            xpForCurrent={data.xpForCurrent}
-            xpForNext={data.xpForNext}
-            animate
-            size="sm"
-            showLevel
-          />
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <StreakFlame streak={data.currentStreak} longestStreak={data.longestStreak} size="sm" />
-            <span>
-              {dailyCompleted}/{data.dailyQuests.length} {t("dashboard.gamification.daily")}
-            </span>
-            <span>
-              {earnedAchievements} {t("dashboard.gamification.achievements")}
-            </span>
-          </div>
-        </CardContent>
-      </Card>
+
+            {/* Stats row */}
+            <div className="grid grid-cols-3 gap-3">
+              <div className="text-center p-2 rounded-lg bg-muted/30">
+                <div className="flex items-center justify-center gap-1 mb-1">
+                  <Flame className="h-3.5 w-3.5 text-amber-500" />
+                </div>
+                <div className="text-sm font-bold text-foreground">
+                  {data.currentStreak}
+                </div>
+                <div className="text-[10px] text-muted-foreground">
+                  {t("dashboard.gamification.streakDays")}
+                </div>
+              </div>
+
+              <div className="text-center p-2 rounded-lg bg-muted/30">
+                <div className="flex items-center justify-center gap-1 mb-1">
+                  <Trophy className="h-3.5 w-3.5 text-emerald-500" />
+                </div>
+                <div className="text-sm font-bold text-foreground">
+                  {earnedAchievements}
+                </div>
+                <div className="text-[10px] text-muted-foreground">
+                  {t("dashboard.gamification.badges")}
+                </div>
+              </div>
+
+              <div className="text-center p-2 rounded-lg bg-muted/30">
+                <div className="flex items-center justify-center gap-1 mb-1">
+                  {nextUnlockable ? (
+                    <Gift className="h-3.5 w-3.5 text-violet-500" />
+                  ) : (
+                    <CheckCircle className="h-3.5 w-3.5 text-emerald-500" />
+                  )}
+                </div>
+                <div className="text-sm font-bold text-foreground truncate">
+                  {nextUnlockable
+                    ? nextUnlockable.name
+                    : t("dashboard.gamification.allUnlocked")}
+                </div>
+                <div className="text-[10px] text-muted-foreground">
+                  {nextUnlockable
+                    ? `${t("dashboard.gamification.next")}`
+                    : t("dashboard.gamification.reward")}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Dialog open={showDetailModal} onOpenChange={setShowDetailModal}>
+          <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Zap className="h-5 w-5 text-amber-500" />
+                {t("dashboard.gamification.title")}
+              </DialogTitle>
+              <DialogDescription>
+                {t("dashboard.gamification.desc")}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-foreground">
+                    {data.level}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    {t("dashboard.gamification.level")}
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <div className="text-sm font-medium text-amber-600 dark:text-amber-400">
+                    {levelTitle}
+                  </div>
+                  <Progress value={xpProgressPercent} className="h-2 mt-2" />
+                  <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                    <span>
+                      {data.xp} / {data.xpForNext} XP
+                    </span>
+                    <span>
+                      {data.xpForNext - data.xp} XP {t("dashboard.gamification.next")}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <StreakFlame
+                  streak={data.currentStreak}
+                  longestStreak={data.longestStreak}
+                  size="md"
+                />
+                <div className="flex items-center gap-2">
+                  <Trophy className="h-5 w-5 text-emerald-500" />
+                  <div>
+                    <div className="text-sm font-medium">
+                      {earnedAchievements} / {totalAchievements}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {t("dashboard.gamification.badges")}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setShowDetailModal(false)}
+              >
+                {t("dashboard.gamification.close")}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* XP & Level Card */}
-      <Card className="border-0 overflow-hidden bg-gradient-to-br from-violet-600 via-fuchsia-600 to-indigo-700 text-white">
-        <CardContent className="p-6 space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-2xl bg-white/15 backdrop-blur flex items-center justify-center">
-                <Zap className="h-6 w-6 text-amber-300" />
+    <>
+      <Card className="border-border/50 overflow-hidden">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
+              <Zap className="h-5 w-5 text-white" />
+            </div>
+            {t("dashboard.gamification.title")}
+          </CardTitle>
+          <CardDescription>{t("dashboard.gamification.desc")}</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="flex items-center gap-4">
+            <div className="text-center">
+              <div className="text-4xl font-bold text-foreground">
+                {data.level}
               </div>
-              <div>
-                <p className="text-sm text-white/70">{t("dashboard.gamification.currentLevel")}</p>
-                <p className="text-2xl font-bold font-display">
-                  {t("dashboard.gamification.levelPrefix")}
-                  {data.level}
-                </p>
+              <div className="text-sm text-muted-foreground">
+                {t("dashboard.gamification.level")}
               </div>
             </div>
-            <StreakFlame streak={data.currentStreak} longestStreak={data.longestStreak} size="md" />
+            <div className="flex-1">
+              <div className="text-sm font-medium text-amber-600 dark:text-amber-400">
+                {levelTitle}
+              </div>
+              <Progress value={xpProgressPercent} className="h-2 mt-2" />
+              <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                <span>
+                  {data.xp} / {data.xpForNext} XP
+                </span>
+                <span>
+                  {data.xpForNext - data.xp} XP {t("dashboard.gamification.next")}
+                </span>
+              </div>
+            </div>
           </div>
-          <XPBar
-            xp={data.xp}
-            level={data.level}
-            xpForCurrent={data.xpForCurrent}
-            xpForNext={data.xpForNext}
-            animate
-            size="lg"
-          />
-        </CardContent>
-      </Card>
-
-      {/* Stats row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {[
-          {
-            label: t("dashboard.gamification.dailyQuests"),
-            value: `${dailyCompleted}/${data.dailyQuests.length}`,
-            icon: Flame,
-            color: "text-blue-500",
-          },
-          {
-            label: t("dashboard.gamification.weeklyQuests"),
-            value: `${weeklyCompleted}/${data.weeklyQuests.length}`,
-            icon: TrendingUp,
-            color: "text-violet-500",
-          },
-          {
-            label: t("dashboard.gamification.achievements_plural"),
-            value: `${earnedAchievements}/${data.achievements.length}`,
-            icon: Trophy,
-            color: "text-amber-500",
-          },
-          {
-            label: t("dashboard.gamification.unlocks"),
-            value: `${earnedUnlocks}/${data.unlockables.length}`,
-            icon: Gift,
-            color: "text-emerald-500",
-          },
-        ].map((s, i) => (
-          <motion.div
-            key={s.label}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.08 }}
-            className="rounded-xl border border-border/60 bg-card p-4 flex items-center gap-3"
+          <div className="grid grid-cols-2 gap-3">
+            <StreakFlame
+              streak={data.currentStreak}
+              longestStreak={data.longestStreak}
+              size="md"
+            />
+            <div className="flex items-center gap-2">
+              <Trophy className="h-5 w-5 text-emerald-500" />
+              <div>
+                <div className="text-sm font-medium">
+                  {earnedAchievements} / {totalAchievements}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {t("dashboard.gamification.badges")}
+                </div>
+              </div>
+            </div>
+          </div>
+          <Button
+            variant="outline"
+            className="w-full gap-1.5"
+            onClick={() => navigate({ to: "/dashboard/gamification" })}
           >
-            <div className="h-10 w-10 rounded-xl bg-muted flex items-center justify-center">
-              <s.icon className={`h-5 w-5 ${s.color}`} />
-            </div>
-            <div>
-              <p className="text-xl font-bold">{s.value}</p>
-              <p className="text-xs text-muted-foreground">{s.label}</p>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Quests section */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="border-0">
-          <CardContent className="p-5 space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-sm flex items-center gap-2">
-                <Flame className="h-4 w-4 text-blue-500" />
-                {t("dashboard.gamification.dailyQuests")}
-              </h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 text-xs"
-                onClick={() => navigate({ to: "/dashboard/quests" })}
-              >
-                {t("dashboard.gamification.viewAll")} <ArrowRight className="h-3 w-3 ml-1" />
-              </Button>
-            </div>
-            <div className="space-y-2">
-              {data.dailyQuests.slice(0, 3).map((q) => (
-                <div key={q.id} className="flex items-center gap-2.5 text-xs">
-                  {q.completed ? (
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
-                  ) : (
-                    <div className="h-4 w-4 rounded-full border-2 border-muted-foreground/30 shrink-0" />
-                  )}
-                  <span
-                    className={cn("flex-1", q.completed && "text-muted-foreground line-through")}
-                  >
-                    {q.title}
-                  </span>
-                  <span className="text-[10px] text-muted-foreground">
-                    {q.progress}/{q.target}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-0">
-          <CardContent className="p-5 space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-sm flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-violet-500" />
-                {t("dashboard.gamification.weeklyQuests")}
-              </h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 text-xs"
-                onClick={() => navigate({ to: "/dashboard/quests" })}
-              >
-                {t("dashboard.gamification.viewAll")} <ArrowRight className="h-3 w-3 ml-1" />
-              </Button>
-            </div>
-            <div className="space-y-2">
-              {data.weeklyQuests.map((q) => (
-                <div key={q.id} className="flex items-center gap-2.5 text-xs">
-                  {q.completed ? (
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
-                  ) : (
-                    <div className="h-4 w-4 rounded-full border-2 border-muted-foreground/30 shrink-0" />
-                  )}
-                  <span
-                    className={cn("flex-1", q.completed && "text-muted-foreground line-through")}
-                  >
-                    {q.title}
-                  </span>
-                  <span className="text-[10px] text-muted-foreground">
-                    {q.progress}/{q.target}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Recent activity */}
-      <Card className="border-0">
-        <CardContent className="p-5">
-          <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
-            <Trophy className="h-4 w-4 text-amber-500" />
-            {t("dashboard.gamification.recentActivity")}
-          </h3>
-          {data.recentEvents.length === 0 ? (
-            <p className="text-xs text-muted-foreground text-center py-4">
-              {t("dashboard.gamification.emptyActivity")}
-            </p>
-          ) : (
-            <div className="space-y-1.5">
-              {data.recentEvents.slice(0, 10).map((e) => (
-                <div
-                  key={e.id}
-                  className="flex items-center justify-between py-1.5 text-xs border-b border-border/40 last:border-0"
-                >
-                  <span className="capitalize text-muted-foreground">
-                    {e.eventType.replace(/_/g, " ")}
-                  </span>
-                  <span className="font-medium text-amber-400">
-                    +{e.xpAmount}
-                    {t("dashboard.gamification.xpSuffix")}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
+            {t("dashboard.gamification.play")}
+            <ArrowRight className="h-4 w-4" />
+          </Button>
         </CardContent>
       </Card>
-    </div>
+    </>
   );
 }

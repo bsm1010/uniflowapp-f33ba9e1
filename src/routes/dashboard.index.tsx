@@ -30,6 +30,7 @@ import {
   Check,
   User,
   ChevronRight,
+  Eye,
 } from "lucide-react";
 import { format } from "date-fns";
 import { useAuth } from "@/hooks/use-auth";
@@ -573,12 +574,13 @@ function DashboardHome() {
         </motion.div>
       )}
 
-      {/* Progress + Gamification */}
-      <div className="grid gap-4 md:grid-cols-2">
+      {/* Store Setup + Your Progress */}
+      <div className="grid gap-4 md:grid-cols-3">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.2 }}
+          className="md:col-span-2"
         >
           <StoreProgressCard />
         </motion.div>
@@ -601,75 +603,91 @@ function DashboardHome() {
         </motion.div>
       </div>
 
-      {/* Shortcuts */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.26 }}
-      >
-        <div className="mb-3">
-          <h3 className="text-sm font-semibold text-foreground">
-            {t("dashboard.home.shortcuts.title")}
-          </h3>
-          <p className="text-xs text-muted-foreground/70">
-            {t("dashboard.home.shortcuts.subtitle")}
-          </p>
-        </div>
-        <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
-          {[
-            { to: "/dashboard/products", icon: Package, gradient: "from-violet-500 to-fuchsia-500", label: t("dashboard.home.shortcuts.products"), desc: t("dashboard.home.shortcuts.productsDesc") },
-            { to: "/dashboard/orders", icon: ShoppingBag, gradient: "from-blue-500 to-indigo-500", label: t("dashboard.home.shortcuts.orders"), desc: t("dashboard.home.shortcuts.ordersDesc") },
-            { to: "/dashboard/customers", icon: Users, gradient: "from-emerald-500 to-teal-500", label: t("dashboard.home.shortcuts.customers"), desc: t("dashboard.home.shortcuts.customersDesc") },
-            { to: "/dashboard/analytics", icon: BarChart3, gradient: "from-sky-500 to-blue-600", label: t("dashboard.home.shortcuts.analytics"), desc: t("dashboard.home.shortcuts.analyticsDesc") },
-            { to: "/dashboard/delivery", icon: Truck, gradient: "from-amber-500 to-orange-500", label: t("dashboard.home.shortcuts.delivery"), desc: t("dashboard.home.shortcuts.deliveryDesc") },
-            { to: "/dashboard/voice-generator", icon: Mic, gradient: "from-rose-500 to-pink-500", label: t("dashboard.home.shortcuts.voiceGenerator"), desc: t("dashboard.home.shortcuts.voiceGeneratorDesc") },
-          ].map((s) => (
-            <Link key={s.to} to={s.to as never} className="block group">
-              <Card className="border-border/50 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md overflow-hidden h-full">
-                <CardContent className="p-4 flex flex-col items-center text-center gap-2.5">
-                  <div className={`h-10 w-10 rounded-xl bg-gradient-to-br ${s.gradient} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                    <s.icon className="h-5 w-5 text-white" />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-xs">{s.label}</div>
-                    <div className="text-[11px] text-muted-foreground/70 mt-0.5">{s.desc}</div>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* Quick actions */}
+      {/* Quick Actions + Store Preview */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.28 }}
         className="grid gap-4 md:grid-cols-3"
       >
-        <QuickAction
-          to="/dashboard/products"
-          icon={Plus}
-          iconGradient="from-violet-500 to-fuchsia-500"
-          title={t("dashboard.home.actions.addProduct.title")}
-          description={t("dashboard.home.actions.addProduct.desc")}
-        />
-        <QuickAction
-          to="/customize"
-          external
-          icon={Palette}
-          iconGradient="from-sky-500 to-indigo-500"
-          title={t("dashboard.home.actions.customize.title")}
-          description={t("dashboard.home.actions.customize.desc")}
-        />
-        <QuickAction
-          to="/dashboard/store"
-          icon={ExternalLink}
-          iconGradient="from-emerald-500 to-teal-500"
-          title={t("dashboard.home.actions.viewStore.title")}
-          description={t("dashboard.home.actions.viewStore.desc")}
-        />
+        {/* Quick Actions Card */}
+        <Card className="md:col-span-2 border-border/50 overflow-hidden">
+          <CardContent className="p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="h-8 w-8 rounded-lg bg-violet-500/10 flex items-center justify-center">
+                <Zap className="h-4 w-4 text-violet-600 dark:text-violet-400" />
+              </div>
+              <h3 className="font-semibold text-sm">{t("dashboard.home.shortcuts.title")}</h3>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+              {[
+                { to: "/dashboard/products", icon: Plus, gradient: "from-violet-500 to-fuchsia-500", label: t("dashboard.home.shortcuts.products"), desc: t("dashboard.home.shortcuts.productsDesc") },
+                { to: "/dashboard/orders", icon: ShoppingBag, gradient: "from-blue-500 to-indigo-500", label: t("dashboard.home.shortcuts.orders"), desc: t("dashboard.home.shortcuts.ordersDesc") },
+                { to: "/dashboard/customers", icon: Users, gradient: "from-emerald-500 to-teal-500", label: t("dashboard.home.shortcuts.customers"), desc: t("dashboard.home.shortcuts.customersDesc") },
+                { to: "/dashboard/analytics", icon: BarChart3, gradient: "from-sky-500 to-blue-600", label: t("dashboard.home.shortcuts.analytics"), desc: t("dashboard.home.shortcuts.analyticsDesc") },
+                { to: "/dashboard/delivery", icon: Truck, gradient: "from-amber-500 to-orange-500", label: t("dashboard.home.shortcuts.delivery"), desc: t("dashboard.home.shortcuts.deliveryDesc") },
+                { to: "/dashboard/voice-generator", icon: Mic, gradient: "from-rose-500 to-pink-500", label: t("dashboard.home.shortcuts.voiceGenerator"), desc: t("dashboard.home.shortcuts.voiceGeneratorDesc") },
+              ].map((s) => (
+                <Link key={s.to} to={s.to as never} className="block group">
+                  <div className="flex items-center gap-3 p-3 rounded-xl border border-border/50 hover:bg-muted/50 transition-colors">
+                    <div className={`h-9 w-9 rounded-lg bg-gradient-to-br ${s.gradient} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300`}>
+                      <s.icon className="h-4 w-4 text-white" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-semibold text-xs truncate">{s.label}</div>
+                      <div className="text-[11px] text-muted-foreground/70 truncate">{s.desc}</div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Store Preview Card */}
+        <Card className="border-border/50 overflow-hidden">
+          <CardContent className="p-5 flex flex-col h-full">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                <Eye className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+              </div>
+              <h3 className="font-semibold text-sm">{t("dashboard.home.storePreview.title")}</h3>
+            </div>
+            {/* Mini storefront preview */}
+            <div className="flex-1 rounded-xl border border-border/50 bg-muted/30 overflow-hidden">
+              {/* Mini navbar */}
+              <div className="h-8 bg-background border-b border-border/30 flex items-center px-3 gap-2">
+                <div className="w-4 h-4 rounded bg-gradient-to-br from-violet-500 to-fuchsia-500" />
+                <span className="text-[10px] font-semibold text-foreground truncate">
+                  {storeSettings?.store_name || currentStore?.slug || "Your Store"}
+                </span>
+              </div>
+              {/* Mini hero */}
+              <div className="h-16 bg-gradient-to-br from-violet-100 to-fuchsia-50 dark:from-violet-950/30 dark:to-fuchsia-950/20 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="text-[10px] font-bold text-foreground">
+                    {storeSettings?.store_name || "Your Store"}
+                  </div>
+                  <div className="text-[8px] text-muted-foreground mt-0.5">
+                    Welcome to our store
+                  </div>
+                </div>
+              </div>
+              {/* Mini products grid */}
+              <div className="p-2 grid grid-cols-3 gap-1.5">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="aspect-square rounded-md bg-background border border-border/30" />
+                ))}
+              </div>
+            </div>
+            <Button variant="outline" size="sm" asChild className="w-full mt-3 gap-1.5">
+              <Link to="/dashboard/store">
+                <ExternalLink className="h-3.5 w-3.5" />
+                {t("dashboard.home.actions.viewStore.title")}
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
       </motion.div>
 
       {/* Recent orders + Launch checklist */}
@@ -942,51 +960,6 @@ function StatCard({
         </div>
       </CardContent>
     </Card>
-  );
-}
-
-function QuickAction({
-  to,
-  icon: Icon,
-  iconGradient,
-  title,
-  description,
-  external,
-}: {
-  to: "/dashboard/products" | "/dashboard/store" | "/customize";
-  icon: React.ComponentType<{ className?: string }>;
-  iconGradient: string;
-  title: string;
-  description: string;
-  external?: boolean;
-}) {
-  const inner = (
-    <Card className="border-border/50 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md cursor-pointer overflow-hidden bg-card">
-      <CardContent className="p-5 flex items-start gap-4">
-        <div
-          className={`h-11 w-11 rounded-xl bg-gradient-to-br ${iconGradient} flex items-center justify-center shrink-0`}
-        >
-          <Icon className="h-5 w-5 text-white" />
-        </div>
-        <div className="min-w-0">
-          <div className="font-semibold text-sm">{title}</div>
-          <p className="mt-0.5 text-sm text-muted-foreground">{description}</p>
-        </div>
-      </CardContent>
-    </Card>
-  );
-
-  if (external) {
-    return (
-      <a href={to} target="_blank" rel="noopener noreferrer" className="block">
-        {inner}
-      </a>
-    );
-  }
-  return (
-    <Link to={to as "/dashboard/products" | "/dashboard/store"} className="block">
-      {inner}
-    </Link>
   );
 }
 

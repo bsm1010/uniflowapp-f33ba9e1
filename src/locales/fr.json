@@ -348,7 +348,7 @@
       "trialDesc": "Passez à une offre payante quand vous le souhaitez pour un accès illimité.",
       "upgrade": "Mettre à niveau",
       "shortcuts": {
-        "title": "Raccourcis rapides",
+        "title": "Actions rapides",
         "subtitle": "Accédez directement aux outils que vous utilisez le plus.",
         "products": "Produits",
         "productsDesc": "Gérer votre catalogue",
@@ -362,6 +362,9 @@
         "deliveryDesc": "Expédition et suivi",
         "voiceGenerator": "Générateur vocal",
         "voiceGeneratorDesc": "Créer du contenu audio"
+      },
+      "storePreview": {
+        "title": "Aperçu de la boutique"
       }
     },
     "progress": {

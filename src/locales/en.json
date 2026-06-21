@@ -339,7 +339,7 @@
       "trialDesc": "Upgrade anytime to unlock unlimited access.",
       "upgrade": "Upgrade",
       "shortcuts": {
-        "title": "Quick Shortcuts",
+        "title": "Quick Actions",
         "subtitle": "Jump straight to the tools you use most.",
         "products": "Products",
         "productsDesc": "Manage your catalog",
@@ -353,6 +353,9 @@
         "deliveryDesc": "Shipping & tracking",
         "voiceGenerator": "Voice Generator",
         "voiceGeneratorDesc": "Create voice content"
+      },
+      "storePreview": {
+        "title": "Store Preview"
       }
     },
     "progress": {

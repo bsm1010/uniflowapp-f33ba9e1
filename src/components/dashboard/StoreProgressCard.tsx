@@ -3,8 +3,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import {
-  CheckCircle2,
-  Circle,
+  Check,
   ArrowRight,
   Sparkles,
   Package,
@@ -12,6 +11,7 @@ import {
   ShoppingBag,
   Store,
   Rocket,
+  ChevronRight,
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,6 +35,14 @@ const ITEM_ACTIONS: Record<string, string> = {
   store_customized: "/customize",
   first_order: "/dashboard/orders",
   store_launched: "/dashboard/store",
+};
+
+const STEP_DESCRIPTIONS: Record<string, string> = {
+  product: "Add your first product to the catalog",
+  published: "Publish a product so customers can see it",
+  store_customized: "Set your store colors, hero image, and theme",
+  first_order: "Receive your first customer order",
+  store_launched: "Activate your store so it's publicly visible",
 };
 
 export function StoreProgressCard() {
@@ -75,30 +83,36 @@ export function StoreProgressCard() {
 
   const nextIncomplete = items.find((i) => !i.completed);
   const allDone = items.length > 0 && items.every((i) => i.completed);
+  const completedCount = items.filter((i) => i.completed).length;
 
   if (loading) return null;
 
   return (
-    <Card className="border-border/50 overflow-hidden">
+    <Card className="border-border/50 border-l-2 border-l-violet-500 overflow-hidden">
       <CardContent className="p-5 space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center">
-              <Sparkles className="h-3.5 w-3.5 text-white" />
+        {/* Header */}
+        <div className="flex items-start justify-between">
+          <div className="flex items-start gap-3">
+            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center shrink-0">
+              <Sparkles className="h-4.5 w-4.5 text-white" />
             </div>
-            <span className="text-sm font-semibold text-foreground">
-              {t("progress.setup.title")}
-            </span>
+            <div>
+              <h3 className="text-sm font-semibold text-foreground">
+                {t("progress.setup.title")}
+              </h3>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Complete these steps to launch your store
+              </p>
+            </div>
           </div>
-          {allDone ? (
-            <span className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
-              <CheckCircle2 className="h-3.5 w-3.5" /> {t("progress.setup.complete")}
-            </span>
-          ) : (
-            <span className="text-xs text-muted-foreground font-medium">
-              {t("progress.setup.percent", { percent: progress })}
-            </span>
-          )}
+          <div className="text-right shrink-0">
+            <div className="text-lg font-bold text-foreground">
+              {completedCount} / {items.length || 5}
+            </div>
+            <div className="text-[11px] text-muted-foreground">
+              Steps completed
+            </div>
+          </div>
         </div>
 
         {/* Progress bar */}
@@ -111,45 +125,108 @@ export function StoreProgressCard() {
           />
         </div>
 
+        {/* Vertical timeline */}
+        {items.length > 0 && (
+          <div className="relative">
+            {/* Dashed connector line */}
+            <div className="absolute left-[17px] top-[18px] bottom-[18px] border-l-2 border-dashed border-border z-0" />
+
+            <div className="space-y-1">
+              {items.map((item, idx) => {
+                const Icon = ITEM_ICONS[item.key] || Package;
+                const isCurrent = !item.completed && items.slice(0, idx).every((i) => i.completed);
+                const isFuture = !item.completed && !isCurrent;
+
+                return (
+                  <motion.div
+                    key={item.key}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: idx * 0.05 }}
+                    className={cn(
+                      "relative flex items-center gap-3 py-2 px-1 rounded-lg cursor-pointer transition-colors z-10",
+                      !isFuture && "hover:bg-muted/50",
+                    )}
+                    onClick={() => {
+                      if (!isFuture) {
+                        navigate({ to: ITEM_ACTIONS[item.key] || "/dashboard" });
+                      }
+                    }}
+                  >
+                    {/* Step circle */}
+                    <div
+                      className={cn(
+                        "h-9 w-9 rounded-full flex items-center justify-center shrink-0 transition-all relative",
+                        item.completed
+                          ? "bg-emerald-500/10 ring-1 ring-emerald-500/30"
+                          : isCurrent
+                            ? "bg-primary text-primary-foreground ring-2 ring-primary/30"
+                            : "bg-muted",
+                      )}
+                    >
+                      {item.completed ? (
+                        <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                      ) : (
+                        <span
+                          className={cn(
+                            "text-xs font-semibold",
+                            isCurrent ? "text-primary-foreground" : "text-muted-foreground",
+                          )}
+                        >
+                          {idx + 1}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={cn(
+                            "text-sm font-semibold",
+                            item.completed
+                              ? "text-muted-foreground line-through"
+                              : "text-foreground",
+                          )}
+                        >
+                          {t(item.label)}
+                        </span>
+                        {isCurrent && (
+                          <span className="text-[10px] font-medium bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-300 rounded-full px-2 py-0.5">
+                            Current
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                        {STEP_DESCRIPTIONS[item.key]}
+                      </p>
+                    </div>
+
+                    {/* Chevron */}
+                    {!isFuture && (
+                      <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                    )}
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Bottom button */}
         {allDone ? (
           <p className="text-xs text-muted-foreground text-center py-1">
             {t("progress.setup.completeAll")}
           </p>
         ) : nextIncomplete ? (
-          <>
-            <div className="space-y-1.5">
-              {items.map((item) => {
-                const Icon = ITEM_ICONS[item.key] || Circle;
-                return (
-                  <div key={item.key} className="flex items-center gap-2.5 text-xs">
-                    {item.completed ? (
-                      <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
-                    ) : (
-                      <Circle className="h-4 w-4 text-muted-foreground/30 shrink-0" />
-                    )}
-                    <span
-                      className={cn(
-                        item.completed
-                          ? "text-muted-foreground line-through opacity-60"
-                          : "text-foreground",
-                      )}
-                    >
-                      {t(item.label)}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-
-            <Button
-              size="sm"
-              className="w-full gap-1.5"
-              onClick={() => navigate({ to: ITEM_ACTIONS[nextIncomplete.key] || "/dashboard" })}
-            >
-              {t(nextIncomplete.label)}
-              <ArrowRight className="h-3 w-3" />
-            </Button>
-          </>
+          <Button
+            size="sm"
+            className="w-full gap-1.5 bg-violet-600 hover:bg-violet-700 text-white"
+            onClick={() => navigate({ to: ITEM_ACTIONS[nextIncomplete.key] || "/dashboard" })}
+          >
+            Continue Setup
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Button>
         ) : null}
       </CardContent>
     </Card>
