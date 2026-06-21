@@ -312,7 +312,23 @@
       "day": "يوم",
       "days": "أيام",
       "trialDesc": "ارقَ في أي وقت للحصول على وصول غير محدود.",
-      "upgrade": "ترقية"
+      "upgrade": "ترقية",
+      "shortcuts": {
+        "title": "اختصارات سريعة",
+        "subtitle": "انتقل مباشرة إلى الأدوات التي تستخدمها أكثر.",
+        "products": "المنتجات",
+        "productsDesc": "إدارة الكتالوج",
+        "orders": "الطلبات",
+        "ordersDesc": "تتبع وتنفيذ",
+        "customers": "العملاء",
+        "customersDesc": "عرض الجمهور",
+        "analytics": "التحليلات",
+        "analyticsDesc": "رؤى وتقارير",
+        "delivery": "التوصيل",
+        "deliveryDesc": "الشحن والتتبع",
+        "voiceGenerator": "مولد الصوت",
+        "voiceGeneratorDesc": "إنشاء محتوى صوتي"
+      }
     },
     "progress": {
       "title": "Store Progress",

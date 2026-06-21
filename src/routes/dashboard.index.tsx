@@ -23,6 +23,9 @@ import {
   Wallet,
   Loader2,
   Pencil,
+  BarChart3,
+  Truck,
+  Mic,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useCurrentStore } from "@/hooks/use-current-store";
@@ -526,6 +529,46 @@ function DashboardHome() {
           ) : null}
         </motion.div>
       </div>
+
+      {/* Shortcuts */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.26 }}
+      >
+        <div className="mb-3">
+          <h3 className="text-sm font-semibold text-foreground">
+            {t("dashboard.home.shortcuts.title")}
+          </h3>
+          <p className="text-xs text-muted-foreground/70">
+            {t("dashboard.home.shortcuts.subtitle")}
+          </p>
+        </div>
+        <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
+          {[
+            { to: "/dashboard/products", icon: Package, gradient: "from-violet-500 to-fuchsia-500", label: t("dashboard.home.shortcuts.products"), desc: t("dashboard.home.shortcuts.productsDesc") },
+            { to: "/dashboard/orders", icon: ShoppingBag, gradient: "from-blue-500 to-indigo-500", label: t("dashboard.home.shortcuts.orders"), desc: t("dashboard.home.shortcuts.ordersDesc") },
+            { to: "/dashboard/customers", icon: Users, gradient: "from-emerald-500 to-teal-500", label: t("dashboard.home.shortcuts.customers"), desc: t("dashboard.home.shortcuts.customersDesc") },
+            { to: "/dashboard/analytics", icon: BarChart3, gradient: "from-sky-500 to-blue-600", label: t("dashboard.home.shortcuts.analytics"), desc: t("dashboard.home.shortcuts.analyticsDesc") },
+            { to: "/dashboard/delivery", icon: Truck, gradient: "from-amber-500 to-orange-500", label: t("dashboard.home.shortcuts.delivery"), desc: t("dashboard.home.shortcuts.deliveryDesc") },
+            { to: "/dashboard/voice-generator", icon: Mic, gradient: "from-rose-500 to-pink-500", label: t("dashboard.home.shortcuts.voiceGenerator"), desc: t("dashboard.home.shortcuts.voiceGeneratorDesc") },
+          ].map((s) => (
+            <Link key={s.to} to={s.to as never} className="block group">
+              <Card className="border-border/50 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md overflow-hidden h-full">
+                <CardContent className="p-4 flex flex-col items-center text-center gap-2.5">
+                  <div className={`h-10 w-10 rounded-xl bg-gradient-to-br ${s.gradient} flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-300`}>
+                    <s.icon className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-xs">{s.label}</div>
+                    <div className="text-[11px] text-muted-foreground/70 mt-0.5">{s.desc}</div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      </motion.div>
 
       {/* Quick actions */}
       <motion.div

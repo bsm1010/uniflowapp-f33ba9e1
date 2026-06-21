@@ -330,7 +330,23 @@
       "day": "jour",
       "days": "jours",
       "trialDesc": "Passez à une offre payante quand vous le souhaitez pour un accès illimité.",
-      "upgrade": "Mettre à niveau"
+      "upgrade": "Mettre à niveau",
+      "shortcuts": {
+        "title": "Raccourcis rapides",
+        "subtitle": "Accédez directement aux outils que vous utilisez le plus.",
+        "products": "Produits",
+        "productsDesc": "Gérer votre catalogue",
+        "orders": "Commandes",
+        "ordersDesc": "Suivre et expédier",
+        "customers": "Clients",
+        "customersDesc": "Voir votre audience",
+        "analytics": "Analytique",
+        "analyticsDesc": "Aperçus et rapports",
+        "delivery": "Livraison",
+        "deliveryDesc": "Expédition et suivi",
+        "voiceGenerator": "Générateur vocal",
+        "voiceGeneratorDesc": "Créer du contenu audio"
+      }
     },
     "progress": {
       "title": "Progrès de la boutique",

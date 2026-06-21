@@ -321,7 +321,23 @@
       "day": "day",
       "days": "days",
       "trialDesc": "Upgrade anytime to unlock unlimited access.",
-      "upgrade": "Upgrade"
+      "upgrade": "Upgrade",
+      "shortcuts": {
+        "title": "Quick Shortcuts",
+        "subtitle": "Jump straight to the tools you use most.",
+        "products": "Products",
+        "productsDesc": "Manage your catalog",
+        "orders": "Orders",
+        "ordersDesc": "Track & fulfill",
+        "customers": "Customers",
+        "customersDesc": "View your audience",
+        "analytics": "Analytics",
+        "analyticsDesc": "Insights & reports",
+        "delivery": "Delivery",
+        "deliveryDesc": "Shipping & tracking",
+        "voiceGenerator": "Voice Generator",
+        "voiceGeneratorDesc": "Create voice content"
+      }
     },
     "progress": {
       "title": "Store Progress",
