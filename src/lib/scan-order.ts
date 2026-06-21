@@ -1,5 +1,4 @@
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY as string;
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
 
 export type ScannedData = {
   customer_name: string | null;
@@ -42,11 +41,51 @@ Rules:
 - If no delivery type is mentioned, default to "domicile".
 - Return ONLY the JSON object, no markdown fencing or explanation.`;
 
+function compressImage(file: File): Promise<{ base64: string; mediaType: string }> {
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    const img = new Image();
+
+    img.onload = () => {
+      const MAX = 1024;
+      let w = img.width;
+      let h = img.height;
+      if (w > MAX || h > MAX) {
+        const ratio = Math.min(MAX / w, MAX / h);
+        w = Math.round(w * ratio);
+        h = Math.round(h * ratio);
+      }
+      canvas.width = w;
+      canvas.height = h;
+      ctx?.drawImage(img, 0, 0, w, h);
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
+      const base64 = dataUrl.split(",")[1] ?? "";
+      resolve({ base64, mediaType: "image/jpeg" });
+    };
+
+    img.onerror = () => reject(new Error("Failed to load image for compression"));
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      img.src = reader.result as string;
+    };
+    reader.onerror = () => reject(new Error("Failed to read file"));
+    reader.readAsDataURL(file);
+  });
+}
+
 export async function scanOrderWithGemini(
   base64: string,
   mediaType: string,
 ): Promise<ScannedData> {
-  const res = await fetch(GEMINI_URL, {
+  if (!GEMINI_API_KEY) {
+    throw new Error("Gemini API key not configured. Add VITE_GEMINI_API_KEY to your .env file.");
+  }
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+  const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -67,17 +106,32 @@ export async function scanOrderWithGemini(
   });
 
   if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Gemini API error: ${res.status}`);
+    const errBody = await res.text().catch(() => "unknown");
+    console.error("[scan-order] API error:", res.status, errBody);
+    throw new Error(`Gemini API error ${res.status}: ${errBody.slice(0, 200)}`);
   }
 
   const data = await res.json();
-  const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "{}";
+  console.log("[scan-order] Gemini response:", data);
+
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+  if (!text) {
+    console.error("[scan-order] No text in response:", JSON.stringify(data).slice(0, 500));
+    throw new Error("Gemini returned no text. The image may be unclear.");
+  }
 
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   if (!jsonMatch) {
+    console.error("[scan-order] No JSON found in:", text.slice(0, 300));
     throw new Error("Could not parse order data from image");
   }
 
-  return JSON.parse(jsonMatch[0]) as ScannedData;
+  try {
+    return JSON.parse(jsonMatch[0]) as ScannedData;
+  } catch (e) {
+    console.error("[scan-order] JSON parse error:", e, jsonMatch[0].slice(0, 300));
+    throw new Error("Invalid order data format");
+  }
 }
+
+export { compressImage };

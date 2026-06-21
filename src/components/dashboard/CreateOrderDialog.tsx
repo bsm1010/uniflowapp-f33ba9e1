@@ -18,7 +18,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useCurrentStore } from "@/hooks/use-current-store";
 import { ALGERIA_WILAYAS, getCitiesForWilaya, WILAYA_LIST } from "@/lib/algeriaWilayas";
-import { scanOrderWithGemini, type ScannedData } from "@/lib/scan-order";
+import { scanOrderWithGemini, compressImage, type ScannedData } from "@/lib/scan-order";
 import {
   Dialog,
   DialogContent,
@@ -266,20 +266,13 @@ export function CreateOrderDialog({ open, onClose, onCreated }: Props) {
   };
 
   const handleScan = async () => {
-    if (!scanFile || !user) return;
+    if (!scanFile) return;
     setScanning(true);
     try {
-      const reader = new FileReader();
-      const base64 = await new Promise<string>((resolve) => {
-        reader.onload = () => {
-          const result = reader.result as string;
-          resolve(result.split(",")[1] ?? result);
-        };
-        reader.readAsDataURL(scanFile);
-      });
-
-      const mediaType = scanFile.type || "image/jpeg";
+      const { base64, mediaType } = await compressImage(scanFile);
+      console.log("[scan] Calling Gemini...", { mediaType, base64Length: base64.length });
       const data = await scanOrderWithGemini(base64, mediaType);
+      console.log("[scan] Result:", data);
       setScannedConfidence(data.confidence);
 
       // Pre-fill form
@@ -306,6 +299,7 @@ export function CreateOrderDialog({ open, onClose, onCreated }: Props) {
       setMode("manual");
       toast.success("Order scanned — please review");
     } catch (err) {
+      console.error("[scan] Error:", err);
       toast.error(err instanceof Error ? err.message : "Scan failed");
     } finally {
       setScanning(false);
@@ -372,29 +366,49 @@ export function CreateOrderDialog({ open, onClose, onCreated }: Props) {
         {mode === "scan" && (
           <div className="space-y-4 py-4">
             {!scanPreview ? (
-              <div
-                onClick={() => fileInputRef.current?.click()}
-                onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  const file = e.dataTransfer.files?.[0];
-                  if (file?.type.startsWith("image/")) handleScanFile(file);
-                }}
-                className="border-2 border-dashed rounded-xl p-10 text-center cursor-pointer hover:border-primary/50 transition-colors"
-              >
-                <Camera className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
-                <p className="text-sm font-medium">
-                  Drop a screenshot or photo of the order note here
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  or click to browse
-                </p>
+              <div className="space-y-3">
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const file = e.dataTransfer.files?.[0];
+                    if (file?.type.startsWith("image/")) handleScanFile(file);
+                  }}
+                  className="border-2 border-dashed rounded-xl p-8 sm:p-10 text-center cursor-pointer hover:border-primary/50 transition-colors"
+                >
+                  <Camera className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
+                  <p className="text-sm font-medium">
+                    Drop a screenshot or photo of the order note
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    or tap to browse
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    const camInput = document.createElement("input");
+                    camInput.type = "file";
+                    camInput.accept = "image/*";
+                    camInput.capture = "environment";
+                    camInput.onchange = (e) => {
+                      const file = (e.target as HTMLInputElement).files?.[0];
+                      if (file) handleScanFile(file);
+                    };
+                    camInput.click();
+                  }}
+                  className="w-full gap-2"
+                >
+                  <Camera className="h-4 w-4" />
+                  Take photo with camera
+                </Button>
                 <input
                   ref={fileInputRef}
                   type="file"
                   accept="image/*"
-                  capture="environment"
                   className="hidden"
                   onChange={(e) => handleScanFile(e.target.files?.[0] ?? null)}
                 />
