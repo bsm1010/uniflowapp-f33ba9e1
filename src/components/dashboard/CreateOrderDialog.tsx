@@ -19,6 +19,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useCurrentStore } from "@/hooks/use-current-store";
 import { ALGERIA_WILAYAS, getCitiesForWilaya, WILAYA_LIST } from "@/lib/algeriaWilayas";
 import { scanOrderWithGemini, compressImage, type ScannedData } from "@/lib/scan-order";
+import { OrderScanIllustration } from "@/components/dashboard/illustrations/OrderScanIllustration";
 import {
   Dialog,
   DialogContent,
@@ -367,6 +368,7 @@ export function CreateOrderDialog({ open, onClose, onCreated }: Props) {
           <div className="space-y-4 py-4">
             {!scanPreview ? (
               <div className="space-y-3">
+                <OrderScanIllustration className="w-full max-w-[280px] mx-auto mb-4" />
                 <div
                   onClick={() => fileInputRef.current?.click()}
                   onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
