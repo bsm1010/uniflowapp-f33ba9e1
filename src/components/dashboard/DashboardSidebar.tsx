@@ -200,12 +200,6 @@ export function DashboardSidebar() {
           gradient: "from-sky-500 to-indigo-500",
         },
         {
-          title: t("dashboard.nav.supplyOrders", { defaultValue: "سوق التوريد" }),
-          url: "/dashboard/supply-orders",
-          icon: Store,
-          gradient: "from-amber-500 to-orange-500",
-        },
-        {
           title: t("dashboard.nav.supplyListings", { defaultValue: "منتجات التوريد في متجرك" }),
           url: "/dashboard/supply-listings",
           icon: Tag,
