@@ -12,27 +12,56 @@ export function setCachedSettings(slug: string, s: StoreSettings) {
   settingsCache.set(slug, s);
 }
 
-export function fetchSettings(slug: string): Promise<StoreSettings | null> {
+const RETRY_DELAYS = [300, 600, 900];
+
+async function querySettings(slug: string): Promise<StoreSettings | null> {
+  const { data, error } = await supabase
+    .from("store_settings")
+    .select("*")
+    .eq("slug", slug)
+    .maybeSingle();
+  if (error) throw error;
+  return (data as StoreSettings) ?? null;
+}
+
+export async function fetchSettings(slug: string): Promise<StoreSettings | null> {
   const cached = settingsCache.get(slug);
-  if (cached) return Promise.resolve(cached);
+  if (cached) return cached;
+
   const existing = settingsInflight.get(slug);
   if (existing) return existing;
-  const p = Promise.resolve(
-    supabase.from("store_settings").select("*").eq("slug", slug).maybeSingle(),
-  )
-    .then(({ data }) => {
-      settingsInflight.delete(slug);
-      if (data) {
-        settingsCache.set(slug, data as StoreSettings);
-        return data as StoreSettings;
+
+  const p = (async () => {
+    try {
+      let result = await querySettings(slug);
+      for (let i = 0; !result && i < RETRY_DELAYS.length; i++) {
+        await new Promise((r) => setTimeout(r, RETRY_DELAYS[i]));
+        result = await querySettings(slug);
       }
-      return null;
-    })
-    .catch((err) => {
+      settingsInflight.delete(slug);
+      if (result) {
+        settingsCache.set(slug, result);
+      }
+      return result;
+    } catch (err) {
       settingsInflight.delete(slug);
       console.error("fetchSettings failed for slug:", slug, err);
+      for (let i = 0; i < RETRY_DELAYS.length; i++) {
+        try {
+          await new Promise((r) => setTimeout(r, RETRY_DELAYS[i]));
+          const result = await querySettings(slug);
+          if (result) {
+            settingsCache.set(slug, result);
+            return result;
+          }
+        } catch {
+          // continue retrying
+        }
+      }
       return null;
-    });
+    }
+  })();
+
   settingsInflight.set(slug, p);
   return p;
 }
