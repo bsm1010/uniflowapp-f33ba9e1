@@ -576,128 +576,138 @@ function DashboardHome() {
         </motion.div>
       )}
 
-      {/* Store Setup + Your Progress */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.2 }}
-          className="md:col-span-2"
-        >
-          <StoreProgressCard />
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.24 }}
-        >
-          {gamiLoading ? (
+      {/* Store Setup + Quick Actions (left) | Your Progress + Store Preview (right) */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+        {/* LEFT COLUMN: Store Setup → Quick Actions */}
+        <div className="md:col-span-2 flex flex-col gap-4">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+          >
+            <StoreProgressCard />
+          </motion.div>
+
+          {/* Quick Actions Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.28 }}
+          >
             <Card className="border-border/50 overflow-hidden">
-              <CardContent className="p-5 animate-pulse space-y-3">
-                <div className="h-4 w-24 bg-muted rounded" />
-                <div className="h-2 bg-muted rounded w-full" />
-                <div className="h-2 bg-muted rounded w-3/4" />
+              <CardContent className="p-4 sm:p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="h-8 w-8 rounded-lg bg-violet-500/10 flex items-center justify-center">
+                    <Zap className="h-4 w-4 text-violet-600 dark:text-violet-400" />
+                  </div>
+                  <h3 className="font-semibold text-sm">{t("dashboard.home.shortcuts.title")}</h3>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {[
+                    { to: "/dashboard/products", icon: Plus, gradient: "from-violet-500 to-fuchsia-500", label: t("dashboard.home.shortcuts.products"), desc: t("dashboard.home.shortcuts.productsDesc") },
+                    { to: "/dashboard/orders", icon: ShoppingBag, gradient: "from-blue-500 to-indigo-500", label: t("dashboard.home.shortcuts.orders"), desc: t("dashboard.home.shortcuts.ordersDesc") },
+                    { to: "/dashboard/customers", icon: Users, gradient: "from-emerald-500 to-teal-500", label: t("dashboard.home.shortcuts.customers"), desc: t("dashboard.home.shortcuts.customersDesc") },
+                    { to: "/dashboard/analytics", icon: BarChart3, gradient: "from-sky-500 to-blue-600", label: t("dashboard.home.shortcuts.analytics"), desc: t("dashboard.home.shortcuts.analyticsDesc") },
+                    { to: "/dashboard/delivery", icon: Truck, gradient: "from-amber-500 to-orange-500", label: t("dashboard.home.shortcuts.delivery"), desc: t("dashboard.home.shortcuts.deliveryDesc") },
+                    { to: "/dashboard/voice-generator", icon: Mic, gradient: "from-rose-500 to-pink-500", label: t("dashboard.home.shortcuts.voiceGenerator"), desc: t("dashboard.home.shortcuts.voiceGeneratorDesc") },
+                  ].map((s) => (
+                    <Link key={s.to} to={s.to as never} className="block group">
+                      <div className="flex items-center gap-3 p-3 rounded-xl border border-border/50 hover:bg-muted/50 transition-colors">
+                        <div className={`h-9 w-9 rounded-lg bg-gradient-to-br ${s.gradient} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300`}>
+                          <s.icon className="h-4 w-4 text-white" />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="font-semibold text-xs truncate">{s.label}</div>
+                          <div className="text-[11px] text-muted-foreground/70 truncate">{s.desc}</div>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
               </CardContent>
             </Card>
-          ) : gamiData ? (
-            <GamificationHub data={gamiData} compact />
-          ) : null}
-        </motion.div>
-      </div>
+          </motion.div>
+        </div>
 
-      {/* Quick Actions + Store Preview */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.28 }}
-        className="grid gap-4 md:grid-cols-3 items-start"
-      >
-        {/* Quick Actions Card */}
-        <Card className="md:col-span-2 border-border/50 overflow-hidden">
-          <CardContent className="p-4 sm:p-5">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="h-8 w-8 rounded-lg bg-violet-500/10 flex items-center justify-center">
-                <Zap className="h-4 w-4 text-violet-600 dark:text-violet-400" />
-              </div>
-              <h3 className="font-semibold text-sm">{t("dashboard.home.shortcuts.title")}</h3>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {[
-                { to: "/dashboard/products", icon: Plus, gradient: "from-violet-500 to-fuchsia-500", label: t("dashboard.home.shortcuts.products"), desc: t("dashboard.home.shortcuts.productsDesc") },
-                { to: "/dashboard/orders", icon: ShoppingBag, gradient: "from-blue-500 to-indigo-500", label: t("dashboard.home.shortcuts.orders"), desc: t("dashboard.home.shortcuts.ordersDesc") },
-                { to: "/dashboard/customers", icon: Users, gradient: "from-emerald-500 to-teal-500", label: t("dashboard.home.shortcuts.customers"), desc: t("dashboard.home.shortcuts.customersDesc") },
-                { to: "/dashboard/analytics", icon: BarChart3, gradient: "from-sky-500 to-blue-600", label: t("dashboard.home.shortcuts.analytics"), desc: t("dashboard.home.shortcuts.analyticsDesc") },
-                { to: "/dashboard/delivery", icon: Truck, gradient: "from-amber-500 to-orange-500", label: t("dashboard.home.shortcuts.delivery"), desc: t("dashboard.home.shortcuts.deliveryDesc") },
-                { to: "/dashboard/voice-generator", icon: Mic, gradient: "from-rose-500 to-pink-500", label: t("dashboard.home.shortcuts.voiceGenerator"), desc: t("dashboard.home.shortcuts.voiceGeneratorDesc") },
-              ].map((s) => (
-                <Link key={s.to} to={s.to as never} className="block group">
-                  <div className="flex items-center gap-3 p-3 rounded-xl border border-border/50 hover:bg-muted/50 transition-colors">
-                    <div className={`h-9 w-9 rounded-lg bg-gradient-to-br ${s.gradient} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300`}>
-                      <s.icon className="h-4 w-4 text-white" />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="font-semibold text-xs truncate">{s.label}</div>
-                      <div className="text-[11px] text-muted-foreground/70 truncate">{s.desc}</div>
-                    </div>
+        {/* RIGHT COLUMN: Your Progress → Store Preview */}
+        <div className="md:col-span-1 flex flex-col gap-4">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.24 }}
+          >
+            {gamiLoading ? (
+              <Card className="border-border/50 overflow-hidden">
+                <CardContent className="p-5 animate-pulse space-y-3">
+                  <div className="h-4 w-24 bg-muted rounded" />
+                  <div className="h-2 bg-muted rounded w-full" />
+                  <div className="h-2 bg-muted rounded w-3/4" />
+                </CardContent>
+              </Card>
+            ) : gamiData ? (
+              <GamificationHub data={gamiData} compact />
+            ) : null}
+          </motion.div>
+
+          {/* Store Preview Card — live screenshot */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.32 }}
+          >
+            <Card className="border-border/50 overflow-hidden">
+              <CardContent className="p-4 sm:p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                    <Eye className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                   </div>
-                </Link>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Store Preview Card — live screenshot */}
-        <Card className="border-border/50 overflow-hidden">
-          <CardContent className="p-4 sm:p-5">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                <Eye className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-              </div>
-              <h3 className="font-semibold text-sm">{t("dashboard.home.storePreview.title")}</h3>
-            </div>
-            {currentStore?.slug ? (
-              <>
-                {!screenshotLoaded && !screenshotError && (
-                  <div className="animate-pulse rounded-lg bg-muted h-48 w-full" />
-                )}
-                {screenshotError ? (
+                  <h3 className="font-semibold text-sm">{t("dashboard.home.storePreview.title")}</h3>
+                </div>
+                {currentStore?.slug ? (
+                  <>
+                    {!screenshotLoaded && !screenshotError && (
+                      <div className="animate-pulse rounded-lg bg-muted h-48 w-full" />
+                    )}
+                    {screenshotError ? (
+                      <div className="rounded-lg border border-border/50 bg-muted/30 p-6 text-center">
+                        <Store className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
+                        <p className="text-xs font-medium text-foreground">
+                          {storeSettings?.store_name || currentStore?.slug}
+                        </p>
+                        <p className="text-[11px] text-muted-foreground mt-1">Preview unavailable</p>
+                      </div>
+                    ) : (
+                      <img
+                        src={`https://image.thum.io/get/width/600/crop/400/noanimate/https://fennecly.online/s/${currentStore.slug}`}
+                        alt={storeSettings?.store_name || "Store preview"}
+                        loading="lazy"
+                        onLoad={() => setScreenshotLoaded(true)}
+                        onError={() => setScreenshotError(true)}
+                        className={`rounded-lg border border-border/30 w-full object-cover h-48 max-h-48 ${screenshotLoaded ? "block" : "hidden"}`}
+                      />
+                    )}
+                  </>
+                ) : (
                   <div className="rounded-lg border border-border/50 bg-muted/30 p-6 text-center">
                     <Store className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
-                    <p className="text-xs font-medium text-foreground">
-                      {storeSettings?.store_name || currentStore?.slug}
-                    </p>
-                    <p className="text-[11px] text-muted-foreground mt-1">Preview unavailable</p>
+                    <p className="text-xs text-muted-foreground">Set up your store to see a preview</p>
                   </div>
-                ) : (
-                  <img
-                    src={`https://image.thum.io/get/width/600/crop/400/noanimate/https://fennecly.online/s/${currentStore.slug}`}
-                    alt={storeSettings?.store_name || "Store preview"}
-                    loading="lazy"
-                    onLoad={() => setScreenshotLoaded(true)}
-                    onError={() => setScreenshotError(true)}
-                    className={`rounded-lg border border-border/30 w-full object-cover h-48 max-h-48 ${screenshotLoaded ? "block" : "hidden"}`}
-                  />
                 )}
-              </>
-            ) : (
-              <div className="rounded-lg border border-border/50 bg-muted/30 p-6 text-center">
-                <Store className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
-                <p className="text-xs text-muted-foreground">Set up your store to see a preview</p>
-              </div>
-            )}
-            <Button variant="outline" size="sm" asChild className="w-full mt-3 gap-1.5">
-              <a
-                href={currentStore?.slug ? `https://fennecly.online/s/${currentStore.slug}` : "#"}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <ExternalLink className="h-3.5 w-3.5" />
-                {t("dashboard.home.actions.viewStore.title")}
-              </a>
-            </Button>
-          </CardContent>
-        </Card>
-      </motion.div>
+                <Button variant="outline" size="sm" asChild className="w-full mt-3 gap-1.5">
+                  <a
+                    href={currentStore?.slug ? `https://fennecly.online/s/${currentStore.slug}` : "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    {t("dashboard.home.actions.viewStore.title")}
+                  </a>
+                </Button>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+      </div>
 
       {/* Recent orders + Launch checklist */}
       <motion.div
