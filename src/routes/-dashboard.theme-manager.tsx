@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback } from "react";
-import { useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Zap, Flame, LayoutGrid, Check } from "lucide-react";
 import { toast } from "sonner";
@@ -21,7 +20,6 @@ import type { StoreSettings } from "@/lib/storeTheme";
 export function ThemeManagerComponent() {
   const { user } = useAuth();
   const { currentStore } = useCurrentStore();
-  const navigate = useNavigate();
   const [settings, setSettings] = useState<StoreSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

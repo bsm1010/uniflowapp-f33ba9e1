@@ -271,9 +271,7 @@ export function CreateOrderDialog({ open, onClose, onCreated }: Props) {
     setScanning(true);
     try {
       const { base64, mediaType } = await compressImage(scanFile);
-      console.log("[scan] Calling Gemini...", { mediaType, base64Length: base64.length });
       const data = await scanOrderWithGemini(base64, mediaType);
-      console.log("[scan] Result:", data);
       setScannedConfidence(data.confidence);
 
       // Pre-fill form

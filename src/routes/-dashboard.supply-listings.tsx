@@ -20,7 +20,6 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Img } from "@/components/ui/Img";
-import { Switch } from "@/components/ui/switch";
 import {
   Dialog,
   DialogContent,

@@ -35,7 +35,7 @@ function resolveLink(n: Notification): string | null {
     return "/dashboard/stock-alerts";
   if (msg.includes("product") || msg.includes("stock") || title.includes("stock"))
     return "/dashboard/products";
-  if (msg.includes("payment") || title.includes("payment")) return "/dashboard/payments";
+  if (msg.includes("payment") || title.includes("payment")) return "/dashboard/orders";
   if (msg.includes("return") || title.includes("return")) return "/dashboard/returns";
 
   return null;

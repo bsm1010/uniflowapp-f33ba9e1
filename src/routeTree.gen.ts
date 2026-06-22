@@ -39,7 +39,6 @@ import { Route as DashboardNotificationsRouteImport } from './routes/dashboard.n
 import { Route as DashboardMarketplaceRouteImport } from './routes/dashboard.marketplace'
 import { Route as DashboardLandingGeneratorRouteImport } from './routes/dashboard.landing-generator'
 import { Route as DashboardGdprRouteImport } from './routes/dashboard.gdpr'
-import { Route as DashboardGamificationRouteImport } from './routes/dashboard.gamification'
 import { Route as DashboardDomainsRouteImport } from './routes/dashboard.domains'
 import { Route as DashboardDeliveryRouteImport } from './routes/dashboard.delivery'
 import { Route as DashboardDatabaseRouteImport } from './routes/dashboard.database'
@@ -248,11 +247,6 @@ const DashboardLandingGeneratorRoute =
 const DashboardGdprRoute = DashboardGdprRouteImport.update({
   id: '/gdpr',
   path: '/gdpr',
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardGamificationRoute = DashboardGamificationRouteImport.update({
-  id: '/gamification',
-  path: '/gamification',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardDomainsRoute = DashboardDomainsRouteImport.update({
@@ -593,7 +587,6 @@ export interface FileRoutesByFullPath {
   '/dashboard/database': typeof DashboardDatabaseRoute
   '/dashboard/delivery': typeof DashboardDeliveryRoute
   '/dashboard/domains': typeof DashboardDomainsRoute
-  '/dashboard/gamification': typeof DashboardGamificationRoute
   '/dashboard/gdpr': typeof DashboardGdprRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
   '/dashboard/marketplace': typeof DashboardMarketplaceRoute
@@ -682,7 +675,6 @@ export interface FileRoutesByTo {
   '/dashboard/database': typeof DashboardDatabaseRoute
   '/dashboard/delivery': typeof DashboardDeliveryRoute
   '/dashboard/domains': typeof DashboardDomainsRoute
-  '/dashboard/gamification': typeof DashboardGamificationRoute
   '/dashboard/gdpr': typeof DashboardGdprRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
   '/dashboard/marketplace': typeof DashboardMarketplaceRoute
@@ -773,7 +765,6 @@ export interface FileRoutesById {
   '/dashboard/database': typeof DashboardDatabaseRoute
   '/dashboard/delivery': typeof DashboardDeliveryRoute
   '/dashboard/domains': typeof DashboardDomainsRoute
-  '/dashboard/gamification': typeof DashboardGamificationRoute
   '/dashboard/gdpr': typeof DashboardGdprRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
   '/dashboard/marketplace': typeof DashboardMarketplaceRoute
@@ -866,7 +857,6 @@ export interface FileRouteTypes {
     | '/dashboard/database'
     | '/dashboard/delivery'
     | '/dashboard/domains'
-    | '/dashboard/gamification'
     | '/dashboard/gdpr'
     | '/dashboard/landing-generator'
     | '/dashboard/marketplace'
@@ -955,7 +945,6 @@ export interface FileRouteTypes {
     | '/dashboard/database'
     | '/dashboard/delivery'
     | '/dashboard/domains'
-    | '/dashboard/gamification'
     | '/dashboard/gdpr'
     | '/dashboard/landing-generator'
     | '/dashboard/marketplace'
@@ -1045,7 +1034,6 @@ export interface FileRouteTypes {
     | '/dashboard/database'
     | '/dashboard/delivery'
     | '/dashboard/domains'
-    | '/dashboard/gamification'
     | '/dashboard/gdpr'
     | '/dashboard/landing-generator'
     | '/dashboard/marketplace'
@@ -1362,13 +1350,6 @@ declare module '@tanstack/react-router' {
       path: '/gdpr'
       fullPath: '/dashboard/gdpr'
       preLoaderRoute: typeof DashboardGdprRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    '/dashboard/gamification': {
-      id: '/dashboard/gamification'
-      path: '/gamification'
-      fullPath: '/dashboard/gamification'
-      preLoaderRoute: typeof DashboardGamificationRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/domains': {
@@ -1848,7 +1829,6 @@ interface DashboardRouteChildren {
   DashboardDatabaseRoute: typeof DashboardDatabaseRoute
   DashboardDeliveryRoute: typeof DashboardDeliveryRoute
   DashboardDomainsRoute: typeof DashboardDomainsRoute
-  DashboardGamificationRoute: typeof DashboardGamificationRoute
   DashboardGdprRoute: typeof DashboardGdprRoute
   DashboardLandingGeneratorRoute: typeof DashboardLandingGeneratorRoute
   DashboardMarketplaceRoute: typeof DashboardMarketplaceRoute
@@ -1885,7 +1865,6 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardDatabaseRoute: DashboardDatabaseRoute,
   DashboardDeliveryRoute: DashboardDeliveryRoute,
   DashboardDomainsRoute: DashboardDomainsRoute,
-  DashboardGamificationRoute: DashboardGamificationRoute,
   DashboardGdprRoute: DashboardGdprRoute,
   DashboardLandingGeneratorRoute: DashboardLandingGeneratorRoute,
   DashboardMarketplaceRoute: DashboardMarketplaceRoute,

@@ -74,8 +74,8 @@ export function DashboardTopbar({ name, avatarUrl }: { name: string; avatarUrl?:
       },
       {
         label: t("dashboard.nav.shipping", { defaultValue: "Shipping" }),
-        to: "/dashboard/shipping",
-        keywords: "shipping rates",
+        to: "/dashboard/shipments",
+        keywords: "shipping rates shipments tracking",
       },
       {
         label: t("dashboard.nav.store", { defaultValue: "Store" }),
@@ -83,19 +83,9 @@ export function DashboardTopbar({ name, avatarUrl }: { name: string; avatarUrl?:
         keywords: "store storefront settings",
       },
       {
-        label: t("dashboard.nav.themes", { defaultValue: "Themes" }),
-        to: "/dashboard/themes",
-        keywords: "themes design colors",
-      },
-      {
-        label: t("dashboard.nav.themePresets", { defaultValue: "Theme Presets" }),
-        to: "/dashboard/theme-presets",
-        keywords: "presets templates",
-      },
-      {
         label: t("dashboard.nav.customize", { defaultValue: "Customize" }),
         to: "/customize",
-        keywords: "customize design editor",
+        keywords: "customize design editor themes presets",
       },
       {
         label: t("dashboard.nav.analytics", { defaultValue: "Analytics" }),
@@ -133,14 +123,9 @@ export function DashboardTopbar({ name, avatarUrl }: { name: string; avatarUrl?:
         keywords: "settings account profile",
       },
       {
-        label: t("dashboard.nav.about", { defaultValue: "About" }),
-        to: "/dashboard/about",
-        keywords: "about info",
-      },
-      {
-        label: t("dashboard.nav.contact", { defaultValue: "Contact" }),
-        to: "/dashboard/contact",
-        keywords: "contact support help",
+        label: t("dashboard.nav.storeSettings", { defaultValue: "Store Settings" }),
+        to: "/dashboard/store-settings",
+        keywords: "store settings about contact configuration",
       },
       {
         label: "AI Descriptions",
