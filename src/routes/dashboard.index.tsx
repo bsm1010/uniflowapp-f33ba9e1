@@ -117,9 +117,8 @@ function DashboardHome() {
   } | null>(null);
   const [zrBalance, setZrBalance] = useState<ZRExpressBalanceResult | null>(null);
   const callZrBalance = useServerFn(getZRExpressBalance);
-  const [previewProducts, setPreviewProducts] = useState<
-    Array<{ id: string; name: string; image_url: string | null }>
-  >([]);
+  const [screenshotLoaded, setScreenshotLoaded] = useState(false);
+  const [screenshotError, setScreenshotError] = useState(false);
 
   const loadDashboard = useCallback(() => {
     if (!user) return;
@@ -153,18 +152,6 @@ function DashboardHome() {
       .then(({ data }) => {
         if (!cancelled) setHasPendingPayment((data?.length ?? 0) > 0);
       });
-
-    let previewQ = supabase
-      .from("products")
-      .select("id,name,image_url")
-      .eq("user_id", user.id)
-      .eq("status", "published")
-      .order("created_at", { ascending: false })
-      .limit(3);
-    if (storeId) previewQ = previewQ.eq("store_id", storeId);
-    previewQ.then(({ data }) => {
-      if (!cancelled) setPreviewProducts(data ?? []);
-    });
 
     const scopedProducts = () => {
       let q = supabase
@@ -623,18 +610,18 @@ function DashboardHome() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.28 }}
-        className="grid gap-4 md:grid-cols-3"
+        className="grid gap-4 md:grid-cols-3 items-start"
       >
         {/* Quick Actions Card */}
         <Card className="md:col-span-2 border-border/50 overflow-hidden">
-          <CardContent className="p-5">
-            <div className="flex items-center gap-2 mb-4">
+          <CardContent className="p-4 sm:p-5">
+            <div className="flex items-center gap-2 mb-3">
               <div className="h-8 w-8 rounded-lg bg-violet-500/10 flex items-center justify-center">
                 <Zap className="h-4 w-4 text-violet-600 dark:text-violet-400" />
               </div>
               <h3 className="font-semibold text-sm">{t("dashboard.home.shortcuts.title")}</h3>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {[
                 { to: "/dashboard/products", icon: Plus, gradient: "from-violet-500 to-fuchsia-500", label: t("dashboard.home.shortcuts.products"), desc: t("dashboard.home.shortcuts.productsDesc") },
                 { to: "/dashboard/orders", icon: ShoppingBag, gradient: "from-blue-500 to-indigo-500", label: t("dashboard.home.shortcuts.orders"), desc: t("dashboard.home.shortcuts.ordersDesc") },
@@ -659,89 +646,48 @@ function DashboardHome() {
           </CardContent>
         </Card>
 
-        {/* Store Preview Card */}
+        {/* Store Preview Card — live screenshot */}
         <Card className="border-border/50 overflow-hidden">
-          <CardContent className="p-5 flex flex-col h-full">
-            <div className="flex items-center gap-2 mb-4">
+          <CardContent className="p-4 sm:p-5">
+            <div className="flex items-center gap-2 mb-3">
               <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
                 <Eye className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
               </div>
               <h3 className="font-semibold text-sm">{t("dashboard.home.storePreview.title")}</h3>
             </div>
-            {/* Mini storefront preview */}
-            <div className="flex-1 rounded-xl border border-border/50 bg-muted/30 overflow-hidden">
-              {/* Mini navbar */}
-              <div className="h-8 bg-background border-b border-border/30 flex items-center px-3 gap-2">
-                {storeSettings?.logo_url ? (
-                  <Img
-                    src={storeSettings.logo_url}
-                    alt=""
-                    width={32}
-                    className="w-4 h-4 rounded shrink-0"
-                  />
-                ) : (
-                  <div className="w-4 h-4 rounded bg-gradient-to-br from-violet-500 to-fuchsia-500 shrink-0" />
+            {currentStore?.slug ? (
+              <>
+                {!screenshotLoaded && !screenshotError && (
+                  <div className="animate-pulse rounded-lg bg-muted h-48 w-full" />
                 )}
-                <span className="text-[10px] font-semibold text-foreground truncate">
-                  {storeSettings?.store_name || currentStore?.slug || "Your Store"}
-                </span>
-              </div>
-              {/* Mini hero */}
-              <div
-                className="h-16 flex items-center justify-center"
-                style={{
-                  background: storeSettings?.theme && storeSettings.theme !== "default"
-                    ? `linear-gradient(135deg, hsl(var(--primary) / 0.08), hsl(var(--primary) / 0.03))`
-                    : undefined,
-                }}
-              >
-                <div className="bg-gradient-to-br from-violet-100 to-fuchsia-50 dark:from-violet-950/30 dark:to-fuchsia-950/20 h-full w-full flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="text-[10px] font-bold text-foreground">
-                      {storeSettings?.store_name || currentStore?.slug || "Your Store"}
-                    </div>
-                    <div className="text-[8px] text-muted-foreground mt-0.5">
-                      Welcome to our store
-                    </div>
+                {screenshotError ? (
+                  <div className="rounded-lg border border-border/50 bg-muted/30 p-6 text-center">
+                    <Store className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
+                    <p className="text-xs font-medium text-foreground">
+                      {storeSettings?.store_name || currentStore?.slug}
+                    </p>
+                    <p className="text-[11px] text-muted-foreground mt-1">Preview unavailable</p>
                   </div>
-                </div>
+                ) : (
+                  <img
+                    src={`https://image.thum.io/get/width/600/crop/400/noanimate/https://fennecly.online/s/${currentStore.slug}`}
+                    alt={storeSettings?.store_name || "Store preview"}
+                    loading="lazy"
+                    onLoad={() => setScreenshotLoaded(true)}
+                    onError={() => setScreenshotError(true)}
+                    className={`rounded-lg border border-border/30 w-full object-cover h-48 max-h-48 ${screenshotLoaded ? "block" : "hidden"}`}
+                  />
+                )}
+              </>
+            ) : (
+              <div className="rounded-lg border border-border/50 bg-muted/30 p-6 text-center">
+                <Store className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
+                <p className="text-xs text-muted-foreground">Set up your store to see a preview</p>
               </div>
-              {/* Real product thumbnails or empty state */}
-              {previewProducts.length > 0 ? (
-                <div className="p-2 grid grid-cols-3 gap-1.5">
-                  {previewProducts.map((p) => (
-                    <div key={p.id} className="aspect-square rounded-md bg-background border border-border/30 overflow-hidden">
-                      {p.image_url ? (
-                        <Img
-                          src={p.image_url}
-                          alt={p.name}
-                          width={120}
-                          quality={60}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-muted/50">
-                          <Package className="h-3 w-3 text-muted-foreground" />
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="p-3 text-center">
-                  <Package className="h-5 w-5 text-muted-foreground/50 mx-auto mb-1" />
-                  <p className="text-[9px] text-muted-foreground leading-tight">
-                    No products yet
-                  </p>
-                  <Link to="/dashboard/products" className="text-[9px] text-violet-600 dark:text-violet-400 font-medium hover:underline">
-                    Add your first product
-                  </Link>
-                </div>
-              )}
-            </div>
+            )}
             <Button variant="outline" size="sm" asChild className="w-full mt-3 gap-1.5">
               <a
-                href={currentStore?.slug ? `${window.location.origin}/s/${currentStore.slug}` : "#"}
+                href={currentStore?.slug ? `https://fennecly.online/s/${currentStore.slug}` : "#"}
                 target="_blank"
                 rel="noopener noreferrer"
               >
