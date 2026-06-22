@@ -19,14 +19,20 @@ export function fetchSettings(slug: string): Promise<StoreSettings | null> {
   if (existing) return existing;
   const p = Promise.resolve(
     supabase.from("store_settings").select("*").eq("slug", slug).maybeSingle(),
-  ).then(({ data }) => {
-    settingsInflight.delete(slug);
-    if (data) {
-      settingsCache.set(slug, data as StoreSettings);
-      return data as StoreSettings;
-    }
-    return null;
-  });
+  )
+    .then(({ data }) => {
+      settingsInflight.delete(slug);
+      if (data) {
+        settingsCache.set(slug, data as StoreSettings);
+        return data as StoreSettings;
+      }
+      return null;
+    })
+    .catch((err) => {
+      settingsInflight.delete(slug);
+      console.error("fetchSettings failed for slug:", slug, err);
+      return null;
+    });
   settingsInflight.set(slug, p);
   return p;
 }

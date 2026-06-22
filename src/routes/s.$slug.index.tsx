@@ -153,7 +153,13 @@ function StorefrontHome() {
     let active = true;
     let channel: ReturnType<typeof supabase.channel> | null = null;
     (async () => {
-      const s = await fetchSettings(slug);
+      let s = await fetchSettings(slug);
+      // Retry up to 2 times on transient failures
+      for (let attempt = 0; !s && attempt < 2; attempt++) {
+        await new Promise((r) => setTimeout(r, 500 * (attempt + 1)));
+        if (!active) return;
+        s = await fetchSettings(slug);
+      }
       if (!active) return;
       if (!s) {
         setNotFound(true);
