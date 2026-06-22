@@ -280,7 +280,7 @@ export function GamificationHub({ compact = false, data: propData }: Gamificatio
                 size="sm"
                 className="gap-1.5 text-xs text-violet-600 dark:text-violet-400"
                 onClick={() =>
-                  navigate({ to: "/dashboard/gamification" })
+                  navigate({ to: "/dashboard/progress" })
                 }
               >
                 {t("dashboard.gamification.viewAll")}
@@ -536,7 +536,7 @@ export function GamificationHub({ compact = false, data: propData }: Gamificatio
           <Button
             variant="outline"
             className="w-full gap-1.5"
-            onClick={() => navigate({ to: "/dashboard/gamification" })}
+            onClick={() => navigate({ to: "/dashboard/progress" })}
           >
             {t("dashboard.gamification.play")}
             <ArrowRight className="h-4 w-4" />

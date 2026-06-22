@@ -25,19 +25,13 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as DashboardVoiceGeneratorRouteImport } from './routes/dashboard.voice-generator'
 import { Route as DashboardUpgradeRouteImport } from './routes/dashboard.upgrade'
-import { Route as DashboardThemePresetsRouteImport } from './routes/dashboard.theme-presets'
-import { Route as DashboardThemeManagerRouteImport } from './routes/dashboard.theme-manager'
-import { Route as DashboardSupplyOrdersRouteImport } from './routes/dashboard.supply-orders'
-import { Route as DashboardSupplyListingsRouteImport } from './routes/dashboard.supply-listings'
 import { Route as DashboardStoreSettingsRouteImport } from './routes/dashboard.store-settings'
 import { Route as DashboardStoreRouteImport } from './routes/dashboard.store'
 import { Route as DashboardStockAlertsRouteImport } from './routes/dashboard.stock-alerts'
-import { Route as DashboardShippingRouteImport } from './routes/dashboard.shipping'
 import { Route as DashboardShipmentsRouteImport } from './routes/dashboard.shipments'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
 import { Route as DashboardReturnsRouteImport } from './routes/dashboard.returns'
 import { Route as DashboardReferralsRouteImport } from './routes/dashboard.referrals'
-import { Route as DashboardQuestsRouteImport } from './routes/dashboard.quests'
 import { Route as DashboardProgressRouteImport } from './routes/dashboard.progress'
 import { Route as DashboardProductsRouteImport } from './routes/dashboard.products'
 import { Route as DashboardOrdersRouteImport } from './routes/dashboard.orders'
@@ -46,20 +40,15 @@ import { Route as DashboardMarketplaceRouteImport } from './routes/dashboard.mar
 import { Route as DashboardLandingGeneratorRouteImport } from './routes/dashboard.landing-generator'
 import { Route as DashboardGdprRouteImport } from './routes/dashboard.gdpr'
 import { Route as DashboardGamificationRouteImport } from './routes/dashboard.gamification'
-import { Route as DashboardDropshipOrdersRouteImport } from './routes/dashboard.dropship-orders'
 import { Route as DashboardDomainsRouteImport } from './routes/dashboard.domains'
-import { Route as DashboardDeveloperRouteImport } from './routes/dashboard.developer'
 import { Route as DashboardDeliveryRouteImport } from './routes/dashboard.delivery'
 import { Route as DashboardDatabaseRouteImport } from './routes/dashboard.database'
 import { Route as DashboardCustomersRouteImport } from './routes/dashboard.customers'
 import { Route as DashboardCreditsRouteImport } from './routes/dashboard.credits'
-import { Route as DashboardContactRouteImport } from './routes/dashboard.contact'
 import { Route as DashboardCategoriesRouteImport } from './routes/dashboard.categories'
 import { Route as DashboardAppsRouteImport } from './routes/dashboard.apps'
 import { Route as DashboardAnalyticsRouteImport } from './routes/dashboard.analytics'
 import { Route as DashboardAiAgentRouteImport } from './routes/dashboard.ai-agent'
-import { Route as DashboardAchievementsRouteImport } from './routes/dashboard.achievements'
-import { Route as DashboardAboutRouteImport } from './routes/dashboard.about'
 import { Route as SSlugIndexRouteImport } from './routes/s.$slug.index'
 import { Route as DashboardNotificationsIndexRouteImport } from './routes/dashboard.notifications.index'
 import { Route as DashboardAppsIndexRouteImport } from './routes/dashboard.apps.index'
@@ -74,7 +63,6 @@ import { Route as DashboardAppsSubmitRouteImport } from './routes/dashboard.apps
 import { Route as DashboardAppsSeoOptimizerRouteImport } from './routes/dashboard.apps.seo-optimizer'
 import { Route as DashboardAppsPopupBuilderRouteImport } from './routes/dashboard.apps.popup-builder'
 import { Route as DashboardAppsMultiLanguageRouteImport } from './routes/dashboard.apps.multi-language'
-import { Route as DashboardAppsMarketplaceRouteImport } from './routes/dashboard.apps.marketplace'
 import { Route as DashboardAppsImageEnhancerRouteImport } from './routes/dashboard.apps.image-enhancer'
 import { Route as DashboardAppsEmailMarketingRouteImport } from './routes/dashboard.apps.email-marketing'
 import { Route as DashboardAppsDiscountGeneratorRouteImport } from './routes/dashboard.apps.discount-generator'
@@ -191,26 +179,6 @@ const DashboardUpgradeRoute = DashboardUpgradeRouteImport.update({
   path: '/upgrade',
   getParentRoute: () => DashboardRoute,
 } as any)
-const DashboardThemePresetsRoute = DashboardThemePresetsRouteImport.update({
-  id: '/theme-presets',
-  path: '/theme-presets',
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardThemeManagerRoute = DashboardThemeManagerRouteImport.update({
-  id: '/theme-manager',
-  path: '/theme-manager',
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardSupplyOrdersRoute = DashboardSupplyOrdersRouteImport.update({
-  id: '/supply-orders',
-  path: '/supply-orders',
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardSupplyListingsRoute = DashboardSupplyListingsRouteImport.update({
-  id: '/supply-listings',
-  path: '/supply-listings',
-  getParentRoute: () => DashboardRoute,
-} as any)
 const DashboardStoreSettingsRoute = DashboardStoreSettingsRouteImport.update({
   id: '/store-settings',
   path: '/store-settings',
@@ -224,11 +192,6 @@ const DashboardStoreRoute = DashboardStoreRouteImport.update({
 const DashboardStockAlertsRoute = DashboardStockAlertsRouteImport.update({
   id: '/stock-alerts',
   path: '/stock-alerts',
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardShippingRoute = DashboardShippingRouteImport.update({
-  id: '/shipping',
-  path: '/shipping',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardShipmentsRoute = DashboardShipmentsRouteImport.update({
@@ -249,11 +212,6 @@ const DashboardReturnsRoute = DashboardReturnsRouteImport.update({
 const DashboardReferralsRoute = DashboardReferralsRouteImport.update({
   id: '/referrals',
   path: '/referrals',
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardQuestsRoute = DashboardQuestsRouteImport.update({
-  id: '/quests',
-  path: '/quests',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardProgressRoute = DashboardProgressRouteImport.update({
@@ -297,19 +255,9 @@ const DashboardGamificationRoute = DashboardGamificationRouteImport.update({
   path: '/gamification',
   getParentRoute: () => DashboardRoute,
 } as any)
-const DashboardDropshipOrdersRoute = DashboardDropshipOrdersRouteImport.update({
-  id: '/dropship-orders',
-  path: '/dropship-orders',
-  getParentRoute: () => DashboardRoute,
-} as any)
 const DashboardDomainsRoute = DashboardDomainsRouteImport.update({
   id: '/domains',
   path: '/domains',
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardDeveloperRoute = DashboardDeveloperRouteImport.update({
-  id: '/developer',
-  path: '/developer',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardDeliveryRoute = DashboardDeliveryRouteImport.update({
@@ -332,11 +280,6 @@ const DashboardCreditsRoute = DashboardCreditsRouteImport.update({
   path: '/credits',
   getParentRoute: () => DashboardRoute,
 } as any)
-const DashboardContactRoute = DashboardContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => DashboardRoute,
-} as any)
 const DashboardCategoriesRoute = DashboardCategoriesRouteImport.update({
   id: '/categories',
   path: '/categories',
@@ -355,16 +298,6 @@ const DashboardAnalyticsRoute = DashboardAnalyticsRouteImport.update({
 const DashboardAiAgentRoute = DashboardAiAgentRouteImport.update({
   id: '/ai-agent',
   path: '/ai-agent',
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardAchievementsRoute = DashboardAchievementsRouteImport.update({
-  id: '/achievements',
-  path: '/achievements',
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardAboutRoute = DashboardAboutRouteImport.update({
-  id: '/about',
-  path: '/about',
   getParentRoute: () => DashboardRoute,
 } as any)
 const SSlugIndexRoute = SSlugIndexRouteImport.update({
@@ -440,12 +373,6 @@ const DashboardAppsMultiLanguageRoute =
   DashboardAppsMultiLanguageRouteImport.update({
     id: '/multi-language',
     path: '/multi-language',
-    getParentRoute: () => DashboardAppsRoute,
-  } as any)
-const DashboardAppsMarketplaceRoute =
-  DashboardAppsMarketplaceRouteImport.update({
-    id: '/marketplace',
-    path: '/marketplace',
     getParentRoute: () => DashboardAppsRoute,
   } as any)
 const DashboardAppsImageEnhancerRoute =
@@ -657,20 +584,15 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/themes': typeof ThemesRoute
   '/trust': typeof TrustRoute
-  '/dashboard/about': typeof DashboardAboutRoute
-  '/dashboard/achievements': typeof DashboardAchievementsRoute
   '/dashboard/ai-agent': typeof DashboardAiAgentRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/apps': typeof DashboardAppsRouteWithChildren
   '/dashboard/categories': typeof DashboardCategoriesRoute
-  '/dashboard/contact': typeof DashboardContactRoute
   '/dashboard/credits': typeof DashboardCreditsRoute
   '/dashboard/customers': typeof DashboardCustomersRoute
   '/dashboard/database': typeof DashboardDatabaseRoute
   '/dashboard/delivery': typeof DashboardDeliveryRoute
-  '/dashboard/developer': typeof DashboardDeveloperRoute
   '/dashboard/domains': typeof DashboardDomainsRoute
-  '/dashboard/dropship-orders': typeof DashboardDropshipOrdersRoute
   '/dashboard/gamification': typeof DashboardGamificationRoute
   '/dashboard/gdpr': typeof DashboardGdprRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
@@ -679,19 +601,13 @@ export interface FileRoutesByFullPath {
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/progress': typeof DashboardProgressRoute
-  '/dashboard/quests': typeof DashboardQuestsRoute
   '/dashboard/referrals': typeof DashboardReferralsRoute
   '/dashboard/returns': typeof DashboardReturnsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/shipments': typeof DashboardShipmentsRoute
-  '/dashboard/shipping': typeof DashboardShippingRoute
   '/dashboard/stock-alerts': typeof DashboardStockAlertsRoute
   '/dashboard/store': typeof DashboardStoreRoute
   '/dashboard/store-settings': typeof DashboardStoreSettingsRoute
-  '/dashboard/supply-listings': typeof DashboardSupplyListingsRoute
-  '/dashboard/supply-orders': typeof DashboardSupplyOrdersRoute
-  '/dashboard/theme-manager': typeof DashboardThemeManagerRoute
-  '/dashboard/theme-presets': typeof DashboardThemePresetsRoute
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
   '/dashboard/voice-generator': typeof DashboardVoiceGeneratorRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -711,7 +627,6 @@ export interface FileRoutesByFullPath {
   '/dashboard/apps/discount-generator': typeof DashboardAppsDiscountGeneratorRoute
   '/dashboard/apps/email-marketing': typeof DashboardAppsEmailMarketingRoute
   '/dashboard/apps/image-enhancer': typeof DashboardAppsImageEnhancerRoute
-  '/dashboard/apps/marketplace': typeof DashboardAppsMarketplaceRoute
   '/dashboard/apps/multi-language': typeof DashboardAppsMultiLanguageRoute
   '/dashboard/apps/popup-builder': typeof DashboardAppsPopupBuilderRoute
   '/dashboard/apps/seo-optimizer': typeof DashboardAppsSeoOptimizerRoute
@@ -759,19 +674,14 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/themes': typeof ThemesRoute
   '/trust': typeof TrustRoute
-  '/dashboard/about': typeof DashboardAboutRoute
-  '/dashboard/achievements': typeof DashboardAchievementsRoute
   '/dashboard/ai-agent': typeof DashboardAiAgentRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/categories': typeof DashboardCategoriesRoute
-  '/dashboard/contact': typeof DashboardContactRoute
   '/dashboard/credits': typeof DashboardCreditsRoute
   '/dashboard/customers': typeof DashboardCustomersRoute
   '/dashboard/database': typeof DashboardDatabaseRoute
   '/dashboard/delivery': typeof DashboardDeliveryRoute
-  '/dashboard/developer': typeof DashboardDeveloperRoute
   '/dashboard/domains': typeof DashboardDomainsRoute
-  '/dashboard/dropship-orders': typeof DashboardDropshipOrdersRoute
   '/dashboard/gamification': typeof DashboardGamificationRoute
   '/dashboard/gdpr': typeof DashboardGdprRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
@@ -779,19 +689,13 @@ export interface FileRoutesByTo {
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/progress': typeof DashboardProgressRoute
-  '/dashboard/quests': typeof DashboardQuestsRoute
   '/dashboard/referrals': typeof DashboardReferralsRoute
   '/dashboard/returns': typeof DashboardReturnsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/shipments': typeof DashboardShipmentsRoute
-  '/dashboard/shipping': typeof DashboardShippingRoute
   '/dashboard/stock-alerts': typeof DashboardStockAlertsRoute
   '/dashboard/store': typeof DashboardStoreRoute
   '/dashboard/store-settings': typeof DashboardStoreSettingsRoute
-  '/dashboard/supply-listings': typeof DashboardSupplyListingsRoute
-  '/dashboard/supply-orders': typeof DashboardSupplyOrdersRoute
-  '/dashboard/theme-manager': typeof DashboardThemeManagerRoute
-  '/dashboard/theme-presets': typeof DashboardThemePresetsRoute
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
   '/dashboard/voice-generator': typeof DashboardVoiceGeneratorRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -811,7 +715,6 @@ export interface FileRoutesByTo {
   '/dashboard/apps/discount-generator': typeof DashboardAppsDiscountGeneratorRoute
   '/dashboard/apps/email-marketing': typeof DashboardAppsEmailMarketingRoute
   '/dashboard/apps/image-enhancer': typeof DashboardAppsImageEnhancerRoute
-  '/dashboard/apps/marketplace': typeof DashboardAppsMarketplaceRoute
   '/dashboard/apps/multi-language': typeof DashboardAppsMultiLanguageRoute
   '/dashboard/apps/popup-builder': typeof DashboardAppsPopupBuilderRoute
   '/dashboard/apps/seo-optimizer': typeof DashboardAppsSeoOptimizerRoute
@@ -861,20 +764,15 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/themes': typeof ThemesRoute
   '/trust': typeof TrustRoute
-  '/dashboard/about': typeof DashboardAboutRoute
-  '/dashboard/achievements': typeof DashboardAchievementsRoute
   '/dashboard/ai-agent': typeof DashboardAiAgentRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/apps': typeof DashboardAppsRouteWithChildren
   '/dashboard/categories': typeof DashboardCategoriesRoute
-  '/dashboard/contact': typeof DashboardContactRoute
   '/dashboard/credits': typeof DashboardCreditsRoute
   '/dashboard/customers': typeof DashboardCustomersRoute
   '/dashboard/database': typeof DashboardDatabaseRoute
   '/dashboard/delivery': typeof DashboardDeliveryRoute
-  '/dashboard/developer': typeof DashboardDeveloperRoute
   '/dashboard/domains': typeof DashboardDomainsRoute
-  '/dashboard/dropship-orders': typeof DashboardDropshipOrdersRoute
   '/dashboard/gamification': typeof DashboardGamificationRoute
   '/dashboard/gdpr': typeof DashboardGdprRoute
   '/dashboard/landing-generator': typeof DashboardLandingGeneratorRoute
@@ -883,19 +781,13 @@ export interface FileRoutesById {
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/progress': typeof DashboardProgressRoute
-  '/dashboard/quests': typeof DashboardQuestsRoute
   '/dashboard/referrals': typeof DashboardReferralsRoute
   '/dashboard/returns': typeof DashboardReturnsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/shipments': typeof DashboardShipmentsRoute
-  '/dashboard/shipping': typeof DashboardShippingRoute
   '/dashboard/stock-alerts': typeof DashboardStockAlertsRoute
   '/dashboard/store': typeof DashboardStoreRoute
   '/dashboard/store-settings': typeof DashboardStoreSettingsRoute
-  '/dashboard/supply-listings': typeof DashboardSupplyListingsRoute
-  '/dashboard/supply-orders': typeof DashboardSupplyOrdersRoute
-  '/dashboard/theme-manager': typeof DashboardThemeManagerRoute
-  '/dashboard/theme-presets': typeof DashboardThemePresetsRoute
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
   '/dashboard/voice-generator': typeof DashboardVoiceGeneratorRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -915,7 +807,6 @@ export interface FileRoutesById {
   '/dashboard/apps/discount-generator': typeof DashboardAppsDiscountGeneratorRoute
   '/dashboard/apps/email-marketing': typeof DashboardAppsEmailMarketingRoute
   '/dashboard/apps/image-enhancer': typeof DashboardAppsImageEnhancerRoute
-  '/dashboard/apps/marketplace': typeof DashboardAppsMarketplaceRoute
   '/dashboard/apps/multi-language': typeof DashboardAppsMultiLanguageRoute
   '/dashboard/apps/popup-builder': typeof DashboardAppsPopupBuilderRoute
   '/dashboard/apps/seo-optimizer': typeof DashboardAppsSeoOptimizerRoute
@@ -966,20 +857,15 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/themes'
     | '/trust'
-    | '/dashboard/about'
-    | '/dashboard/achievements'
     | '/dashboard/ai-agent'
     | '/dashboard/analytics'
     | '/dashboard/apps'
     | '/dashboard/categories'
-    | '/dashboard/contact'
     | '/dashboard/credits'
     | '/dashboard/customers'
     | '/dashboard/database'
     | '/dashboard/delivery'
-    | '/dashboard/developer'
     | '/dashboard/domains'
-    | '/dashboard/dropship-orders'
     | '/dashboard/gamification'
     | '/dashboard/gdpr'
     | '/dashboard/landing-generator'
@@ -988,19 +874,13 @@ export interface FileRouteTypes {
     | '/dashboard/orders'
     | '/dashboard/products'
     | '/dashboard/progress'
-    | '/dashboard/quests'
     | '/dashboard/referrals'
     | '/dashboard/returns'
     | '/dashboard/settings'
     | '/dashboard/shipments'
-    | '/dashboard/shipping'
     | '/dashboard/stock-alerts'
     | '/dashboard/store'
     | '/dashboard/store-settings'
-    | '/dashboard/supply-listings'
-    | '/dashboard/supply-orders'
-    | '/dashboard/theme-manager'
-    | '/dashboard/theme-presets'
     | '/dashboard/upgrade'
     | '/dashboard/voice-generator'
     | '/dashboard/'
@@ -1020,7 +900,6 @@ export interface FileRouteTypes {
     | '/dashboard/apps/discount-generator'
     | '/dashboard/apps/email-marketing'
     | '/dashboard/apps/image-enhancer'
-    | '/dashboard/apps/marketplace'
     | '/dashboard/apps/multi-language'
     | '/dashboard/apps/popup-builder'
     | '/dashboard/apps/seo-optimizer'
@@ -1068,19 +947,14 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/themes'
     | '/trust'
-    | '/dashboard/about'
-    | '/dashboard/achievements'
     | '/dashboard/ai-agent'
     | '/dashboard/analytics'
     | '/dashboard/categories'
-    | '/dashboard/contact'
     | '/dashboard/credits'
     | '/dashboard/customers'
     | '/dashboard/database'
     | '/dashboard/delivery'
-    | '/dashboard/developer'
     | '/dashboard/domains'
-    | '/dashboard/dropship-orders'
     | '/dashboard/gamification'
     | '/dashboard/gdpr'
     | '/dashboard/landing-generator'
@@ -1088,19 +962,13 @@ export interface FileRouteTypes {
     | '/dashboard/orders'
     | '/dashboard/products'
     | '/dashboard/progress'
-    | '/dashboard/quests'
     | '/dashboard/referrals'
     | '/dashboard/returns'
     | '/dashboard/settings'
     | '/dashboard/shipments'
-    | '/dashboard/shipping'
     | '/dashboard/stock-alerts'
     | '/dashboard/store'
     | '/dashboard/store-settings'
-    | '/dashboard/supply-listings'
-    | '/dashboard/supply-orders'
-    | '/dashboard/theme-manager'
-    | '/dashboard/theme-presets'
     | '/dashboard/upgrade'
     | '/dashboard/voice-generator'
     | '/dashboard'
@@ -1120,7 +988,6 @@ export interface FileRouteTypes {
     | '/dashboard/apps/discount-generator'
     | '/dashboard/apps/email-marketing'
     | '/dashboard/apps/image-enhancer'
-    | '/dashboard/apps/marketplace'
     | '/dashboard/apps/multi-language'
     | '/dashboard/apps/popup-builder'
     | '/dashboard/apps/seo-optimizer'
@@ -1169,20 +1036,15 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/themes'
     | '/trust'
-    | '/dashboard/about'
-    | '/dashboard/achievements'
     | '/dashboard/ai-agent'
     | '/dashboard/analytics'
     | '/dashboard/apps'
     | '/dashboard/categories'
-    | '/dashboard/contact'
     | '/dashboard/credits'
     | '/dashboard/customers'
     | '/dashboard/database'
     | '/dashboard/delivery'
-    | '/dashboard/developer'
     | '/dashboard/domains'
-    | '/dashboard/dropship-orders'
     | '/dashboard/gamification'
     | '/dashboard/gdpr'
     | '/dashboard/landing-generator'
@@ -1191,19 +1053,13 @@ export interface FileRouteTypes {
     | '/dashboard/orders'
     | '/dashboard/products'
     | '/dashboard/progress'
-    | '/dashboard/quests'
     | '/dashboard/referrals'
     | '/dashboard/returns'
     | '/dashboard/settings'
     | '/dashboard/shipments'
-    | '/dashboard/shipping'
     | '/dashboard/stock-alerts'
     | '/dashboard/store'
     | '/dashboard/store-settings'
-    | '/dashboard/supply-listings'
-    | '/dashboard/supply-orders'
-    | '/dashboard/theme-manager'
-    | '/dashboard/theme-presets'
     | '/dashboard/upgrade'
     | '/dashboard/voice-generator'
     | '/dashboard/'
@@ -1223,7 +1079,6 @@ export interface FileRouteTypes {
     | '/dashboard/apps/discount-generator'
     | '/dashboard/apps/email-marketing'
     | '/dashboard/apps/image-enhancer'
-    | '/dashboard/apps/marketplace'
     | '/dashboard/apps/multi-language'
     | '/dashboard/apps/popup-builder'
     | '/dashboard/apps/seo-optimizer'
@@ -1411,34 +1266,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardUpgradeRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/dashboard/theme-presets': {
-      id: '/dashboard/theme-presets'
-      path: '/theme-presets'
-      fullPath: '/dashboard/theme-presets'
-      preLoaderRoute: typeof DashboardThemePresetsRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    '/dashboard/theme-manager': {
-      id: '/dashboard/theme-manager'
-      path: '/theme-manager'
-      fullPath: '/dashboard/theme-manager'
-      preLoaderRoute: typeof DashboardThemeManagerRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    '/dashboard/supply-orders': {
-      id: '/dashboard/supply-orders'
-      path: '/supply-orders'
-      fullPath: '/dashboard/supply-orders'
-      preLoaderRoute: typeof DashboardSupplyOrdersRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    '/dashboard/supply-listings': {
-      id: '/dashboard/supply-listings'
-      path: '/supply-listings'
-      fullPath: '/dashboard/supply-listings'
-      preLoaderRoute: typeof DashboardSupplyListingsRouteImport
-      parentRoute: typeof DashboardRoute
-    }
     '/dashboard/store-settings': {
       id: '/dashboard/store-settings'
       path: '/store-settings'
@@ -1458,13 +1285,6 @@ declare module '@tanstack/react-router' {
       path: '/stock-alerts'
       fullPath: '/dashboard/stock-alerts'
       preLoaderRoute: typeof DashboardStockAlertsRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    '/dashboard/shipping': {
-      id: '/dashboard/shipping'
-      path: '/shipping'
-      fullPath: '/dashboard/shipping'
-      preLoaderRoute: typeof DashboardShippingRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/shipments': {
@@ -1493,13 +1313,6 @@ declare module '@tanstack/react-router' {
       path: '/referrals'
       fullPath: '/dashboard/referrals'
       preLoaderRoute: typeof DashboardReferralsRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    '/dashboard/quests': {
-      id: '/dashboard/quests'
-      path: '/quests'
-      fullPath: '/dashboard/quests'
-      preLoaderRoute: typeof DashboardQuestsRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/progress': {
@@ -1558,25 +1371,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardGamificationRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/dashboard/dropship-orders': {
-      id: '/dashboard/dropship-orders'
-      path: '/dropship-orders'
-      fullPath: '/dashboard/dropship-orders'
-      preLoaderRoute: typeof DashboardDropshipOrdersRouteImport
-      parentRoute: typeof DashboardRoute
-    }
     '/dashboard/domains': {
       id: '/dashboard/domains'
       path: '/domains'
       fullPath: '/dashboard/domains'
       preLoaderRoute: typeof DashboardDomainsRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    '/dashboard/developer': {
-      id: '/dashboard/developer'
-      path: '/developer'
-      fullPath: '/dashboard/developer'
-      preLoaderRoute: typeof DashboardDeveloperRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/delivery': {
@@ -1607,13 +1406,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardCreditsRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/dashboard/contact': {
-      id: '/dashboard/contact'
-      path: '/contact'
-      fullPath: '/dashboard/contact'
-      preLoaderRoute: typeof DashboardContactRouteImport
-      parentRoute: typeof DashboardRoute
-    }
     '/dashboard/categories': {
       id: '/dashboard/categories'
       path: '/categories'
@@ -1640,20 +1432,6 @@ declare module '@tanstack/react-router' {
       path: '/ai-agent'
       fullPath: '/dashboard/ai-agent'
       preLoaderRoute: typeof DashboardAiAgentRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    '/dashboard/achievements': {
-      id: '/dashboard/achievements'
-      path: '/achievements'
-      fullPath: '/dashboard/achievements'
-      preLoaderRoute: typeof DashboardAchievementsRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    '/dashboard/about': {
-      id: '/dashboard/about'
-      path: '/about'
-      fullPath: '/dashboard/about'
-      preLoaderRoute: typeof DashboardAboutRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/s/$slug/': {
@@ -1752,13 +1530,6 @@ declare module '@tanstack/react-router' {
       path: '/multi-language'
       fullPath: '/dashboard/apps/multi-language'
       preLoaderRoute: typeof DashboardAppsMultiLanguageRouteImport
-      parentRoute: typeof DashboardAppsRoute
-    }
-    '/dashboard/apps/marketplace': {
-      id: '/dashboard/apps/marketplace'
-      path: '/marketplace'
-      fullPath: '/dashboard/apps/marketplace'
-      preLoaderRoute: typeof DashboardAppsMarketplaceRouteImport
       parentRoute: typeof DashboardAppsRoute
     }
     '/dashboard/apps/image-enhancer': {
@@ -2019,7 +1790,6 @@ interface DashboardAppsRouteChildren {
   DashboardAppsDiscountGeneratorRoute: typeof DashboardAppsDiscountGeneratorRoute
   DashboardAppsEmailMarketingRoute: typeof DashboardAppsEmailMarketingRoute
   DashboardAppsImageEnhancerRoute: typeof DashboardAppsImageEnhancerRoute
-  DashboardAppsMarketplaceRoute: typeof DashboardAppsMarketplaceRoute
   DashboardAppsMultiLanguageRoute: typeof DashboardAppsMultiLanguageRoute
   DashboardAppsPopupBuilderRoute: typeof DashboardAppsPopupBuilderRoute
   DashboardAppsSeoOptimizerRoute: typeof DashboardAppsSeoOptimizerRoute
@@ -2039,7 +1809,6 @@ const DashboardAppsRouteChildren: DashboardAppsRouteChildren = {
   DashboardAppsDiscountGeneratorRoute: DashboardAppsDiscountGeneratorRoute,
   DashboardAppsEmailMarketingRoute: DashboardAppsEmailMarketingRoute,
   DashboardAppsImageEnhancerRoute: DashboardAppsImageEnhancerRoute,
-  DashboardAppsMarketplaceRoute: DashboardAppsMarketplaceRoute,
   DashboardAppsMultiLanguageRoute: DashboardAppsMultiLanguageRoute,
   DashboardAppsPopupBuilderRoute: DashboardAppsPopupBuilderRoute,
   DashboardAppsSeoOptimizerRoute: DashboardAppsSeoOptimizerRoute,
@@ -2070,20 +1839,15 @@ const DashboardNotificationsRouteWithChildren =
   )
 
 interface DashboardRouteChildren {
-  DashboardAboutRoute: typeof DashboardAboutRoute
-  DashboardAchievementsRoute: typeof DashboardAchievementsRoute
   DashboardAiAgentRoute: typeof DashboardAiAgentRoute
   DashboardAnalyticsRoute: typeof DashboardAnalyticsRoute
   DashboardAppsRoute: typeof DashboardAppsRouteWithChildren
   DashboardCategoriesRoute: typeof DashboardCategoriesRoute
-  DashboardContactRoute: typeof DashboardContactRoute
   DashboardCreditsRoute: typeof DashboardCreditsRoute
   DashboardCustomersRoute: typeof DashboardCustomersRoute
   DashboardDatabaseRoute: typeof DashboardDatabaseRoute
   DashboardDeliveryRoute: typeof DashboardDeliveryRoute
-  DashboardDeveloperRoute: typeof DashboardDeveloperRoute
   DashboardDomainsRoute: typeof DashboardDomainsRoute
-  DashboardDropshipOrdersRoute: typeof DashboardDropshipOrdersRoute
   DashboardGamificationRoute: typeof DashboardGamificationRoute
   DashboardGdprRoute: typeof DashboardGdprRoute
   DashboardLandingGeneratorRoute: typeof DashboardLandingGeneratorRoute
@@ -2092,19 +1856,13 @@ interface DashboardRouteChildren {
   DashboardOrdersRoute: typeof DashboardOrdersRoute
   DashboardProductsRoute: typeof DashboardProductsRoute
   DashboardProgressRoute: typeof DashboardProgressRoute
-  DashboardQuestsRoute: typeof DashboardQuestsRoute
   DashboardReferralsRoute: typeof DashboardReferralsRoute
   DashboardReturnsRoute: typeof DashboardReturnsRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardShipmentsRoute: typeof DashboardShipmentsRoute
-  DashboardShippingRoute: typeof DashboardShippingRoute
   DashboardStockAlertsRoute: typeof DashboardStockAlertsRoute
   DashboardStoreRoute: typeof DashboardStoreRoute
   DashboardStoreSettingsRoute: typeof DashboardStoreSettingsRoute
-  DashboardSupplyListingsRoute: typeof DashboardSupplyListingsRoute
-  DashboardSupplyOrdersRoute: typeof DashboardSupplyOrdersRoute
-  DashboardThemeManagerRoute: typeof DashboardThemeManagerRoute
-  DashboardThemePresetsRoute: typeof DashboardThemePresetsRoute
   DashboardUpgradeRoute: typeof DashboardUpgradeRoute
   DashboardVoiceGeneratorRoute: typeof DashboardVoiceGeneratorRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
@@ -2118,20 +1876,15 @@ interface DashboardRouteChildren {
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
-  DashboardAboutRoute: DashboardAboutRoute,
-  DashboardAchievementsRoute: DashboardAchievementsRoute,
   DashboardAiAgentRoute: DashboardAiAgentRoute,
   DashboardAnalyticsRoute: DashboardAnalyticsRoute,
   DashboardAppsRoute: DashboardAppsRouteWithChildren,
   DashboardCategoriesRoute: DashboardCategoriesRoute,
-  DashboardContactRoute: DashboardContactRoute,
   DashboardCreditsRoute: DashboardCreditsRoute,
   DashboardCustomersRoute: DashboardCustomersRoute,
   DashboardDatabaseRoute: DashboardDatabaseRoute,
   DashboardDeliveryRoute: DashboardDeliveryRoute,
-  DashboardDeveloperRoute: DashboardDeveloperRoute,
   DashboardDomainsRoute: DashboardDomainsRoute,
-  DashboardDropshipOrdersRoute: DashboardDropshipOrdersRoute,
   DashboardGamificationRoute: DashboardGamificationRoute,
   DashboardGdprRoute: DashboardGdprRoute,
   DashboardLandingGeneratorRoute: DashboardLandingGeneratorRoute,
@@ -2140,19 +1893,13 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardOrdersRoute: DashboardOrdersRoute,
   DashboardProductsRoute: DashboardProductsRoute,
   DashboardProgressRoute: DashboardProgressRoute,
-  DashboardQuestsRoute: DashboardQuestsRoute,
   DashboardReferralsRoute: DashboardReferralsRoute,
   DashboardReturnsRoute: DashboardReturnsRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardShipmentsRoute: DashboardShipmentsRoute,
-  DashboardShippingRoute: DashboardShippingRoute,
   DashboardStockAlertsRoute: DashboardStockAlertsRoute,
   DashboardStoreRoute: DashboardStoreRoute,
   DashboardStoreSettingsRoute: DashboardStoreSettingsRoute,
-  DashboardSupplyListingsRoute: DashboardSupplyListingsRoute,
-  DashboardSupplyOrdersRoute: DashboardSupplyOrdersRoute,
-  DashboardThemeManagerRoute: DashboardThemeManagerRoute,
-  DashboardThemePresetsRoute: DashboardThemePresetsRoute,
   DashboardUpgradeRoute: DashboardUpgradeRoute,
   DashboardVoiceGeneratorRoute: DashboardVoiceGeneratorRoute,
   DashboardIndexRoute: DashboardIndexRoute,

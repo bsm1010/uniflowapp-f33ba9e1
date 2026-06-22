@@ -1,4 +1,3 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { ExternalLink, FileText, Image as ImageIcon, Loader2, Save, Upload, X } from "lucide-react";
 import { toast } from "sonner";
@@ -15,16 +14,11 @@ import { Button } from "@/components/ui/button";
 import type { StoreSettings } from "@/lib/storeTheme";
 import { getStoreTokens } from "@/lib/storeTheme";
 
-export const Route = createFileRoute("/dashboard/about")({
-  component: AboutEditor,
-  head: () => ({ meta: [{ title: "About Page — Fennecly" }] }),
-});
-
-const DEFAULT_TITLE = "About us";
-const DEFAULT_CONTENT =
+export const DEFAULT_TITLE = "About us";
+export const DEFAULT_CONTENT =
   "Welcome to our store. We are passionate about offering quality products and a delightful shopping experience. Thanks for stopping by!";
 
-function AboutEditor() {
+export function AboutEditor() {
   const { user } = useAuth();
   const { isExpired } = useSubscription();
   const [settings, setSettings] = useState<StoreSettings | null>(null);

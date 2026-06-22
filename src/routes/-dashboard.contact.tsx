@@ -1,4 +1,3 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import {
   ExternalLink,
@@ -24,12 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { getStoreTokens, type StoreSettings } from "@/lib/storeTheme";
 
-export const Route = createFileRoute("/dashboard/contact")({
-  component: ContactEditor,
-  head: () => ({ meta: [{ title: "Contact Page — Fennecly" }] }),
-});
-
-function ContactEditor() {
+export function ContactEditor() {
   const { user } = useAuth();
   const { isExpired } = useSubscription();
   const [settings, setSettings] = useState<StoreSettings | null>(null);

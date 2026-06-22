@@ -1,4 +1,3 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Check, Eye, Loader2, Palette, Sparkles, ArrowRight } from "lucide-react";
@@ -23,12 +22,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
-export const Route = createFileRoute("/dashboard/theme-presets")({
-  component: PresetsPage,
-  head: () => ({ meta: [{ title: "Theme Presets — Fennecly" }] }),
-});
-
-function PresetsPage() {
+export function ThemePresetsComponent() {
   const { user } = useAuth();
   const { isExpired } = useSubscription();
   const [settings, setSettings] = useState<StoreSettings | null>(null);

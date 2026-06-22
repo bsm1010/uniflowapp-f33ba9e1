@@ -9,35 +9,19 @@ import {
   ShoppingBag,
   Users,
   Palette,
-  Sparkles,
   BarChart3,
   Settings,
   ShieldCheck,
-  FileText,
-  Mail,
   Blocks,
-  Database,
   ChevronDown,
-  Wand2,
   Coins,
-  Gift,
-  Mic,
-  Truck,
-  Bot,
-  Globe,
-  Layers,
   RotateCcw,
   AlertTriangle,
   Bell,
   Store as StoreIcon,
   PackageOpen,
-  Banknote,
   Wallet,
-  Code2,
   Trophy,
-  Zap,
-  Flame,
-  Shield,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { FennecyLogo } from "@/components/ui/fennecy-logo";
@@ -169,18 +153,6 @@ export function DashboardSidebar() {
           icon: PackageOpen,
           gradient: "from-orange-500 to-rose-500",
         },
-        {
-          title: t("dashboard.nav.themePresets"),
-          url: "/dashboard/theme-presets",
-          icon: Sparkles,
-          gradient: "from-fuchsia-500 to-purple-500",
-        },
-        {
-          title: "Theme Manager",
-          url: "/dashboard/theme-manager",
-          icon: Palette,
-          gradient: "from-violet-500 to-fuchsia-500",
-        },
       ],
     },
     {
@@ -192,18 +164,6 @@ export function DashboardSidebar() {
           icon: ShoppingBag,
           gradient: "from-pink-500 to-rose-500",
           tourId: "orders",
-        },
-        {
-          title: t("dashboard.nav.dropshipOrders", { defaultValue: "طلبات التوريد" }),
-          url: "/dashboard/dropship-orders",
-          icon: Banknote,
-          gradient: "from-sky-500 to-indigo-500",
-        },
-        {
-          title: t("dashboard.nav.supplyListings", { defaultValue: "منتجات التوريد في متجرك" }),
-          url: "/dashboard/supply-listings",
-          icon: Tag,
-          gradient: "from-orange-500 to-amber-500",
         },
         {
           title: "Returns & Refunds",
@@ -218,13 +178,6 @@ export function DashboardSidebar() {
           gradient: "from-amber-500 to-red-500",
         },
         {
-          title: "Shipping",
-          url: "/dashboard/shipping",
-          icon: Truck,
-          gradient: "from-green-500 to-emerald-500",
-          tourId: "shipping",
-        },
-        {
           title: "Shipments",
           url: "/dashboard/shipments",
           icon: Package,
@@ -236,74 +189,11 @@ export function DashboardSidebar() {
           icon: Users,
           gradient: "from-sky-500 to-cyan-500",
         },
-      ],
-    },
-    {
-      label: "AI Tools",
-      items: [
-        {
-          title: "AI Sales Agent",
-          url: "/dashboard/ai-agent",
-          icon: Bot,
-          gradient: "from-violet-500 to-indigo-600",
-        },
-        {
-          title: t("dashboard.nav.landingGenerator"),
-          url: "/dashboard/landing-generator",
-          icon: Wand2,
-          gradient: "from-purple-500 to-indigo-500",
-        },
-        {
-          title: "AI Voice Generator",
-          url: "/dashboard/voice-generator",
-          icon: Mic,
-          gradient: "from-pink-500 to-purple-500",
-        },
-      ],
-    },
-    {
-      label: "Marketing",
-      items: [
         {
           title: t("dashboard.nav.analytics"),
           url: "/dashboard/analytics",
           icon: BarChart3,
           gradient: "from-orange-500 to-red-500",
-        },
-        {
-          title: t("dashboard.nav.aboutPage"),
-          url: "/dashboard/about",
-          icon: FileText,
-          gradient: "from-blue-500 to-sky-500",
-        },
-        {
-          title: t("dashboard.nav.contactPage"),
-          url: "/dashboard/contact",
-          icon: Mail,
-          gradient: "from-cyan-500 to-blue-500",
-        },
-      ],
-    },
-    {
-      label: "Rewards",
-      items: [
-        {
-          title: "Progress Hub",
-          url: "/dashboard/gamification",
-          icon: Zap,
-          gradient: "from-violet-500 to-amber-400",
-        },
-        {
-          title: "Quests",
-          url: "/dashboard/quests",
-          icon: Flame,
-          gradient: "from-blue-500 to-cyan-500",
-        },
-        {
-          title: "Achievements",
-          url: "/dashboard/achievements",
-          icon: Trophy,
-          gradient: "from-amber-500 to-orange-500",
         },
       ],
     },
@@ -311,34 +201,10 @@ export function DashboardSidebar() {
       label: "Settings",
       items: [
         {
-          title: "Custom Domains",
-          url: "/dashboard/domains",
-          icon: Globe,
-          gradient: "from-sky-500 to-blue-600",
-        },
-        {
-          title: t("dashboard.nav.database"),
-          url: "/dashboard/database",
-          icon: Database,
-          gradient: "from-slate-600 to-slate-800",
-        },
-        {
           title: t("dashboard.nav.appStore"),
           url: "/dashboard/apps",
           icon: Blocks,
           gradient: "from-violet-500 to-purple-500",
-        },
-        {
-          title: "Marketplace",
-          url: "/dashboard/apps/marketplace",
-          icon: StoreIcon,
-          gradient: "from-purple-500 to-pink-500",
-        },
-        {
-          title: "Developer",
-          url: "/dashboard/developer",
-          icon: Code2,
-          gradient: "from-fuchsia-500 to-violet-500",
         },
         {
           title: t("dashboard.nav.progress", "Progress"),
@@ -351,18 +217,6 @@ export function DashboardSidebar() {
           url: "/dashboard/credits",
           icon: Coins,
           gradient: "from-yellow-500 to-amber-500",
-        },
-        {
-          title: t("dashboard.nav.referrals"),
-          url: "/dashboard/referrals",
-          icon: Gift,
-          gradient: "from-rose-500 to-pink-500",
-        },
-        {
-          title: "GDPR & Privacy",
-          url: "/dashboard/gdpr",
-          icon: Shield,
-          gradient: "from-red-500 to-rose-500",
         },
         {
           title: "Store Settings",

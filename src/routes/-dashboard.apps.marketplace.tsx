@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { Loader2, Search, Star, Store, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -22,40 +22,6 @@ type AppRow = {
   created_at: string;
 };
 
-export const Route = createFileRoute("/dashboard/apps/marketplace")({
-  component: MarketplacePage,
-  loader: async () => {
-    const { data } = await supabase
-      .from("apps")
-      .select(
-        "id,title,slug,short_description,category,icon_url,screenshots,price,is_free,developer_id,created_at",
-      )
-      .eq("status", "approved")
-      .order("created_at", { ascending: false });
-    return { apps: (data as AppRow[]) ?? [] };
-  },
-  staleTime: 30_000,
-  pendingComponent: () => (
-    <div className="flex items-center justify-center py-20">
-      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-    </div>
-  ),
-  errorComponent: ({ error }) => (
-    <div className="text-center py-20 text-muted-foreground">
-      Failed to load marketplace: {error.message}
-    </div>
-  ),
-  notFoundComponent: () => (
-    <div className="text-center py-20 text-muted-foreground">Not found.</div>
-  ),
-  head: () => ({
-    meta: [
-      { title: "Community Marketplace — Fennecly" },
-      { name: "description", content: "Discover apps built by the community." },
-    ],
-  }),
-});
-
 const CATEGORIES = [
   "All",
   "Marketing",
@@ -67,10 +33,25 @@ const CATEGORIES = [
   "Other",
 ];
 
-function MarketplacePage() {
-  const { apps } = Route.useLoaderData() as { apps: AppRow[] };
+export function MarketplaceComponent() {
+  const [apps, setApps] = useState<AppRow[]>([]);
+  const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [cat, setCat] = useState("All");
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("apps")
+        .select(
+          "id,title,slug,short_description,category,icon_url,screenshots,price,is_free,developer_id,created_at",
+        )
+        .eq("status", "approved")
+        .order("created_at", { ascending: false });
+      setApps((data as AppRow[]) ?? []);
+      setLoading(false);
+    })();
+  }, []);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -82,9 +63,16 @@ function MarketplacePage() {
     });
   }, [apps, query, cat]);
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
         <div className="flex flex-col gap-1.5">
           <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -102,7 +90,6 @@ function MarketplacePage() {
         </Button>
       </div>
 
-      {/* Search + Tabs */}
       <div className="space-y-3">
         <div className="relative max-w-xl">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

@@ -1,4 +1,3 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
@@ -62,11 +61,6 @@ import {
   useConfirmAndPayOrder,
   type DropshipOrder,
 } from "@/hooks/useDropshipping";
-
-export const Route = createFileRoute("/dashboard/dropship-orders")({
-  component: DropshipOrdersPage,
-  head: () => ({ meta: [{ title: "Dropship Orders — Fennecly" }] }),
-});
 
 function formatPrice(n: number) {
   return `${Math.round(n).toLocaleString("fr-DZ")} DA`;
@@ -181,7 +175,7 @@ function PipelineSteps({ status }: { status: string }) {
   );
 }
 
-function DropshipOrdersPage() {
+export function DropshipOrdersComponent() {
   const { user } = useAuth();
   const { currentStore, loading: storeLoading } = useCurrentStore();
   const [statusFilter, setStatusFilter] = useState<string>("all");

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Loader2, Truck, Search, Copy, CheckCircle2, MapPin } from "lucide-react";
 import deliveryMan from "@/assets/delivery-man.webp";
 import { toast } from "sonner";
@@ -25,15 +25,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+const ShippingTab = lazy(() =>
+  import("./-dashboard.shipping").then((m) => ({ default: m.ShippingSettingsComponent }))
+);
 
 type Shipment = Tables<"shipments">;
 type Order = Tables<"orders">;
 type Company = { id: string; name: string };
-
-export const Route = createFileRoute("/dashboard/shipments")({
-  component: ShipmentsPage,
-  head: () => ({ meta: [{ title: "Shipments — Tracking" }] }),
-});
 
 const STATUS_FLOW = ["pending", "in_transit", "delivered"] as const;
 type Status = (typeof STATUS_FLOW)[number];
@@ -53,7 +53,12 @@ const STATUS_VARIANT: Record<string, { label: string; className: string }> = {
   },
 };
 
-function ShipmentsPage() {
+export const Route = createFileRoute("/dashboard/shipments")({
+  component: ShipmentsPage,
+  head: () => ({ meta: [{ title: "Shipments — Fennecly" }] }),
+});
+
+function ShipmentsContent() {
   const { user } = useAuth();
   const [shipments, setShipments] = useState<Shipment[] | null>(null);
   const [orders, setOrders] = useState<Record<string, Order>>({});
@@ -160,16 +165,7 @@ function ShipmentsPage() {
   );
 
   return (
-    <div className="max-w-7xl mx-auto">
-      <PageHeader
-        eyebrow="Logistics"
-        title="Shipments & Tracking"
-        description="Follow every shipment from pickup to delivery."
-        icon={Truck}
-        gradient="from-sky-500 via-indigo-500 to-violet-500"
-      />
-
-      {/* Hero showcase */}
+    <>
       <section className="relative my-6 rounded-2xl border bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 text-white shadow-lg">
         <div
           className="absolute inset-0 overflow-hidden rounded-2xl opacity-20"
@@ -361,6 +357,43 @@ function ShipmentsPage() {
           </CardContent>
         </Card>
       )}
+    </>
+  );
+}
+
+export default function ShipmentsPage() {
+  return (
+    <div className="max-w-7xl mx-auto">
+      <PageHeader
+        eyebrow="Logistics"
+        title="Shipments & Tracking"
+        description="Follow every shipment from pickup to delivery."
+        icon={Truck}
+        gradient="from-sky-500 via-indigo-500 to-violet-500"
+      />
+
+      <Tabs defaultValue="shipments" className="space-y-4">
+        <TabsList className="grid w-full max-w-sm grid-cols-2">
+          <TabsTrigger value="shipments">Shipments</TabsTrigger>
+          <TabsTrigger value="shipping">Shipping Settings</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="shipments">
+          <ShipmentsContent />
+        </TabsContent>
+
+        <TabsContent value="shipping">
+          <Suspense
+            fallback={
+              <div className="flex items-center justify-center min-h-[300px]">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              </div>
+            }
+          >
+            <ShippingTab />
+          </Suspense>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

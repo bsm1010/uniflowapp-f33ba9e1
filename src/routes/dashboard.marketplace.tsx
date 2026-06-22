@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Search,
@@ -9,10 +9,12 @@ import {
   Plus,
   Trash2,
   Loader2,
-  ShoppingCart,
+  ShoppingBag,
   Check,
   AlertCircle,
   ImageIcon,
+  Tag,
+  ShoppingCart,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
@@ -74,6 +76,13 @@ import {
   type SupplyMarketplaceProduct,
 } from "@/hooks/useDropshipping";
 
+const DropshipOrdersTab = lazy(() =>
+  import("./-dashboard.dropship-orders").then((m) => ({ default: m.DropshipOrdersComponent }))
+);
+const SupplyListingsTab = lazy(() =>
+  import("./-dashboard.supply-listings").then((m) => ({ default: m.SupplyListingsComponent }))
+);
+
 export const Route = createFileRoute("/dashboard/marketplace")({
   component: MarketplacePage,
   head: () => ({ meta: [{ title: "سوق التوريد — Fennecly" }] }),
@@ -83,7 +92,7 @@ function formatPrice(n: number) {
   return `${Math.round(n).toLocaleString("fr-DZ")} DA`;
 }
 
-type Tab = "catalog" | "my-listings";
+type Tab = "catalog" | "my-listings" | "dropship-orders" | "supply-listings";
 
 function MarketplacePage() {
   const { user } = useAuth();
@@ -228,6 +237,12 @@ function MarketplacePage() {
               </Badge>
             )}
           </TabsTrigger>
+          <TabsTrigger value="dropship-orders" className="gap-1.5">
+            <ShoppingBag className="h-3.5 w-3.5" /> طلبات التوريد
+          </TabsTrigger>
+          <TabsTrigger value="supply-listings" className="gap-1.5">
+            <Tag className="h-3.5 w-3.5" /> منتجاتي في المتجر
+          </TabsTrigger>
         </TabsList>
 
         {/* CATALOG TAB */}
@@ -309,6 +324,32 @@ function MarketplacePage() {
             loading={listingsLoading}
             onRemove={(l) => setRemoving({ id: l.id, name: l.supply_product?.name ?? "المنتج" })}
           />
+        </TabsContent>
+
+        {/* DROPSHIP ORDERS TAB */}
+        <TabsContent value="dropship-orders">
+          <Suspense
+            fallback={
+              <div className="flex items-center justify-center min-h-[300px]">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              </div>
+            }
+          >
+            <DropshipOrdersTab />
+          </Suspense>
+        </TabsContent>
+
+        {/* SUPPLY LISTINGS TAB */}
+        <TabsContent value="supply-listings">
+          <Suspense
+            fallback={
+              <div className="flex items-center justify-center min-h-[300px]">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              </div>
+            }
+          >
+            <SupplyListingsTab />
+          </Suspense>
         </TabsContent>
       </Tabs>
 

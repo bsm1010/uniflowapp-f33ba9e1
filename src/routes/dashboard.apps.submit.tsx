@@ -181,7 +181,7 @@ function SubmitAppPage() {
       });
       setIconUrl(null);
       setScreenshots([]);
-      navigate({ to: "/dashboard/developer" });
+      navigate({ to: "/dashboard/apps" });
       void data;
     } catch (err) {
       console.error("Unexpected submit error", err);
@@ -194,7 +194,7 @@ function SubmitAppPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <Button asChild variant="ghost" size="sm">
-        <Link to="/dashboard/apps/marketplace">
+        <Link to="/dashboard/apps">
           <ArrowLeft className="h-4 w-4" />
           Back to Marketplace
         </Link>
@@ -369,7 +369,7 @@ function SubmitAppPage() {
 
         <div className="flex gap-3 justify-end">
           <Button type="button" variant="outline" asChild>
-            <Link to="/dashboard/apps/marketplace">Cancel</Link>
+            <Link to="/dashboard/apps">Cancel</Link>
           </Button>
           <Button type="submit" disabled={submitting || uploading}>
             {submitting && <Loader2 className="h-4 w-4 animate-spin" />}

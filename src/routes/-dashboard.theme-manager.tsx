@@ -1,12 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Zap, Flame, LayoutGrid, Check } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useCurrentStore } from "@/hooks/use-current-store";
-import { useServerFn } from "@tanstack/react-start";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,12 +18,7 @@ import { SECTION_PRESETS } from "@/lib/themes/section-presets";
 import type { NavbarStyle, FooterStyle, ThemeDefinition } from "@/lib/themes";
 import type { StoreSettings } from "@/lib/storeTheme";
 
-export const Route = createFileRoute("/dashboard/theme-manager")({
-  component: ThemeManagerPage,
-  head: () => ({ meta: [{ title: "Theme Manager — Fennecly" }] }),
-});
-
-function ThemeManagerPage() {
+export function ThemeManagerComponent() {
   const { user } = useAuth();
   const { currentStore } = useCurrentStore();
   const navigate = useNavigate();

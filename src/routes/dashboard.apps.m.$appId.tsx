@@ -103,7 +103,7 @@ function MarketplaceAppPage() {
       <div className="text-center py-20">
         <p className="text-muted-foreground">App not found.</p>
         <Button asChild className="mt-4">
-          <Link to="/dashboard/apps/marketplace">Back to Marketplace</Link>
+          <Link to="/dashboard/apps">Back to Marketplace</Link>
         </Button>
       </div>
     );
@@ -114,7 +114,7 @@ function MarketplaceAppPage() {
   return (
     <div className="space-y-6">
       <Button asChild variant="ghost" size="sm">
-        <Link to="/dashboard/apps/marketplace">
+        <Link to="/dashboard/apps">
           <ArrowLeft className="h-4 w-4" />
           Marketplace
         </Link>

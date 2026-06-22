@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Loader2, Plus, ExternalLink, Code2, Pencil } from "lucide-react";
+import { Loader2, Plus, ExternalLink, Code2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -10,11 +10,6 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-
-export const Route = createFileRoute("/dashboard/developer")({
-  component: DeveloperPage,
-  head: () => ({ meta: [{ title: "Developer Dashboard — Fennecly" }] }),
-});
 
 type AppRow = {
   id: string;
@@ -53,7 +48,7 @@ function statusBadge(status: string) {
   );
 }
 
-function DeveloperPage() {
+export function DeveloperComponent() {
   const { user } = useAuth();
   const [apps, setApps] = useState<AppRow[]>([]);
   const [loading, setLoading] = useState(true);

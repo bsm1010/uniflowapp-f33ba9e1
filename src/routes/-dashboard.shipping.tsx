@@ -1,4 +1,3 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { Truck } from "lucide-react";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -6,20 +5,7 @@ import { ShippingCompaniesSection } from "@/components/dashboard/ShippingCompani
 import { TariffsSection } from "@/components/dashboard/TariffsSection";
 import deliveryTruck from "@/assets/delivery-truck.webp";
 
-export const Route = createFileRoute("/dashboard/shipping")({
-  component: ShippingSettingsPage,
-  head: () => ({
-    meta: [
-      { title: "Shipping Settings — Fennecly" },
-      {
-        name: "description",
-        content: "Manage delivery companies and per-wilaya tariffs for your store.",
-      },
-    ],
-  }),
-});
-
-function ShippingSettingsPage() {
+export function ShippingSettingsComponent() {
   return (
     <div className="space-y-6">
       <PageHeader

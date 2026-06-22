@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { Loader2, Settings, Trash2, Upload, Store as StoreIcon } from "lucide-react";
+import { lazy, Suspense, useEffect, useState } from "react";
+import { Loader2, Settings, Trash2, Upload, Store as StoreIcon, Info, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -29,6 +29,14 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+const AboutTab = lazy(() =>
+  import("./-dashboard.about").then((m) => ({ default: m.AboutEditor }))
+);
+const ContactTab = lazy(() =>
+  import("./-dashboard.contact").then((m) => ({ default: m.ContactEditor }))
+);
 
 const CATEGORIES = [
   "fashion",
@@ -145,156 +153,195 @@ function StoreSettingsPage() {
         gradient="from-violet-500 via-fuchsia-500 to-pink-500"
       />
 
-      {/* ── General Settings ── */}
-      <Card className="border-border/60">
-        <CardContent className="p-6 space-y-5">
-          <div>
-            <Label>Logo</Label>
-            <div className="mt-1 flex items-center gap-3">
-              <div className="h-16 w-16 rounded-xl bg-muted overflow-hidden flex items-center justify-center">
-                {logoUrl ? (
-                  <img src={logoUrl} alt="Store logo preview" className="h-full w-full object-cover" />
-                ) : (
-                  <StoreIcon className="h-6 w-6 text-muted-foreground" />
-                )}
+      <Tabs defaultValue="general" className="space-y-4">
+        <TabsList className="grid w-full max-w-md grid-cols-3">
+          <TabsTrigger value="general" className="gap-1.5">
+            <Settings className="h-4 w-4" /> Store
+          </TabsTrigger>
+          <TabsTrigger value="about" className="gap-1.5">
+            <Info className="h-4 w-4" /> About
+          </TabsTrigger>
+          <TabsTrigger value="contact" className="gap-1.5">
+            <MessageSquare className="h-4 w-4" /> Contact
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="general">
+          {/* ── General Settings ── */}
+          <Card className="border-border/60">
+            <CardContent className="p-6 space-y-5">
+              <div>
+                <Label>Logo</Label>
+                <div className="mt-1 flex items-center gap-3">
+                  <div className="h-16 w-16 rounded-xl bg-muted overflow-hidden flex items-center justify-center">
+                    {logoUrl ? (
+                      <img src={logoUrl} alt="Store logo preview" className="h-full w-full object-cover" />
+                    ) : (
+                      <StoreIcon className="h-6 w-6 text-muted-foreground" />
+                    )}
+                  </div>
+                  <label className="cursor-pointer inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-accent">
+                    {uploading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Upload className="h-4 w-4" />
+                    )}
+                    <span>Upload</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        if (f) void uploadLogo(f);
+                      }}
+                    />
+                  </label>
+                </div>
               </div>
-              <label className="cursor-pointer inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-accent">
-                {uploading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Upload className="h-4 w-4" />
-                )}
-                <span>Upload</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={(e) => {
-                    const f = e.target.files?.[0];
-                    if (f) void uploadLogo(f);
-                  }}
+
+              <div>
+                <Label htmlFor="name">Store name</Label>
+                <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
+              </div>
+              <div>
+                <Label>Category</Label>
+                <Select value={category} onValueChange={setCategory}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CATEGORIES.map((c) => (
+                      <SelectItem key={c} value={c} className="capitalize">
+                        {c}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="desc">Description</Label>
+                <Textarea
+                  id="desc"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={4}
                 />
-              </label>
-            </div>
-          </div>
+              </div>
 
-          <div>
-            <Label htmlFor="name">Store name</Label>
-            <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
-          </div>
-          <div>
-            <Label>Category</Label>
-            <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {CATEGORIES.map((c) => (
-                  <SelectItem key={c} value={c} className="capitalize">
-                    {c}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label htmlFor="desc">Description</Label>
-            <Textarea
-              id="desc"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={4}
-            />
-          </div>
+              <div className="flex justify-between pt-4 border-t">
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" disabled={stores.length <= 1}>
+                      <Trash2 className="h-4 w-4" /> Delete store
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete this store?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This permanently deletes <strong>{currentStore.name}</strong> and all its data
+                        (products, orders, settings). This cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={remove}>Delete</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
 
-          <div className="flex justify-between pt-4 border-t">
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="destructive" disabled={stores.length <= 1}>
-                  <Trash2 className="h-4 w-4" /> Delete store
+                <Button onClick={save} disabled={saving}>
+                  {saving && <Loader2 className="h-4 w-4 animate-spin" />}
+                  Save changes
                 </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Delete this store?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This permanently deletes <strong>{currentStore.name}</strong> and all its data
-                    (products, orders, settings). This cannot be undone.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={remove}>Delete</AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+              </div>
+            </CardContent>
+          </Card>
 
-            <Button onClick={save} disabled={saving}>
-              {saving && <Loader2 className="h-4 w-4 animate-spin" />}
-              Save changes
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+          {/* ── TikTok Pixel ── */}
+          <Card className="border-border/60 mt-6">
+            <CardContent className="p-6 space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-black flex items-center justify-center shrink-0">
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="h-5 w-5 fill-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold">TikTok Pixel</h3>
+                  <p className="text-xs text-muted-foreground">
+                    Track visitors and conversions from your TikTok ads
+                  </p>
+                </div>
+              </div>
 
-      {/* ── TikTok Pixel ── */}
-      <Card className="border-border/60 mt-6">
-        <CardContent className="p-6 space-y-4">
-          <div className="flex items-center gap-3">
-            {/* TikTok icon */}
-            <div className="h-10 w-10 rounded-xl bg-black flex items-center justify-center shrink-0">
-              <svg
-                viewBox="0 0 24 24"
-                className="h-5 w-5 fill-white"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z" />
-              </svg>
-            </div>
-            <div>
-              <h3 className="text-sm font-semibold">TikTok Pixel</h3>
-              <p className="text-xs text-muted-foreground">
-                Track visitors and conversions from your TikTok ads
-              </p>
-            </div>
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="tiktok-pixel">Pixel ID</Label>
+                <Input
+                  id="tiktok-pixel"
+                  placeholder="e.g. C3ABC1234567890"
+                  value={tiktokPixelId}
+                  onChange={(e) => setTiktokPixelId(e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Find your Pixel ID in{" "}
+                  <a
+                    href="https://ads.tiktok.com/i18n/events_manager"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary underline underline-offset-2"
+                  >
+                    TikTok Ads Manager → Events Manager
+                  </a>
+                </p>
+              </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="tiktok-pixel">Pixel ID</Label>
-            <Input
-              id="tiktok-pixel"
-              placeholder="e.g. C3ABC1234567890"
-              value={tiktokPixelId}
-              onChange={(e) => setTiktokPixelId(e.target.value)}
-            />
-            <p className="text-xs text-muted-foreground">
-              Find your Pixel ID in{" "}
-              <a
-                href="https://ads.tiktok.com/i18n/events_manager"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary underline underline-offset-2"
-              >
-                TikTok Ads Manager → Events Manager
-              </a>
-            </p>
-          </div>
+              {tiktokPixelId && (
+                <div className="rounded-lg bg-green-500/10 border border-green-500/20 px-4 py-3 text-sm text-green-700 dark:text-green-400">
+                  ✅ Pixel <span className="font-mono font-semibold">{tiktokPixelId}</span> will be
+                  injected into your storefront automatically.
+                </div>
+              )}
 
-          {tiktokPixelId && (
-            <div className="rounded-lg bg-green-500/10 border border-green-500/20 px-4 py-3 text-sm text-green-700 dark:text-green-400">
-              ✅ Pixel <span className="font-mono font-semibold">{tiktokPixelId}</span> will be
-              injected into your storefront automatically.
-            </div>
-          )}
+              <div className="flex justify-end pt-2 border-t">
+                <Button onClick={save} disabled={saving}>
+                  {saving && <Loader2 className="h-4 w-4 animate-spin" />}
+                  Save changes
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-          <div className="flex justify-end pt-2 border-t">
-            <Button onClick={save} disabled={saving}>
-              {saving && <Loader2 className="h-4 w-4 animate-spin" />}
-              Save changes
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+        <TabsContent value="about">
+          <Suspense
+            fallback={
+              <div className="flex items-center justify-center min-h-[300px]">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              </div>
+            }
+          >
+            <AboutTab />
+          </Suspense>
+        </TabsContent>
+
+        <TabsContent value="contact">
+          <Suspense
+            fallback={
+              <div className="flex items-center justify-center min-h-[300px]">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              </div>
+            }
+          >
+            <ContactTab />
+          </Suspense>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

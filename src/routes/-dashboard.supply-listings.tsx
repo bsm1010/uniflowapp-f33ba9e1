@@ -1,4 +1,3 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
@@ -47,11 +46,6 @@ import {
   type UserSupplyListing,
 } from "@/hooks/useDropshipping";
 
-export const Route = createFileRoute("/dashboard/supply-listings")({
-  component: SupplyListingsPage,
-  head: () => ({ meta: [{ title: "منتجات التوريد — Fennecly" }] }),
-});
-
 function formatPrice(n: number) {
   return `${Math.round(n).toLocaleString("fr-DZ")} DA`;
 }
@@ -75,7 +69,7 @@ type ListingWithProduct = UserSupplyListing & {
   } | null;
 };
 
-function SupplyListingsPage() {
+export function SupplyListingsComponent() {
   const { user } = useAuth();
   const [search, setSearch] = useState("");
   const [editListing, setEditListing] = useState<ListingWithProduct | null>(null);
