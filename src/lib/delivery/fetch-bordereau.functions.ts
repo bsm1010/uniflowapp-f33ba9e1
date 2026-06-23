@@ -1,7 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { createAuthenticatedDeliveryClient } from "./authenticated-client";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { normalizeProviderKey } from "./registry";
 
 const ZR_BASE_URL = "https://api.zrexpress.app/api/v1";
@@ -40,8 +39,8 @@ export const fetchBordereau = createServerFn({ method: "POST" })
         return { ok: false, message: "ZR Express is not configured." };
       }
 
-      // Get credentials
-      const { data: link } = await supabaseAdmin
+      // Get credentials (user's own store — RLS allows this)
+      const { data: link } = await supabase
         .from("store_delivery_companies")
         .select("api_key")
         .eq("store_id", userId)
