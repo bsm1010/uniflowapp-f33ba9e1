@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import { DeliveryService } from "@/lib/delivery/service";
 import { mergePDFs, openPDFForPrinting } from "@/lib/pdf-merge";
 import { useCurrentStore } from "@/hooks/use-current-store";
+import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -16,6 +17,7 @@ export function useBordereaux() {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
   const { currentStore } = useCurrentStore();
+  const { user } = useAuth();
 
   const printBordereaux = useCallback(
     async (orders: BordereauOrder[]) => {
@@ -35,8 +37,8 @@ export function useBordereaux() {
         return;
       }
 
-      if (!currentStore?.id) {
-        console.error("[useBordereaux] No store selected");
+      if (!currentStore?.id || !user?.id) {
+        console.error("[useBordereaux] No store or user selected");
         toast.error("No store selected.");
         return;
       }
@@ -46,16 +48,17 @@ export function useBordereaux() {
 
       try {
         // Find ZR Express link for this store via join with delivery_companies
+        // Note: store_delivery_companies.store_id references the user ID, not the store UUID
         const { data: link } = await supabase
           .from("store_delivery_companies")
           .select("company_id, delivery_companies!inner(name)")
-          .eq("store_id", currentStore.id)
+          .eq("store_id", user.id)
           .eq("enabled", true)
           .maybeSingle();
 
         const companyName = (link as any)?.delivery_companies?.name as string | undefined;
         if (!link?.company_id || !companyName) {
-          console.error("[useBordereaux] No enabled delivery company linked to store:", { storeId: currentStore.id });
+          console.error("[useBordereaux] No enabled delivery company linked to store:", { userId: user.id, storeId: currentStore.id });
           toast.error("No delivery company connected to your store.");
           setLoading(false);
           setProgress(null);
@@ -71,7 +74,7 @@ export function useBordereaux() {
         }
 
         const adapter = await DeliveryService.getAdapterForStore(
-          currentStore.id,
+          user.id,
           link.company_id,
         );
 
@@ -122,14 +125,14 @@ export function useBordereaux() {
           );
         }
       } catch (err) {
-        console.error("[useBordereaux] Batch bordereau error:", { err, orders: eligible, storeId: currentStore?.id });
+        console.error("[useBordereaux] Batch bordereau error:", { err, orders: eligible, userId: user?.id, storeId: currentStore?.id });
         toast.error("Failed to generate bordereaux. Please try again.");
       } finally {
         setLoading(false);
         setProgress(null);
       }
     },
-    [currentStore?.id],
+    [currentStore?.id, user?.id],
   );
 
   return { printBordereaux, loading, progress };
