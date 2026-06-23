@@ -45,32 +45,26 @@ export function useBordereaux() {
       setProgress({ done: 0, total: eligible.length });
 
       try {
-        // Find ZR Express company ID from delivery_companies table
-        const { data: zrCompany } = await supabase
-          .from("delivery_companies")
-          .select("id")
-          .ilike("name", "%zr%express%")
+        // Find ZR Express link for this store via join with delivery_companies
+        const { data: link } = await supabase
+          .from("store_delivery_companies")
+          .select("company_id, delivery_companies!inner(name)")
+          .eq("store_id", currentStore.id)
+          .eq("enabled", true)
           .maybeSingle();
 
-        if (!zrCompany?.id) {
-          console.error("[useBordereaux] ZR Express company not found in delivery_companies");
-          toast.error("ZR Express is not configured on this platform.");
+        const companyName = (link as any)?.delivery_companies?.name as string | undefined;
+        if (!link?.company_id || !companyName) {
+          console.error("[useBordereaux] No enabled delivery company linked to store:", { storeId: currentStore.id });
+          toast.error("No delivery company connected to your store.");
           setLoading(false);
           setProgress(null);
           return;
         }
 
-        const { data: link } = await supabase
-          .from("store_delivery_companies")
-          .select("company_id")
-          .eq("store_id", currentStore.id)
-          .eq("company_id", zrCompany.id)
-          .eq("enabled", true)
-          .maybeSingle();
-
-        if (!link?.company_id) {
-          console.error("[useBordereaux] ZR Express not linked to store:", { storeId: currentStore.id, zrCompanyId: zrCompany.id });
-          toast.error("ZR Express is not connected to your store.");
+        if (!companyName.toLowerCase().includes("zr") || !companyName.toLowerCase().includes("express")) {
+          console.error("[useBordereaux] Default company is not ZR Express:", { companyName, companyId: link.company_id });
+          toast.error("ZR Express is required for bordereau printing. Set it as your delivery company.");
           setLoading(false);
           setProgress(null);
           return;
