@@ -355,7 +355,9 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
     // Approach 1: GET with query params (id)
     try {
       const url = `${ZR_BASE_URL}/get_bordereaux?token=${encodeURIComponent(token)}&id=${encodeURIComponent(colisId)}`;
+      console.log("[ZRExpressAdapter] getBordereau attempt 1:", url);
       const res = await fetch(url, { method: "GET", headers, signal: AbortSignal.timeout(30_000) });
+      console.log("[ZRExpressAdapter] response status:", res.status, "content-type:", res.headers.get("content-type"));
       if (res.ok) {
         const ct = res.headers.get("content-type") || "";
         if (ct.includes("application/pdf")) {
@@ -372,7 +374,9 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
     // Approach 2: GET with query params (ids)
     try {
       const url = `${ZR_BASE_URL}/get_bordereaux?token=${encodeURIComponent(token)}&ids=${encodeURIComponent(colisId)}`;
+      console.log("[ZRExpressAdapter] getBordereau attempt 2:", url);
       const res = await fetch(url, { method: "GET", headers, signal: AbortSignal.timeout(30_000) });
+      console.log("[ZRExpressAdapter] response status:", res.status, "content-type:", res.headers.get("content-type"));
       if (res.ok) {
         const ct = res.headers.get("content-type") || "";
         if (ct.includes("application/pdf")) {
@@ -389,12 +393,14 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
     // Approach 3: POST with JSON body
     try {
       const url = `${ZR_BASE_URL}/get_bordereaux`;
+      console.log("[ZRExpressAdapter] getBordereau attempt 3 (POST):", url);
       const res = await fetch(url, {
         method: "POST",
         headers: { ...headers, "Content-Type": "application/json" },
         body: JSON.stringify({ token, ids: [colisId] }),
         signal: AbortSignal.timeout(30_000),
       });
+      console.log("[ZRExpressAdapter] response status:", res.status, "content-type:", res.headers.get("content-type"));
       if (res.ok) {
         const ct = res.headers.get("content-type") || "";
         if (ct.includes("application/pdf")) {
@@ -408,6 +414,7 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
       }
     } catch { /* try next */ }
 
+    console.error("[ZRExpressAdapter] All bordereau approaches failed for colis:", colisId);
     throw new Error(
       `ZR Express: could not fetch bordereau for colis ${colisId}. All request approaches failed.`,
     );

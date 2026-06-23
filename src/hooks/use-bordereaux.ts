@@ -28,6 +28,7 @@ export function useBordereaux() {
         }));
 
       if (eligible.length === 0) {
+        console.error("[useBordereaux] No eligible orders:", { orders });
         toast.error(
           "No orders have been sent to ZR Express yet. Send orders to ZR Express first.",
         );
@@ -35,6 +36,7 @@ export function useBordereaux() {
       }
 
       if (!currentStore?.id) {
+        console.error("[useBordereaux] No store selected");
         toast.error("No store selected.");
         return;
       }
@@ -43,16 +45,32 @@ export function useBordereaux() {
       setProgress({ done: 0, total: eligible.length });
 
       try {
-        // Find the ZR Express company for this store
+        // Find ZR Express company ID from delivery_companies table
+        const { data: zrCompany } = await supabase
+          .from("delivery_companies")
+          .select("id")
+          .ilike("name", "%zr%express%")
+          .maybeSingle();
+
+        if (!zrCompany?.id) {
+          console.error("[useBordereaux] ZR Express company not found in delivery_companies");
+          toast.error("ZR Express is not configured on this platform.");
+          setLoading(false);
+          setProgress(null);
+          return;
+        }
+
         const { data: link } = await supabase
           .from("store_delivery_companies")
           .select("company_id")
           .eq("store_id", currentStore.id)
+          .eq("company_id", zrCompany.id)
           .eq("enabled", true)
           .maybeSingle();
 
         if (!link?.company_id) {
-          toast.error("No delivery company connected.");
+          console.error("[useBordereaux] ZR Express not linked to store:", { storeId: currentStore.id, zrCompanyId: zrCompany.id });
+          toast.error("ZR Express is not connected to your store.");
           setLoading(false);
           setProgress(null);
           return;
@@ -64,6 +82,7 @@ export function useBordereaux() {
         );
 
         if (!adapter || !adapter.getBordereau) {
+          console.error("[useBordereaux] Adapter has no getBordereau method:", { adapterKey: adapter?.key, companyId: link.company_id });
           toast.error("This delivery provider does not support bordereau printing.");
           setLoading(false);
           setProgress(null);
@@ -79,13 +98,14 @@ export function useBordereaux() {
             const blob = await adapter.getBordereau(order.colisId);
             blobs.push(blob);
           } catch (err) {
-            console.warn(`Failed to fetch bordereau for ${order.customer_name}:`, err);
+            console.error(`[useBordereaux] Failed bordereau for ${order.customer_name}:`, { colisId: order.colisId, err });
             failed.push(order.customer_name);
           }
           setProgress((p) => (p ? { ...p, done: p.done + 1 } : null));
         }
 
         if (blobs.length === 0) {
+          console.error("[useBordereaux] All bordereau fetches failed:", { eligible, failed });
           toast.error(
             "Could not fetch any bordereaux from ZR Express. Check your API connection.",
           );
@@ -108,7 +128,7 @@ export function useBordereaux() {
           );
         }
       } catch (err) {
-        console.error("Batch bordereau error:", err);
+        console.error("[useBordereaux] Batch bordereau error:", { err, orders: eligible, storeId: currentStore?.id });
         toast.error("Failed to generate bordereaux. Please try again.");
       } finally {
         setLoading(false);

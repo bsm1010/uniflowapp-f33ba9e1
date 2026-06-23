@@ -448,7 +448,7 @@ function TrackingPage() {
             <InfoRow icon={ClipboardCheck} label="Tracking">
               <span className="font-mono">{order.tracking_number || "—"}</span>
             </InfoRow>
-            {order.zr_colis_id && (
+            {(order.zr_colis_id || order.tracking_number) && (
               <div className="flex items-center gap-2 pt-1">
                 <Button
                   size="sm"
@@ -469,7 +469,7 @@ function TrackingPage() {
                   ) : (
                     <Truck className="h-3.5 w-3.5 mr-1.5" />
                   )}
-                  Print bordereau
+                  {printingBordereau ? "Fetching PDF..." : "Print bordereau"}
                 </Button>
                 <Badge variant="outline" className="bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-500/30 text-[10px] px-1.5 py-0">
                   ZR label ready
