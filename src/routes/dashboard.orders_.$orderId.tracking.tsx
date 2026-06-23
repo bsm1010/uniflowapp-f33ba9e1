@@ -454,6 +454,11 @@ function TrackingPage() {
                   size="sm"
                   variant="outline"
                   onClick={() => {
+                    console.log("Bordereau order fields:", {
+                      zr_colis_id: order.zr_colis_id,
+                      tracking_number: order.tracking_number,
+                      id: order.id,
+                    });
                     const bo: BordereauOrder = {
                       id: order.id,
                       zr_colis_id: order.zr_colis_id,

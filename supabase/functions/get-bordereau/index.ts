@@ -6,6 +6,10 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Debug: check Supabase Edge Function logs at
+// Dashboard → Edge Functions → get-bordereau → Logs
+// to see console.log output showing raw ZR Express responses.
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -39,6 +43,8 @@ serve(async (req) => {
       });
     }
 
+    console.log("[get-bordereau] Request:", { colisId, storeId });
+
     // Get ZR Express credentials using service role (bypasses RLS)
     const adminSupabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -71,45 +77,30 @@ serve(async (req) => {
       });
     }
 
+    console.log("[get-bordereau] Token length:", token.length, "token prefix:", token.slice(0, 8));
+
+    // ZR Express / Procolis base URL
     const ZR_BASE_URL = "https://api.zrexpress.app/api/v1";
 
-    // Try approach 1: GET with id param
     let pdfBlob: ArrayBuffer | null = null;
 
-    const attempt1 = await fetch(
-      `${ZR_BASE_URL}/get_bordereaux?token=${encodeURIComponent(token)}&id=${encodeURIComponent(colisId)}`,
-      { method: "GET" },
-    ).catch(() => null);
+    // Attempt 1: GET with token as query param + id
+    try {
+      const url = `${ZR_BASE_URL}/get_bordereaux?token=${encodeURIComponent(token)}&id=${encodeURIComponent(colisId)}`;
+      console.log("[get-bordereau] Attempt 1 (GET ?id):", url);
+      const res = await fetch(url, { method: "GET" });
+      const rawText = await res.text();
+      console.log("[get-bordereau] Attempt 1 status:", res.status);
+      console.log("[get-bordereau] Attempt 1 content-type:", res.headers.get("content-type"));
+      console.log("[get-bordereau] Attempt 1 raw body (first 500):", rawText?.slice(0, 500));
 
-    if (attempt1?.ok) {
-      const ct = attempt1.headers.get("content-type") ?? "";
-      if (ct.includes("application/pdf")) {
-        pdfBlob = await attempt1.arrayBuffer();
-      } else {
-        const body = await attempt1.json().catch(() => null);
-        if (body?.url) {
-          const r = await fetch(body.url).catch(() => null);
-          if (r?.ok) pdfBlob = await r.arrayBuffer();
-        } else if (body?.pdf) {
-          const bytes = Uint8Array.from(atob(body.pdf), (c) => c.charCodeAt(0));
+      if (res.ok) {
+        const ct = res.headers.get("content-type") ?? "";
+        if (ct.includes("application/pdf")) {
+          const bytes = Uint8Array.from(rawText, (c) => c.charCodeAt(0));
           pdfBlob = bytes.buffer;
-        }
-      }
-    }
-
-    // Try approach 2: GET with ids param
-    if (!pdfBlob) {
-      const attempt2 = await fetch(
-        `${ZR_BASE_URL}/get_bordereaux?token=${encodeURIComponent(token)}&ids=${encodeURIComponent(colisId)}`,
-        { method: "GET" },
-      ).catch(() => null);
-
-      if (attempt2?.ok) {
-        const ct = attempt2.headers.get("content-type") ?? "";
-        if (ct.includes("application/pdf")) {
-          pdfBlob = await attempt2.arrayBuffer();
         } else {
-          const body = await attempt2.json().catch(() => null);
+          const body = rawText ? JSON.parse(rawText) : null;
           if (body?.url) {
             const r = await fetch(body.url).catch(() => null);
             if (r?.ok) pdfBlob = await r.arrayBuffer();
@@ -119,40 +110,156 @@ serve(async (req) => {
           }
         }
       }
+    } catch (e) {
+      console.error("[get-bordereau] Attempt 1 error:", e);
     }
 
-    // Try approach 3: POST with JSON body
+    // Attempt 2: GET with token as query param + ids
     if (!pdfBlob) {
-      const attempt3 = await fetch(`${ZR_BASE_URL}/get_bordereaux`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, ids: [colisId] }),
-      }).catch(() => null);
+      try {
+        const url = `${ZR_BASE_URL}/get_bordereaux?token=${encodeURIComponent(token)}&ids=${encodeURIComponent(colisId)}`;
+        console.log("[get-bordereau] Attempt 2 (GET ?ids):", url);
+        const res = await fetch(url, { method: "GET" });
+        const rawText = await res.text();
+        console.log("[get-bordereau] Attempt 2 status:", res.status);
+        console.log("[get-bordereau] Attempt 2 content-type:", res.headers.get("content-type"));
+        console.log("[get-bordereau] Attempt 2 raw body (first 500):", rawText?.slice(0, 500));
 
-      if (attempt3?.ok) {
-        const ct = attempt3.headers.get("content-type") ?? "";
-        if (ct.includes("application/pdf")) {
-          pdfBlob = await attempt3.arrayBuffer();
-        } else {
-          const body = await attempt3.json().catch(() => null);
-          if (body?.url) {
-            const r = await fetch(body.url).catch(() => null);
-            if (r?.ok) pdfBlob = await r.arrayBuffer();
-          } else if (body?.pdf) {
-            const bytes = Uint8Array.from(atob(body.pdf), (c) => c.charCodeAt(0));
+        if (res.ok) {
+          const ct = res.headers.get("content-type") ?? "";
+          if (ct.includes("application/pdf")) {
+            const bytes = Uint8Array.from(rawText, (c) => c.charCodeAt(0));
             pdfBlob = bytes.buffer;
+          } else {
+            const body = rawText ? JSON.parse(rawText) : null;
+            if (body?.url) {
+              const r = await fetch(body.url).catch(() => null);
+              if (r?.ok) pdfBlob = await r.arrayBuffer();
+            } else if (body?.pdf) {
+              const bytes = Uint8Array.from(atob(body.pdf), (c) => c.charCodeAt(0));
+              pdfBlob = bytes.buffer;
+            }
           }
         }
+      } catch (e) {
+        console.error("[get-bordereau] Attempt 2 error:", e);
+      }
+    }
+
+    // Attempt 3: POST with JSON body
+    if (!pdfBlob) {
+      try {
+        const url = `${ZR_BASE_URL}/get_bordereaux`;
+        console.log("[get-bordereau] Attempt 3 (POST):", url);
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token, ids: [colisId] }),
+        });
+        const rawText = await res.text();
+        console.log("[get-bordereau] Attempt 3 status:", res.status);
+        console.log("[get-bordereau] Attempt 3 content-type:", res.headers.get("content-type"));
+        console.log("[get-bordereau] Attempt 3 raw body (first 500):", rawText?.slice(0, 500));
+
+        if (res.ok) {
+          const ct = res.headers.get("content-type") ?? "";
+          if (ct.includes("application/pdf")) {
+            const bytes = Uint8Array.from(rawText, (c) => c.charCodeAt(0));
+            pdfBlob = bytes.buffer;
+          } else {
+            const body = rawText ? JSON.parse(rawText) : null;
+            if (body?.url) {
+              const r = await fetch(body.url).catch(() => null);
+              if (r?.ok) pdfBlob = await r.arrayBuffer();
+            } else if (body?.pdf) {
+              const bytes = Uint8Array.from(atob(body.pdf), (c) => c.charCodeAt(0));
+              pdfBlob = bytes.buffer;
+            }
+          }
+        }
+      } catch (e) {
+        console.error("[get-bordereau] Attempt 3 error:", e);
+      }
+    }
+
+    // Attempt 4: GET with token in Authorization header
+    if (!pdfBlob) {
+      try {
+        const url = `${ZR_BASE_URL}/get_bordereaux?ids=${encodeURIComponent(colisId)}`;
+        console.log("[get-bordereau] Attempt 4 (GET header):", url);
+        const res = await fetch(url, {
+          method: "GET",
+          headers: { "Authorization": token, "Content-Type": "application/json" },
+        });
+        const rawText = await res.text();
+        console.log("[get-bordereau] Attempt 4 status:", res.status);
+        console.log("[get-bordereau] Attempt 4 content-type:", res.headers.get("content-type"));
+        console.log("[get-bordereau] Attempt 4 raw body (first 500):", rawText?.slice(0, 500));
+
+        if (res.ok) {
+          const ct = res.headers.get("content-type") ?? "";
+          if (ct.includes("application/pdf")) {
+            const bytes = Uint8Array.from(rawText, (c) => c.charCodeAt(0));
+            pdfBlob = bytes.buffer;
+          } else {
+            const body = rawText ? JSON.parse(rawText) : null;
+            if (body?.url) {
+              const r = await fetch(body.url).catch(() => null);
+              if (r?.ok) pdfBlob = await r.arrayBuffer();
+            } else if (body?.pdf) {
+              const bytes = Uint8Array.from(atob(body.pdf), (c) => c.charCodeAt(0));
+              pdfBlob = bytes.buffer;
+            }
+          }
+        }
+      } catch (e) {
+        console.error("[get-bordereau] Attempt 4 error:", e);
+      }
+    }
+
+    // Attempt 5: GET with token in "token" header
+    if (!pdfBlob) {
+      try {
+        const url = `${ZR_BASE_URL}/get_bordereaux?ids=${encodeURIComponent(colisId)}`;
+        console.log("[get-bordereau] Attempt 5 (token header):", url);
+        const res = await fetch(url, {
+          method: "GET",
+          headers: { "token": token, "Content-Type": "application/json" },
+        });
+        const rawText = await res.text();
+        console.log("[get-bordereau] Attempt 5 status:", res.status);
+        console.log("[get-bordereau] Attempt 5 content-type:", res.headers.get("content-type"));
+        console.log("[get-bordereau] Attempt 5 raw body (first 500):", rawText?.slice(0, 500));
+
+        if (res.ok) {
+          const ct = res.headers.get("content-type") ?? "";
+          if (ct.includes("application/pdf")) {
+            const bytes = Uint8Array.from(rawText, (c) => c.charCodeAt(0));
+            pdfBlob = bytes.buffer;
+          } else {
+            const body = rawText ? JSON.parse(rawText) : null;
+            if (body?.url) {
+              const r = await fetch(body.url).catch(() => null);
+              if (r?.ok) pdfBlob = await r.arrayBuffer();
+            } else if (body?.pdf) {
+              const bytes = Uint8Array.from(atob(body.pdf), (c) => c.charCodeAt(0));
+              pdfBlob = bytes.buffer;
+            }
+          }
+        }
+      } catch (e) {
+        console.error("[get-bordereau] Attempt 5 error:", e);
       }
     }
 
     if (!pdfBlob) {
+      console.error("[get-bordereau] All 5 attempts failed for colis:", colisId);
       return new Response(JSON.stringify({ error: "Could not fetch bordereau from ZR Express" }), {
         status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Return the PDF directly
+    console.log("[get-bordereau] Success! PDF size:", pdfBlob.byteLength);
     return new Response(pdfBlob, {
       headers: {
         ...corsHeaders,
@@ -161,7 +268,7 @@ serve(async (req) => {
       },
     });
   } catch (err) {
-    console.error("get-bordereau error:", err);
+    console.error("[get-bordereau] Fatal error:", err);
     return new Response(JSON.stringify({ error: String(err) }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

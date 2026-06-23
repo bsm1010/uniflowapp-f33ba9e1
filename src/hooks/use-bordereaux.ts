@@ -31,7 +31,9 @@ export function useBordereaux() {
         .filter((o) => o.zr_colis_id || o.tracking_number)
         .map((o) => ({
           ...o,
-          colisId: o.zr_colis_id || o.tracking_number || "",
+          // tracking_number is the real ZR Express tracking number (e.g. "16-TJDNHL3HCU-ZR")
+          // zr_colis_id is Fennecly's internal UUID — NOT what the ZR API expects
+          colisId: o.tracking_number || o.zr_colis_id || "",
         }));
 
       if (eligible.length === 0) {

@@ -53,44 +53,73 @@ export const fetchBordereau = createServerFn({ method: "POST" })
         return { ok: false, message: "ZR Express API key not configured." };
       }
 
-      // Try 3 approaches server-side (no CORS)
-      const attempts = [
-        () =>
-          fetch(
-            `${ZR_BASE_URL}/get_bordereaux?token=${encodeURIComponent(token)}&id=${encodeURIComponent(data.colisId)}`,
-            { method: "GET", headers: { Authorization: `Bearer ${token}`, Accept: "application/json" } },
-          ),
-        () =>
-          fetch(
-            `${ZR_BASE_URL}/get_bordereaux?token=${encodeURIComponent(token)}&ids=${encodeURIComponent(data.colisId)}`,
-            { method: "GET", headers: { Authorization: `Bearer ${token}`, Accept: "application/json" } },
-          ),
-        () =>
-          fetch(`${ZR_BASE_URL}/get_bordereaux`, {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-            body: JSON.stringify({ token, ids: [data.colisId] }),
-          }),
+      console.log(`[fetchBordereau] colisId: ${data.colisId}, token length: ${token.length}, token prefix: ${token.slice(0, 8)}`);
+
+      // Try 5 approaches server-side (no CORS)
+      // 1. GET ?token=...&id=...
+      // 2. GET ?token=...&ids=...
+      // 3. POST { token, ids: [...] }
+      // 4. GET with token in Authorization header
+      // 5. GET with token in "token" header
+      const attempts: Array<{ label: string; fn: () => Promise<Response> }> = [
+        {
+          label: "GET ?id (token in query)",
+          fn: () =>
+            fetch(
+              `${ZR_BASE_URL}/get_bordereaux?token=${encodeURIComponent(token)}&id=${encodeURIComponent(data.colisId)}`,
+              { method: "GET", headers: { Accept: "application/json" } },
+            ),
+        },
+        {
+          label: "GET ?ids (token in query)",
+          fn: () =>
+            fetch(
+              `${ZR_BASE_URL}/get_bordereaux?token=${encodeURIComponent(token)}&ids=${encodeURIComponent(data.colisId)}`,
+              { method: "GET", headers: { Accept: "application/json" } },
+            ),
+        },
+        {
+          label: "POST body (token in body)",
+          fn: () =>
+            fetch(`${ZR_BASE_URL}/get_bordereaux`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json", Accept: "application/json" },
+              body: JSON.stringify({ token, ids: [data.colisId] }),
+            }),
+        },
+        {
+          label: "GET (token in Authorization header)",
+          fn: () =>
+            fetch(`${ZR_BASE_URL}/get_bordereaux?ids=${encodeURIComponent(data.colisId)}`, {
+              method: "GET",
+              headers: { Authorization: token, "Content-Type": "application/json", Accept: "application/json" },
+            }),
+        },
+        {
+          label: "GET (token in 'token' header)",
+          fn: () =>
+            fetch(`${ZR_BASE_URL}/get_bordereaux?ids=${encodeURIComponent(data.colisId)}`, {
+              method: "GET",
+              headers: { token, "Content-Type": "application/json", Accept: "application/json" },
+            }),
+        },
       ];
 
-      for (let i = 0; i < attempts.length; i++) {
+      for (const attempt of attempts) {
         try {
-          console.log(`[fetchBordereau] Server attempt ${i + 1} for colis:`, data.colisId);
-          const res = await attempts[i]();
-          const ct = res.headers.get("content-type") || "";
-          console.log(`[fetchBordereau] Response ${i + 1}:`, res.status, ct);
-
-          if (res.ok && ct.includes("application/pdf")) {
-            const buf = await res.arrayBuffer();
-            return { ok: true, pdfBase64: bufferToBase64(buf) };
-          }
+          console.log(`[fetchBordereau] Trying: ${attempt.label}`);
+          const res = await attempt.fn();
+          const rawText = await res.text();
+          console.log(`[fetchBordereau] ${attempt.label} → status: ${res.status}, content-type: ${res.headers.get("content-type")}`);
+          console.log(`[fetchBordereau] ${attempt.label} → body (first 500): ${rawText?.slice(0, 500)}`);
 
           if (res.ok) {
-            const body = await res.json().catch(() => null);
+            const ct = res.headers.get("content-type") || "";
+            if (ct.includes("application/pdf")) {
+              return { ok: true, pdfBase64: bufferToBase64(new TextEncoder().encode(rawText).buffer) };
+            }
+
+            const body = rawText ? JSON.parse(rawText) : null;
             if (body) {
               const pdf = extractPDFBase64(body);
               if (pdf) return { ok: true, pdfBase64: pdf };
@@ -123,10 +152,11 @@ export const fetchBordereau = createServerFn({ method: "POST" })
             }
           }
         } catch (err) {
-          console.error(`[fetchBordereau] Attempt ${i + 1} error:`, err);
+          console.error(`[fetchBordereau] ${attempt.label} error:`, err);
         }
       }
 
+      console.error("[fetchBordereau] All attempts failed for colis:", data.colisId);
       return { ok: false, message: "ZR Express bordereau API returned no PDF for this colis." };
     } catch (e) {
       console.error("[fetchBordereau] Server error:", e);
