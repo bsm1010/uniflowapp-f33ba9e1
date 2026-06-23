@@ -1,10 +1,10 @@
 import { useState, useCallback } from "react";
+import { DeliveryService } from "@/lib/delivery/service";
 import { mergePDFs, openPDFForPrinting } from "@/lib/pdf-merge";
 import { useCurrentStore } from "@/hooks/use-current-store";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { fetchBordereau } from "@/lib/delivery/fetch-bordereau.functions";
 
 export type BordereauOrder = {
   id: string;
@@ -12,14 +12,6 @@ export type BordereauOrder = {
   tracking_number?: string | null;
   customer_name: string;
 };
-
-function base64ToBlob(b64: string): Blob {
-  const raw = b64.includes(",") ? b64.split(",")[1] : b64;
-  const binary = atob(raw);
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-  return new Blob([bytes], { type: "application/pdf" });
-}
 
 export function useBordereaux() {
   const [loading, setLoading] = useState(false);
@@ -54,29 +46,53 @@ export function useBordereaux() {
       setProgress({ done: 0, total: eligible.length });
 
       try {
-        // Get access token for server function auth
-        const { data: session } = await supabase.auth.getSession();
-        const accessToken = session.session?.access_token;
-        if (!accessToken) {
-          toast.error("Please sign in again.");
+        // Find ZR Express link for this store
+        const { data: link } = await supabase
+          .from("store_delivery_companies")
+          .select("company_id, delivery_companies!inner(name)")
+          .eq("store_id", user.id)
+          .eq("enabled", true)
+          .maybeSingle();
+
+        const companyName = (link as any)?.delivery_companies?.name as string | undefined;
+        if (!link?.company_id || !companyName) {
+          console.error("[useBordereaux] No enabled delivery company linked to store:", { userId: user.id });
+          toast.error("No delivery company connected to your store.");
           setLoading(false);
           setProgress(null);
           return;
         }
 
-        // Fetch bordereaux via server-side proxy (avoids CORS)
+        if (!companyName.toLowerCase().includes("zr") || !companyName.toLowerCase().includes("express")) {
+          console.error("[useBordereaux] Default company is not ZR Express:", { companyName, companyId: link.company_id });
+          toast.error("ZR Express is required for bordereau printing. Set it as your delivery company.");
+          setLoading(false);
+          setProgress(null);
+          return;
+        }
+
+        // Get adapter with storeId in credentials (needed for edge function proxy)
+        const adapter = await DeliveryService.getAdapterForStore(
+          user.id,
+          link.company_id,
+        );
+
+        if (!adapter || !adapter.getBordereau) {
+          console.error("[useBordereaux] Adapter has no getBordereau method:", { adapterKey: adapter?.key, companyId: link.company_id });
+          toast.error("This delivery provider does not support bordereau printing.");
+          setLoading(false);
+          setProgress(null);
+          return;
+        }
+
+        // Fetch bordereaux via adapter (proxied through edge function to avoid CORS)
         const blobs: Blob[] = [];
         const failed: string[] = [];
 
         for (const order of eligible) {
           try {
-            const result = await fetchBordereau({ data: { accessToken, colisId: order.colisId } });
-            if (result.ok) {
-              blobs.push(base64ToBlob(result.pdfBase64));
-            } else {
-              console.error(`[useBordereaux] Server rejected bordereau for ${order.customer_name}:`, result.message);
-              failed.push(order.customer_name);
-            }
+            const blob = await adapter.getBordereau(order.colisId);
+            blobs.push(blob);
           } catch (err) {
             console.error(`[useBordereaux] Failed bordereau for ${order.customer_name}:`, { colisId: order.colisId, err });
             failed.push(order.customer_name);

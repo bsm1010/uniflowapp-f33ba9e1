@@ -346,78 +346,43 @@ export class ZRExpressAdapter extends BaseDeliveryAdapter {
 
   /**
    * Fetch a bordereau (shipping label PDF) for a single colis.
-   * Tries multiple request shapes since the API docs are not public.
+   * Proxied through Supabase Edge Function to avoid CORS issues.
    */
   async getBordereau(colisId: string): Promise<Blob> {
-    const headers = this.authHeaders();
-    const token = (this.credentials.apiKey ?? "").trim();
-
-    // Approach 1: GET with query params (id)
-    try {
-      const url = `${ZR_BASE_URL}/get_bordereaux?token=${encodeURIComponent(token)}&id=${encodeURIComponent(colisId)}`;
-      console.log("[ZRExpressAdapter] getBordereau attempt 1:", url);
-      const res = await fetch(url, { method: "GET", headers, signal: AbortSignal.timeout(30_000) });
-      console.log("[ZRExpressAdapter] response status:", res.status, "content-type:", res.headers.get("content-type"));
-      if (res.ok) {
-        const ct = res.headers.get("content-type") || "";
-        if (ct.includes("application/pdf")) {
-          return await res.blob();
-        }
-        const body = await res.json().catch(() => null);
-        if (body) {
-          const result = await extractPDFFromResponseAsync(body);
-          if (result) return result;
-        }
-      }
-    } catch { /* try next */ }
-
-    // Approach 2: GET with query params (ids)
-    try {
-      const url = `${ZR_BASE_URL}/get_bordereaux?token=${encodeURIComponent(token)}&ids=${encodeURIComponent(colisId)}`;
-      console.log("[ZRExpressAdapter] getBordereau attempt 2:", url);
-      const res = await fetch(url, { method: "GET", headers, signal: AbortSignal.timeout(30_000) });
-      console.log("[ZRExpressAdapter] response status:", res.status, "content-type:", res.headers.get("content-type"));
-      if (res.ok) {
-        const ct = res.headers.get("content-type") || "";
-        if (ct.includes("application/pdf")) {
-          return await res.blob();
-        }
-        const body = await res.json().catch(() => null);
-        if (body) {
-          const result = await extractPDFFromResponseAsync(body);
-          if (result) return result;
-        }
-      }
-    } catch { /* try next */ }
-
-    // Approach 3: POST with JSON body
-    try {
-      const url = `${ZR_BASE_URL}/get_bordereaux`;
-      console.log("[ZRExpressAdapter] getBordereau attempt 3 (POST):", url);
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { ...headers, "Content-Type": "application/json" },
-        body: JSON.stringify({ token, ids: [colisId] }),
-        signal: AbortSignal.timeout(30_000),
-      });
-      console.log("[ZRExpressAdapter] response status:", res.status, "content-type:", res.headers.get("content-type"));
-      if (res.ok) {
-        const ct = res.headers.get("content-type") || "";
-        if (ct.includes("application/pdf")) {
-          return await res.blob();
-        }
-        const body = await res.json().catch(() => null);
-        if (body) {
-          const result = await extractPDFFromResponseAsync(body);
-          if (result) return result;
-        }
-      }
-    } catch { /* try next */ }
-
-    console.error("[ZRExpressAdapter] All bordereau approaches failed for colis:", colisId);
-    throw new Error(
-      `ZR Express: could not fetch bordereau for colis ${colisId}. All request approaches failed.`,
+    const { createClient } = await import("@supabase/supabase-js");
+    const supabase = createClient(
+      import.meta.env.VITE_SUPABASE_URL,
+      import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
     );
+
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) throw new Error("Not authenticated");
+
+    const storeId = this.credentials.storeId;
+    if (!storeId) throw new Error("Store ID not available for bordereau request");
+
+    console.log("[ZRExpressAdapter] getBordereau via edge function:", { colisId, storeId });
+
+    const response = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-bordereau`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ colisId, storeId }),
+      },
+    );
+
+    console.log("[ZRExpressAdapter] edge function response:", response.status, response.headers.get("content-type"));
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({ error: response.statusText }));
+      throw new Error(`Bordereau proxy error: ${err.error}`);
+    }
+
+    return await response.blob();
   }
 
   /**

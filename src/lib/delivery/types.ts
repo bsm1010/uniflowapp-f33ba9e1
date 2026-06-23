@@ -13,6 +13,7 @@ export type ShipmentStatus =
 export interface DeliveryCredentials {
   apiKey: string;
   apiSecret?: string;
+  storeId?: string;
 }
 
 export interface CreateShipmentInput {

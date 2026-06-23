@@ -44,6 +44,7 @@ export class DeliveryService {
     return new Ctor({
       apiKey: link?.api_key ?? "",
       apiSecret: link?.api_secret ?? "",
+      storeId: storeId,
     });
   }
 
