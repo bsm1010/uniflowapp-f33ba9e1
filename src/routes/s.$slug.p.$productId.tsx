@@ -9,7 +9,7 @@ import { Img } from "@/components/ui/Img";
 import { StorefrontShell, getStoreTokens } from "@/components/storefront/StorefrontShell";
 import { AlgerianCheckoutForm } from "@/components/storefront/AlgerianCheckoutForm";
 import { useCart } from "@/hooks/use-cart";
-import { fetchSettings, getCachedSettings, setCachedSettings } from "@/lib/storefrontCache";
+import { fetchSettings, setCachedSettings } from "@/lib/storefrontCache";
 
 type StoreSettings = Tables<"store_settings">;
 type Product = Tables<"products">;
@@ -17,15 +17,19 @@ type Product = Tables<"products">;
 export const Route = createFileRoute("/s/$slug/p/$productId")({
   component: ProductPage,
   loader: async ({ params }) => {
-    const settings = await fetchSettings(params.slug);
-    if (!settings) return { settings: null, product: null };
-    const { data: product } = await supabase
-      .from("products")
-      .select("id,name,description,price,images,stock")
-      .eq("id", params.productId)
-      .eq("user_id", settings.user_id)
-      .maybeSingle();
-    return { settings, product };
+    try {
+      const settings = await fetchSettings(params.slug);
+      if (!settings) return { settings: null, product: null };
+      const { data: product } = await supabase
+        .from("products")
+        .select("id,name,description,price,images,stock")
+        .eq("id", params.productId)
+        .eq("user_id", settings.user_id)
+        .maybeSingle();
+      return { settings, product };
+    } catch {
+      return { settings: null, product: null };
+    }
   },
   head: ({ params, loaderData }) => {
     const product = loaderData?.product;
@@ -80,10 +84,10 @@ function ProductPage() {
   const { slug, productId } = Route.useParams();
   const { t: tr } = useTranslation();
 
-  const initialSettings = getCachedSettings(slug);
-  const [settings, setSettings] = useState<StoreSettings | null>(initialSettings);
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
+  const loaderData = Route.useLoaderData();
+  const [settings, setSettings] = useState<StoreSettings | null>(loaderData?.settings ?? null);
+  const [product, setProduct] = useState<Product | null>((loaderData?.product as Product | null) ?? null);
+  const [loading, setLoading] = useState(false);
   const [notFound, setNotFound] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
   const [qty, setQty] = useState(1);
@@ -92,28 +96,25 @@ function ProductPage() {
   useEffect(() => {
     let active = true;
     (async () => {
-      const s = await fetchSettings(slug);
+      const s = settings ?? await fetchSettings(slug);
       if (!active) return;
       if (!s) {
         setNotFound(true);
         setLoading(false);
         return;
       }
-      setSettings(s);
+      if (s !== settings) setSettings(s);
       setCachedSettings(slug, s);
-      const { data: p } = await supabase
-        .from("products")
-        .select("*")
-        .eq("id", productId)
-        .eq("user_id", s.user_id)
-        .maybeSingle();
-      if (!active) return;
-      if (!p) {
-        setNotFound(true);
-        setLoading(false);
-        return;
+      if (!product) {
+        const { data: p } = await supabase
+          .from("products")
+          .select("*")
+          .eq("id", productId)
+          .eq("user_id", s.user_id)
+          .maybeSingle();
+        if (!active) return;
+        setProduct(p);
       }
-      setProduct(p);
       setLoading(false);
     })();
     return () => {

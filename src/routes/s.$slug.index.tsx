@@ -30,7 +30,7 @@ import {
   type SectionKey,
 } from "@/lib/storeTheme";
 import { useCart } from "@/hooks/use-cart";
-import { fetchSettings, getCachedSettings, setCachedSettings } from "@/lib/storefrontCache";
+import { fetchSettings, setCachedSettings } from "@/lib/storefrontCache";
 import { SearchableSelect } from "@/components/ui/searchable-select";
 
 type Product = Pick<
@@ -161,10 +161,10 @@ function StorefrontHome() {
   const { slug } = Route.useParams();
   const router = useRouter();
   const { t: tr } = useTranslation();
-  const initialSettings = getCachedSettings(slug);
-  const [settings, setSettings] = useState<StoreSettings | null>(initialSettings);
+  const loaderSettings = Route.useLoaderData();
+  const [settings, setSettings] = useState<StoreSettings | null>(loaderSettings);
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(!initialSettings);
+  const [loading, setLoading] = useState(false);
   const [notFound, setNotFound] = useState(false);
   const [tiktokPixelId, setTiktokPixelId] = useState<string>("");
   const cart = useCart(slug);
@@ -181,20 +181,14 @@ function StorefrontHome() {
     let active = true;
     let channel: ReturnType<typeof supabase.channel> | null = null;
     (async () => {
-      let s = await fetchSettings(slug);
-      // Retry up to 2 times on transient failures
-      for (let attempt = 0; !s && attempt < 2; attempt++) {
-        await new Promise((r) => setTimeout(r, 500 * (attempt + 1)));
-        if (!active) return;
-        s = await fetchSettings(slug);
-      }
+      const s = settings ?? await fetchSettings(slug);
       if (!active) return;
       if (!s) {
         setNotFound(true);
         setLoading(false);
         return;
       }
-      setSettings(s);
+      if (s !== settings) setSettings(s);
       setCachedSettings(slug, s);
 
       // Fetch products

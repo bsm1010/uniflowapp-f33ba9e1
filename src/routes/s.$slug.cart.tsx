@@ -5,34 +5,42 @@ import { useTranslation } from "react-i18next";
 import type { Tables } from "@/integrations/supabase/types";
 import { StorefrontShell, getStoreTokens } from "@/components/storefront/StorefrontShell";
 import { useCart } from "@/hooks/use-cart";
-import { fetchSettings, getCachedSettings, setCachedSettings } from "@/lib/storefrontCache";
+import { fetchSettings, setCachedSettings } from "@/lib/storefrontCache";
 
 type StoreSettings = Tables<"store_settings">;
 
 export const Route = createFileRoute("/s/$slug/cart")({
   component: CartPage,
-  loader: ({ params }) => fetchSettings(params.slug),
+  loader: async ({ params }) => {
+    try {
+      return await fetchSettings(params.slug);
+    } catch {
+      return null;
+    }
+  },
   head: ({ loaderData }) => ({ meta: [{ title: `${loaderData?.store_name ?? "Cart"} — Cart` }] }),
 });
 
 function CartPage() {
   const { slug } = Route.useParams();
   const { t: tr } = useTranslation();
-  const initial = getCachedSettings(slug);
-  const [settings, setSettings] = useState<StoreSettings | null>(initial);
-  const [loading, setLoading] = useState(!initial);
+  const loaderSettings = Route.useLoaderData();
+  const [settings, setSettings] = useState<StoreSettings | null>(loaderSettings);
+  const [loading, setLoading] = useState(false);
   const cart = useCart(slug);
 
   useEffect(() => {
     let active = true;
-    fetchSettings(slug).then((data) => {
+    (async () => {
+      const data = settings ?? await fetchSettings(slug);
       if (!active) return;
       if (data) {
         setCachedSettings(slug, data);
-        setSettings(data);
+        if (data !== settings) setSettings(data);
+      } else {
+        setLoading(false);
       }
-      setLoading(false);
-    });
+    })();
     return () => {
       active = false;
     };
