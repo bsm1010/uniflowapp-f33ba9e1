@@ -108,13 +108,13 @@
   },
   "overrides": {
     "ws": "^8.21.0",
-    "postcss": "^8.5.6",
+    "postcss": "^8.5.15",
     "brace-expansion": "^2.0.2",
     "js-yaml": "^4.1.1"
   },
   "resolutions": {
     "ws": "^8.21.0",
-    "postcss": "^8.5.6",
+    "postcss": "^8.5.15",
     "brace-expansion": "^2.0.2",
     "js-yaml": "^4.1.1"
   }
