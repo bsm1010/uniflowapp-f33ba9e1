@@ -846,7 +846,14 @@
       "errPhoneReq": "Le numéro de téléphone est obligatoire",
       "errPhoneInvalid": "Numéro algérien invalide (ex. 0555 12 34 56)",
       "errWilaya": "La wilaya est obligatoire",
-      "errCity": "La ville est obligatoire"
+      "errCity": "La ville est obligatoire",
+      "address": "Adresse de livraison",
+      "searchAddress": "Rechercher votre adresse...",
+      "addressOptional": "Détails de l'adresse (optionnel)",
+      "addressHint": "Nom de rue, quartier, numéro de bâtiment...",
+      "addressAutocomplete": "Rechercher votre adresse automatiquement (optionnel)",
+      "addressAutocompleteDone": "Adresse trouvée automatiquement",
+      "addressAutocompleteClear": "Effacer et rechercher à nouveau"
     }
   },
   "progress": {

@@ -828,7 +828,14 @@
       "errPhoneReq": "الهاتف مطلوب",
       "errPhoneInvalid": "رقم هاتف جزائري غير صالح (مثال 0555 12 34 56)",
       "errWilaya": "الولاية مطلوبة",
-      "errCity": "المدينة مطلوبة"
+      "errCity": "المدينة مطلوبة",
+      "address": "عنوان التوصيل",
+      "searchAddress": "ابحث عن عنوانك...",
+      "addressOptional": "تفاصيل العنوان (اختياري)",
+      "addressHint": "اسم الشارع، الحي، رقم المبنى...",
+      "addressAutocomplete": "ابحث عن عنوانك تلقائياً (اختياري)",
+      "addressAutocompleteDone": "تم تحديد العنوان تلقائياً",
+      "addressAutocompleteClear": "مسح والبحث مرة أخرى"
     }
   },
   "editor": {

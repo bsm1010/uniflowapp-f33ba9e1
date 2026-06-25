@@ -837,7 +837,14 @@
       "errPhoneReq": "Phone is required",
       "errPhoneInvalid": "Invalid Algerian phone (e.g. 0555 12 34 56)",
       "errWilaya": "Wilaya is required",
-      "errCity": "City is required"
+      "errCity": "City is required",
+      "address": "Delivery address",
+      "searchAddress": "Search your address...",
+      "addressOptional": "Address details (optional)",
+      "addressHint": "Street name, neighborhood, building number...",
+      "addressAutocomplete": "Search your address automatically (optional)",
+      "addressAutocompleteDone": "Address found automatically",
+      "addressAutocompleteClear": "Clear and search again"
     }
   },
   "progress": {

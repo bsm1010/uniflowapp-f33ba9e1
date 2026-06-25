@@ -9,6 +9,8 @@ import {
   User,
   Phone,
   MapPin,
+  ChevronDown,
+  Check,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { z } from "zod";
@@ -93,6 +95,7 @@ export function AlgerianCheckoutForm({
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [successOrderId, setSuccessOrderId] = useState<string | null>(null);
+  const [autocompleteOpen, setAutocompleteOpen] = useState(false);
 
   const cities = useMemo(() => (wilaya ? (ALGERIA_WILAYAS[wilaya] ?? []) : []), [wilaya]);
 
@@ -223,7 +226,9 @@ export function AlgerianCheckoutForm({
           customerName: `${parsed.data.firstName} ${parsed.data.lastName}`,
           customerEmail: "",
           customerPhone: phone,
-          shippingAddress: `${parsed.data.wilaya}, ${parsed.data.city}`,
+          shippingAddress: address.trim()
+            ? `${address.trim()}, ${parsed.data.wilaya}, ${parsed.data.city}`
+            : `${parsed.data.wilaya}, ${parsed.data.city}`,
           shippingCity: parsed.data.city,
           shippingWilaya: parsed.data.wilaya,
           shippingCountry: "Algeria",
@@ -259,6 +264,7 @@ export function AlgerianCheckoutForm({
     setDeliveryType("domicile");
     setShippingPrice(null);
     setErrors({});
+    setAutocompleteOpen(false);
     setOpen(false);
   };
 
@@ -388,81 +394,138 @@ export function AlgerianCheckoutForm({
                 <div className="mt-6 space-y-4">
                   <Field
                     icon={<MapPin className="h-4 w-4" style={{ color: t.primary }} />}
-                    label={tr("storefront.cod.address") || "Address"}
+                    label={tr("storefront.cod.wilaya")}
+                    error={errors.wilaya}
                     mutedColor={t.muted}
-                    fieldId="address"
+                    fieldId="wilaya"
                   >
-                    <AddressAutocomplete
-                      value={address}
-                      onChange={setAddress}
-                      onSelect={(parsed) => {
-                        if (parsed.wilaya) {
-                          const match = WILAYA_LIST.find(
-                            (w) => w.toLowerCase() === parsed.wilaya.toLowerCase(),
-                          );
-                          if (match) setWilaya(match);
-                        }
-                        if (parsed.city) setCity(parsed.city);
+                    <SearchableSelect
+                      value={wilaya}
+                      onChange={(v) => {
+                        setWilaya(v);
+                        setCity("");
                       }}
-                      placeholder={tr("storefront.cod.searchAddress") || "Start typing your address..."}
+                      options={WILAYA_LIST}
+                      placeholder={tr("storefront.cod.selectWilaya")}
+                      searchPlaceholder={tr("storefront.cod.searchWilaya")}
+                      emptyMessage={tr("storefront.cod.noWilaya")}
+                      triggerStyle={{
+                        backgroundColor: t.isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
+                        border: `1px solid ${t.border}`,
+                        borderRadius: Math.min(radius, 16),
+                        color: t.fg,
+                      }}
+                    />
+                  </Field>
+
+                  <Field
+                    icon={<MapPin className="h-4 w-4" style={{ color: t.primary }} />}
+                    label={tr("storefront.cod.city")}
+                    error={errors.city}
+                    mutedColor={t.muted}
+                    fieldId="city"
+                  >
+                    <SearchableSelect
+                      value={city}
+                      onChange={setCity}
+                      options={cities}
+                      placeholder={
+                        wilaya
+                          ? tr("storefront.cod.selectCity")
+                          : tr("storefront.cod.pickWilayaFirst")
+                      }
+                      searchPlaceholder={tr("storefront.cod.searchCity")}
+                      emptyMessage={tr("storefront.cod.noCity")}
+                      disabled={!wilaya}
+                      triggerStyle={{
+                        backgroundColor: t.isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
+                        border: `1px solid ${t.border}`,
+                        borderRadius: Math.min(radius, 16),
+                        color: t.fg,
+                      }}
+                    />
+                  </Field>
+
+                  <Field
+                    icon={<MapPin className="h-4 w-4" style={{ color: t.primary }} />}
+                    label={tr("storefront.cod.addressOptional") || "Address details (optional)"}
+                    mutedColor={t.muted}
+                    fieldId="address-details"
+                  >
+                    <textarea
+                      id="address-details"
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                      placeholder={tr("storefront.cod.addressHint") || "Street name, neighborhood, building number..."}
+                      rows={2}
+                      className="resize-none w-full"
                       style={inputStyle}
                     />
                   </Field>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <Field
-                      icon={<MapPin className="h-4 w-4" style={{ color: t.primary }} />}
-                      label={tr("storefront.cod.wilaya")}
-                      error={errors.wilaya}
-                      mutedColor={t.muted}
-                      fieldId="wilaya"
-                    >
-                      <SearchableSelect
-                        value={wilaya}
-                        onChange={(v) => {
-                          setWilaya(v);
-                          setCity("");
-                        }}
-                        options={WILAYA_LIST}
-                        placeholder={tr("storefront.cod.selectWilaya")}
-                        searchPlaceholder={tr("storefront.cod.searchWilaya")}
-                        emptyMessage={tr("storefront.cod.noWilaya")}
-                        triggerStyle={{
-                          backgroundColor: t.isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
-                          border: `1px solid ${t.border}`,
-                          borderRadius: Math.min(radius, 16),
-                          color: t.fg,
-                        }}
-                      />
-                    </Field>
-
-                    <Field
-                      icon={<MapPin className="h-4 w-4" style={{ color: t.primary }} />}
-                      label={tr("storefront.cod.city")}
-                      error={errors.city}
-                      mutedColor={t.muted}
-                      fieldId="city"
-                    >
-                      <SearchableSelect
-                        value={city}
-                        onChange={setCity}
-                        options={cities}
-                        placeholder={
-                          wilaya
-                            ? tr("storefront.cod.selectCity")
-                            : tr("storefront.cod.pickWilayaFirst")
-                        }
-                        searchPlaceholder={tr("storefront.cod.searchCity")}
-                        emptyMessage={tr("storefront.cod.noCity")}
-                        disabled={!wilaya}
-                        triggerStyle={{
-                          backgroundColor: t.isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
-                          border: `1px solid ${t.border}`,
-                          borderRadius: Math.min(radius, 16),
-                          color: t.fg,
-                        }}
-                      />
-                    </Field>
+                  {/* Collapsible autocomplete helper */}
+                  <div
+                    className="rounded-lg overflow-hidden transition-colors"
+                    style={{
+                      border: `1px solid ${t.border}`,
+                      backgroundColor: address && autocompleteOpen === false ? t.primary + "08" : t.surface,
+                    }}
+                  >
+                    {address && !autocompleteOpen ? (
+                      <div className="flex items-center justify-between px-3 py-2.5">
+                        <div className="flex items-center gap-2 text-sm" style={{ color: t.primary }}>
+                          <Check className="h-4 w-4" />
+                          <span>{tr("storefront.cod.addressAutocompleteDone") || "Address found automatically"}</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAddress("");
+                            setAutocompleteOpen(true);
+                          }}
+                          className="text-xs underline"
+                          style={{ color: t.muted }}
+                        >
+                          {tr("storefront.cod.addressAutocompleteClear") || "Clear and search again"}
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => setAutocompleteOpen(!autocompleteOpen)}
+                          className="w-full flex items-center justify-between px-3 py-2.5 text-sm transition-colors hover:opacity-80"
+                          style={{ color: t.muted }}
+                        >
+                          <span>{tr("storefront.cod.addressAutocomplete") || "Search your address automatically (optional)"}</span>
+                          <ChevronDown
+                            className="h-4 w-4 transition-transform"
+                            style={{ transform: autocompleteOpen ? "rotate(180deg)" : undefined }}
+                          />
+                        </button>
+                        {autocompleteOpen && (
+                          <div className="px-3 pb-3">
+                            <AddressAutocomplete
+                              value=""
+                              onChange={() => {}}
+                              onSelect={(parsed) => {
+                                if (parsed.wilaya) {
+                                  const match = WILAYA_LIST.find(
+                                    (w) => w.toLowerCase() === parsed.wilaya.toLowerCase(),
+                                  );
+                                  if (match) setWilaya(match);
+                                }
+                                if (parsed.city) setCity(parsed.city);
+                                setAddress(parsed.street || parsed.full);
+                                setAutocompleteOpen(false);
+                              }}
+                              placeholder={tr("storefront.cod.searchAddress") || "Search your address..."}
+                              style={inputStyle}
+                            />
+                          </div>
+                        )}
+                      </>
+                    )}
                   </div>
 
                   <Field label={tr("storefront.cod.deliveryType")} mutedColor={t.muted} fieldId="deliveryType">
