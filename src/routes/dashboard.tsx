@@ -42,6 +42,8 @@ const AICopilot = lazy(() =>
   })),
 );
 
+import { LoginPopup } from "@/components/dashboard/LoginPopup";
+
 export const Route = createFileRoute("/dashboard")({
   component: DashboardLayout,
   head: () => ({
@@ -214,6 +216,7 @@ function DashboardLayout() {
             </div>
 
             <PaywallDialog />
+            <LoginPopup />
             <CommandPalette open={cmdOpen} onOpenChange={setCmdOpen} />
             <KeyboardShortcutsGuide open={shortcutsGuide.open} onClose={() => shortcutsGuide.setOpen(false)} />
 
