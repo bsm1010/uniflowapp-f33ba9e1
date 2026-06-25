@@ -4,6 +4,7 @@ const STORAGE_KEY = "fennecly:login-popup-seen";
 
 export function LoginPopup() {
   const [open, setOpen] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   useEffect(() => {
     try {
@@ -39,11 +40,18 @@ export function LoginPopup() {
         >
           ✕
         </button>
-        <img
-          src="/pic.png"
-          alt="Welcome"
-          className="w-full rounded-xl shadow-lg"
-        />
+        {imgError ? (
+          <div className="rounded-xl bg-background border border-border p-8 text-center text-muted-foreground">
+            Image not found at /pic.png
+          </div>
+        ) : (
+          <img
+            src="/pic.png"
+            alt="Welcome"
+            className="w-full rounded-xl shadow-lg"
+            onError={() => setImgError(true)}
+          />
+        )}
       </div>
     </div>
   );
