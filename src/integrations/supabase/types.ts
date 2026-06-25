@@ -1839,6 +1839,30 @@ export type Database = {
           },
         ]
       }
+      order_scan_logs: {
+        Row: {
+          confidence: string
+          created_at: string
+          id: string
+          items_found: number
+          user_id: string
+        }
+        Insert: {
+          confidence?: string
+          created_at?: string
+          id?: string
+          items_found?: number
+          user_id: string
+        }
+        Update: {
+          confidence?: string
+          created_at?: string
+          id?: string
+          items_found?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           bordereau_fetched_at: string | null
