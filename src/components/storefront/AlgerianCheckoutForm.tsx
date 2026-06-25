@@ -19,6 +19,7 @@ import { createOrder } from "@/lib/orders/create-order.functions";
 import { SearchableSelect } from "@/components/ui/searchable-select";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { ALGERIA_WILAYAS, WILAYA_LIST, isValidAlgerianPhone } from "@/lib/algeriaWilayas";
+import { AddressAutocomplete } from "@/components/ui/AddressAutocomplete";
 
 type Tokens = {
   primary: string;
@@ -85,6 +86,7 @@ export function AlgerianCheckoutForm({
   const [phone, setPhone] = useState("");
   const [wilaya, setWilaya] = useState("");
   const [city, setCity] = useState("");
+  const [address, setAddress] = useState("");
   const [deliveryType, setDeliveryType] = useState<"domicile" | "stopdesk">("domicile");
   const [shippingPrice, setShippingPrice] = useState<number | null>(null);
   const [shippingLoading, setShippingLoading] = useState(false);
@@ -253,6 +255,7 @@ export function AlgerianCheckoutForm({
     setPhone("");
     setWilaya("");
     setCity("");
+    setAddress("");
     setDeliveryType("domicile");
     setShippingPrice(null);
     setErrors({});
@@ -383,6 +386,29 @@ export function AlgerianCheckoutForm({
               {/* Step 1: Delivery */}
               {step === 1 && (
                 <div className="mt-6 space-y-4">
+                  <Field
+                    icon={<MapPin className="h-4 w-4" style={{ color: t.primary }} />}
+                    label={tr("storefront.cod.address") || "Address"}
+                    mutedColor={t.muted}
+                    fieldId="address"
+                  >
+                    <AddressAutocomplete
+                      value={address}
+                      onChange={setAddress}
+                      onSelect={(parsed) => {
+                        if (parsed.wilaya) {
+                          const match = WILAYA_LIST.find(
+                            (w) => w.toLowerCase() === parsed.wilaya.toLowerCase(),
+                          );
+                          if (match) setWilaya(match);
+                        }
+                        if (parsed.city) setCity(parsed.city);
+                      }}
+                      placeholder={tr("storefront.cod.searchAddress") || "Start typing your address..."}
+                      style={inputStyle}
+                    />
+                  </Field>
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <Field
                       icon={<MapPin className="h-4 w-4" style={{ color: t.primary }} />}

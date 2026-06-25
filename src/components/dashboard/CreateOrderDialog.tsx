@@ -40,6 +40,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { AddressAutocomplete } from "@/components/ui/AddressAutocomplete";
 
 type LineItem = {
   id: string;
@@ -568,11 +569,20 @@ export function CreateOrderDialog({ open, onClose, onCreated }: Props) {
             </div>
             <div>
               <Label htmlFor="address">Address *</Label>
-              <Input
-                id="address"
+              <AddressAutocomplete
                 value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                placeholder="Street and number"
+                onChange={setAddress}
+                onSelect={(parsed) => {
+                  if (parsed.wilaya) {
+                    const match = WILAYA_LIST.find(
+                      (w) => w.toLowerCase() === parsed.wilaya.toLowerCase(),
+                    );
+                    if (match) setWilaya(match);
+                  }
+                  if (parsed.city) setCity(parsed.city);
+                  if (parsed.postalCode) setPostalCode(parsed.postalCode);
+                }}
+                placeholder="Start typing an address..."
                 style={inputStyle}
               />
               {fieldError("address")}
