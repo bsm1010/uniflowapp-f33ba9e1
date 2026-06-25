@@ -145,6 +145,13 @@ function SignUpPage() {
 
     setHasSession(!!data.session);
     setShowSuccess(true);
+
+    supabase.functions.invoke("send-email", {
+      body: {
+        type: "welcome_merchant",
+        data: { merchantName: parsed.data.name, email: parsed.data.email },
+      },
+    }).catch(() => {});
   };
 
   return (

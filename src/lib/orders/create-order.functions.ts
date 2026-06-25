@@ -215,5 +215,72 @@ export const createOrder = createServerFn({ method: "POST" })
       console.error("createOrder: provider push threw", pushErr);
     }
 
+    // 8. Send transactional emails (best-effort, never blocks order creation).
+    try {
+      const edgeUrl = `${SUPABASE_URL}/functions/v1/send-email`;
+      const edgeHeaders = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${SERVICE_KEY}`,
+      };
+      const orderNumber = order.id.slice(0, 8).toUpperCase();
+
+      // Fetch merchant profile for name + email
+      const { data: merchantProfile } = await admin
+        .from("profiles")
+        .select("full_name, email")
+        .eq("id", storeOwnerId)
+        .maybeSingle();
+
+      if (merchantProfile?.email) {
+        fetch(edgeUrl, {
+          method: "POST",
+          headers: edgeHeaders,
+          body: JSON.stringify({
+            type: "new_order_merchant",
+            data: {
+              merchantName: merchantProfile.full_name || "Merchant",
+              merchantEmail: merchantProfile.email,
+              customerName: data.customerName,
+              orderTotal: total,
+              orderNumber,
+              ordersUrl: `https://fennecly.online/dashboard/orders`,
+            },
+          }),
+        }).catch(() => {});
+      }
+
+      // Send order confirmation to customer if email provided
+      if (data.customerEmail && data.customerEmail !== "noemail@fennecly.local") {
+        const storeName = data.storeSlug
+          .split("-")
+          .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+          .join(" ");
+        fetch(edgeUrl, {
+          method: "POST",
+          headers: edgeHeaders,
+          body: JSON.stringify({
+            type: "order_confirmation",
+            data: {
+              customerName: data.customerName,
+              customerEmail: data.customerEmail,
+              storeName,
+              orderNumber,
+              items: orderItems.map((i) => ({
+                name: i.product_name,
+                qty: i.quantity,
+                price: i.unit_price,
+              })),
+              total,
+              deliveryWilaya: data.shippingWilaya,
+            },
+          }),
+        }).catch(() => {});
+      }
+
+      console.log("createOrder: email triggers dispatched", { orderId: order.id });
+    } catch (emailErr) {
+      console.error("createOrder: email dispatch failed", emailErr);
+    }
+
     return { orderId: order.id, subtotal, deliveryPrice, total };
   });
