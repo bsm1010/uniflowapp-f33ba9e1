@@ -1,5 +1,17 @@
-project_id = "gyfcaoscsjazazhfozig"
+[functions.create-chargily-checkout]
+verify_jwt = true
 
-[auth.hook.send_email]
-enabled = true
-uri = "https://gyfcaoscsjazazhfozig.supabase.co/functions/v1/send-confirmation-email"
+[functions.chargily-webhook]
+verify_jwt = false
+
+[functions.activate-plan]
+verify_jwt = true
+
+[functions.activate-credits]
+verify_jwt = true
+
+[functions.get-bordereau]
+verify_jwt = true
+
+[functions.send-email]
+verify_jwt = false
