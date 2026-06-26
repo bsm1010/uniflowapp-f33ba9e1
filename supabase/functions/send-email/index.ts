@@ -1,5 +1,3 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-
 const BREVO_API = "https://api.brevo.com/v3";
 const PRIMARY = "#7C3AED";
 const PRIMARY_LIGHT = "#EDE9FE";
@@ -145,7 +143,7 @@ async function unsubscribeBrevoContact(apiKey: string, email: string): Promise<b
   return res.ok;
 }
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
