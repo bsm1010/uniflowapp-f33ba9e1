@@ -46,12 +46,83 @@ serve(async (req) => {
       const checkout = event.data;
       const orderId = checkout.metadata?.order_id;
 
-      if (orderId) {
-        const adminSupabase = createClient(
-          Deno.env.get("SUPABASE_URL")!,
-          Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-        );
+      if (!orderId) {
+        return new Response("ok", { status: 200 });
+      }
 
+      const adminSupabase = createClient(
+        Deno.env.get("SUPABASE_URL")!,
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      );
+
+      if (orderId.startsWith("PLAN-")) {
+        const parts = orderId.split("-");
+        const planId = parts[2];
+        const userId = parts[1];
+
+        const PLAN_MAP: Record<string, string> = {
+          trial: "free",
+          beginner: "basic",
+          pro: "pro",
+          business: "business",
+          agency: "business",
+        };
+        const mappedPlan = PLAN_MAP[planId] ?? "basic";
+
+        await adminSupabase
+          .from("profiles")
+          .update({ plan: mappedPlan })
+          .eq("id", userId);
+
+        await adminSupabase.from("payment_submissions").insert({
+          user_id: userId,
+          plan: planId,
+          amount: checkout.amount,
+          payment_method: "chargily",
+          proof_url: checkout.id,
+          status: "approved",
+          reviewed_at: new Date().toISOString(),
+        });
+      } else if (orderId.startsWith("CREDITS-")) {
+        const parts = orderId.split("-");
+        const packId = parts[2];
+        const userId = parts[1];
+
+        const CREDIT_MAP: Record<string, number> = {
+          pack_50: 50,
+          pack_150: 150,
+          pack_500: 500,
+          basic: 100,
+          pro: 300,
+          business: 2000,
+        };
+        const creditsToAdd = CREDIT_MAP[packId] ?? 0;
+
+        if (creditsToAdd > 0) {
+          const { data: profile } = await adminSupabase
+            .from("profiles")
+            .select("credits")
+            .eq("id", userId)
+            .single();
+
+          const currentCredits = profile?.credits ?? 0;
+
+          await adminSupabase
+            .from("profiles")
+            .update({ credits: currentCredits + creditsToAdd })
+            .eq("id", userId);
+
+          await adminSupabase.from("payment_submissions").insert({
+            user_id: userId,
+            plan: packId,
+            amount: checkout.amount,
+            payment_method: "chargily",
+            proof_url: checkout.id,
+            status: "approved",
+            reviewed_at: new Date().toISOString(),
+          });
+        }
+      } else {
         await adminSupabase
           .from("orders")
           .update({

@@ -16,6 +16,10 @@ import {
   TrendingUp,
   ShieldCheck,
   Loader2,
+  CreditCard,
+  Smartphone,
+  XCircle,
+  CheckCircle2,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -98,8 +102,28 @@ function CreditsPage() {
 
   const [tab, setTab] = useState<"packs" | "plans">("packs");
   const [selected, setSelected] = useState<string>("pack_150");
+  const [paymentMode, setPaymentMode] = useState<"chargily" | "manual">("chargily");
   const [file, setFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const search = Route.useSearch();
+  const paymentStatus = (search as Record<string, string>)?.payment;
+  const paymentPack = (search as Record<string, string>)?.pack;
+
+  useEffect(() => {
+    if (paymentStatus === "success" && paymentPack && user) {
+      supabase.functions
+        .invoke("activate-credits", {
+          body: { checkoutId: `webhook-fallback-${paymentPack}`, packId: paymentPack },
+        })
+        .then(() => {
+          toast.success("تم إضافة الرصيد إلى حسابك فوراً!");
+          refresh();
+          setTimeout(() => window.location.href = "/dashboard/credits", 2000);
+        })
+        .catch(() => {});
+    }
+  }, [paymentStatus, paymentPack, user, refresh]);
 
   const allOptions = [...PACK_DEFS, ...PLAN_DEFS];
   const choice = allOptions.find((x) => x.id === selected) ?? PACK_DEFS[1];
@@ -107,6 +131,42 @@ function CreditsPage() {
   useEffect(() => {
     setSelected(tab === "packs" ? "pack_150" : "pro");
   }, [tab]);
+
+  const handleChargilyPay = useCallback(async () => {
+    if (!user) return;
+    setSubmitting(true);
+    try {
+      const orderId = `CREDITS-${user.id}-${selected}-${Date.now()}`;
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("name, email")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      const { data: checkoutData, error: checkoutErr } = await supabase.functions.invoke(
+        "create-chargily-checkout",
+        {
+          body: {
+            amount: choice.price,
+            orderId,
+            customerName: profile?.name || user.email || "Merchant",
+            customerEmail: profile?.email || user.email || undefined,
+            successUrl: `${window.location.origin}/dashboard/credits?payment=success&pack=${selected}`,
+            failureUrl: `${window.location.origin}/dashboard/credits?payment=failed`,
+          },
+        },
+      );
+      if (checkoutErr || !checkoutData?.checkout_url) {
+        toast.error("فشل إنشاء رابط الدفع. حاول مرة أخرى.");
+        setSubmitting(false);
+        return;
+      }
+      window.location.href = checkoutData.checkout_url;
+    } catch {
+      toast.error("حدث خطأ. حاول مرة أخرى.");
+      setSubmitting(false);
+    }
+  }, [user, selected, choice]);
 
   const submit = useCallback(async () => {
     if (!user) return;
@@ -489,6 +549,24 @@ function CreditsPage() {
         />
 
         <CardContent className="relative p-6 sm:p-8 space-y-6">
+          {/* Payment success/failed banners */}
+          {paymentStatus === "success" && (
+            <div className="rounded-xl border border-green-500/40 bg-green-500/10 p-4 flex items-start gap-3">
+              <CheckCircle2 className="size-5 text-green-600 mt-0.5 shrink-0" />
+              <div className="text-sm">
+                <p className="font-medium text-foreground">تم الدفع بنجاح! جاري إضافة الرصيد...</p>
+              </div>
+            </div>
+          )}
+          {paymentStatus === "failed" && (
+            <div className="rounded-xl border border-red-500/40 bg-red-500/10 p-4 flex items-start gap-3">
+              <XCircle className="size-5 text-red-600 mt-0.5 shrink-0" />
+              <div className="text-sm">
+                <p className="font-medium text-foreground">فشل الدفع — يمكنك المحاولة مجدداً أو استخدام CCP</p>
+              </div>
+            </div>
+          )}
+
           <div className="flex items-start gap-4">
             <div className="size-12 grid place-items-center rounded-2xl bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white shrink-0">
               <ShieldCheck className="size-6" />
@@ -503,101 +581,184 @@ function CreditsPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl bg-gradient-to-br from-muted/60 to-muted/30 border border-border/60 p-5 font-mono text-base tracking-wide">
-            {CCP}
-          </div>
-
-          <div className="rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-fuchsia-500/10 border-2 border-primary/20 p-5 grid sm:grid-cols-2 gap-4">
-            <div>
-              <div className="text-xs uppercase tracking-wider text-muted-foreground">
-                {t("dashboard.credits.amountDue")}
-              </div>
-              <div className="text-3xl font-bold font-display mt-1 bg-gradient-to-br from-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
-                {choice.price.toLocaleString()}{" "}
-                <span className="text-base text-muted-foreground font-normal">
-                  {t("dashboard.credits.currency")}
-                </span>
-              </div>
-            </div>
-            <div className="sm:text-right">
-              <div className="text-xs uppercase tracking-wider text-muted-foreground">
-                {t("dashboard.credits.youGet")}
-              </div>
-              <div className="text-3xl font-bold font-display mt-1 flex items-baseline gap-2 sm:justify-end">
-                <Coins className="size-6 text-primary" />
-                {choice.credits}{" "}
-                <span className="text-base text-muted-foreground font-normal">
-                  {t("dashboard.credits.creditsLabel")}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">{t("dashboard.credits.screenshotLabel")}</Label>
-            <label
-              htmlFor="proof"
-              className={`flex items-center gap-4 rounded-2xl border-2 border-dashed px-5 py-5 cursor-pointer transition-all ${
-                file
-                  ? "border-primary/60 bg-primary/5"
-                  : "border-border hover:border-primary/60 hover:bg-muted/30"
+          {/* Payment method toggle */}
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setPaymentMode("chargily")}
+              className={`relative flex flex-col items-center gap-1.5 py-4 px-3 text-sm font-medium transition-all border-2 rounded-xl ${
+                paymentMode === "chargily"
+                  ? "border-violet-500 bg-violet-500/10 text-violet-600"
+                  : "border-border/60 hover:border-border"
               }`}
             >
-              <div
-                className={`grid size-12 place-items-center rounded-xl shrink-0 transition-all ${
-                  file
-                    ? "bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white"
-                    : "bg-muted border border-border"
-                }`}
-              >
-                <Upload className="size-5" />
+              <CreditCard className="size-5" />
+              <span>CIB / EDAHABIA</span>
+              <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full bg-green-500 text-white text-[10px] font-bold px-2 py-0.5">
+                فوري
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setPaymentMode("manual")}
+              className={`flex flex-col items-center gap-1.5 py-4 px-3 text-sm font-medium transition-all border-2 rounded-xl ${
+                paymentMode === "manual"
+                  ? "border-primary bg-primary/5 text-primary"
+                  : "border-border/60 hover:border-border"
+              }`}
+            >
+              <Smartphone className="size-5" />
+              <span>CCP / BaridiMob</span>
+              <span className="text-[10px] font-normal opacity-70">24 ساعة</span>
+            </button>
+          </div>
+
+          {/* Chargily button */}
+          {paymentMode === "chargily" && (
+            <>
+              <div className="rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-fuchsia-500/10 border-2 border-primary/20 p-5 grid sm:grid-cols-2 gap-4">
+                <div>
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground">
+                    {t("dashboard.credits.amountDue")}
+                  </div>
+                  <div className="text-3xl font-bold font-display mt-1 bg-gradient-to-br from-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
+                    {choice.price.toLocaleString()}{" "}
+                    <span className="text-base text-muted-foreground font-normal">
+                      {t("dashboard.credits.currency")}
+                    </span>
+                  </div>
+                </div>
+                <div className="sm:text-right">
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground">
+                    {t("dashboard.credits.youGet")}
+                  </div>
+                  <div className="text-3xl font-bold font-display mt-1 flex items-baseline gap-2 sm:justify-end">
+                    <Coins className="size-6 text-primary" />
+                    {choice.credits}{" "}
+                    <span className="text-base text-muted-foreground font-normal">
+                      {t("dashboard.credits.creditsLabel")}
+                    </span>
+                  </div>
+                </div>
               </div>
-              <div className="text-sm flex-1 min-w-0">
-                {file ? (
+              <Button
+                onClick={handleChargilyPay}
+                disabled={submitting}
+                size="lg"
+                className="w-full bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 hover:from-violet-700 hover:via-fuchsia-700 hover:to-pink-700 text-white border-0 shadow-lg shadow-violet-500/30 hover:shadow-xl hover:shadow-violet-500/40 transition-all h-12 text-base font-semibold"
+              >
+                {submitting ? (
+                  <Loader2 className="size-5 animate-spin" />
+                ) : (
                   <>
-                    <p className="font-semibold truncate">{file.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {(file.size / 1024).toFixed(0)} KB
-                    </p>
+                    <Zap className="size-5" />
+                    ادفع الآن {choice.price.toLocaleString()} DA
+                  </>
+                )}
+              </Button>
+            </>
+          )}
+
+          {/* Manual CCP form */}
+          {paymentMode === "manual" && (
+            <>
+              <div className="rounded-2xl bg-gradient-to-br from-muted/60 to-muted/30 border border-border/60 p-5 font-mono text-base tracking-wide">
+                {CCP}
+              </div>
+
+              <div className="rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-fuchsia-500/10 border-2 border-primary/20 p-5 grid sm:grid-cols-2 gap-4">
+                <div>
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground">
+                    {t("dashboard.credits.amountDue")}
+                  </div>
+                  <div className="text-3xl font-bold font-display mt-1 bg-gradient-to-br from-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
+                    {choice.price.toLocaleString()}{" "}
+                    <span className="text-base text-muted-foreground font-normal">
+                      {t("dashboard.credits.currency")}
+                    </span>
+                  </div>
+                </div>
+                <div className="sm:text-right">
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground">
+                    {t("dashboard.credits.youGet")}
+                  </div>
+                  <div className="text-3xl font-bold font-display mt-1 flex items-baseline gap-2 sm:justify-end">
+                    <Coins className="size-6 text-primary" />
+                    {choice.credits}{" "}
+                    <span className="text-base text-muted-foreground font-normal">
+                      {t("dashboard.credits.creditsLabel")}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">{t("dashboard.credits.screenshotLabel")}</Label>
+                <label
+                  htmlFor="proof"
+                  className={`flex items-center gap-4 rounded-2xl border-2 border-dashed px-5 py-5 cursor-pointer transition-all ${
+                    file
+                      ? "border-primary/60 bg-primary/5"
+                      : "border-border hover:border-primary/60 hover:bg-muted/30"
+                  }`}
+                >
+                  <div
+                    className={`grid size-12 place-items-center rounded-xl shrink-0 transition-all ${
+                      file
+                        ? "bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white"
+                        : "bg-muted border border-border"
+                    }`}
+                  >
+                    <Upload className="size-5" />
+                  </div>
+                  <div className="text-sm flex-1 min-w-0">
+                    {file ? (
+                      <>
+                        <p className="font-semibold truncate">{file.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {(file.size / 1024).toFixed(0)} KB
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <p className="font-semibold">{t("dashboard.credits.uploadCta")}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {t("dashboard.credits.uploadHint")}
+                        </p>
+                      </>
+                    )}
+                  </div>
+                </label>
+                <input
+                  id="proof"
+                  ref={fileRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                />
+              </div>
+
+              <Button
+                onClick={submit}
+                disabled={submitting || !file}
+                size="lg"
+                className="w-full bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 hover:from-violet-700 hover:via-fuchsia-700 hover:to-pink-700 text-white border-0 shadow-lg shadow-violet-500/30 hover:shadow-xl hover:shadow-violet-500/40 transition-all h-12 text-base font-semibold"
+              >
+                {submitting ? (
+                  <>
+                    <Loader2 className="size-5 animate-spin" />
+                    {t("dashboard.credits.submitting")}
                   </>
                 ) : (
                   <>
-                    <p className="font-semibold">{t("dashboard.credits.uploadCta")}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {t("dashboard.credits.uploadHint")}
-                    </p>
+                    <Sparkles className="size-5" />
+                    {t("dashboard.credits.submit")}
                   </>
                 )}
-              </div>
-            </label>
-            <input
-              id="proof"
-              ref={fileRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-            />
-          </div>
-
-          <Button
-            onClick={submit}
-            disabled={submitting || !file}
-            size="lg"
-            className="w-full bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 hover:from-violet-700 hover:via-fuchsia-700 hover:to-pink-700 text-white border-0 shadow-lg shadow-violet-500/30 hover:shadow-xl hover:shadow-violet-500/40 transition-all h-12 text-base font-semibold"
-          >
-            {submitting ? (
-              <>
-                <Loader2 className="size-5 animate-spin" />
-                {t("dashboard.credits.submitting")}
-              </>
-            ) : (
-              <>
-                <Sparkles className="size-5" />
-                {t("dashboard.credits.submit")}
-              </>
-            )}
-          </Button>
+              </Button>
+            </>
+          )}
         </CardContent>
       </Card>
     </div>

@@ -14,6 +14,8 @@ import {
   Rocket,
   Building,
   Crown,
+  Loader2,
+  CheckCircle2,
 } from "lucide-react";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
@@ -31,7 +33,7 @@ export const Route = createFileRoute("/dashboard/upgrade")({
 });
 
 const CCP_NUMBER = "0012345678 91";
-const CCP_NAME = "STORELY SARL";
+const CCP_NAME = "FENNECLY SARL";
 const CCP_KEY = "12";
 
 const PLANS = [
@@ -249,9 +251,28 @@ function UpgradePage() {
 
   const [plan, setPlan] = useState<PlanId>("pro");
   const [method, setMethod] = useState<"ccp" | "baridimob">("baridimob");
+  const [paymentMode, setPaymentMode] = useState<"chargily" | "manual">("chargily");
   const [file, setFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
+
+  const search = Route.useSearch();
+  const paymentStatus = (search as Record<string, string>)?.payment;
+  const paymentPlan = (search as Record<string, string>)?.plan;
+
+  useEffect(() => {
+    if (paymentStatus === "success" && paymentPlan && user) {
+      supabase.functions
+        .invoke("activate-plan", {
+          body: { checkoutId: `webhook-fallback-${paymentPlan}`, planId: paymentPlan },
+        })
+        .then(() => {
+          toast.success(`تم تفعيل خطتك بنجاح!`);
+          setTimeout(() => window.location.href = "/dashboard/upgrade", 2000);
+        })
+        .catch(() => {});
+    }
+  }, [paymentStatus, paymentPlan, user]);
 
   const selectedPlan = PLANS.find((p) => p.id === plan)!;
 
@@ -273,6 +294,42 @@ function UpgradePage() {
   const copy = async (value: string, label: string) => {
     await navigator.clipboard.writeText(value);
     toast.success(`${label} copied`);
+  };
+
+  const handleChargilyPay = async () => {
+    if (!user || selectedPlan.price === 0) return;
+    setSubmitting(true);
+    try {
+      const orderId = `PLAN-${user.id}-${plan}-${Date.now()}`;
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("name, email")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      const { data: checkoutData, error: checkoutErr } = await supabase.functions.invoke(
+        "create-chargily-checkout",
+        {
+          body: {
+            amount: selectedPlan.price,
+            orderId,
+            customerName: profile?.name || user.email || "Merchant",
+            customerEmail: profile?.email || user.email || undefined,
+            successUrl: `${window.location.origin}/dashboard/upgrade?payment=success&plan=${plan}`,
+            failureUrl: `${window.location.origin}/dashboard/upgrade?payment=failed`,
+          },
+        },
+      );
+      if (checkoutErr || !checkoutData?.checkout_url) {
+        toast.error("فشل إنشاء رابط الدفع. حاول مرة أخرى.");
+        setSubmitting(false);
+        return;
+      }
+      window.location.href = checkoutData.checkout_url;
+    } catch {
+      toast.error("حدث خطأ. حاول مرة أخرى.");
+      setSubmitting(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -465,129 +522,210 @@ function UpgradePage() {
 
         {/* Payment form */}
         <Card className="border-border/60">
-          <CardContent className="p-6">
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="flex items-center gap-3">
-                <div className="grid size-10 place-items-center rounded-lg bg-primary/10 text-primary">
-                  <Building2 className="size-5" />
-                </div>
-                <div>
-                  <h3 className="font-semibold">إرسال إثبات الدفع</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {selectedPlan.price === 0
-                      ? "هذه الخطة مجانية لمدة 3 أيام"
-                      : `أرسل ${selectedPlan.price.toLocaleString()} DA عبر CCP أو BaridiMob`}
-                  </p>
+          <CardContent className="p-6 space-y-5">
+            {/* Payment success banner */}
+            {paymentStatus === "success" && (
+              <div className="rounded-xl border border-green-500/40 bg-green-500/10 p-4 flex items-start gap-3">
+                <CheckCircle2 className="size-5 text-green-600 mt-0.5 shrink-0" />
+                <div className="text-sm">
+                  <p className="font-medium text-foreground">تم الدفع بنجاح! جاري تفعيل خطتك...</p>
                 </div>
               </div>
+            )}
+            {paymentStatus === "failed" && (
+              <div className="rounded-xl border border-red-500/40 bg-red-500/10 p-4 flex items-start gap-3">
+                <XCircle className="size-5 text-red-600 mt-0.5 shrink-0" />
+                <div className="text-sm">
+                  <p className="font-medium text-foreground">فشل الدفع — يمكنك المحاولة مجدداً أو استخدام CCP</p>
+                </div>
+              </div>
+            )}
 
-              {selectedPlan.price > 0 && (
-                <>
-                  {/* CCP info */}
-                  <div className="rounded-xl border border-border/60 bg-muted/30 p-4 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                        رقم CCP
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => copy(CCP_NUMBER, "رقم CCP")}
-                        className="text-xs text-primary hover:underline"
-                      >
-                        نسخ
-                      </button>
-                    </div>
-                    <p className="font-mono text-base font-semibold tracking-wider">
-                      {CCP_NUMBER} <span className="text-muted-foreground">CLE {CCP_KEY}</span>
-                    </p>
-                    <Separator />
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                        اسم الحساب
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => copy(CCP_NAME, "اسم الحساب")}
-                        className="text-xs text-primary hover:underline"
-                      >
-                        نسخ
-                      </button>
-                    </div>
-                    <p className="font-medium">{CCP_NAME}</p>
-                  </div>
+            <div className="flex items-center gap-3">
+              <div className="grid size-10 place-items-center rounded-lg bg-primary/10 text-primary">
+                <Building2 className="size-5" />
+              </div>
+              <div>
+                <h3 className="font-semibold">طريقة الدفع</h3>
+                <p className="text-sm text-muted-foreground">
+                  {selectedPlan.price === 0
+                    ? "هذه الخطة مجانية لمدة 3 أيام"
+                    : `اختر طريقة الدفع لتفعيل ${selectedPlan.name}`}
+                </p>
+              </div>
+            </div>
 
-                  {/* Method */}
-                  <div className="space-y-2">
-                    <Label>طريقة الدفع</Label>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setMethod("ccp")}
-                        className={`flex items-center gap-2 rounded-lg border p-3 text-sm transition-colors ${method === "ccp" ? "border-primary bg-primary/5" : "border-border/60 hover:border-border"}`}
-                      >
-                        <CreditCard className="size-4" /> CCP
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setMethod("baridimob")}
-                        className={`flex items-center gap-2 rounded-lg border p-3 text-sm transition-colors ${method === "baridimob" ? "border-primary bg-primary/5" : "border-border/60 hover:border-border"}`}
-                      >
-                        <Smartphone className="size-4" /> BaridiMob
-                      </button>
-                    </div>
-                  </div>
+            {selectedPlan.price > 0 && (
+              <>
+                {/* Payment method toggle */}
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMode("chargily")}
+                    className={`relative flex flex-col items-center gap-1.5 py-4 px-3 text-sm font-medium transition-all border-2 rounded-xl ${
+                      paymentMode === "chargily"
+                        ? "border-violet-500 bg-violet-500/10 text-violet-600"
+                        : "border-border/60 hover:border-border"
+                    }`}
+                  >
+                    <CreditCard className="size-5" />
+                    <span>CIB / EDAHABIA</span>
+                    <span className="text-[10px] font-normal opacity-70">فوري</span>
+                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full bg-green-500 text-white text-[10px] font-bold px-2 py-0.5">
+                      فوري
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMode("manual")}
+                    className={`flex flex-col items-center gap-1.5 py-4 px-3 text-sm font-medium transition-all border-2 rounded-xl ${
+                      paymentMode === "manual"
+                        ? "border-primary bg-primary/5 text-primary"
+                        : "border-border/60 hover:border-border"
+                    }`}
+                  >
+                    <Smartphone className="size-5" />
+                    <span>CCP / BaridiMob</span>
+                    <span className="text-[10px] font-normal opacity-70">24 ساعة</span>
+                  </button>
+                </div>
 
-                  {/* Screenshot upload */}
-                  <div className="space-y-2">
-                    <Label>صورة إثبات الدفع</Label>
-                    <label
-                      htmlFor="proof"
-                      className="flex items-center gap-3 rounded-md border border-dashed border-border/80 bg-muted/30 px-3 py-3 cursor-pointer hover:border-primary/60 transition-colors"
+                {/* Chargily button */}
+                {paymentMode === "chargily" && (
+                  <Button
+                    type="button"
+                    onClick={handleChargilyPay}
+                    disabled={submitting}
+                    className="w-full h-13 text-base font-semibold bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white border-0 shadow-lg shadow-violet-500/25"
+                    size="lg"
+                  >
+                    {submitting ? (
+                      <Loader2 className="size-5 animate-spin" />
+                    ) : (
+                      <>
+                        <Zap className="size-5" />
+                        ادفع الآن {selectedPlan.price.toLocaleString()} DA
+                      </>
+                    )}
+                  </Button>
+                )}
+
+                {/* Manual (CCP) form */}
+                {paymentMode === "manual" && (
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    {/* CCP info */}
+                    <div className="rounded-xl border border-border/60 bg-muted/30 p-4 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                          رقم CCP
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => copy(CCP_NUMBER, "رقم CCP")}
+                          className="text-xs text-primary hover:underline"
+                        >
+                          نسخ
+                        </button>
+                      </div>
+                      <p className="font-mono text-base font-semibold tracking-wider">
+                        {CCP_NUMBER} <span className="text-muted-foreground">CLE {CCP_KEY}</span>
+                      </p>
+                      <Separator />
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                          اسم الحساب
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => copy(CCP_NAME, "اسم الحساب")}
+                          className="text-xs text-primary hover:underline"
+                        >
+                          نسخ
+                        </button>
+                      </div>
+                      <p className="font-medium">{CCP_NAME}</p>
+                    </div>
+
+                    {/* Method */}
+                    <div className="space-y-2">
+                      <Label>طريقة التحويل</Label>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setMethod("ccp")}
+                          className={`flex items-center gap-2 rounded-lg border p-3 text-sm transition-colors ${method === "ccp" ? "border-primary bg-primary/5" : "border-border/60 hover:border-border"}`}
+                        >
+                          <CreditCard className="size-4" /> CCP
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setMethod("baridimob")}
+                          className={`flex items-center gap-2 rounded-lg border p-3 text-sm transition-colors ${method === "baridimob" ? "border-primary bg-primary/5" : "border-border/60 hover:border-border"}`}
+                        >
+                          <Smartphone className="size-4" /> BaridiMob
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Screenshot upload */}
+                    <div className="space-y-2">
+                      <Label>صورة إثبات الدفع</Label>
+                      <label
+                        htmlFor="proof"
+                        className="flex items-center gap-3 rounded-md border border-dashed border-border/80 bg-muted/30 px-3 py-3 cursor-pointer hover:border-primary/60 transition-colors"
+                      >
+                        <div className="grid size-9 place-items-center rounded-md bg-background border border-border/60">
+                          <Upload className="size-4" />
+                        </div>
+                        <div className="text-sm min-w-0">
+                          {file ? (
+                            <>
+                              <p className="font-medium truncate">{file.name}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {(file.size / 1024).toFixed(0)} KB
+                              </p>
+                            </>
+                          ) : (
+                            <>
+                              <p className="font-medium">ارفع الصورة هنا</p>
+                              <p className="text-xs text-muted-foreground">PNG أو JPG، حتى 5MB</p>
+                            </>
+                          )}
+                        </div>
+                      </label>
+                      <input
+                        id="proof"
+                        ref={fileRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                      />
+                    </div>
+
+                    <Button
+                      type="submit"
+                      className="w-full"
+                      size="lg"
+                      disabled={submitting}
                     >
-                      <div className="grid size-9 place-items-center rounded-md bg-background border border-border/60">
-                        <Upload className="size-4" />
-                      </div>
-                      <div className="text-sm min-w-0">
-                        {file ? (
-                          <>
-                            <p className="font-medium truncate">{file.name}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {(file.size / 1024).toFixed(0)} KB
-                            </p>
-                          </>
-                        ) : (
-                          <>
-                            <p className="font-medium">ارفع الصورة هنا</p>
-                            <p className="text-xs text-muted-foreground">PNG أو JPG، حتى 5MB</p>
-                          </>
-                        )}
-                      </div>
-                    </label>
-                    <input
-                      id="proof"
-                      ref={fileRef}
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-                    />
-                  </div>
-                </>
-              )}
+                      {submitting ? "جاري الإرسال…" : "إرسال للمراجعة"}
+                    </Button>
+                  </form>
+                )}
+              </>
+            )}
 
+            {selectedPlan.price === 0 && (
               <Button
                 type="submit"
                 className="w-full"
                 size="lg"
-                disabled={submitting || selectedPlan.price === 0}
+                disabled
               >
-                {submitting
-                  ? "جاري الإرسال…"
-                  : selectedPlan.price === 0
-                    ? "مجاني - سيتم التفعيل تلقائياً"
-                    : "إرسال للمراجعة"}
+                مجاني - سيتم التفعيل تلقائياً
               </Button>
-            </form>
+            )}
           </CardContent>
         </Card>
       </div>
