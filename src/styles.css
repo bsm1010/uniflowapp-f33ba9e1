@@ -565,3 +565,17 @@
 .stagger-reveal > *:nth-child(10) { animation-delay: 540ms; }
 .stagger-reveal > *:nth-child(11) { animation-delay: 600ms; }
 .stagger-reveal > *:nth-child(12) { animation-delay: 660ms; }
+
+/* Hide Lovable editor badge */
+[data-lovable-editor-badge],
+.lovable-badge,
+a[href*="lovable"][target="_blank"][rel*="noopener"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
