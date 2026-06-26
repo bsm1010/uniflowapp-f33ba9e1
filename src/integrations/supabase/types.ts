@@ -1866,6 +1866,7 @@ export type Database = {
       orders: {
         Row: {
           bordereau_fetched_at: string | null
+          chargily_checkout_id: string | null
           created_at: string
           customer_email: string
           customer_name: string
@@ -1873,6 +1874,9 @@ export type Database = {
           delivery_type: string
           id: string
           notes: string | null
+          paid_at: string | null
+          payment_method: string
+          payment_status: string
           shipping_address: string
           shipping_city: string
           shipping_country: string
@@ -1891,6 +1895,7 @@ export type Database = {
         }
         Insert: {
           bordereau_fetched_at?: string | null
+          chargily_checkout_id?: string | null
           created_at?: string
           customer_email: string
           customer_name: string
@@ -1898,6 +1903,9 @@ export type Database = {
           delivery_type?: string
           id?: string
           notes?: string | null
+          paid_at?: string | null
+          payment_method?: string
+          payment_status?: string
           shipping_address: string
           shipping_city: string
           shipping_country: string
@@ -1916,6 +1924,7 @@ export type Database = {
         }
         Update: {
           bordereau_fetched_at?: string | null
+          chargily_checkout_id?: string | null
           created_at?: string
           customer_email?: string
           customer_name?: string
@@ -1923,6 +1932,9 @@ export type Database = {
           delivery_type?: string
           id?: string
           notes?: string | null
+          paid_at?: string | null
+          payment_method?: string
+          payment_status?: string
           shipping_address?: string
           shipping_city?: string
           shipping_country?: string
@@ -2752,6 +2764,7 @@ export type Database = {
           border_radius: string
           button_labels: Json
           button_style: string
+          chargily_enabled: boolean | null
           contact_address: string
           contact_form_enabled: boolean
           contact_intro: string
@@ -2800,6 +2813,7 @@ export type Database = {
           border_radius?: string
           button_labels?: Json
           button_style?: string
+          chargily_enabled?: boolean | null
           contact_address?: string
           contact_form_enabled?: boolean
           contact_intro?: string
@@ -2848,6 +2862,7 @@ export type Database = {
           border_radius?: string
           button_labels?: Json
           button_style?: string
+          chargily_enabled?: boolean | null
           contact_address?: string
           contact_form_enabled?: boolean
           contact_intro?: string

@@ -751,7 +751,12 @@
       "demo": "This is a demo checkout. No payment will be charged.",
       "errEmpty": "Your cart is empty.",
       "errFields": "Please fill in all required fields.",
-      "errOrder": "Could not place order."
+      "errOrder": "Could not place order.",
+      "paymentMethod": "Payment method",
+      "cod": "Cash on Delivery",
+      "codDesc": "Pay when you receive",
+      "chargily": "Pay Online (CIB / EDAHABIA)",
+      "chargilyDesc": "Secure online payment"
     },
     "success": {
       "title": "Thank you for your order!",

@@ -760,7 +760,12 @@
       "demo": "Démonstration : aucun paiement ne sera réellement débité.",
       "errEmpty": "Votre panier est vide.",
       "errFields": "Veuillez compléter tous les champs obligatoires.",
-      "errOrder": "Impossible de valider la commande."
+      "errOrder": "Impossible de valider la commande.",
+      "paymentMethod": "Mode de paiement",
+      "cod": "Paiement à la livraison",
+      "codDesc": "Payez à la réception",
+      "chargily": "Paiement en ligne (CIB / EDAHABIA)",
+      "chargilyDesc": "Paiement sécurisé en ligne"
     },
     "success": {
       "title": "Merci pour votre commande !",

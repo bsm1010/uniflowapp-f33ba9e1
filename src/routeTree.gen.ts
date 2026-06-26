@@ -24,6 +24,8 @@ import { Route as CustomizeRouteImport } from './routes/customize'
 import { Route as AiAgentRouteImport } from './routes/ai-agent'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
+import { Route as PaymentSuccessRouteImport } from './routes/payment.success'
+import { Route as PaymentFailedRouteImport } from './routes/payment.failed'
 import { Route as DashboardVoiceGeneratorRouteImport } from './routes/dashboard.voice-generator'
 import { Route as DashboardUpgradeRouteImport } from './routes/dashboard.upgrade'
 import { Route as DashboardStoreSettingsRouteImport } from './routes/dashboard.store-settings'
@@ -173,6 +175,16 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => DashboardRoute,
+} as any)
+const PaymentSuccessRoute = PaymentSuccessRouteImport.update({
+  id: '/payment/success',
+  path: '/payment/success',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentFailedRoute = PaymentFailedRouteImport.update({
+  id: '/payment/failed',
+  path: '/payment/failed',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardVoiceGeneratorRoute = DashboardVoiceGeneratorRouteImport.update({
   id: '/voice-generator',
@@ -610,6 +622,8 @@ export interface FileRoutesByFullPath {
   '/dashboard/store-settings': typeof DashboardStoreSettingsRoute
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
   '/dashboard/voice-generator': typeof DashboardVoiceGeneratorRoute
+  '/payment/failed': typeof PaymentFailedRoute
+  '/payment/success': typeof PaymentSuccessRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/db/$tableId': typeof ApiDbTableIdRouteWithChildren
   '/dashboard/admin/apps': typeof DashboardAdminAppsRoute
@@ -698,6 +712,8 @@ export interface FileRoutesByTo {
   '/dashboard/store-settings': typeof DashboardStoreSettingsRoute
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
   '/dashboard/voice-generator': typeof DashboardVoiceGeneratorRoute
+  '/payment/failed': typeof PaymentFailedRoute
+  '/payment/success': typeof PaymentSuccessRoute
   '/dashboard': typeof DashboardIndexRoute
   '/api/db/$tableId': typeof ApiDbTableIdRouteWithChildren
   '/dashboard/admin/apps': typeof DashboardAdminAppsRoute
@@ -790,6 +806,8 @@ export interface FileRoutesById {
   '/dashboard/store-settings': typeof DashboardStoreSettingsRoute
   '/dashboard/upgrade': typeof DashboardUpgradeRoute
   '/dashboard/voice-generator': typeof DashboardVoiceGeneratorRoute
+  '/payment/failed': typeof PaymentFailedRoute
+  '/payment/success': typeof PaymentSuccessRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/db/$tableId': typeof ApiDbTableIdRouteWithChildren
   '/dashboard/admin/apps': typeof DashboardAdminAppsRoute
@@ -883,6 +901,8 @@ export interface FileRouteTypes {
     | '/dashboard/store-settings'
     | '/dashboard/upgrade'
     | '/dashboard/voice-generator'
+    | '/payment/failed'
+    | '/payment/success'
     | '/dashboard/'
     | '/api/db/$tableId'
     | '/dashboard/admin/apps'
@@ -971,6 +991,8 @@ export interface FileRouteTypes {
     | '/dashboard/store-settings'
     | '/dashboard/upgrade'
     | '/dashboard/voice-generator'
+    | '/payment/failed'
+    | '/payment/success'
     | '/dashboard'
     | '/api/db/$tableId'
     | '/dashboard/admin/apps'
@@ -1062,6 +1084,8 @@ export interface FileRouteTypes {
     | '/dashboard/store-settings'
     | '/dashboard/upgrade'
     | '/dashboard/voice-generator'
+    | '/payment/failed'
+    | '/payment/success'
     | '/dashboard/'
     | '/api/db/$tableId'
     | '/dashboard/admin/apps'
@@ -1129,6 +1153,8 @@ export interface RootRouteChildren {
   ThemesRoute: typeof ThemesRoute
   TrustRoute: typeof TrustRoute
   UnsubscribeRoute: typeof UnsubscribeRoute
+  PaymentFailedRoute: typeof PaymentFailedRoute
+  PaymentSuccessRoute: typeof PaymentSuccessRoute
   ApiDbTableIdRoute: typeof ApiDbTableIdRouteWithChildren
   SSlugAboutRoute: typeof SSlugAboutRoute
   SSlugCartRoute: typeof SSlugCartRoute
@@ -1259,6 +1285,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/'
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRoute
+    }
+    '/payment/success': {
+      id: '/payment/success'
+      path: '/payment/success'
+      fullPath: '/payment/success'
+      preLoaderRoute: typeof PaymentSuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/payment/failed': {
+      id: '/payment/failed'
+      path: '/payment/failed'
+      fullPath: '/payment/failed'
+      preLoaderRoute: typeof PaymentFailedRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/dashboard/voice-generator': {
       id: '/dashboard/voice-generator'
@@ -1954,6 +1994,8 @@ const rootRouteChildren: RootRouteChildren = {
   ThemesRoute: ThemesRoute,
   TrustRoute: TrustRoute,
   UnsubscribeRoute: UnsubscribeRoute,
+  PaymentFailedRoute: PaymentFailedRoute,
+  PaymentSuccessRoute: PaymentSuccessRoute,
   ApiDbTableIdRoute: ApiDbTableIdRouteWithChildren,
   SSlugAboutRoute: SSlugAboutRoute,
   SSlugCartRoute: SSlugCartRoute,

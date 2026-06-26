@@ -23,6 +23,7 @@ const CreateOrderSchema = z.object({
   companyId: z.string().uuid().optional(),
   notes: z.string().max(1000).nullable().optional(),
   items: z.array(OrderItemSchema).min(1).max(50),
+  paymentMethod: z.enum(["cod", "chargily"]).default("cod"),
 });
 
 export const createOrder = createServerFn({ method: "POST" })
@@ -145,7 +146,9 @@ export const createOrder = createServerFn({ method: "POST" })
         notes: data.notes || null,
         subtotal,
         total,
-        status: "pending",
+        status: data.paymentMethod === "chargily" ? "pending" : "pending",
+        payment_method: data.paymentMethod,
+        payment_status: data.paymentMethod === "chargily" ? "pending" : "pending",
         delivery_type: data.deliveryType,
       })
       .select("id, created_at")

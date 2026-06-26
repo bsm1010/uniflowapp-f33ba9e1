@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useState } from "react";
-import { Loader2, Settings, Trash2, Upload, Store as StoreIcon, Info, MessageSquare } from "lucide-react";
+import { Loader2, Settings, Trash2, Upload, Store as StoreIcon, Info, MessageSquare, CreditCard } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -30,6 +30,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
 
 const AboutTab = lazy(() =>
   import("./-dashboard.about").then((m) => ({ default: m.AboutEditor }))
@@ -64,8 +65,10 @@ function StoreSettingsPage() {
   const [description, setDescription] = useState("");
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [tiktokPixelId, setTiktokPixelId] = useState("");
+  const [chargilyEnabled, setChargilyEnabled] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [savingPayments, setSavingPayments] = useState(false);
 
   useEffect(() => {
     if (!currentStore) return;
@@ -75,6 +78,19 @@ function StoreSettingsPage() {
     setLogoUrl(currentStore.logo_url);
     setTiktokPixelId((currentStore as any).tiktok_pixel_id ?? "");
   }, [currentStore]);
+
+  useEffect(() => {
+    if (!currentStore?.slug || !currentStore?.owner_id) return;
+    supabase
+      .from("store_settings")
+      .select("chargily_enabled")
+      .eq("user_id", currentStore.owner_id)
+      .eq("slug", currentStore.slug)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) setChargilyEnabled(data.chargily_enabled ?? false);
+      });
+  }, [currentStore?.id]);
 
   if (!currentStore) {
     return (
@@ -125,6 +141,22 @@ function StoreSettingsPage() {
     await refresh();
   };
 
+  const savePayments = async () => {
+    if (!currentStore?.slug || !currentStore?.owner_id) return;
+    setSavingPayments(true);
+    const { error } = await supabase
+      .from("store_settings")
+      .update({ chargily_enabled: chargilyEnabled })
+      .eq("user_id", currentStore.owner_id)
+      .eq("slug", currentStore.slug);
+    setSavingPayments(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Payment settings updated");
+  };
+
   const remove = async () => {
     if (!currentStore) return;
     if (stores.length <= 1) {
@@ -154,9 +186,12 @@ function StoreSettingsPage() {
       />
 
       <Tabs defaultValue="general" className="space-y-4">
-        <TabsList className="grid w-full max-w-md grid-cols-3">
+        <TabsList className="grid w-full max-w-lg grid-cols-4">
           <TabsTrigger value="general" className="gap-1.5">
             <Settings className="h-4 w-4" /> Store
+          </TabsTrigger>
+          <TabsTrigger value="payments" className="gap-1.5">
+            <CreditCard className="h-4 w-4" /> Payments
           </TabsTrigger>
           <TabsTrigger value="about" className="gap-1.5">
             <Info className="h-4 w-4" /> About
@@ -311,6 +346,52 @@ function StoreSettingsPage() {
               <div className="flex justify-end pt-2 border-t">
                 <Button onClick={save} disabled={saving}>
                   {saving && <Loader2 className="h-4 w-4 animate-spin" />}
+                  Save changes
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="payments">
+          <Card className="border-border/60">
+            <CardContent className="p-6 space-y-5">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center shrink-0">
+                  <CreditCard className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold">Chargily Pay</h3>
+                  <p className="text-xs text-muted-foreground">
+                    Enable online payment (CIB / EDAHABIA) for your customers
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between rounded-lg border p-4">
+                <div className="space-y-0.5">
+                  <Label className="text-sm font-medium">
+                   تفعيل الدفع الإلكتروني (Chargily)
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    يتيح لعملائك الدفع بـ CIB أو EDAHABIA مباشرة عند الطلب
+                  </p>
+                </div>
+                <Switch
+                  checked={chargilyEnabled}
+                  onCheckedChange={setChargilyEnabled}
+                />
+              </div>
+
+              {chargilyEnabled && (
+                <div className="rounded-lg bg-green-500/10 border border-green-500/20 px-4 py-3 text-sm text-green-700 dark:text-green-400">
+                  مفعّل — سيظهر خيار الدفع الإلكتروني في صفحة الدفع لدى عملائك
+                </div>
+              )}
+
+              <div className="flex justify-end pt-2 border-t">
+                <Button onClick={savePayments} disabled={savingPayments}>
+                  {savingPayments && <Loader2 className="h-4 w-4 animate-spin" />}
                   Save changes
                 </Button>
               </div>

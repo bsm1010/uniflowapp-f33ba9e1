@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { ArrowLeft, CheckCircle2, Home, Loader2, MapPin, Package, Truck } from "lucide-react";
+import { ArrowLeft, CheckCircle2, CreditCard, Home, Loader2, MapPin, Package, Truck } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
@@ -84,6 +84,7 @@ function CheckoutPage() {
     deliveryType: "domicile" as DeliveryType,
     notes: "",
   });
+  const [paymentMethod, setPaymentMethod] = useState<"cod" | "chargily">("cod");
 
   useEffect(() => {
     let active = true;
@@ -265,8 +266,40 @@ function CheckoutPage() {
             name: i.name,
             image: i.image,
           })),
+          paymentMethod,
         },
       });
+
+      if (paymentMethod === "chargily") {
+        const { data: session } = await supabase.auth.getSession();
+        if (!session?.session?.access_token) {
+          toast.error("Please log in to pay online");
+          setSubmitting(false);
+          return;
+        }
+        const { data: checkoutData, error: checkoutErr } = await supabase.functions.invoke(
+          "create-chargily-checkout",
+          {
+            body: {
+              amount: result.total,
+              orderId: result.orderId,
+              customerName: form.name.trim(),
+              customerEmail: form.email.trim() || undefined,
+              successUrl: `${window.location.origin}/payment/success?order_id=${result.orderId}`,
+              failureUrl: `${window.location.origin}/payment/failed?order_id=${result.orderId}`,
+            },
+          },
+        );
+        if (checkoutErr || !checkoutData?.checkout_url) {
+          toast.error("Failed to create payment link. Please try again.");
+          setSubmitting(false);
+          return;
+        }
+        cart.clear();
+        window.location.href = checkoutData.checkout_url;
+        return;
+      }
+
       cart.clear();
       setSuccessOrderId(result.orderId);
     } catch (err: unknown) {
@@ -731,6 +764,41 @@ function CheckoutPage() {
                       </span>
                     </div>
                   </div>
+
+                  {/* Payment method selection */}
+                  {settings.chargily_enabled && (
+                    <div className="mt-5 pt-4" style={{ borderTop: `1px solid ${t.border}` }}>
+                      <p className="text-xs font-semibold mb-3 uppercase tracking-wide" style={{ opacity: 0.6, color: t.muted }}>
+                        {tr("storefront.checkout.paymentMethod")}
+                      </p>
+                      <div className="grid grid-cols-2 gap-3">
+                        {([
+                          { key: "cod" as const, icon: Truck, label: tr("storefront.checkout.cod"), desc: tr("storefront.checkout.codDesc") },
+                          { key: "chargily" as const, icon: CreditCard, label: tr("storefront.checkout.chargily"), desc: tr("storefront.checkout.chargilyDesc") },
+                        ]).map(({ key, icon: Icon, label, desc }) => {
+                          const active = paymentMethod === key;
+                          return (
+                            <button
+                              type="button"
+                              key={key}
+                              onClick={() => setPaymentMethod(key)}
+                              className="flex flex-col items-center gap-1.5 py-3 px-3 text-sm font-medium transition-all"
+                              style={{
+                                border: `2px solid ${active ? t.primary : t.border}`,
+                                backgroundColor: active ? t.primary + "15" : t.isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.02)",
+                                color: active ? t.primary : t.fg,
+                                borderRadius: r,
+                              }}
+                            >
+                              <Icon className="h-5 w-5" />
+                              <span className="text-xs">{label}</span>
+                              <span className="text-[10px] font-normal opacity-60">{desc}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Submit button */}
                   <button
