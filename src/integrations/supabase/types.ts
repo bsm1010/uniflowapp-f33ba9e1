@@ -2760,6 +2760,7 @@ export type Database = {
           about_image_url: string | null
           about_title: string
           accent_color: string
+          ai_number: string
           background_color: string
           border_radius: string
           button_labels: Json
@@ -2786,7 +2787,9 @@ export type Database = {
           logo_url: string | null
           nav_links: Json
           navbar_style: string
+          nif_number: string
           primary_color: string
+          rc_number: string
           secondary_color: string
           section_order: string[]
           section_titles: Json
@@ -2797,18 +2800,22 @@ export type Database = {
           show_newsletter: boolean
           show_search: boolean
           slug: string
+          store_favicon_url: string
           store_id: string | null
           store_name: string
           tagline: string
           theme: string
+          tva_rate: number
           updated_at: string
           user_id: string
+          whatsapp_number: string
         }
         Insert: {
           about_content?: string
           about_image_url?: string | null
           about_title?: string
           accent_color?: string
+          ai_number?: string
           background_color?: string
           border_radius?: string
           button_labels?: Json
@@ -2835,7 +2842,9 @@ export type Database = {
           logo_url?: string | null
           nav_links?: Json
           navbar_style?: string
+          nif_number?: string
           primary_color?: string
+          rc_number?: string
           secondary_color?: string
           section_order?: string[]
           section_titles?: Json
@@ -2846,18 +2855,22 @@ export type Database = {
           show_newsletter?: boolean
           show_search?: boolean
           slug: string
+          store_favicon_url?: string
           store_id?: string | null
           store_name?: string
           tagline?: string
           theme?: string
+          tva_rate?: number
           updated_at?: string
           user_id: string
+          whatsapp_number?: string
         }
         Update: {
           about_content?: string
           about_image_url?: string | null
           about_title?: string
           accent_color?: string
+          ai_number?: string
           background_color?: string
           border_radius?: string
           button_labels?: Json
@@ -2884,7 +2897,9 @@ export type Database = {
           logo_url?: string | null
           nav_links?: Json
           navbar_style?: string
+          nif_number?: string
           primary_color?: string
+          rc_number?: string
           secondary_color?: string
           section_order?: string[]
           section_titles?: Json
@@ -2895,12 +2910,15 @@ export type Database = {
           show_newsletter?: boolean
           show_search?: boolean
           slug?: string
+          store_favicon_url?: string
           store_id?: string | null
           store_name?: string
           tagline?: string
           theme?: string
+          tva_rate?: number
           updated_at?: string
           user_id?: string
+          whatsapp_number?: string
         }
         Relationships: [
           {

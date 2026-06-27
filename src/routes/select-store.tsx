@@ -25,6 +25,8 @@ function SelectStorePage() {
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [wizardOpen, setWizardOpen] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [userName, setUserName] = useState("");
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -35,6 +37,15 @@ function SelectStorePage() {
   const load = async () => {
     if (!user) return;
     setLoading(true);
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("avatar_url, name")
+      .eq("id", user.id)
+      .maybeSingle();
+    setAvatarUrl(profile?.avatar_url ?? null);
+    setUserName(profile?.name ?? user.email ?? "");
+
     const { data } = await supabase
       .from("stores")
       .select("id, name, logo_url, category")
@@ -92,8 +103,12 @@ function SelectStorePage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-10"
         >
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary text-primary-foreground text-xl font-bold mb-4">
-            F
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary text-primary-foreground text-xl font-bold mb-4 overflow-hidden">
+            {avatarUrl ? (
+              <img src={avatarUrl} alt={userName} className="h-full w-full object-cover" />
+            ) : (
+              (userName || "U").split(/[\s@]/)[0].slice(0, 2).toUpperCase()
+            )}
           </div>
           <h1 className="text-4xl font-bold tracking-tight">Select Your Store</h1>
           <p className="text-muted-foreground mt-3">
