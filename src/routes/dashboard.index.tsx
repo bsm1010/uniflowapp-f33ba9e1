@@ -54,6 +54,7 @@ import {
   getZRExpressBalance,
   type ZRExpressBalanceResult,
 } from "@/lib/delivery/zrexpress-balance.functions";
+import { formatPrice as fmtPrice } from "@/lib/storeTheme";
 
 export const Route = createFileRoute("/dashboard/")({
   component: DashboardHome,
@@ -507,6 +508,8 @@ function DashboardHome() {
           ))}
         </div>
       )}
+
+      <CodPendingWidget user={user} formatPrice={(n) => fmtPrice(n, currentStore?.currency ?? "DZD")} />
 
       {/* ZRExpress — Solde prêt (shown when the API responded, even on error) */}
       {zrBalance && (
@@ -1101,5 +1104,58 @@ function SubscriptionStatusCard({
         </Button>
       </CardContent>
     </Card>
+  );
+}
+
+function CodPendingWidget({
+  user,
+  formatPrice,
+}: {
+  user: { id: string } | null;
+  formatPrice: (n: number) => string;
+}) {
+  const [total, setTotal] = useState(0);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("cod_collections")
+      .select("amount, status")
+      .eq("merchant_id", user.id)
+      .then(({ data }) => {
+        if (!data) return setLoaded(true);
+        const pending = data
+          .filter((c) => c.status === "in_transit" || c.status === "delivered")
+          .reduce((s, c) => s + (c.amount || 0), 0);
+        setTotal(pending);
+        setLoaded(true);
+      });
+  }, [user]);
+
+  if (!loaded || total === 0) return null;
+
+  return (
+    <Link to="/dashboard/apps/cod-manager" className="block">
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.15 }}
+        className="rounded-2xl border border-amber-500/20 bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-red-500/10 p-4 sm:p-5 flex items-center justify-between gap-4 hover:shadow-lg transition-shadow cursor-pointer"
+      >
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white">
+            <Wallet className="h-5 w-5" />
+          </div>
+          <div>
+            <p className="text-xs text-amber-600/80 font-semibold uppercase tracking-wider">COD Pending</p>
+            <p className="text-lg font-bold tabular-nums">{formatPrice(total)}</p>
+          </div>
+        </div>
+        <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/20 text-xs">
+          في الطريق
+        </Badge>
+      </motion.div>
+    </Link>
   );
 }

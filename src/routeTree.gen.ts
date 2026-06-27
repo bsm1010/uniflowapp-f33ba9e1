@@ -69,6 +69,7 @@ import { Route as DashboardAppsImageEnhancerRouteImport } from './routes/dashboa
 import { Route as DashboardAppsEmailMarketingRouteImport } from './routes/dashboard.apps.email-marketing'
 import { Route as DashboardAppsDiscountGeneratorRouteImport } from './routes/dashboard.apps.discount-generator'
 import { Route as DashboardAppsCurrencyConverterRouteImport } from './routes/dashboard.apps.currency-converter'
+import { Route as DashboardAppsCodManagerRouteImport } from './routes/dashboard.apps.cod-manager'
 import { Route as DashboardAppsChatbotRouteImport } from './routes/dashboard.apps.chatbot'
 import { Route as DashboardAppsAnalyticsRouteImport } from './routes/dashboard.apps.analytics'
 import { Route as DashboardAppsAiDescriptionsRouteImport } from './routes/dashboard.apps.ai-descriptions'
@@ -411,6 +412,11 @@ const DashboardAppsCurrencyConverterRoute =
     path: '/currency-converter',
     getParentRoute: () => DashboardAppsRoute,
   } as any)
+const DashboardAppsCodManagerRoute = DashboardAppsCodManagerRouteImport.update({
+  id: '/cod-manager',
+  path: '/cod-manager',
+  getParentRoute: () => DashboardAppsRoute,
+} as any)
 const DashboardAppsChatbotRoute = DashboardAppsChatbotRouteImport.update({
   id: '/chatbot',
   path: '/chatbot',
@@ -637,6 +643,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/apps/ai-descriptions': typeof DashboardAppsAiDescriptionsRoute
   '/dashboard/apps/analytics': typeof DashboardAppsAnalyticsRoute
   '/dashboard/apps/chatbot': typeof DashboardAppsChatbotRoute
+  '/dashboard/apps/cod-manager': typeof DashboardAppsCodManagerRoute
   '/dashboard/apps/currency-converter': typeof DashboardAppsCurrencyConverterRoute
   '/dashboard/apps/discount-generator': typeof DashboardAppsDiscountGeneratorRoute
   '/dashboard/apps/email-marketing': typeof DashboardAppsEmailMarketingRoute
@@ -727,6 +734,7 @@ export interface FileRoutesByTo {
   '/dashboard/apps/ai-descriptions': typeof DashboardAppsAiDescriptionsRoute
   '/dashboard/apps/analytics': typeof DashboardAppsAnalyticsRoute
   '/dashboard/apps/chatbot': typeof DashboardAppsChatbotRoute
+  '/dashboard/apps/cod-manager': typeof DashboardAppsCodManagerRoute
   '/dashboard/apps/currency-converter': typeof DashboardAppsCurrencyConverterRoute
   '/dashboard/apps/discount-generator': typeof DashboardAppsDiscountGeneratorRoute
   '/dashboard/apps/email-marketing': typeof DashboardAppsEmailMarketingRoute
@@ -821,6 +829,7 @@ export interface FileRoutesById {
   '/dashboard/apps/ai-descriptions': typeof DashboardAppsAiDescriptionsRoute
   '/dashboard/apps/analytics': typeof DashboardAppsAnalyticsRoute
   '/dashboard/apps/chatbot': typeof DashboardAppsChatbotRoute
+  '/dashboard/apps/cod-manager': typeof DashboardAppsCodManagerRoute
   '/dashboard/apps/currency-converter': typeof DashboardAppsCurrencyConverterRoute
   '/dashboard/apps/discount-generator': typeof DashboardAppsDiscountGeneratorRoute
   '/dashboard/apps/email-marketing': typeof DashboardAppsEmailMarketingRoute
@@ -916,6 +925,7 @@ export interface FileRouteTypes {
     | '/dashboard/apps/ai-descriptions'
     | '/dashboard/apps/analytics'
     | '/dashboard/apps/chatbot'
+    | '/dashboard/apps/cod-manager'
     | '/dashboard/apps/currency-converter'
     | '/dashboard/apps/discount-generator'
     | '/dashboard/apps/email-marketing'
@@ -1006,6 +1016,7 @@ export interface FileRouteTypes {
     | '/dashboard/apps/ai-descriptions'
     | '/dashboard/apps/analytics'
     | '/dashboard/apps/chatbot'
+    | '/dashboard/apps/cod-manager'
     | '/dashboard/apps/currency-converter'
     | '/dashboard/apps/discount-generator'
     | '/dashboard/apps/email-marketing'
@@ -1099,6 +1110,7 @@ export interface FileRouteTypes {
     | '/dashboard/apps/ai-descriptions'
     | '/dashboard/apps/analytics'
     | '/dashboard/apps/chatbot'
+    | '/dashboard/apps/cod-manager'
     | '/dashboard/apps/currency-converter'
     | '/dashboard/apps/discount-generator'
     | '/dashboard/apps/email-marketing'
@@ -1601,6 +1613,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAppsCurrencyConverterRouteImport
       parentRoute: typeof DashboardAppsRoute
     }
+    '/dashboard/apps/cod-manager': {
+      id: '/dashboard/apps/cod-manager'
+      path: '/cod-manager'
+      fullPath: '/dashboard/apps/cod-manager'
+      preLoaderRoute: typeof DashboardAppsCodManagerRouteImport
+      parentRoute: typeof DashboardAppsRoute
+    }
     '/dashboard/apps/chatbot': {
       id: '/dashboard/apps/chatbot'
       path: '/chatbot'
@@ -1827,6 +1846,7 @@ interface DashboardAppsRouteChildren {
   DashboardAppsAiDescriptionsRoute: typeof DashboardAppsAiDescriptionsRoute
   DashboardAppsAnalyticsRoute: typeof DashboardAppsAnalyticsRoute
   DashboardAppsChatbotRoute: typeof DashboardAppsChatbotRoute
+  DashboardAppsCodManagerRoute: typeof DashboardAppsCodManagerRoute
   DashboardAppsCurrencyConverterRoute: typeof DashboardAppsCurrencyConverterRoute
   DashboardAppsDiscountGeneratorRoute: typeof DashboardAppsDiscountGeneratorRoute
   DashboardAppsEmailMarketingRoute: typeof DashboardAppsEmailMarketingRoute
@@ -1846,6 +1866,7 @@ const DashboardAppsRouteChildren: DashboardAppsRouteChildren = {
   DashboardAppsAiDescriptionsRoute: DashboardAppsAiDescriptionsRoute,
   DashboardAppsAnalyticsRoute: DashboardAppsAnalyticsRoute,
   DashboardAppsChatbotRoute: DashboardAppsChatbotRoute,
+  DashboardAppsCodManagerRoute: DashboardAppsCodManagerRoute,
   DashboardAppsCurrencyConverterRoute: DashboardAppsCurrencyConverterRoute,
   DashboardAppsDiscountGeneratorRoute: DashboardAppsDiscountGeneratorRoute,
   DashboardAppsEmailMarketingRoute: DashboardAppsEmailMarketingRoute,

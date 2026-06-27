@@ -2683,6 +2683,87 @@ export type Database = {
         }
         Relationships: []
       }
+      cod_collections: {
+        Row: {
+          actual_transfer_date: string | null
+          amount: number
+          created_at: string
+          customer_name: string | null
+          delivery_company: string
+          expected_transfer_date: string | null
+          id: string
+          merchant_id: string
+          order_id: string | null
+          status: string
+          tracking_number: string | null
+          transfer_reference: string | null
+          updated_at: string
+        }
+        Insert: {
+          actual_transfer_date?: string | null
+          amount: number
+          created_at?: string
+          customer_name?: string | null
+          delivery_company: string
+          expected_transfer_date?: string | null
+          id?: string
+          merchant_id: string
+          order_id?: string | null
+          status?: string
+          tracking_number?: string | null
+          transfer_reference?: string | null
+          updated_at?: string
+        }
+        Update: {
+          actual_transfer_date?: string | null
+          amount?: number
+          created_at?: string
+          customer_name?: string | null
+          delivery_company?: string
+          expected_transfer_date?: string | null
+          id?: string
+          merchant_id?: string
+          order_id?: string | null
+          status?: string
+          tracking_number?: string | null
+          transfer_reference?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      cod_transfers: {
+        Row: {
+          amount: number
+          created_at: string
+          delivery_company: string
+          id: string
+          merchant_id: string
+          notes: string | null
+          reference: string | null
+          transfer_date: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          delivery_company: string
+          id?: string
+          merchant_id: string
+          notes?: string | null
+          reference?: string | null
+          transfer_date: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          delivery_company?: string
+          id?: string
+          merchant_id?: string
+          notes?: string | null
+          reference?: string | null
+          transfer_date?: string
+        }
+        Relationships: []
+      }
       store_delivery_companies: {
         Row: {
           api_key: string

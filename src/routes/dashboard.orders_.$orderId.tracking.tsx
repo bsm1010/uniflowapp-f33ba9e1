@@ -16,6 +16,7 @@ import {
   Code2,
   MessageCircle,
   PhoneCall,
+  Wallet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -122,6 +123,8 @@ function TrackingPage() {
     { id: string; outcome: string; called_at: string; channel: string; customer_name: string | null; note: string | null }[]
   >([]);
   const { printBordereaux, loading: printingBordereau } = useBordereaux();
+  const [codTracked, setCodTracked] = useState<boolean | null>(null);
+  const [codLogging, setCodLogging] = useState(false);
 
   const loadOrder = async () => {
     if (!user) return;
@@ -193,6 +196,35 @@ function TrackingPage() {
     if (order?.tracking_number) void refreshTracking();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [order?.tracking_number]);
+
+  useEffect(() => {
+    if (!user || !orderId) return;
+    supabase
+      .from("cod_collections")
+      .select("id")
+      .eq("merchant_id", user.id)
+      .eq("order_id", orderId)
+      .maybeSingle()
+      .then(({ data }) => setCodTracked(!!data));
+  }, [user, orderId]);
+
+  const logToCOD = async () => {
+    if (!user || !order) return;
+    setCodLogging(true);
+    const { error } = await supabase.from("cod_collections").insert({
+      merchant_id: user.id,
+      order_id: order.id,
+      delivery_company: order.delivery_type || "ZR Express",
+      tracking_number: order.tracking_number,
+      customer_name: order.customer_name,
+      amount: Math.round(Number(order.total) || 0),
+      status: order.status === "delivered" ? "delivered" : "in_transit",
+    });
+    setCodLogging(false);
+    if (error) return toast.error(error.message);
+    setCodTracked(true);
+    toast.success("Added to COD Manager");
+  };
 
   if (loading) {
     return (
@@ -481,6 +513,32 @@ function TrackingPage() {
                 </Badge>
               </div>
             )}
+            <div className="pt-2 border-t border-border/60">
+              {codTracked === false ? (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="rounded-xl"
+                  onClick={logToCOD}
+                  disabled={codLogging}
+                >
+                  {codLogging ? (
+                    <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+                  ) : (
+                    <Wallet className="h-3.5 w-3.5 mr-1.5" />
+                  )}
+                  تسجيل في COD Manager
+                </Button>
+              ) : codTracked === true ? (
+                <Link
+                  to="/dashboard/apps/cod-manager"
+                  className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+                >
+                  <Wallet className="h-3.5 w-3.5" />
+                  Already tracked in COD Manager
+                </Link>
+              ) : null}
+            </div>
             <InfoRow icon={User} label="Customer">
               {order.customer_name}
             </InfoRow>
