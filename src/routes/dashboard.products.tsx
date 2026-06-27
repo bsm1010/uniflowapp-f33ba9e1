@@ -12,6 +12,8 @@ import {
   Trash2,
   ChevronUp,
   ChevronDown,
+  Upload,
+  Clock,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -63,6 +65,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Img } from "@/components/ui/Img";
 import { formatPrice as fmtPrice } from "@/lib/storeTheme";
+import { ProductImportDialog } from "@/components/dashboard/ProductImportDialog";
+import { formatDistanceToNow } from "date-fns";
 
 export const Route = createFileRoute("/dashboard/products")({
   component: ProductsPage,
@@ -88,6 +92,8 @@ function ProductsPage() {
   const [editing, setEditing] = useState<Product | null>(null);
   const [deleting, setDeleting] = useState<Product | null>(null);
   const [bulkDeleting, setBulkDeleting] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
+  const [lastImport, setLastImport] = useState<{ imported_rows: number; created_at: string; filename: string | null } | null>(null);
 
   const formatPrice = (n: number) => fmtPrice(n, currentStore?.currency ?? "DZD");
 
@@ -137,6 +143,17 @@ function ProductsPage() {
         })),
       );
       setSelected(new Set());
+
+      // Load last import log
+      const { data: lastImportData } = await supabase
+        .from("import_logs")
+        .select("imported_rows, created_at, filename")
+        .eq("merchant_id", user.id)
+        .eq("type", "products")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (lastImportData) setLastImport(lastImportData);
     } catch {
       toast.error("Failed to load products. Please try again.");
     } finally {
@@ -262,15 +279,32 @@ function ProductsPage() {
         icon={PackageSearch}
         gradient="from-violet-500 via-fuchsia-500 to-pink-500"
         actions={
-          <Button
-            onClick={() => {
-              setEditing(null);
-              setDialogOpen(true);
-            }}
-            disabled={isExpired}
-          >
-            <Plus className="h-4 w-4" /> Add product
-          </Button>
+          <div className="flex items-center gap-2">
+            {lastImport && (
+              <span className="text-xs text-muted-foreground hidden sm:inline-flex items-center gap-1">
+                <Clock className="h-3 w-3" />
+                Last import: {lastImport.imported_rows} products — {formatDistanceToNow(new Date(lastImport.created_at), { addSuffix: true })}
+              </span>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setImportOpen(true)}
+              disabled={isExpired}
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              Import from Excel
+            </Button>
+            <Button
+              onClick={() => {
+                setEditing(null);
+                setDialogOpen(true);
+              }}
+              disabled={isExpired}
+            >
+              <Plus className="h-4 w-4" /> Add product
+            </Button>
+          </div>
         }
       />
 
@@ -555,6 +589,12 @@ function ProductsPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <ProductImportDialog
+        open={importOpen}
+        onOpenChange={setImportOpen}
+        onImported={() => { void load(); }}
+      />
     </div>
   );
 }

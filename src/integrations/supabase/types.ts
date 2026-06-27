@@ -2764,6 +2764,39 @@ export type Database = {
         }
         Relationships: []
       }
+      import_logs: {
+        Row: {
+          created_at: string
+          filename: string | null
+          id: string
+          imported_rows: number
+          merchant_id: string
+          skipped_rows: number
+          total_rows: number
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          filename?: string | null
+          id?: string
+          imported_rows?: number
+          merchant_id: string
+          skipped_rows?: number
+          total_rows?: number
+          type?: string
+        }
+        Update: {
+          created_at?: string
+          filename?: string | null
+          id?: string
+          imported_rows?: number
+          merchant_id?: string
+          skipped_rows?: number
+          total_rows?: number
+          type?: string
+        }
+        Relationships: []
+      }
       store_delivery_companies: {
         Row: {
           api_key: string
