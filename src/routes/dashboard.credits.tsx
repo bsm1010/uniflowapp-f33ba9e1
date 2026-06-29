@@ -237,9 +237,6 @@ function CreditsPage() {
     <div className="relative max-w-6xl mx-auto space-y-10 pb-12">
       {/* Decorative background orbs */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-24 -left-24 size-96 rounded-full bg-gradient-to-br from-violet-500/30 via-fuchsia-500/20 to-transparent blur-3xl" />
-        <div className="absolute top-40 -right-32 size-[28rem] rounded-full bg-gradient-to-br from-violet-400/15 via-fuchsia-500/10 to-transparent blur-3xl" />
-        <div className="absolute bottom-0 left-1/3 size-80 rounded-full bg-gradient-to-tr from-amber-400/20 via-pink-400/15 to-transparent blur-3xl" />
       </div>
 
       {/* Hero header */}
