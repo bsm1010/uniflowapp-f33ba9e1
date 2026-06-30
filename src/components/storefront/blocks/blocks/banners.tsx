@@ -88,7 +88,7 @@ export function PromoBanner({ props }: BlockComponentProps<PromoBannerProps>) {
           />
         ) : null}
         <div className="relative max-w-xl">
-          <h2 className="font-display text-3xl font-bold md:text-5xl">{props.title}</h2>
+          <h2 className="font-display text-3xl font-bold tracking-tight md:text-5xl">{props.title}</h2>
           {props.subtitle ? <p className="mt-3 text-lg opacity-90">{props.subtitle}</p> : null}
           <Button asChild size="lg" variant="secondary" className="mt-6">
             <a href={props.ctaHref}>{props.ctaLabel}</a>
@@ -127,14 +127,14 @@ export function CountdownBanner({ props }: BlockComponentProps<CountdownBannerPr
   return (
     <section className="mx-auto my-10 max-w-5xl px-4">
       <div className="rounded-3xl border border-border bg-card p-8 text-center">
-        <h2 className="font-display text-2xl font-bold md:text-3xl">{props.title}</h2>
+        <h2 className="font-display text-2xl font-bold tracking-tight md:text-3xl">{props.title}</h2>
         <div className="mt-6 flex justify-center gap-3">
           {cells.map(([v, label]) => (
             <div
               key={label}
               className="min-w-[70px] rounded-xl bg-primary px-4 py-3 text-primary-foreground"
             >
-              <p className="font-display text-3xl font-bold tabular-nums">
+              <p className="font-display text-3xl font-bold tracking-tight tabular-nums">
                 {String(v).padStart(2, "0")}
               </p>
               <p className="text-[10px] uppercase tracking-wider opacity-80">{label}</p>

@@ -687,7 +687,7 @@ function OrdersPage() {
                             day: "numeric",
                           })}
                         </TableCell>
-                        <TableCell className="text-right font-semibold whitespace-nowrap">
+                        <TableCell className="text-right font-semibold whitespace-nowrap tabular-nums">
                           {Number(o.total).toFixed(2)} DA
                         </TableCell>
                         <TableCell className="text-right whitespace-nowrap">
@@ -758,7 +758,7 @@ function OrdersPage() {
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-card/95 backdrop-blur-xl border border-border shadow-2xl rounded-2xl px-5 py-3 flex items-center gap-3">
           <div className="flex items-center gap-2">
             <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
-              <span className="text-xs font-bold text-primary">{selectedIds.size}</span>
+              <span className="text-xs font-bold text-primary tabular-nums">{selectedIds.size}</span>
             </div>
             <span className="text-sm font-medium">selected</span>
           </div>

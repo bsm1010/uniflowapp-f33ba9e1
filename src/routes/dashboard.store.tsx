@@ -346,7 +346,7 @@ function StorePage() {
               <CardContent className="relative p-5 flex items-center justify-between">
                 <div>
                   <p className="text-xs text-muted-foreground font-medium">{s.label}</p>
-                  <p className="text-2xl font-bold font-display mt-1">{s.value}</p>
+                  <p className="text-2xl font-bold font-display tabular-nums mt-1">{s.value}</p>
                 </div>
                 <div className="h-10 w-10 rounded-xl bg-background/70 border border-border/60 flex items-center justify-center">
                   <s.icon className="h-4 w-4 text-foreground" />

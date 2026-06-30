@@ -416,7 +416,7 @@ function CreditsPage() {
                     {t("dashboard.credits.packName", { count: p.credits })}
                   </h3>
                   <div className="mt-2 flex items-baseline gap-2">
-                    <div className="text-4xl font-bold font-display bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
+                    <div className="text-4xl font-bold font-display tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
                       {p.price.toLocaleString()}
                     </div>
                     <span className="text-sm text-muted-foreground">
@@ -487,9 +487,9 @@ function CreditsPage() {
                       </Badge>
                     )}
                   </div>
-                  <h3 className="text-lg font-semibold">{planName(p.id)}</h3>
-                  <div className="mt-2 flex items-baseline gap-2">
-                    <div className="text-4xl font-bold font-display bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
+                   <h3 className="text-lg font-semibold">{planName(p.id)}</h3>
+                   <div className="mt-2 flex items-baseline gap-2">
+                    <div className="text-4xl font-bold font-display tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
                       {p.price.toLocaleString()}
                     </div>
                     <span className="text-sm text-muted-foreground">
@@ -618,7 +618,7 @@ function CreditsPage() {
                   <div className="text-xs uppercase tracking-wider text-muted-foreground">
                     {t("dashboard.credits.amountDue")}
                   </div>
-                  <div className="text-3xl font-bold font-display mt-1 bg-gradient-to-br from-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
+                  <div className="text-3xl font-bold font-display tabular-nums tracking-tight mt-1 bg-gradient-to-br from-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
                     {choice.price.toLocaleString()}{" "}
                     <span className="text-base text-muted-foreground font-normal">
                       {t("dashboard.credits.currency")}
@@ -629,7 +629,7 @@ function CreditsPage() {
                   <div className="text-xs uppercase tracking-wider text-muted-foreground">
                     {t("dashboard.credits.youGet")}
                   </div>
-                  <div className="text-3xl font-bold font-display mt-1 flex items-baseline gap-2 sm:justify-end">
+                  <div className="text-3xl font-bold font-display tabular-nums tracking-tight mt-1 flex items-baseline gap-2 sm:justify-end">
                     <Coins className="size-6 text-primary" />
                     {choice.credits}{" "}
                     <span className="text-base text-muted-foreground font-normal">
@@ -668,7 +668,7 @@ function CreditsPage() {
                   <div className="text-xs uppercase tracking-wider text-muted-foreground">
                     {t("dashboard.credits.amountDue")}
                   </div>
-                  <div className="text-3xl font-bold font-display mt-1 bg-gradient-to-br from-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
+                  <div className="text-3xl font-bold font-display tabular-nums tracking-tight mt-1 bg-gradient-to-br from-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
                     {choice.price.toLocaleString()}{" "}
                     <span className="text-base text-muted-foreground font-normal">
                       {t("dashboard.credits.currency")}
@@ -679,7 +679,7 @@ function CreditsPage() {
                   <div className="text-xs uppercase tracking-wider text-muted-foreground">
                     {t("dashboard.credits.youGet")}
                   </div>
-                  <div className="text-3xl font-bold font-display mt-1 flex items-baseline gap-2 sm:justify-end">
+                  <div className="text-3xl font-bold font-display tabular-nums tracking-tight mt-1 flex items-baseline gap-2 sm:justify-end">
                     <Coins className="size-6 text-primary" />
                     {choice.credits}{" "}
                     <span className="text-base text-muted-foreground font-normal">

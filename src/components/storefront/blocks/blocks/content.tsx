@@ -133,7 +133,7 @@ export function Pricing({ props }: BlockComponentProps<PricingProps>) {
             }`}
           >
             <h3 className="text-lg font-semibold">{p.name}</h3>
-            <p className="mt-3 font-display text-4xl font-bold">
+            <p className="mt-3 font-display text-4xl font-bold tracking-tight">
               {p.price}
               {p.period ? (
                 <span className="text-base font-normal opacity-70">/{p.period}</span>

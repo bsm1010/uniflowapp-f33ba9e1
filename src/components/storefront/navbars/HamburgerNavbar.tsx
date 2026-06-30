@@ -105,7 +105,7 @@ export function HamburgerNavbar({
                   initial={{ opacity: 0, y: 24, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ delay: i * 0.06, type: "spring", stiffness: 300, damping: 25 }}
-                  className="text-3xl font-display font-bold py-3 transition-all duration-200 hover:opacity-60 hover:scale-105"
+                  className="text-3xl font-display font-bold tracking-tight py-3 transition-all duration-200 hover:opacity-60 hover:scale-105"
                   style={{ color: t.fg }}
                   onClick={() => setMobileOpen(false)}
                 >

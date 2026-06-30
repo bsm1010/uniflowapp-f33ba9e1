@@ -425,7 +425,7 @@ function DashboardHome() {
               <TrendingUp className="h-3 w-3" />
               {t("dashboard.home.kicker")}
             </div>
-            <h1 className="mt-3 text-3xl md:text-4xl font-bold font-display">
+            <h1 className="mt-3 text-3xl md:text-4xl font-bold font-display tracking-tight">
               {t("dashboard.home.welcome")}{" "}
               <InlineEditable
                 value={displayName}
@@ -435,7 +435,7 @@ function DashboardHome() {
                   if (!error) setName(val);
                 }}
                 placeholder="Your name"
-                className="aurora-text"
+                className="text-primary font-bold"
                 inputClassName="text-3xl md:text-4xl font-bold font-display bg-transparent"
                 maxLength={60}
               />
@@ -946,7 +946,7 @@ function StatCard({
         <div className="pointer-events-none absolute -top-12 -right-12 h-32 w-32 rounded-full bg-white/15 blur-2xl" />
       )}
       {isRevenue && (
-        <div className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shine" />
+        <div className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
       )}
       <CardContent className="relative p-5">
         <div className="flex items-center justify-between">

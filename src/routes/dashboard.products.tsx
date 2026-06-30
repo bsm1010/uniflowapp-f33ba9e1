@@ -500,7 +500,7 @@ function ProductsPage() {
                             </Badge>
                           )}
                         </TableCell>
-                        <TableCell className="text-right font-medium">
+                        <TableCell className="text-right font-medium tabular-nums">
                           <div>{formatPrice(p.price)}</div>
                           {p.sale_price != null && (
                             <div className="text-xs text-emerald-600">

@@ -227,7 +227,7 @@ export function Pricing() {
                 {tier.desc}
               </p>
               <div className="mt-6 flex items-baseline gap-1">
-                <span className={`text-4xl font-bold font-display ${getPriceClass(tier.style)}`}>
+                <span className={`text-4xl font-bold font-display tracking-tight ${getPriceClass(tier.style)}`}>
                   {tier.price}
                 </span>
                 <span className="text-sm text-muted-foreground">

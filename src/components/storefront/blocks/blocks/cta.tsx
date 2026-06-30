@@ -16,7 +16,7 @@ export function CTASection({ props }: BlockComponentProps<CTASectionProps>) {
   return (
     <Section>
       <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-primary to-accent p-12 text-center text-primary-foreground md:p-20">
-        <h2 className="font-display text-3xl font-bold md:text-5xl">{props.title}</h2>
+        <h2 className="font-display text-3xl font-bold tracking-tight md:text-5xl">{props.title}</h2>
         {props.subtitle ? (
           <p className="mx-auto mt-4 max-w-2xl text-lg opacity-90">{props.subtitle}</p>
         ) : null}

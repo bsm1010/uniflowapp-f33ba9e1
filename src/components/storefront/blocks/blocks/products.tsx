@@ -86,7 +86,7 @@ export function FeaturedProduct({ props, context }: BlockComponentProps<Featured
       <div className="grid items-center gap-10 md:grid-cols-2">
         <BlockImage src={props.product.imageUrl} alt={props.product.name} aspect="square" />
         <div>
-          <h2 className="font-display text-3xl font-bold md:text-4xl">{props.product.name}</h2>
+          <h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">{props.product.name}</h2>
           <p className="mt-3 text-2xl font-semibold text-primary">
             {formatPrice(props.product.price, context.currency)}
           </p>

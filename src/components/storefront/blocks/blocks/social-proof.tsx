@@ -108,7 +108,7 @@ export function StatsCounter({ props }: BlockComponentProps<StatsCounterProps>) 
       <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-4">
         {props.stats.map((s, i) => (
           <div key={i} className="rounded-2xl border border-border bg-card p-6 text-center">
-            <p className="font-display text-4xl font-bold text-primary">{s.value}</p>
+            <p className="font-display text-4xl font-bold tracking-tight text-primary">{s.value}</p>
             <p className="mt-2 text-sm text-muted-foreground">{s.label}</p>
           </div>
         ))}
