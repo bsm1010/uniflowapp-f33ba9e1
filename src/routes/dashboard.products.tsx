@@ -145,7 +145,7 @@ function ProductsPage() {
       setSelected(new Set());
 
       // Load last import log
-      const { data: lastImportData } = await supabase
+      const { data: lastImportData } = await (supabase as any)
         .from("import_logs")
         .select("imported_rows, created_at, filename")
         .eq("merchant_id", user.id)
