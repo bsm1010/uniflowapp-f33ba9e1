@@ -420,7 +420,7 @@ function SettingsPage() {
     if (!user) return;
     setSavingSocials(true);
     const [err1, err2] = await Promise.all([
-      supabase
+      (supabase as any)
         .from("store_settings")
         .update({
           whatsapp_number: whatsapp,
