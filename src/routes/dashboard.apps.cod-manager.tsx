@@ -205,7 +205,7 @@ function CodManagerPage() {
     > = {};
 
     for (const c of collections) {
-      const m = c.created_at.slice(0, 7);
+      const m = (c.created_at ?? "").slice(0, 7);
       if (!months[m]) months[m] = { shipped: 0, delivered: 0, returned: 0, codExpected: 0, codReceived: 0 };
       months[m].shipped += 1;
       if (c.status === "delivered") months[m].delivered += 1;
