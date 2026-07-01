@@ -594,13 +594,12 @@ export function useAdminApproveTopup() {
   const qc = useQueryClient();
   const { user } = useAuth();
   return useMutation({
-    mutationFn: async (args: { requestId: string; adminNote?: string; accessToken: string }) => {
+    mutationFn: async (args: { requestId: string; adminNote?: string; accessToken?: string }) => {
       if (!user) throw new Error("Not signed in");
       const res = await approveWalletTopup({
         data: {
           request_id: args.requestId,
           admin_note: args.adminNote,
-          access_token: args.accessToken,
         },
       });
       return res;
@@ -618,13 +617,12 @@ export function useAdminRejectTopup() {
   const qc = useQueryClient();
   const { user } = useAuth();
   return useMutation({
-    mutationFn: async (args: { requestId: string; adminNote?: string; accessToken: string }) => {
+    mutationFn: async (args: { requestId: string; adminNote?: string; accessToken?: string }) => {
       if (!user) throw new Error("Not signed in");
       const res = await rejectWalletTopup({
         data: {
           request_id: args.requestId,
           admin_note: args.adminNote,
-          access_token: args.accessToken,
         },
       });
       return res;

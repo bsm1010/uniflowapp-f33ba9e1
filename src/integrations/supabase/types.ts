@@ -604,6 +604,95 @@ export type Database = {
           },
         ]
       }
+      cod_collections: {
+        Row: {
+          actual_transfer_date: string | null
+          amount: number
+          created_at: string | null
+          customer_name: string | null
+          delivery_company: string
+          expected_transfer_date: string | null
+          id: string
+          merchant_id: string
+          order_id: string | null
+          status: string | null
+          tracking_number: string | null
+          transfer_reference: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          actual_transfer_date?: string | null
+          amount: number
+          created_at?: string | null
+          customer_name?: string | null
+          delivery_company: string
+          expected_transfer_date?: string | null
+          id?: string
+          merchant_id: string
+          order_id?: string | null
+          status?: string | null
+          tracking_number?: string | null
+          transfer_reference?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          actual_transfer_date?: string | null
+          amount?: number
+          created_at?: string | null
+          customer_name?: string | null
+          delivery_company?: string
+          expected_transfer_date?: string | null
+          id?: string
+          merchant_id?: string
+          order_id?: string | null
+          status?: string | null
+          tracking_number?: string | null
+          transfer_reference?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cod_collections_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cod_transfers: {
+        Row: {
+          amount: number
+          created_at: string | null
+          delivery_company: string
+          id: string
+          merchant_id: string
+          notes: string | null
+          reference: string | null
+          transfer_date: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          delivery_company: string
+          id?: string
+          merchant_id: string
+          notes?: string | null
+          reference?: string | null
+          transfer_date: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          delivery_company?: string
+          id?: string
+          merchant_id?: string
+          notes?: string | null
+          reference?: string | null
+          transfer_date?: string
+        }
+        Relationships: []
+      }
       consent_audit_log: {
         Row: {
           action: string
@@ -1875,8 +1964,8 @@ export type Database = {
           id: string
           notes: string | null
           paid_at: string | null
-          payment_method: string
-          payment_status: string
+          payment_method: string | null
+          payment_status: string | null
           shipping_address: string
           shipping_city: string
           shipping_country: string
@@ -1904,8 +1993,8 @@ export type Database = {
           id?: string
           notes?: string | null
           paid_at?: string | null
-          payment_method?: string
-          payment_status?: string
+          payment_method?: string | null
+          payment_status?: string | null
           shipping_address: string
           shipping_city: string
           shipping_country: string
@@ -1933,8 +2022,8 @@ export type Database = {
           id?: string
           notes?: string | null
           paid_at?: string | null
-          payment_method?: string
-          payment_status?: string
+          payment_method?: string | null
+          payment_status?: string | null
           shipping_address?: string
           shipping_city?: string
           shipping_country?: string
@@ -2683,120 +2772,6 @@ export type Database = {
         }
         Relationships: []
       }
-      cod_collections: {
-        Row: {
-          actual_transfer_date: string | null
-          amount: number
-          created_at: string
-          customer_name: string | null
-          delivery_company: string
-          expected_transfer_date: string | null
-          id: string
-          merchant_id: string
-          order_id: string | null
-          status: string
-          tracking_number: string | null
-          transfer_reference: string | null
-          updated_at: string
-        }
-        Insert: {
-          actual_transfer_date?: string | null
-          amount: number
-          created_at?: string
-          customer_name?: string | null
-          delivery_company: string
-          expected_transfer_date?: string | null
-          id?: string
-          merchant_id: string
-          order_id?: string | null
-          status?: string
-          tracking_number?: string | null
-          transfer_reference?: string | null
-          updated_at?: string
-        }
-        Update: {
-          actual_transfer_date?: string | null
-          amount?: number
-          created_at?: string
-          customer_name?: string | null
-          delivery_company?: string
-          expected_transfer_date?: string | null
-          id?: string
-          merchant_id?: string
-          order_id?: string | null
-          status?: string
-          tracking_number?: string | null
-          transfer_reference?: string | null
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      cod_transfers: {
-        Row: {
-          amount: number
-          created_at: string
-          delivery_company: string
-          id: string
-          merchant_id: string
-          notes: string | null
-          reference: string | null
-          transfer_date: string
-        }
-        Insert: {
-          amount: number
-          created_at?: string
-          delivery_company: string
-          id?: string
-          merchant_id: string
-          notes?: string | null
-          reference?: string | null
-          transfer_date: string
-        }
-        Update: {
-          amount?: number
-          created_at?: string
-          delivery_company?: string
-          id?: string
-          merchant_id?: string
-          notes?: string | null
-          reference?: string | null
-          transfer_date?: string
-        }
-        Relationships: []
-      }
-      import_logs: {
-        Row: {
-          created_at: string
-          filename: string | null
-          id: string
-          imported_rows: number
-          merchant_id: string
-          skipped_rows: number
-          total_rows: number
-          type: string
-        }
-        Insert: {
-          created_at?: string
-          filename?: string | null
-          id?: string
-          imported_rows?: number
-          merchant_id: string
-          skipped_rows?: number
-          total_rows?: number
-          type?: string
-        }
-        Update: {
-          created_at?: string
-          filename?: string | null
-          id?: string
-          imported_rows?: number
-          merchant_id?: string
-          skipped_rows?: number
-          total_rows?: number
-          type?: string
-        }
-        Relationships: []
-      }
       store_delivery_companies: {
         Row: {
           api_key: string
@@ -2874,7 +2849,6 @@ export type Database = {
           about_image_url: string | null
           about_title: string
           accent_color: string
-          ai_number: string
           background_color: string
           border_radius: string
           button_labels: Json
@@ -2901,9 +2875,7 @@ export type Database = {
           logo_url: string | null
           nav_links: Json
           navbar_style: string
-          nif_number: string
           primary_color: string
-          rc_number: string
           secondary_color: string
           section_order: string[]
           section_titles: Json
@@ -2914,22 +2886,18 @@ export type Database = {
           show_newsletter: boolean
           show_search: boolean
           slug: string
-          store_favicon_url: string
           store_id: string | null
           store_name: string
           tagline: string
           theme: string
-          tva_rate: number
           updated_at: string
           user_id: string
-          whatsapp_number: string
         }
         Insert: {
           about_content?: string
           about_image_url?: string | null
           about_title?: string
           accent_color?: string
-          ai_number?: string
           background_color?: string
           border_radius?: string
           button_labels?: Json
@@ -2956,9 +2924,7 @@ export type Database = {
           logo_url?: string | null
           nav_links?: Json
           navbar_style?: string
-          nif_number?: string
           primary_color?: string
-          rc_number?: string
           secondary_color?: string
           section_order?: string[]
           section_titles?: Json
@@ -2969,22 +2935,18 @@ export type Database = {
           show_newsletter?: boolean
           show_search?: boolean
           slug: string
-          store_favicon_url?: string
           store_id?: string | null
           store_name?: string
           tagline?: string
           theme?: string
-          tva_rate?: number
           updated_at?: string
           user_id: string
-          whatsapp_number?: string
         }
         Update: {
           about_content?: string
           about_image_url?: string | null
           about_title?: string
           accent_color?: string
-          ai_number?: string
           background_color?: string
           border_radius?: string
           button_labels?: Json
@@ -3011,9 +2973,7 @@ export type Database = {
           logo_url?: string | null
           nav_links?: Json
           navbar_style?: string
-          nif_number?: string
           primary_color?: string
-          rc_number?: string
           secondary_color?: string
           section_order?: string[]
           section_titles?: Json
@@ -3024,15 +2984,12 @@ export type Database = {
           show_newsletter?: boolean
           show_search?: boolean
           slug?: string
-          store_favicon_url?: string
           store_id?: string | null
           store_name?: string
           tagline?: string
           theme?: string
-          tva_rate?: number
           updated_at?: string
           user_id?: string
-          whatsapp_number?: string
         }
         Relationships: [
           {

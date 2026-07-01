@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Shield } from "lucide-react";
+import DOMPurify from "isomorphic-dompurify";
 import { StorefrontShell } from "@/components/storefront/StorefrontShell";
 import {
   getPrivacyPolicyBySlug,
@@ -29,6 +30,16 @@ function PrivacyPolicyPage() {
       setLoading(false);
     });
   }, [params.slug]);
+
+  // Sanitize merchant-provided HTML to prevent stored XSS (SEC-XSS-001)
+  const sanitizedCustomHtml = useMemo(() => {
+    if (!policy?.custom_html) return "";
+    return DOMPurify.sanitize(policy.custom_html, {
+      USE_PROFILES: { html: true },
+      FORBID_TAGS: ["style", "script", "iframe", "object", "embed", "form"],
+      FORBID_ATTR: ["style", "onerror", "onload", "onclick"],
+    });
+  }, [policy?.custom_html]);
 
   if (!loaderData) {
     return (
@@ -67,7 +78,7 @@ function PrivacyPolicyPage() {
         ) : policy.custom_html ? (
           <div
             className="prose prose-sm max-w-none"
-            dangerouslySetInnerHTML={{ __html: policy.custom_html }}
+            dangerouslySetInnerHTML={{ __html: sanitizedCustomHtml }}
           />
         ) : (
           <div className="space-y-8">
