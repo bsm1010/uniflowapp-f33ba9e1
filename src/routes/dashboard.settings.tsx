@@ -380,7 +380,7 @@ function SettingsPage() {
   const saveBusiness = async () => {
     if (!user) return;
     setSavingBusiness(true);
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from("store_settings")
       .update({
         rc_number: rcNumber,
