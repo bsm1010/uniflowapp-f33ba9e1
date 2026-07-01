@@ -158,14 +158,14 @@ function SettingsPage() {
         setPlanRenewsAt(data?.plan_renews_at ?? null);
       });
 
-    supabase
+    (supabase as any)
       .from("store_settings")
       .select(
         "store_name, tagline, slug, logo_url, store_favicon_url, primary_color, secondary_color, accent_color, contact_address, footer_socials, rc_number, nif_number, ai_number, whatsapp_number, tva_rate",
       )
       .eq("user_id", user.id)
       .maybeSingle()
-      .then(({ data }) => {
+      .then(({ data }: { data: any }) => {
         if (!data) return;
         setStoreName(data.store_name ?? "");
         setTagline(data.tagline ?? "");
