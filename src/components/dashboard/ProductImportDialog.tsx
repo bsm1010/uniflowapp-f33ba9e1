@@ -251,7 +251,7 @@ export function ProductImportDialog({ open, onOpenChange, onImported }: ProductI
     }
 
     // Log the import
-    await supabase.from("import_logs").insert({
+    await (supabase as any).from("import_logs").insert({
       merchant_id: user.id,
       type: "products",
       total_rows: rawRows.length,

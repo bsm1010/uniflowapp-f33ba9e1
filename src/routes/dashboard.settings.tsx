@@ -158,14 +158,14 @@ function SettingsPage() {
         setPlanRenewsAt(data?.plan_renews_at ?? null);
       });
 
-    supabase
+    (supabase as any)
       .from("store_settings")
       .select(
         "store_name, tagline, slug, logo_url, store_favicon_url, primary_color, secondary_color, accent_color, contact_address, footer_socials, rc_number, nif_number, ai_number, whatsapp_number, tva_rate",
       )
       .eq("user_id", user.id)
       .maybeSingle()
-      .then(({ data }) => {
+      .then(({ data }: { data: any }) => {
         if (!data) return;
         setStoreName(data.store_name ?? "");
         setTagline(data.tagline ?? "");
@@ -362,7 +362,7 @@ function SettingsPage() {
   const saveBranding = async () => {
     if (!user) return;
     setSavingBranding(true);
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from("store_settings")
       .update({
         logo_url: logoUrl,
@@ -380,7 +380,7 @@ function SettingsPage() {
   const saveBusiness = async () => {
     if (!user) return;
     setSavingBusiness(true);
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from("store_settings")
       .update({
         rc_number: rcNumber,
@@ -420,7 +420,7 @@ function SettingsPage() {
     if (!user) return;
     setSavingSocials(true);
     const [err1, err2] = await Promise.all([
-      supabase
+      (supabase as any)
         .from("store_settings")
         .update({
           whatsapp_number: whatsapp,
@@ -464,7 +464,7 @@ function SettingsPage() {
     const rate = parseFloat(tvaRate);
     if (isNaN(rate) || rate < 0 || rate > 100) return toast.error("Invalid TVA rate");
     setSavingTax(true);
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from("store_settings")
       .update({ tva_rate: rate })
       .eq("user_id", user.id);
