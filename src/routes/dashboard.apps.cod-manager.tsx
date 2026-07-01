@@ -500,7 +500,7 @@ function CodManagerPage() {
                         <td className="px-4 py-3 text-right font-semibold tabular-nums">
                           {formatPrice(c.amount)}
                         </td>
-                        <td className="px-4 py-3 text-center">{statusBadge(c.status)}</td>
+                        <td className="px-4 py-3 text-center">{statusBadge(c.status ?? "")}</td>
                         <td className="px-4 py-3 text-muted-foreground text-xs">
                           {c.expected_transfer_date ?? "—"}
                         </td>
