@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export type ExportRequest = {
   id: string;
@@ -69,8 +70,9 @@ export const requestDataExportAsCustomer = createServerFn({ method: "POST" })
   });
 
 export const processDataExport = createServerFn({ method: "POST" })
-  .inputValidator((input: { requestId: string; accessToken: string }) => input)
-  .handler(async ({ data }) => {
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { requestId: string; accessToken?: string }) => input)
+  .handler(async ({ data, context }) => {
     const SUPABASE_URL = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL;
     const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
     if (!SUPABASE_URL || !SERVICE_KEY) throw new Error("Supabase config missing");
@@ -83,6 +85,12 @@ export const processDataExport = createServerFn({ method: "POST" })
       .eq("id", data.requestId)
       .maybeSingle();
     if (!request) throw new Error("Export request not found");
+
+    // AUTHZ: only the store owner may process a merchant export request.
+    // `stores.id` equals `auth.uid()` for the owner in this project.
+    if (request.store_id !== context.userId) {
+      throw new Response("Forbidden: you do not own this export request", { status: 403 });
+    }
 
     await admin
       .from("data_export_requests")

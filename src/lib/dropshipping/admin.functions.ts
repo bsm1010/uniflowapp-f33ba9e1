@@ -1,34 +1,35 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin as supabaseAdminTyped } from "@/integrations/supabase/client.server";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- service_role client bypasses RLS; types are intentionally loose
 const supabaseAdmin: any = supabaseAdminTyped;
-import { createAuthenticatedDeliveryClient } from "@/lib/delivery/authenticated-client";
-import type { Database } from "@/integrations/supabase/types";
 
 /**
  * Admin-only dropshipping server functions.
  *
- * These run with service_role (bypasses RLS) so a single client can list ALL
- * dropship orders and transition statuses. The client-side hooks call these
- * via useServerFn(); the service_role key never leaves the server.
- *
- * Access control: callers MUST verify the authenticated user has the
- * `marketplace_admin` (or `admin`) app role before invoking. We re-check
- * here as a defense-in-depth layer.
+ * Every handler is wrapped with `requireSupabaseAuth` (verifies caller JWT)
+ * and performs an explicit `has_role` check against `user_roles` before
+ * touching the service_role client. This is the ONLY authorization gate —
+ * client-side hooks provide zero server-side protection.
  */
 
 async function assertMarketplaceAdmin(userId: string): Promise<void> {
-  const { data, error } = await supabaseAdmin
-    .from("profiles")
-    .select("role")
-    .eq("id", userId)
-    .maybeSingle();
-  if (error) throw new Error(`Failed to verify admin role: ${error.message}`);
-  const role = (data as { role?: string } | null)?.role;
-  if (role !== "marketplace_admin" && role !== "admin") {
-    throw new Error("Forbidden: marketplace_admin role required");
-  }
+  const { data: isAdmin, error: adminErr } = await supabaseAdmin.rpc("has_role", {
+    _user_id: userId,
+    _role: "admin",
+  });
+  if (adminErr) throw new Error(`Failed to verify admin role: ${adminErr.message}`);
+  if (isAdmin === true) return;
+
+  const { data: isMarketAdmin, error: marketErr } = await supabaseAdmin.rpc("has_role", {
+    _user_id: userId,
+    _role: "marketplace_admin",
+  });
+  if (marketErr) throw new Error(`Failed to verify admin role: ${marketErr.message}`);
+  if (isMarketAdmin === true) return;
+
+  throw new Response("Forbidden: marketplace_admin role required", { status: 403 });
 }
 
 // ------------------------------------------------------------
@@ -41,8 +42,10 @@ const ListOrdersInput = z.object({
 });
 
 export const listAllDropshipOrders = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => ListOrdersInput.parse(input))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
+    await assertMarketplaceAdmin(context.userId);
     const { data: orders, error } = await supabaseAdmin
       .from("dropship_orders")
       .select(
@@ -81,9 +84,10 @@ const UpdateStatusInput = z.object({
 });
 
 export const updateDropshipOrderStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => UpdateStatusInput.parse(input))
-  .handler(async ({ data }) => {
-    // Stamp the corresponding *_at timestamp based on the new status.
+  .handler(async ({ data, context }) => {
+    await assertMarketplaceAdmin(context.userId);
     const now = new Date().toISOString();
     const timestampPatch: Record<string, string> = {};
     switch (data.status) {
@@ -131,8 +135,10 @@ const ListTopupRequestsInput = z.object({
 });
 
 export const listWalletTopupRequests = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => ListTopupRequestsInput.parse(input))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
+    await assertMarketplaceAdmin(context.userId);
     let q = supabaseAdmin
       .from("wallet_topup_requests")
       .select(
@@ -165,19 +171,16 @@ export const listWalletTopupRequests = createServerFn({ method: "POST" })
 const TopupDecisionInput = z.object({
   request_id: z.string().uuid(),
   admin_note: z.string().max(500).optional(),
-  access_token: z.string().min(1),
 });
 
 export const approveWalletTopup = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => TopupDecisionInput.parse(input))
-  .handler(async ({ data }) => {
-    const auth = await createAuthenticatedDeliveryClient(data.access_token);
-    if ("error" in auth) throw new Error(auth.error);
-    const { userId: adminId } = auth;
-
+  .handler(async ({ data, context }) => {
+    await assertMarketplaceAdmin(context.userId);
     const { error } = await supabaseAdmin.rpc("admin_approve_wallet_topup", {
       p_request_id: data.request_id,
-      p_admin_id: adminId,
+      p_admin_id: context.userId,
       p_admin_note: data.admin_note ?? undefined,
     });
     if (error) throw new Error(error.message);
@@ -185,15 +188,13 @@ export const approveWalletTopup = createServerFn({ method: "POST" })
   });
 
 export const rejectWalletTopup = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => TopupDecisionInput.parse(input))
-  .handler(async ({ data }) => {
-    const auth = await createAuthenticatedDeliveryClient(data.access_token);
-    if ("error" in auth) throw new Error(auth.error);
-    const { userId: adminId } = auth;
-
+  .handler(async ({ data, context }) => {
+    await assertMarketplaceAdmin(context.userId);
     const { error } = await supabaseAdmin.rpc("admin_reject_wallet_topup", {
       p_request_id: data.request_id,
-      p_admin_id: adminId,
+      p_admin_id: context.userId,
       p_admin_note: data.admin_note ?? undefined,
     });
     if (error) throw new Error(error.message);
