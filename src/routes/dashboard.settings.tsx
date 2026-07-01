@@ -362,7 +362,7 @@ function SettingsPage() {
   const saveBranding = async () => {
     if (!user) return;
     setSavingBranding(true);
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from("store_settings")
       .update({
         logo_url: logoUrl,
