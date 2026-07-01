@@ -464,7 +464,7 @@ function SettingsPage() {
     const rate = parseFloat(tvaRate);
     if (isNaN(rate) || rate < 0 || rate > 100) return toast.error("Invalid TVA rate");
     setSavingTax(true);
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from("store_settings")
       .update({ tva_rate: rate })
       .eq("user_id", user.id);
