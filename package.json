@@ -113,13 +113,15 @@
     "postcss": "^8.5.15",
     "brace-expansion": "^2.0.2",
     "js-yaml": "^4.1.1",
-    "@tanstack/router-core": "1.171.13"
+    "@tanstack/router-core": "1.170.0",
+    "@tanstack/react-router": "1.170.0"
   },
   "resolutions": {
     "ws": "^8.21.0",
     "postcss": "^8.5.15",
     "brace-expansion": "^2.0.2",
     "js-yaml": "^4.1.1",
-    "@tanstack/router-core": "1.171.13"
+    "@tanstack/router-core": "1.170.0",
+    "@tanstack/react-router": "1.170.0"
   }
 }
