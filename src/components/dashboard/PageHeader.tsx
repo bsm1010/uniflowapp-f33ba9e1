@@ -9,6 +9,7 @@ export function PageHeader({
   icon: Icon,
   gradient = "from-violet-500 via-fuchsia-500 to-pink-500",
   variant = "graphical",
+  rightSlot,
 }: {
   eyebrow?: string;
   title: string;
@@ -17,6 +18,7 @@ export function PageHeader({
   icon?: React.ComponentType<{ className?: string }>;
   gradient?: string;
   variant?: "graphical" | "plain";
+  rightSlot?: ReactNode;
 }) {
   if (variant === "plain") {
     return (
@@ -100,6 +102,7 @@ export function PageHeader({
           </div>
         </div>
         {actions && <div className="flex flex-wrap gap-2 shrink-0">{actions}</div>}
+        {rightSlot && <div className="hidden sm:block shrink-0">{rightSlot}</div>}
       </div>
     </section>
   );

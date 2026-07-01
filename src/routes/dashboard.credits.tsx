@@ -20,8 +20,10 @@ import {
   Smartphone,
   XCircle,
   CheckCircle2,
+  Wallet,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { PageHeader } from "@/components/dashboard/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
@@ -240,35 +242,13 @@ function CreditsPage() {
       </div>
 
       {/* Hero header */}
-      <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-gradient-to-br from-violet-600 via-fuchsia-600 to-pink-600 p-8 sm:p-12 text-white shadow-[0_20px_70px_-20px_rgba(139,92,246,0.5)]">
-        <div
-          aria-hidden
-          className="absolute inset-0 opacity-30"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 20% 20%, white 1px, transparent 1px), radial-gradient(circle at 80% 60%, white 1px, transparent 1px)",
-            backgroundSize: "40px 40px, 60px 60px",
-          }}
-        />
-        <div
-          aria-hidden
-          className="absolute -top-20 -right-20 size-72 rounded-full bg-white/10 blur-3xl"
-        />
-        <div
-          aria-hidden
-          className="absolute -bottom-24 -left-10 size-72 rounded-full bg-amber-300/20 blur-3xl"
-        />
-
-        <div className="relative flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="space-y-3 max-w-xl">
-            <Badge className="bg-white/20 hover:bg-white/20 backdrop-blur border-white/30 text-white">
-              <Sparkles className="size-3 mr-1" /> {t("dashboard.credits.eyebrow")}
-            </Badge>
-            <h1 className="text-4xl sm:text-5xl font-bold font-display tracking-tight">
-              {t("dashboard.credits.title")}
-            </h1>
-            <p className="text-white/80 text-lg">{t("dashboard.credits.description")}</p>
-          </div>
+      <PageHeader
+        icon={Wallet}
+        title={t("dashboard.credits.title")}
+        description={t("dashboard.credits.description")}
+        gradient="from-violet-600 via-fuchsia-600 to-pink-600"
+        eyebrow={t("dashboard.credits.eyebrow")}
+        rightSlot={
           <div className="flex items-center gap-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 px-5 py-4">
             <div className="size-14 grid place-items-center rounded-xl bg-gradient-to-br from-white/30 to-white/10 border border-white/30">
               <Coins className="size-7" />
@@ -283,8 +263,8 @@ function CreditsPage() {
               <div className="text-xs text-white/70 mt-0.5">{PLAN_LABELS[plan ?? "free"]}</div>
             </div>
           </div>
-        </div>
-      </div>
+        }
+      />
 
       {/* Stats row */}
       <div className="grid sm:grid-cols-3 gap-4">

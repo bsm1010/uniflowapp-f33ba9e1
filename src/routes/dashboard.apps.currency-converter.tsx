@@ -18,6 +18,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 
 import { RequireApp } from "@/components/dashboard/RequireApp";
+import { PageHeader } from "@/components/dashboard/PageHeader";
 
 export const Route = createFileRoute("/dashboard/apps/currency-converter")({
   component: () => (
@@ -88,17 +89,12 @@ function CurrencyPage() {
         </Link>
       </Button>
 
-      <div className="flex items-center gap-3">
-        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-lime-500/20 to-green-500/20 flex items-center justify-center">
-          <DollarSign className="h-6 w-6" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-display font-bold">Currency Converter</h1>
-          <p className="text-sm text-muted-foreground">
-            Show prices in your visitor's local currency.
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        icon={DollarSign}
+        title="Currency Converter"
+        description="Show prices in your visitor's local currency."
+        gradient="from-lime-500/20 to-green-500/20"
+      />
 
       <Card>
         <CardHeader>

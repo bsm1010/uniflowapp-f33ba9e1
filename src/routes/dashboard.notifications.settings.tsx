@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Bell, BellOff, Check, AlertTriangle, Smartphone, Volume2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { PageHeader } from "@/components/dashboard/PageHeader";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -151,12 +152,7 @@ function NotificationsSettings() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Notification Settings</h1>
-        <p className="text-muted-foreground text-sm">
-          Choose which push notifications you want on this device.
-        </p>
-      </div>
+      <PageHeader icon={Bell} title="Notification Settings" description="Choose which push notifications you want on this device." variant="plain" />
 
       {/* Push notifications Card */}
       <Card>

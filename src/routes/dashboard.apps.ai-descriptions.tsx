@@ -20,6 +20,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { generateDescription } from "@/lib/ai/generate-description";
 
 import { RequireApp } from "@/components/dashboard/RequireApp";
+import { PageHeader } from "@/components/dashboard/PageHeader";
 
 export const Route = createFileRoute("/dashboard/apps/ai-descriptions")({
   component: () => (
@@ -102,17 +103,12 @@ function AiDescPage() {
         </Link>
       </Button>
 
-      <div className="flex items-center gap-3">
-        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-fuchsia-500/20 to-pink-500/20 flex items-center justify-center">
-          <Sparkles className="h-6 w-6" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-display font-bold">AI Product Descriptions</h1>
-          <p className="text-sm text-muted-foreground">
-            Generate compelling product copy in one click.
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        icon={Sparkles}
+        title="AI Product Descriptions"
+        description="Generate compelling product copy in one click."
+        gradient="from-fuchsia-500/20 to-pink-500/20"
+      />
 
       <Card>
         <CardHeader>

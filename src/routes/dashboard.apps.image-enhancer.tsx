@@ -17,6 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
 import { enhanceImage } from "@/lib/ai/enhance-image";
 import { RequireApp } from "@/components/dashboard/RequireApp";
+import { PageHeader } from "@/components/dashboard/PageHeader";
 
 export const Route = createFileRoute("/dashboard/apps/image-enhancer")({
   component: () => (
@@ -89,17 +90,12 @@ function ImageEnhancerPage() {
         </Link>
       </Button>
 
-      <div className="flex items-center gap-3">
-        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center">
-          <Wand2 className="h-6 w-6" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-display font-bold">AI Image Enhancer</h1>
-          <p className="text-sm text-muted-foreground">
-            Turn ordinary product photos into studio-quality shots.
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        icon={Wand2}
+        title="AI Image Enhancer"
+        description="Turn ordinary product photos into studio-quality shots."
+        gradient="from-cyan-500/20 to-blue-500/20"
+      />
 
       <Card>
         <CardHeader>

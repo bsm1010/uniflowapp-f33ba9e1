@@ -19,6 +19,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 
 import { RequireApp } from "@/components/dashboard/RequireApp";
+import { PageHeader } from "@/components/dashboard/PageHeader";
 
 export const Route = createFileRoute("/dashboard/apps/discount-generator")({
   component: () => (
@@ -117,17 +118,12 @@ function DiscountGeneratorPage() {
         </Link>
       </Button>
 
-      <div className="flex items-center gap-3">
-        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-rose-500/20 to-orange-500/20 flex items-center justify-center">
-          <Tag className="h-6 w-6" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-display font-bold">Discount Generator</h1>
-          <p className="text-sm text-muted-foreground">
-            Create promo codes customers can apply at checkout.
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        icon={Tag}
+        title="Discount Generator"
+        description="Create promo codes customers can apply at checkout."
+        gradient="from-rose-500/20 to-orange-500/20"
+      />
 
       <Card>
         <CardHeader>

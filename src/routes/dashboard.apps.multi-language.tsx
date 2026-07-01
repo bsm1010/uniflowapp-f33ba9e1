@@ -18,6 +18,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 
 import { RequireApp } from "@/components/dashboard/RequireApp";
+import { PageHeader } from "@/components/dashboard/PageHeader";
 
 export const Route = createFileRoute("/dashboard/apps/multi-language")({
   component: () => (
@@ -120,17 +121,12 @@ function MultiLangPage() {
         </Link>
       </Button>
 
-      <div className="flex items-center gap-3">
-        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center">
-          <Languages className="h-6 w-6" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-display font-bold">Multi-language</h1>
-          <p className="text-sm text-muted-foreground">
-            Translate your store into multiple languages.
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        icon={Languages}
+        title="Multi-language"
+        description="Translate your store into multiple languages."
+        gradient="from-green-500/20 to-emerald-500/20"
+      />
 
       <Card>
         <CardHeader>

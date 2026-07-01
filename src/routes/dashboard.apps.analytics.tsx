@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 
 import { RequireApp } from "@/components/dashboard/RequireApp";
+import { PageHeader } from "@/components/dashboard/PageHeader";
 
 export const Route = createFileRoute("/dashboard/apps/analytics")({
   component: () => (
@@ -68,24 +69,18 @@ function AnalyticsIntegrationPage() {
         </Link>
       </Button>
 
-      {/* Header */}
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-sky-500/20 to-blue-500/20 flex items-center justify-center">
-            <BarChart3 className="h-7 w-7 text-sky-600" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-display font-bold">Analytics Integration</h1>
-            <p className="text-sm text-muted-foreground">
-              Connect tracking pixels to measure storefront performance.
-            </p>
-          </div>
-        </div>
-        <Button variant="outline" size="sm" className="rounded-xl shrink-0">
-          <HelpCircle className="h-4 w-4 mr-1.5" />
-          Integration guide
-        </Button>
-      </div>
+      <PageHeader
+        icon={BarChart3}
+        title="Analytics Integration"
+        description="Connect tracking pixels to measure storefront performance."
+        gradient="from-sky-500/20 to-blue-500/20"
+        actions={
+          <Button variant="outline" size="sm" className="rounded-xl shrink-0">
+            <HelpCircle className="h-4 w-4 mr-1.5" />
+            Integration guide
+          </Button>
+        }
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-6">
         {/* Main content */}

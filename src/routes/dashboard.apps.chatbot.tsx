@@ -19,6 +19,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 
 import { RequireApp } from "@/components/dashboard/RequireApp";
+import { PageHeader } from "@/components/dashboard/PageHeader";
 
 export const Route = createFileRoute("/dashboard/apps/chatbot")({
   component: () => (
@@ -90,17 +91,12 @@ function ChatbotPage() {
         </Link>
       </Button>
 
-      <div className="flex items-center gap-3">
-        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-indigo-500/20 to-blue-500/20 flex items-center justify-center">
-          <MessageCircle className="h-6 w-6" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-display font-bold">Chatbot</h1>
-          <p className="text-sm text-muted-foreground">
-            AI-powered support assistant for your storefront.
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        icon={MessageCircle}
+        title="Chatbot"
+        description="AI-powered support assistant for your storefront."
+        gradient="from-indigo-500/20 to-blue-500/20"
+      />
 
       <Card>
         <CardHeader>

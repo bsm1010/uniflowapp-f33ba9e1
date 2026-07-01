@@ -19,6 +19,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 
 import { RequireApp } from "@/components/dashboard/RequireApp";
+import { PageHeader } from "@/components/dashboard/PageHeader";
 
 export const Route = createFileRoute("/dashboard/apps/popup-builder")({
   component: () => (
@@ -114,15 +115,12 @@ function PopupBuilderPage() {
         </Link>
       </Button>
 
-      <div className="flex items-center gap-3">
-        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-yellow-500/20 flex items-center justify-center">
-          <MousePointerClick className="h-6 w-6" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-display font-bold">Popup Builder</h1>
-          <p className="text-sm text-muted-foreground">Capture leads and announce offers.</p>
-        </div>
-      </div>
+      <PageHeader
+        icon={MousePointerClick}
+        title="Popup Builder"
+        description="Capture leads and announce offers."
+        gradient="from-amber-500/20 to-yellow-500/20"
+      />
 
       <div className="grid md:grid-cols-2 gap-6">
         <Card>

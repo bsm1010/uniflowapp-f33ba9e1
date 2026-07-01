@@ -15,6 +15,7 @@ import {
   Clock,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { PageHeader } from "@/components/dashboard/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -232,42 +233,18 @@ function ReferralsPage() {
       </div>
 
       {/* Hero section */}
-      <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-gradient-to-br from-pink-600 via-rose-600 to-orange-500 p-8 sm:p-12 text-white shadow-[0_20px_70px_-20px_rgba(236,72,153,0.5)]">
-        <div
-          aria-hidden
-          className="absolute inset-0 opacity-20"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 20% 20%, white 1px, transparent 1px), radial-gradient(circle at 80% 60%, white 1px, transparent 1px)",
-            backgroundSize: "40px 40px, 60px 60px",
-          }}
-        />
-        <div
-          aria-hidden
-          className="absolute -top-20 -right-20 size-72 rounded-full bg-white/10 blur-3xl"
-        />
-        <div
-          aria-hidden
-          className="absolute -bottom-24 -left-10 size-72 rounded-full bg-amber-300/20 blur-3xl"
-        />
-
-        <div className="relative flex flex-col lg:flex-row lg:items-center gap-8">
-          <div className="flex-1 space-y-4 max-w-xl">
-            <Badge className="bg-white/20 hover:bg-white/20 backdrop-blur border-white/30 text-white w-fit">
-              <Sparkles className="size-3 mr-1" /> {t("dashboard.referrals.eyebrow")}
-            </Badge>
-            <h1 className="text-4xl sm:text-5xl font-bold font-display tracking-tight leading-tight">
-              {t("dashboard.referrals.title")}
-            </h1>
-            <p className="text-white/80 text-lg leading-relaxed">
-              {t("dashboard.referrals.description")}
-            </p>
-          </div>
+      <PageHeader
+        icon={Share2}
+        title={t("dashboard.referrals.title")}
+        description={t("dashboard.referrals.description")}
+        gradient="from-pink-600 via-rose-600 to-orange-500"
+        eyebrow={t("dashboard.referrals.eyebrow")}
+        rightSlot={
           <div className="lg:w-80 shrink-0">
             <ReferralIllustration />
           </div>
-        </div>
-      </div>
+        }
+      />
 
       {/* Stats */}
       <div className="grid sm:grid-cols-3 gap-4">

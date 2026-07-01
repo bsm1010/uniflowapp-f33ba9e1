@@ -39,6 +39,7 @@ import { sendCampaign } from "@/lib/email-marketing/send";
 import { toast } from "sonner";
 
 import { RequireApp } from "@/components/dashboard/RequireApp";
+import { PageHeader } from "@/components/dashboard/PageHeader";
 
 export const Route = createFileRoute("/dashboard/apps/email-marketing")({
   component: () => (
@@ -267,17 +268,12 @@ function EmailMarketingApp() {
         </Link>
       </Button>
 
-      <div className="flex items-center gap-3">
-        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
-          <Mail className="h-6 w-6" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold font-display">Email Marketing</h1>
-          <p className="text-sm text-muted-foreground">
-            Compose campaigns and send them to your customers via Resend.
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        icon={Mail}
+        title="Email Marketing"
+        description="Compose campaigns and send them to your customers via Resend."
+        gradient="from-blue-500/20 to-cyan-500/20"
+      />
 
       {/* Editor */}
       <Card className="border-border/60">

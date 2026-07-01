@@ -28,6 +28,7 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/dashboard/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { generateLandingPage, type LandingPageContent } from "@/lib/ai/generate-landing-page";
@@ -183,30 +184,27 @@ function LandingGeneratorPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between gap-4 flex-wrap">
-        <div>
-          <h1 className="text-2xl font-display font-bold flex items-center gap-2">
-            <Sparkles className="h-6 w-6 text-primary" />
-            {t("dashboard.landingGenerator.title")}
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            {t("dashboard.landingGenerator.description")}
-          </p>
-        </div>
-        {content && (
-          <div className="flex gap-2 flex-wrap">
-            <Button variant="outline" onClick={copyPage}>
-              <Copy className="h-4 w-4" /> نسخ الصفحة
-            </Button>
-            <Button variant="outline" onClick={generate} disabled={loading}>
-              <RotateCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} /> إعادة التوليد
-            </Button>
-            <Button onClick={() => toast.success("تم نشر الصفحة (تجريبي)")}>
-              <Send className="h-4 w-4" /> نشر
-            </Button>
-          </div>
-        )}
-      </div>
+      <PageHeader
+        icon={Sparkles}
+        title={t("dashboard.landingGenerator.title")}
+        description={t("dashboard.landingGenerator.description")}
+        actions={
+          content && (
+            <div className="flex gap-2 flex-wrap">
+              <Button variant="outline" onClick={copyPage}>
+                <Copy className="h-4 w-4" /> نسخ الصفحة
+              </Button>
+              <Button variant="outline" onClick={generate} disabled={loading}>
+                <RotateCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} /> إعادة التوليد
+              </Button>
+              <Button onClick={() => toast.success("تم نشر الصفحة (تجريبي)")}>
+                <Send className="h-4 w-4" /> نشر
+              </Button>
+            </div>
+          )
+        }
+        variant="plain"
+      />
 
       <div className="grid gap-4 md:grid-cols-[1fr_300px]">
         <div

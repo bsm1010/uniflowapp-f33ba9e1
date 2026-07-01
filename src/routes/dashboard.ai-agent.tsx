@@ -3,6 +3,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bot, MessageSquare, BarChart3, Settings2, Instagram, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PageHeader } from "@/components/dashboard/PageHeader";
 import { AIAgentProvider } from "@/hooks/use-ai-agent";
 import { AgentOverview } from "@/components/ai-agent/AgentOverview";
 import { LiveChat } from "@/components/ai-agent/LiveChat";
@@ -37,17 +38,7 @@ function AIAgentPage() {
     <AIAgentProvider>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center">
-              <Bot className="h-6 w-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight">AI Sales Agent</h1>
-              <p className="text-sm text-muted-foreground">Your AI employee for Instagram sales</p>
-            </div>
-          </div>
-        </div>
+        <PageHeader icon={Bot} title="AI Sales Agent" description="Your AI employee for Instagram sales" gradient="from-violet-500/20 to-indigo-500/20" />
 
         {/* Tabs */}
         <div className="flex gap-1 p-1 rounded-xl bg-muted/50 overflow-x-auto">

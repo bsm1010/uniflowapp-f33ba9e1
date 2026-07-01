@@ -12,6 +12,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/dashboard/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ConnectDomainWizard } from "@/components/domains/ConnectDomainWizard";
@@ -102,17 +103,17 @@ function DomainsPage() {
 
   return (
     <div className="max-w-5xl mx-auto p-6 space-y-6">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Custom Domains</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Connect your own domain to your storefront with auto-SSL.
-          </p>
-        </div>
-        <Button onClick={() => setOpen(true)} className="gap-2">
-          <Plus className="h-4 w-4" /> Connect Domain
-        </Button>
-      </div>
+      <PageHeader
+        icon={Globe}
+        title="Custom Domains"
+        description="Connect your own domain to your storefront with auto-SSL."
+        actions={
+          <Button onClick={() => setOpen(true)} className="gap-2">
+            <Plus className="h-4 w-4" /> Connect Domain
+          </Button>
+        }
+        variant="plain"
+      />
 
       <Card className="overflow-hidden">
         <CardHeader>
