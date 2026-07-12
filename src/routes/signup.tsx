@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/select";
 import { ALGERIA_GEO, getCitiesForWilaya, isValidAlgerianPhone } from "@/lib/algeriaWilayas";
 import { SuccessAnimation } from "@/components/auth/SuccessAnimation";
+import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
 
 export const Route = createFileRoute("/signup")({
   component: SignUpPage,
@@ -404,6 +405,8 @@ function SignUpPage() {
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("auth.signup.submit")}
           </Button>
         </motion.div>
+
+        <GoogleAuthButton label="Sign up with Google" />
       </form>
 
       {showSuccess && (
