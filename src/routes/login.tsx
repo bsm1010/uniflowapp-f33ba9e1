@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SuccessAnimation } from "@/components/auth/SuccessAnimation";
+import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
@@ -162,6 +163,8 @@ function LoginPage() {
         >
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("auth.login.submit")}
         </Button>
+
+        <GoogleAuthButton />
       </form>
 
       {showSuccess && <SuccessAnimation onComplete={() => navigate({ to: "/select-store" })} />}
