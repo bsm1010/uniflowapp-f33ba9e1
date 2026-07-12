@@ -14,6 +14,7 @@ import {
   MessageSquare,
   ShieldAlert,
   Wallet,
+  Store,
   type LucideIcon,
 } from "lucide-react";
 
@@ -495,6 +496,36 @@ export const APPS: AppDef[] = [
     plans: defaultPlans,
     changelog: defaultChangelog,
     route: "/dashboard/apps/cod-manager",
+  },
+  {
+    key: "shopify",
+    name: "Shopify Integration",
+    description:
+      "Sync products and orders between your Shopify store and Fennecly. Bidirectional sync keeps both platforms in harmony.",
+    longDescription:
+      "Connect your Shopify store to import products, customers, and orders. Changes sync bidirectionally — update a product in Fennecly and it updates in Shopify, and vice versa. Real-time webhooks keep orders in sync automatically.",
+    icon: Store,
+    category: "Sales",
+    gradient: "from-green-500 to-emerald-600",
+    developer: "Fennecly",
+    rating: 4.8,
+    reviewCount: 124,
+    features: [
+      "Bidirectional product sync",
+      "Order import from Shopify",
+      "Real-time webhook updates",
+      "Bulk product migration",
+      "Variant & image sync",
+      "Stock level sync",
+    ],
+    screenshots: [
+      "from-green-500 to-emerald-500",
+      "from-emerald-500 to-teal-500",
+      "from-teal-500 to-green-500",
+    ],
+    plans: defaultPlans,
+    changelog: defaultChangelog,
+    route: "/dashboard/shopify",
   },
 ];
 

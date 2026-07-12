@@ -15,3 +15,9 @@ verify_jwt = true
 
 [functions.send-email]
 verify_jwt = false
+
+[functions.shopify-oauth]
+verify_jwt = true
+
+[functions.shopify-webhooks]
+verify_jwt = false

@@ -31,6 +31,7 @@ import { Route as DashboardUpgradeRouteImport } from './routes/dashboard.upgrade
 import { Route as DashboardStoreSettingsRouteImport } from './routes/dashboard.store-settings'
 import { Route as DashboardStoreRouteImport } from './routes/dashboard.store'
 import { Route as DashboardStockAlertsRouteImport } from './routes/dashboard.stock-alerts'
+import { Route as DashboardShopifyRouteImport } from './routes/dashboard.shopify'
 import { Route as DashboardShipmentsRouteImport } from './routes/dashboard.shipments'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
 import { Route as DashboardReturnsRouteImport } from './routes/dashboard.returns'
@@ -210,6 +211,11 @@ const DashboardStoreRoute = DashboardStoreRouteImport.update({
 const DashboardStockAlertsRoute = DashboardStockAlertsRouteImport.update({
   id: '/stock-alerts',
   path: '/stock-alerts',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardShopifyRoute = DashboardShopifyRouteImport.update({
+  id: '/shopify',
+  path: '/shopify',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardShipmentsRoute = DashboardShipmentsRouteImport.update({
@@ -623,6 +629,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/returns': typeof DashboardReturnsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/shipments': typeof DashboardShipmentsRoute
+  '/dashboard/shopify': typeof DashboardShopifyRoute
   '/dashboard/stock-alerts': typeof DashboardStockAlertsRoute
   '/dashboard/store': typeof DashboardStoreRoute
   '/dashboard/store-settings': typeof DashboardStoreSettingsRoute
@@ -714,6 +721,7 @@ export interface FileRoutesByTo {
   '/dashboard/returns': typeof DashboardReturnsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/shipments': typeof DashboardShipmentsRoute
+  '/dashboard/shopify': typeof DashboardShopifyRoute
   '/dashboard/stock-alerts': typeof DashboardStockAlertsRoute
   '/dashboard/store': typeof DashboardStoreRoute
   '/dashboard/store-settings': typeof DashboardStoreSettingsRoute
@@ -809,6 +817,7 @@ export interface FileRoutesById {
   '/dashboard/returns': typeof DashboardReturnsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/shipments': typeof DashboardShipmentsRoute
+  '/dashboard/shopify': typeof DashboardShopifyRoute
   '/dashboard/stock-alerts': typeof DashboardStockAlertsRoute
   '/dashboard/store': typeof DashboardStoreRoute
   '/dashboard/store-settings': typeof DashboardStoreSettingsRoute
@@ -905,6 +914,7 @@ export interface FileRouteTypes {
     | '/dashboard/returns'
     | '/dashboard/settings'
     | '/dashboard/shipments'
+    | '/dashboard/shopify'
     | '/dashboard/stock-alerts'
     | '/dashboard/store'
     | '/dashboard/store-settings'
@@ -996,6 +1006,7 @@ export interface FileRouteTypes {
     | '/dashboard/returns'
     | '/dashboard/settings'
     | '/dashboard/shipments'
+    | '/dashboard/shopify'
     | '/dashboard/stock-alerts'
     | '/dashboard/store'
     | '/dashboard/store-settings'
@@ -1090,6 +1101,7 @@ export interface FileRouteTypes {
     | '/dashboard/returns'
     | '/dashboard/settings'
     | '/dashboard/shipments'
+    | '/dashboard/shopify'
     | '/dashboard/stock-alerts'
     | '/dashboard/store'
     | '/dashboard/store-settings'
@@ -1345,6 +1357,13 @@ declare module '@tanstack/react-router' {
       path: '/stock-alerts'
       fullPath: '/dashboard/stock-alerts'
       preLoaderRoute: typeof DashboardStockAlertsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/shopify': {
+      id: '/dashboard/shopify'
+      path: '/shopify'
+      fullPath: '/dashboard/shopify'
+      preLoaderRoute: typeof DashboardShopifyRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/shipments': {
@@ -1921,6 +1940,7 @@ interface DashboardRouteChildren {
   DashboardReturnsRoute: typeof DashboardReturnsRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardShipmentsRoute: typeof DashboardShipmentsRoute
+  DashboardShopifyRoute: typeof DashboardShopifyRoute
   DashboardStockAlertsRoute: typeof DashboardStockAlertsRoute
   DashboardStoreRoute: typeof DashboardStoreRoute
   DashboardStoreSettingsRoute: typeof DashboardStoreSettingsRoute
@@ -1957,6 +1977,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardReturnsRoute: DashboardReturnsRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardShipmentsRoute: DashboardShipmentsRoute,
+  DashboardShopifyRoute: DashboardShopifyRoute,
   DashboardStockAlertsRoute: DashboardStockAlertsRoute,
   DashboardStoreRoute: DashboardStoreRoute,
   DashboardStoreSettingsRoute: DashboardStoreSettingsRoute,
@@ -2044,3 +2065,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
