@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 
 const FONT_OPTIONS = [
+  { value: "Poppins", label: "Poppins" },
   { value: "Nunito", label: "Nunito" },
   { value: "Inter", label: "Inter" },
   { value: "Space Grotesk", label: "Space Grotesk" },
@@ -122,7 +123,7 @@ export function ThemePanel() {
             <div>
               <Label className="text-xs mb-1.5 block">{tr("editor.theme.fontFamily")}</Label>
               <select
-                value={settings.font_family || "Nunito"}
+                value={settings.font_family || "Poppins"}
                 onChange={(e) => updateSettings({ font_family: e.target.value })}
                 className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
               >
@@ -134,7 +135,7 @@ export function ThemePanel() {
               </select>
               <div
                 className="mt-2 p-3 rounded-md border bg-background text-center"
-                style={{ fontFamily: settings.font_family || "Nunito" }}
+                style={{ fontFamily: settings.font_family || "Poppins" }}
               >
                 <span className="text-lg">{tr("editor.theme.fontPreview")}</span>
               </div>

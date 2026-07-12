@@ -70,11 +70,11 @@ export const Route = createRootRoute({
       {
         rel: "preload",
         as: "style",
-        href: "https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700&display=swap",
       },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700&display=swap",
       },
       { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "apple-touch-icon", href: "/icons/apple-touch-icon.png" },

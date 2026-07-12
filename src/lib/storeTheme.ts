@@ -3,7 +3,7 @@ import type { Tables } from "@/integrations/supabase/types";
 export type StoreSettings = Tables<"store_settings">;
 
 export const FONT_STACK: Record<string, string> = {
-  Nunito: '"Nunito", system-ui, sans-serif',
+  Poppins: '"Poppins", system-ui, sans-serif',
   Inter: '"Inter", system-ui, sans-serif',
   "Space Grotesk": '"Space Grotesk", "Inter", sans-serif',
   Playfair: '"Playfair Display", Georgia, serif',
@@ -31,6 +31,9 @@ for (const [key, value] of Object.entries(FONT_STACK)) {
 
 // Also map common old formats that don't exactly match FONT_STACK values
 const LEGACY_FONT_MAP: Record<string, string> = {
+  "poppins, sans-serif": "Poppins",
+  "'poppins', sans-serif": "Poppins",
+  poppins: "Poppins",
   "nunito, sans-serif": "Nunito",
   "'nunito', sans-serif": "Nunito",
   nunito: "Nunito",
@@ -62,8 +65,6 @@ const LEGACY_FONT_MAP: Record<string, string> = {
   "syne, sans-serif": "Syne",
   "plus jakarta sans, sans-serif": "Jakarta",
   "'plus jakarta sans', sans-serif": "Jakarta",
-  "poppins, sans-serif": "Inter",
-  "'poppins', sans-serif": "Inter",
   "lora, serif": "Playfair",
   "'libre baskerville', serif": "Playfair",
   "dm sans, sans-serif": "Inter",
@@ -79,7 +80,7 @@ export function normalizeFontFamily(raw: string): string {
   if (RAW_TO_KEY[normalized]) return RAW_TO_KEY[normalized];
   if (LEGACY_FONT_MAP[normalized]) return LEGACY_FONT_MAP[normalized];
   // Fallback
-  return "Nunito";
+  return "Poppins";
 }
 
 export function readableOn(hex: string): string {

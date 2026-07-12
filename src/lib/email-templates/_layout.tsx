@@ -111,7 +111,7 @@ export const brand = {
 
 const main = {
   backgroundColor: brand.bg,
-  fontFamily: '"Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+  fontFamily: '"Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
   margin: 0,
   padding: 0,
   WebkitFontSmoothing: "antialiased" as const,
@@ -144,7 +144,7 @@ const logoMark = {
 };
 
 const heroBrand = {
-  fontFamily: '"Nunito", sans-serif',
+  fontFamily: '"Poppins", sans-serif',
   fontSize: "24px",
   fontWeight: 700 as const,
   color: brand.white,
@@ -239,7 +239,7 @@ const footerDot = {
 // ─── Shared content styles ──────────────────────────────────────────────
 export const styles = {
   h1: {
-    fontFamily: '"Nunito", sans-serif',
+    fontFamily: '"Poppins", sans-serif',
     fontSize: "28px",
     fontWeight: 700 as const,
     color: brand.text,
