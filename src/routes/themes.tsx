@@ -73,7 +73,7 @@ function ThemeCard({ preset, onClick }: { preset: ThemePreset; onClick: () => vo
       secondary_color: preset.patch.secondary_color ?? "#0f172a",
       accent_color: preset.patch.accent_color ?? "#f59e0b",
       background_color: preset.patch.background_color ?? "#ffffff",
-      font_family: preset.patch.font_family ?? "Inter",
+      font_family: preset.patch.font_family ?? "Nunito",
       border_radius: preset.patch.border_radius ?? "medium",
       button_style: preset.patch.button_style ?? "rounded",
     } as Tables<"store_settings">);
@@ -161,7 +161,7 @@ function ThemePreview({ preset, onBack }: { preset: ThemePreset; onBack: () => v
       secondary_color: preset.patch.secondary_color ?? "#0f172a",
       accent_color: preset.patch.accent_color ?? "#f59e0b",
       background_color: preset.patch.background_color ?? "#ffffff",
-      font_family: preset.patch.font_family ?? "Inter",
+      font_family: preset.patch.font_family ?? "Nunito",
       border_radius: preset.patch.border_radius ?? "medium",
       button_style: preset.patch.button_style ?? "rounded",
     } as Tables<"store_settings">);

@@ -3,6 +3,7 @@ import type { Tables } from "@/integrations/supabase/types";
 export type StoreSettings = Tables<"store_settings">;
 
 export const FONT_STACK: Record<string, string> = {
+  Nunito: '"Nunito", system-ui, sans-serif',
   Inter: '"Inter", system-ui, sans-serif',
   "Space Grotesk": '"Space Grotesk", "Inter", sans-serif',
   Playfair: '"Playfair Display", Georgia, serif',
@@ -30,6 +31,9 @@ for (const [key, value] of Object.entries(FONT_STACK)) {
 
 // Also map common old formats that don't exactly match FONT_STACK values
 const LEGACY_FONT_MAP: Record<string, string> = {
+  "nunito, sans-serif": "Nunito",
+  "'nunito', sans-serif": "Nunito",
+  nunito: "Nunito",
   "inter, sans-serif": "Inter",
   inter: "Inter",
   "space grotesk, sans-serif": "Space Grotesk",
@@ -75,7 +79,7 @@ export function normalizeFontFamily(raw: string): string {
   if (RAW_TO_KEY[normalized]) return RAW_TO_KEY[normalized];
   if (LEGACY_FONT_MAP[normalized]) return LEGACY_FONT_MAP[normalized];
   // Fallback
-  return "Inter";
+  return "Nunito";
 }
 
 export function readableOn(hex: string): string {
