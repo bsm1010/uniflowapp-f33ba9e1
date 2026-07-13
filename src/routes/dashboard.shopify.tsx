@@ -435,9 +435,9 @@ function ShopifyPage() {
               </Button>
             </div>
           ) : (
-            <Dialog open={connectOpen} onOpenChange={setConnectOpen}>
+              <Dialog open={connectOpen} onOpenChange={setConnectOpen}>
               <DialogTrigger asChild>
-                <Button className="gap-2">
+                <Button className="gap-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-md">
                   <LinkIcon className="h-4 w-4" />
                   Connect Shopify Store
                 </Button>
@@ -486,6 +486,7 @@ function ShopifyPage() {
                     <Button
                       onClick={handleConnect}
                       disabled={connecting || !shopifyUrl || !shopifyToken}
+                      className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white"
                     >
                       {connecting ? (
                         <Loader2 className="h-4 w-4 animate-spin mr-1.5" />
@@ -665,22 +666,22 @@ function ShopifyPage() {
         </>
       ) : (
         /* Not Connected State */
-        <Card>
-          <CardContent className="p-12 text-center">
-            <div className="mx-auto h-16 w-16 rounded-2xl bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center mb-4">
-              <Store className="h-8 w-8 text-green-600" />
+        <Card className="border-border/60">
+          <CardContent className="p-16 text-center">
+            <div className="mx-auto h-16 w-16 rounded-2xl bg-green-50 flex items-center justify-center mb-5">
+              <Store className="h-8 w-8 text-green-500" />
             </div>
-            <h3 className="text-lg font-semibold mb-2">
+            <h3 className="text-xl font-bold tracking-tight mb-2">
               Connect Your Shopify Store
             </h3>
-            <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6">
+            <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6 leading-relaxed">
               Import your Shopify products and orders into Fennecly. Sync works
               bidirectionally — changes in either platform stay in sync.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Dialog open={connectOpen} onOpenChange={setConnectOpen}>
                 <DialogTrigger asChild>
-                  <Button className="gap-2">
+                  <Button className="gap-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-md">
                     <LinkIcon className="h-4 w-4" />
                     Connect Shopify Store
                   </Button>
