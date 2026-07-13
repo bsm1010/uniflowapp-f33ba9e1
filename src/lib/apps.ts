@@ -32,6 +32,7 @@ export type AppDef = {
   description: string;
   longDescription?: string;
   icon: LucideIcon;
+  icon_url?: string;
   category: string;
   gradient: string;
   developer: string;
@@ -505,6 +506,7 @@ export const APPS: AppDef[] = [
     longDescription:
       "Connect your Shopify store to import products, customers, and orders. Changes sync bidirectionally — update a product in Fennecly and it updates in Shopify, and vice versa. Real-time webhooks keep orders in sync automatically.",
     icon: Store,
+    icon_url: "/icons/Shopify-logo.png",
     category: "Sales",
     gradient: "from-green-500 to-emerald-600",
     developer: "Fennecly",

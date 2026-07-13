@@ -204,11 +204,15 @@ function AppLandingPage() {
             <div className="flex items-start gap-3">
               <div
                 className={cn(
-                  "h-14 w-14 rounded-xl bg-gradient-to-br flex items-center justify-center ring-1 ring-border shrink-0",
+                  "h-14 w-14 rounded-xl bg-gradient-to-br flex items-center justify-center ring-1 ring-border shrink-0 overflow-hidden",
                   app.gradient,
                 )}
               >
-                <Icon className="h-7 w-7 text-foreground" />
+                {app.icon_url ? (
+                  <img src={app.icon_url} alt={app.name} className="h-full w-full object-cover" />
+                ) : (
+                  <Icon className="h-7 w-7 text-foreground" />
+                )}
               </div>
               <h1 className="text-lg font-bold leading-tight tracking-tight">{app.name}</h1>
             </div>

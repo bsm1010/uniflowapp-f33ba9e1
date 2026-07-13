@@ -262,12 +262,16 @@ function AppsPage() {
                       <div className="flex items-start justify-between gap-3">
                         <div
                           className={cn(
-                            "h-12 w-12 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br",
+                            "h-12 w-12 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br overflow-hidden",
                             app.gradient,
                             "text-white shadow-sm",
                           )}
                         >
-                          <Icon className="h-6 w-6" />
+                          {app.icon_url ? (
+                            <img src={app.icon_url} alt={app.name} className="h-full w-full object-cover" />
+                          ) : (
+                            <Icon className="h-6 w-6" />
+                          )}
                         </div>
                         <div className="flex flex-col items-end gap-1.5">
                           {installed && (
