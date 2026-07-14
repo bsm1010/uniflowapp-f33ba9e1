@@ -8,13 +8,14 @@ import { DashboardTopbar } from "@/components/dashboard/DashboardTopbar";
 import { OnboardingWizard } from "@/components/dashboard/OnboardingWizard";
 import { CreditsProvider } from "@/hooks/use-credits";
 import { PaywallDialog } from "@/components/dashboard/PaywallDialog";
-import { CurrentStoreProvider } from "@/hooks/use-current-store";
+import { CurrentStoreProvider, useCurrentStore } from "@/hooks/use-current-store";
 import { IOSInstallBanner } from "@/components/dashboard/IOSInstallBanner";
 import { registerServiceWorker } from "@/lib/pwa/register-sw";
 import { playSound } from "@/lib/sounds";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { CommandPalette } from "@/components/dashboard/CommandPalette";
 import { KeyboardShortcutsGuide, useKeyboardShortcutsGuide } from "@/components/storefront/KeyboardShortcutsGuide";
+import { useOrderVoice } from "@/hooks/use-order-voice";
 
 const WelcomeDialog = lazy(() =>
   import("@/components/dashboard/WelcomeDialog").then((m) => ({
@@ -56,6 +57,46 @@ export const Route = createFileRoute("/dashboard")({
     ],
   }),
 });
+
+function VoiceListener() {
+  const { user } = useAuth();
+  const { currentStore } = useCurrentStore();
+  const { announceOrder } = useOrderVoice();
+
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const channel = supabase
+      .channel(`new-orders-voice-${user.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "orders",
+          filter: `store_owner_id=eq.${user.id}`,
+        },
+        (payload) => {
+          const order = payload.new as Record<string, unknown>;
+          announceOrder({
+            orderNumber: (order.order_number as string) ?? String(order.id ?? "").slice(0, 8),
+            customerName: (order.customer_name as string) ?? "عميل",
+            wilaya: (order.shipping_wilaya as string) ?? (order.wilaya as string) ?? "غير محدد",
+            total: (order.total as number) ?? (order.total_amount as number) ?? 0,
+            paymentMethod: order.payment_method as string,
+            productNames: [],
+          });
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id, currentStore?.id, announceOrder]);
+
+  return null;
+}
 
 function AnimatedOutlet() {
   const location = useLocation();
@@ -219,6 +260,7 @@ function DashboardLayout() {
             <LoginPopup />
             <CommandPalette open={cmdOpen} onOpenChange={setCmdOpen} />
             <KeyboardShortcutsGuide open={shortcutsGuide.open} onClose={() => shortcutsGuide.setOpen(false)} />
+            <VoiceListener />
 
             <Suspense fallback={null}>
               <WelcomeDialog userId={user.id} />

@@ -1,5 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
-import { LogOut, Search, User as UserIcon, X, Keyboard } from "lucide-react";
+import { LogOut, Search, User as UserIcon, X, Keyboard, Volume2, VolumeX } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -34,6 +34,27 @@ export function DashboardTopbar({ name, avatarUrl }: { name: string; avatarUrl?:
   const containerRef = useRef<HTMLDivElement>(null);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const mobileInputRef = useRef<HTMLInputElement>(null);
+  const [voiceEnabled, setVoiceEnabled] = useState(() => {
+    try {
+      return localStorage.getItem("fennecly_voice_enabled") === "true";
+    } catch {
+      return false;
+    }
+  });
+
+  const toggleVoice = () => {
+    const next = !voiceEnabled;
+    setVoiceEnabled(next);
+    try {
+      localStorage.setItem("fennecly_voice_enabled", String(next));
+    } catch { /* noop */ }
+    if (next && typeof window !== "undefined" && "speechSynthesis" in window) {
+      const u = new SpeechSynthesisUtterance("تم تفعيل الإعلانات الصوتية");
+      u.lang = "ar-DZ";
+      u.volume = 0.7;
+      window.speechSynthesis.speak(u);
+    }
+  };
 
   const targets: SearchTarget[] = useMemo(
     () => [
@@ -304,6 +325,15 @@ export function DashboardTopbar({ name, avatarUrl }: { name: string; avatarUrl?:
         <CreditsBadge />
         <LanguageSwitcher />
         <SoundToggle />
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={toggleVoice}
+          title={voiceEnabled ? "Disable voice announcements" : "Enable voice announcements"}
+          className={voiceEnabled ? "text-primary" : "text-muted-foreground"}
+        >
+          {voiceEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+        </Button>
         <ThemeToggle />
         <NotificationsBell />
         <Button

@@ -16,6 +16,7 @@ import {
   getPushStatus,
 } from "@/lib/push/push.functions";
 import { useCurrentStore } from "@/hooks/use-current-store";
+import { VoiceAnnouncementSettings } from "@/components/dashboard/VoiceAnnouncementSettings";
 
 export const Route = createFileRoute("/dashboard/notifications/settings")({
   component: NotificationsSettings,
@@ -254,6 +255,13 @@ function NotificationsSettings() {
               disabled={saving}
             />
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Voice Announcements */}
+      <Card>
+        <CardContent className="p-6">
+          <VoiceAnnouncementSettings />
         </CardContent>
       </Card>
     </div>

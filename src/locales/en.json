@@ -889,6 +889,26 @@
       "hundred_orders": { "label": "100 orders", "description": "Receive 100 orders" },
       "first_revenue": { "label": "First revenue", "description": "Earn your first revenue" },
       "revenue_100k": { "label": "100,000 DA", "description": "Earn 100,000 DA in revenue" }
+    },
+    "voice": {
+      "title": "Voice Announcements",
+      "subtitle": "Hear new orders read aloud automatically",
+      "enable": "Enable voice",
+      "language": "Language",
+      "mode": "Announcement mode",
+      "modeShort": "Short",
+      "modeFull": "Full details",
+      "shortExample": "New order from Karim in Oran",
+      "fullExample": "Reads all order details including products",
+      "volume": "Volume",
+      "speed": "Speed",
+      "test": "Test voice announcement",
+      "slow": "Slow",
+      "normal": "Normal",
+      "fast": "Fast",
+      "notSupported": "Voice announcements not supported in this browser",
+      "useChrome": "Please use Chrome or Edge for this feature",
+      "confirmOn": "Voice announcements enabled"
     }
   },
   "apps": {

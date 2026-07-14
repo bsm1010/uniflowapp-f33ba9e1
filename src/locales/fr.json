@@ -904,6 +904,26 @@
         "description": "Gagnez vos premiers revenus"
       },
       "revenue_100k": { "label": "100 000 DA", "description": "Gagnez 100 000 DA de revenus" }
+    },
+    "voice": {
+      "title": "Annonces vocales",
+      "subtitle": "Entendez les nouvelles commandes lues à voix haute automatiquement",
+      "enable": "Activer la voix",
+      "language": "Langue",
+      "mode": "Mode d'annonce",
+      "modeShort": "Court",
+      "modeFull": "Détails complets",
+      "shortExample": "Nouvelle commande de Karim à Oran",
+      "fullExample": "Lit tous les détails de la commande y compris les produits",
+      "volume": "Volume",
+      "speed": "Vitesse",
+      "test": "Tester l'annonce vocale",
+      "slow": "Lent",
+      "normal": "Normal",
+      "fast": "Rapide",
+      "notSupported": "Les annonces vocales ne sont pas prises en charge dans ce navigateur",
+      "useChrome": "Veuillez utiliser Chrome ou Edge pour cette fonctionnalité",
+      "confirmOn": "Annonces vocales activées"
     }
   },
   "apps": {
