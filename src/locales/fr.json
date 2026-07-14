@@ -905,5 +905,25 @@
       },
       "revenue_100k": { "label": "100 000 DA", "description": "Gagnez 100 000 DA de revenus" }
     }
+  },
+  "apps": {
+    "deliveryMap": {
+      "title": "Carte des prix de livraison",
+      "subtitle": "Cliquez sur une wilaya pour voir les prix de livraison",
+      "detectingLocation": "Détection de votre position...",
+      "locationDenied": "Accès à la position refusé. Sélectionnez votre wilaya manuellement.",
+      "origin": "De",
+      "destination": "Vers",
+      "homeDelivery": "Livraison à domicile",
+      "stopDesk": "Stop desk",
+      "bestPrices": "Meilleurs prix",
+      "noCompanies": "Aucune entreprise de livraison connectée",
+      "connectCompany": "Connecter une entreprise de livraison",
+      "estimatedDistance": "Distance estimée",
+      "estimatedTime": "Temps de livraison estimé",
+      "clickWilaya": "Cliquez sur une wilaya pour voir les prix de livraison",
+      "selectOrigin": "Choisissez votre wilaya...",
+      "detect": "Détection auto"
+    }
   }
 }

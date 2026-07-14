@@ -15,6 +15,7 @@ import {
   ShieldAlert,
   Wallet,
   Store,
+  MapPin,
   type LucideIcon,
 } from "lucide-react";
 
@@ -528,6 +529,36 @@ export const APPS: AppDef[] = [
     plans: defaultPlans,
     changelog: defaultChangelog,
     route: "/dashboard/shopify",
+  },
+  {
+    key: "delivery-map",
+    name: "Delivery Price Map",
+    description:
+      "See delivery prices between any two wilayas on an interactive map of Algeria.",
+    longDescription:
+      "An interactive Algeria wilaya map that shows delivery prices between your location and any destination. Compare prices across your connected delivery companies at a glance.",
+    icon: MapPin,
+    category: "Algeria",
+    gradient: "from-emerald-500 to-teal-600",
+    developer: "Fennecly",
+    rating: 4.7,
+    reviewCount: 89,
+    features: [
+      "Interactive Algeria wilaya map",
+      "Compare delivery company prices",
+      "Distance & time estimation",
+      "Auto-detect your location",
+      "Home & stop desk pricing",
+      "Best price highlighting",
+    ],
+    screenshots: [
+      "from-emerald-500 to-teal-500",
+      "from-teal-500 to-cyan-500",
+      "from-cyan-500 to-emerald-500",
+    ],
+    plans: defaultPlans,
+    changelog: defaultChangelog,
+    route: "/dashboard/apps/delivery-map",
   },
 ];
 

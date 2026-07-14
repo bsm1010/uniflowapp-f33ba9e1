@@ -890,5 +890,25 @@
       "first_revenue": { "label": "First revenue", "description": "Earn your first revenue" },
       "revenue_100k": { "label": "100,000 DA", "description": "Earn 100,000 DA in revenue" }
     }
+  },
+  "apps": {
+    "deliveryMap": {
+      "title": "Delivery Price Map",
+      "subtitle": "Click any wilaya to see delivery prices",
+      "detectingLocation": "Detecting your location...",
+      "locationDenied": "Location access denied. Select your wilaya manually.",
+      "origin": "From",
+      "destination": "To",
+      "homeDelivery": "Home delivery",
+      "stopDesk": "Stop desk",
+      "bestPrices": "Best prices",
+      "noCompanies": "No delivery company connected",
+      "connectCompany": "Connect a delivery company",
+      "estimatedDistance": "Estimated distance",
+      "estimatedTime": "Estimated delivery time",
+      "clickWilaya": "Click any wilaya on the map to see delivery prices",
+      "selectOrigin": "Choose your wilaya...",
+      "detect": "Auto-detect"
+    }
   }
 }

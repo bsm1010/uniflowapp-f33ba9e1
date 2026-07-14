@@ -993,5 +993,25 @@
       "first_revenue": { "label": "أول أرباح", "description": "حق أول أرباح" },
       "revenue_100k": { "label": "100,000 د.ج", "description": "حق 100,000 د.ج أرباح" }
     }
+  },
+  "apps": {
+    "deliveryMap": {
+      "title": "خريطة أسعار التوصيل",
+      "subtitle": "انقر على أي ولاية لعرض أسعار التوصيل",
+      "detectingLocation": "جاري اكتشاف موقعك...",
+      "locationDenied": "تم رفض الوصول إلى الموقع. اختر ولايتك يدويًا.",
+      "origin": "من",
+      "destination": "إلى",
+      "homeDelivery": "توصيل إلى المنزل",
+      "stopDesk": "توصيل إلى المكتب",
+      "bestPrices": "أفضل الأسعار",
+      "noCompanies": "لم تقم بربط أي شركة توصيل بعد",
+      "connectCompany": "ربط شركة توصيل",
+      "estimatedDistance": "المسافة التقريبية",
+      "estimatedTime": "وقت التوصيل المتوقع",
+      "clickWilaya": "انقر على أيولاية لعرض أسعار التوصيل",
+      "selectOrigin": "اختر ولايتك...",
+      "detect": "اكتشاف تلقائي"
+    }
   }
 }
