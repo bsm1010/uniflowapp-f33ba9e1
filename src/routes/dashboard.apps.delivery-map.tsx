@@ -23,6 +23,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { SearchableSelect } from "@/components/ui/searchable-select";
 import { ALGERIAN_WILAYAS } from "@/lib/algeriaWilayas";
+import { ALGERIA_WILAYA_SHAPES, ALGERIA_MAP_WIDTH, ALGERIA_MAP_HEIGHT } from "@/lib/algeriaMapShapes";
 import { useCurrentStore } from "@/hooks/use-current-store";
 
 type DeliveryPrice = {
@@ -95,9 +96,6 @@ const WILAYA_COORDS: Record<string, [number, number]> = {
   "El Meniaa": [30.58, 2.88],
 };
 
-const GEOJSON_URL =
-  "https://raw.githubusercontent.com/deldersveld/topojson/master/countries/algeria/algeria-wilayas.json";
-
 function haversineDistance(
   lat1: number,
   lon1: number,
@@ -130,60 +128,6 @@ function MapComponent({
   destinationWilaya: string | null;
   onWilayaClick: (name: string) => void;
 }) {
-  const [geoData, setGeoData] = useState<any>(null);
-
-  useEffect(() => {
-    fetch(GEOJSON_URL)
-      .then((r) => r.json())
-      .then((data) => {
-        // The file is TopoJSON, convert to GeoJSON features
-        if (data.objects) {
-          const key = Object.keys(data.objects)[0];
-          const arcs = data.arcs;
-          const obj = data.objects[key];
-          // Simple topojson to geojson conversion for Algeria wilayas
-          if (obj.geometries) {
-            const features = obj.geometries.map((g: any, i: number) => {
-              // Decode arcs to coordinates
-              const coords: number[][][] = [];
-              if (g.arcs) {
-                let currentArc = g.arcs[0];
-                let points: number[][] = [];
-                let x = 0, y = 0;
-                for (const arcIdx of currentArc) {
-                  const idx = Math.abs(arcIdx);
-                  const arc = arcs[idx];
-                  if (!arc) continue;
-                  for (const delta of arc) {
-                    x += delta[0];
-                    y += delta[1];
-                    points.push([y * 0.008 - 2, x * 0.01 - 8]);
-                  }
-                }
-                if (points.length > 2) {
-                  coords.push(points);
-                }
-              }
-              const name =
-                g.properties?.NAME_1 ||
-                g.properties?.name ||
-                ALGERIAN_WILAYAS[i] ||
-                `Wilaya ${i}`;
-              return {
-                type: "Feature",
-                properties: { name, code: i + 1 },
-                geometry: coords.length
-                  ? { type: "Polygon", coordinates: coords }
-                  : null,
-              };
-            }).filter((f: any) => f.geometry);
-            setGeoData({ type: "FeatureCollection", features });
-          }
-        }
-      })
-      .catch(() => {});
-  }, []);
-
   const getWilayaStyle = useCallback(
     (name: string) => {
       if (name === originWilaya)
@@ -203,69 +147,45 @@ function MapComponent({
       return {
         fillColor: "#EDE9FE",
         fillOpacity: 0.5,
-        color: "#7C3AED",
+        color: "#C4B5FD",
         weight: 1,
       };
     },
     [originWilaya, destinationWilaya],
   );
 
-  if (!geoData) {
-    return (
-      <div className="h-full flex items-center justify-center bg-muted/30 rounded-xl">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
-
   return (
-    <div className="h-full rounded-xl overflow-hidden border border-border/60">
-      <div id="delivery-map" className="h-full w-full" />
-      {/* Use a simple SVG-based map instead of Leaflet for reliability */}
+    <div className="h-full rounded-xl overflow-hidden border border-border/60 bg-slate-50 dark:bg-slate-900">
       <svg
-        viewBox="-12 -2 14 12"
+        viewBox={`0 0 ${ALGERIA_MAP_WIDTH} ${ALGERIA_MAP_HEIGHT}`}
         className="h-full w-full"
-        style={{ background: "#f8fafc" }}
+        preserveAspectRatio="xMidYMid meet"
       >
-        {geoData.features?.map((f: any, i: number) => {
-          const name = f.properties?.name;
-          const style = getWilayaStyle(name);
-          // Simple centroid
-          const coords = f.geometry?.coordinates?.[0];
-          let cx = 0, cy = 0;
-          if (coords && coords.length > 2) {
-            const n = coords.length;
-            cx = coords.reduce((s: number, c: number[]) => s + c[0], 0) / n;
-            cy = coords.reduce((s: number, c: number[]) => s + c[1], 0) / n;
-          }
-          const pathD = coords
-            ? `M${coords.map((c: number[]) => `${c[0]},${c[1]}`).join("L")}Z`
-            : "";
+        {ALGERIA_WILAYA_SHAPES.map((wilaya) => {
+          const style = getWilayaStyle(wilaya.name);
           return (
-            <g key={i}>
+            <g key={wilaya.code}>
               <path
-                d={pathD}
+                d={wilaya.d}
                 fill={style.fillColor}
                 fillOpacity={style.fillOpacity}
                 stroke={style.color}
-                strokeWidth={0.03}
+                strokeWidth={style.weight}
                 className="cursor-pointer transition-all hover:fill-opacity-80"
-                onClick={() => onWilayaClick(name)}
+                onClick={() => onWilayaClick(wilaya.name)}
               >
-                <title>{name}</title>
+                <title>{wilaya.name}</title>
               </path>
-              {cx !== 0 && (
-                <text
-                  x={cx}
-                  y={cy}
-                  textAnchor="middle"
-                  fontSize="0.22"
-                  fill="#374151"
-                  className="pointer-events-none select-none font-medium"
-                >
-                  {name}
-                </text>
-              )}
+              <text
+                x={wilaya.cx}
+                y={wilaya.cy}
+                textAnchor="middle"
+                fontSize="14"
+                fill="#374151"
+                className="pointer-events-none select-none font-medium"
+              >
+                {wilaya.name}
+              </text>
             </g>
           );
         })}
